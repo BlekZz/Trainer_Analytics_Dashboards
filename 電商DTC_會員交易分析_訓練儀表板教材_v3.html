@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>會員 × 交易 分析訓練 Dashboard v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+<style>
+:root {
+  /* ── 色彩語意 protocol（D7）────────────────────────
+     藍   主資料 / 中性事實
+     綠   正向 / 穩定 / 高價值
+     橘   注意 / 中等 / 季節性
+     紅   警示 / 流失 / 風險
+     紫   行為 / 時間相關
+  */
+  --bg: #f5f3ef;
+  --bg-card: #ffffff;
+  --bg-alt: #f0ede8;
+  --bg-finding: #f4f1eb;
+  --accent: #2d5be3;       /* 藍 */
+  --accent-2: #e8503a;     /* 紅警示 */
+  --accent-3: #2aab85;     /* 綠正向 */
+  --accent-4: #d4870a;     /* 橘注意 */
+  --accent-5: #7c4dff;     /* 紫行為 */
+  --success: #1a9e72;
+  --warning: #c97c10;
+  --danger: #d43a2f;
+  --text-h: #1a1a2e;
+  --text-b: #3a3a4a;
+  --text-s: #6b6b80;
+  --text-m: #9898a8;
+  --border: #e2ddd6;
+  --border-strong: #ccc8c0;
+  --q-bg: #eef2ff;
+  --q-border: #c5d0f8;
+  --a-bg: #f0faf6;
+  --a-border: #a8dcc9;
+  --trap-bg: #fff5f3;
+  --trap-border: #f5b9b0;
+  --def-bg: #f7f3ff;
+  --def-border: #d6c5f9;
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;font-size:15px;line-height:1.65;}
+
+/* HEADER */
+.site-header{background:var(--bg-card);border-bottom:2px solid var(--border);padding:18px 36px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;position:sticky;top:0;z-index:200;box-shadow:var(--shadow-sm);}
+.header-brand h1{font-family:'Lora',serif;font-size:21px;color:var(--text-h);font-weight:600;letter-spacing:-0.2px;}
+.header-meta{font-size:12.5px;color:var(--text-s);margin-top:5px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.meta-chip{display:inline-flex;align-items:center;gap:5px;background:var(--bg-alt);border:1px solid var(--border);padding:3px 10px;border-radius:20px;font-size:12px;color:var(--text-s);}
+.meta-chip.demo{background:#eef2ff;border-color:var(--q-border);color:var(--accent);font-weight:600;}
+.meta-chip.def-btn{background:var(--def-bg);border-color:var(--def-border);color:var(--accent-5);font-weight:600;cursor:pointer;transition:all 0.15s;user-select:none;}
+.meta-chip.def-btn:hover{background:#ebe1ff;}
+.def-btn-chevron{display:inline-block;font-size:13px;line-height:1;transition:transform 0.22s;margin-left:1px;font-style:normal;}
+.def-panel.open ~ * .def-btn-chevron,
+.def-btn-open .def-btn-chevron{transform:rotate(180deg);}
+.nav-tabs{display:flex;gap:2px;background:var(--bg-alt);border:1px solid var(--border);border-radius:10px;padding:3px;}
+.nav-btn{background:none;border:none;color:var(--text-s);font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:500;padding:8px 18px;border-radius:8px;cursor:pointer;transition:all 0.18s;white-space:nowrap;}
+.nav-btn.active{background:var(--bg-card);color:var(--accent);font-weight:600;box-shadow:var(--shadow-sm);}
+.nav-btn:hover:not(.active){background:rgba(255,255,255,0.6);color:var(--text-b);}
+
+/* DEFINITION PANEL (D10) */
+.def-panel{display:none;background:var(--bg-card);border:1px solid var(--def-border);border-top:3px solid var(--accent-5);border-radius:var(--radius);padding:22px 26px;margin:0 36px 16px;box-shadow:var(--shadow-sm);}
+.def-panel.open{display:block;}
+.def-panel h3{font-family:'Lora',serif;font-size:16px;color:var(--accent-5);margin-bottom:14px;}
+.def-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px 24px;font-size:13px;}
+.def-item strong{color:var(--text-h);font-weight:600;}
+.def-item span{color:var(--text-s);}
+
+/* COLOR LEGEND (D7) */
+.color-legend{display:flex;flex-wrap:wrap;gap:14px;padding:10px 36px;background:var(--bg-alt);border-bottom:1px solid var(--border);font-size:11.5px;color:var(--text-s);align-items:center;position:sticky;top:var(--header-h,73px);z-index:190;}
+.color-legend .lg-label{font-weight:600;color:var(--text-b);text-transform:uppercase;letter-spacing:0.8px;}
+.cl-item{display:inline-flex;align-items:center;gap:5px;}
+.cl-dot{width:10px;height:10px;border-radius:3px;}
+
+/* LAYOUT */
+.page{display:none;}.page.active{display:block;}
+.container{max-width:1360px;margin:0 auto;padding:24px 36px 60px;}
+.section-label{font-size:11.5px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--text-m);margin-bottom:14px;margin-top:30px;display:flex;align-items:center;gap:10px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.section-label:first-child{margin-top:0;}
+
+/* KPI（D1：縮小視覺權重）*/
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:4px;}
+.kpi-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow 0.2s,transform 0.2s;}
+.kpi-card:hover{box-shadow:var(--shadow);transform:translateY(-1px);}
+.kpi-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--card-color,var(--accent));border-radius:0 0 var(--radius) var(--radius);}
+.kpi-label{font-size:11.5px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;color:var(--text-s);margin-bottom:6px;}
+.kpi-value{font-family:'Lora',serif;font-size:28px;color:var(--text-h);line-height:1;margin-bottom:8px;letter-spacing:-0.4px;}
+.kpi-value .unit{font-size:13px;font-family:'Outfit',sans-serif;color:var(--text-s);font-weight:400;}
+.kpi-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;}
+.kpi-delta{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace;}
+.kpi-delta.up{color:var(--success);}.kpi-delta.down{color:var(--danger);}
+.kpi-note{font-size:11px;color:var(--text-m);}
+
+/* CHART GRID */
+.chart-row{display:grid;gap:16px;margin-bottom:0;}
+.chart-row.c2-1{grid-template-columns:2fr 1fr;}
+.chart-row.c1-1{grid-template-columns:1fr 1fr;}
+.chart-row.c3{grid-template-columns:1fr 1fr 1fr;}
+
+.chart-group{margin-bottom:16px;}
+.chart-row .chart-group{margin-bottom:0;}
+
+/* Equal-height chart-blocks within c1-1 rows (prevents donut blowout) */
+.chart-row.c1-1{align-items:start;}
+.chart-row.c1-1 .chart-block .chart-wrap canvas{max-height:260px;}
+
+.chart-block{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;padding:20px 22px;box-shadow:var(--shadow-sm);border-bottom:none;}
+.chart-block.standalone{border-radius:var(--radius);border-bottom:1px solid var(--border);}
+.chart-title{font-size:15px;font-weight:600;color:var(--text-h);margin-bottom:4px;}
+.chart-subtitle{font-size:13px;color:var(--text-s);margin-bottom:14px;font-weight:400;}
+.chart-wrap canvas{width:100%!important;}
+.chart-footnote{font-size:11.5px;color:var(--text-m);margin-top:10px;padding:7px 10px;background:var(--bg-alt);border-radius:6px;border-left:3px solid var(--border-strong);}
+
+/* FINDINGS（D2：左邊條 + 加深背景）*/
+.findings-section{background:var(--bg-finding);border:1px solid var(--border);border-top:1px dashed var(--border-strong);border-left:4px solid var(--accent);border-radius:0 0 var(--radius) var(--radius);padding:16px 20px;}
+.findings-label{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+
+/* QA TOGGLE（D1：折疊時收斂視覺權重）*/
+.qa-item{border-left:3px solid var(--q-border);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);border-radius:0 8px 8px 0;margin-bottom:8px;overflow:hidden;background:var(--bg-card);transition:border-color 0.18s;}
+.qa-item:last-child{margin-bottom:0;}
+.qa-item.open{border-left-color:var(--accent);}
+.qa-question{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;cursor:pointer;user-select:none;transition:background 0.15s;}
+.qa-question:hover{background:var(--q-bg);}
+.qa-q-icon{flex-shrink:0;width:24px;height:24px;border-radius:6px;background:var(--q-bg);border:1px solid var(--q-border);color:var(--accent);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;margin-top:1px;}
+.qa-q-text{flex:1;font-size:13.5px;font-weight:500;color:var(--text-h);line-height:1.55;}
+.qa-item.open .qa-q-text{font-weight:600;}
+.qa-level{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:6px;letter-spacing:0.4px;vertical-align:middle;position:relative;top:-1px;}
+.qa-level.l1{background:#e3f2fd;color:#1565c0;}
+.qa-level.l2{background:#fff4e0;color:#a36a08;}
+.qa-level.l3{background:#fde7e3;color:#a8362a;}
+.qa-chevron{flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text-s);transition:transform 0.22s,background 0.15s;margin-top:3px;}
+.qa-item.open .qa-chevron{transform:rotate(180deg);background:var(--a-border);color:var(--success);}
+.qa-answer{display:none;border-top:1px solid var(--border);background:var(--a-bg);}
+.qa-item.open .qa-answer{display:block;}
+.qa-a-inner{display:flex;gap:10px;padding:14px 16px;}
+.qa-a-icon{flex-shrink:0;width:24px;height:24px;border-radius:6px;background:var(--a-border);color:var(--success);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;margin-top:1px;}
+.qa-a-text{flex:1;font-size:13.5px;color:var(--text-b);line-height:1.72;}
+.qa-a-text strong{color:var(--text-h);font-weight:600;}
+
+/* 三段式答案結構 (D9) */
+.ans-block{margin-bottom:10px;}
+.ans-block:last-child{margin-bottom:0;}
+.ans-head{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:0.6px;padding:1px 8px;border-radius:3px;margin-right:7px;font-family:'JetBrains Mono',monospace;}
+.ans-head.obs{background:#dbe7ff;color:#1a3a99;}
+.ans-head.inf{background:#fef4d9;color:#8a5d00;}
+.ans-head.act{background:#d0f0e2;color:#0e6f4f;}
+
+/* F/I/A 標註 */
+.fia{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;padding:0 4px;border-radius:2px;margin:0 1px;vertical-align:middle;position:relative;top:-1px;}
+.fia.f{background:#dbe7ff;color:#1a3a99;}
+.fia.i{background:#fef4d9;color:#8a5d00;}
+.fia.a{background:#fde7e3;color:#a8362a;}
+
+/* 證據碼（圖名引用）*/
+.ev{display:inline;background:rgba(45,91,227,0.09);border-radius:4px;padding:1px 5px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--accent);font-weight:500;}
+
+/* TRAINING */
+.qa-item.training{border-left-color:#d4c5f9;}
+.qa-item.training.open{border-left-color:var(--accent-5);}
+.qa-item.training .qa-question:hover{background:#f5f0ff;}
+.qa-item.training .qa-q-icon{background:#f5f0ff;border-color:#d4c5f9;color:var(--accent-5);}
+.qa-item.training.open .qa-chevron{background:#d4c5f9;color:var(--accent-5);}
+.qa-item.training .qa-answer{background:#faf7ff;}
+.qa-item.training .qa-a-icon{background:#d4c5f9;color:var(--accent-5);}
+.training-panel{background:var(--bg-card);border:1px solid #d4c5f9;border-top:3px solid var(--accent-5);border-radius:var(--radius);padding:22px;margin-top:16px;box-shadow:var(--shadow-sm);}
+.training-hd{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.training-hd .ico{font-size:20px;}
+.training-hd h3{font-size:15px;font-weight:600;color:var(--accent-5);margin-bottom:2px;}
+.training-hd p{font-size:13px;color:var(--text-s);}
+
+/* COMMON TRAPS BLOCK (D11) */
+.trap-block{background:var(--trap-bg);border:1px solid var(--trap-border);border-left:3px solid var(--danger);border-radius:6px;padding:10px 13px;margin:10px 0;font-size:12.5px;color:#7a2b22;}
+.trap-block strong{color:var(--danger);font-weight:700;}
+.trap-block .trap-label{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;background:var(--danger);color:#fff;padding:1px 6px;border-radius:3px;margin-right:6px;letter-spacing:0.4px;}
+
+/* META-LEVEL DESIGN-CHOICES BLOCK (D12) */
+.meta-panel{background:linear-gradient(135deg, #fff8f0 0%, #fff 100%);border:1px solid var(--accent-4);border-top:3px solid var(--accent-4);border-radius:var(--radius);padding:24px 26px;margin-top:24px;box-shadow:var(--shadow-sm);}
+.meta-panel h3{font-family:'Lora',serif;font-size:16px;color:var(--accent-4);margin-bottom:6px;}
+.meta-panel .meta-intro{font-size:13px;color:var(--text-s);margin-bottom:16px;}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.meta-item{background:#fff;border:1px solid #f0e4d4;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.65;}
+.meta-item h4{font-size:13.5px;font-weight:600;color:var(--text-h);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.meta-item h4::before{content:'📐';font-size:14px;}
+.meta-item p{color:var(--text-b);font-size:12.5px;}
+.meta-item .tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:1px 6px;border-radius:3px;margin-right:4px;background:var(--bg-alt);color:var(--text-s);}
+
+/* NAV-HINT (D3：從問題搬到答案區)*/
+.nav-hint{display:flex;align-items:flex-start;gap:7px;background:#fff8e6;border:1px solid #f0d080;border-radius:6px;padding:7px 11px;margin-bottom:10px;font-size:12.5px;color:#7a5a00;line-height:1.4;cursor:pointer;transition:background 0.15s;}
+.nav-hint:hover{background:#fdf0c0;}
+.nav-hint .nh-body{flex:1;}
+.nav-hint .nh-arrow{font-size:14px;}
+.nav-hint .nh-label{font-weight:600;display:block;margin-bottom:1px;}
+.nav-hint .nh-sub{color:#a07820;font-size:11.5px;}
+
+/* LEGEND */
+.chart-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-s);}
+.legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+
+/* DONUT CENTER LABEL companion (從未購買) */
+.freq-companion{margin-top:14px;background:#f8f5f0;border:1px dashed var(--border-strong);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:12px;}
+.freq-companion .fc-num{font-family:'Lora',serif;font-size:22px;color:var(--text-h);font-weight:600;line-height:1;}
+.freq-companion .fc-txt{flex:1;font-size:12.5px;color:var(--text-s);line-height:1.5;}
+.freq-companion .fc-txt strong{color:var(--text-h);font-weight:600;}
+
+@keyframes flashBorder {
+  0%,50%,100%{box-shadow:0 0 0 3px #e8503a;border-color:#e8503a;}
+  25%,75%{box-shadow:none;border-color:var(--border);}
+}
+@keyframes flashFade{0%{box-shadow:0 0 0 3px #e8503a;border-color:#e8503a;}100%{box-shadow:none;border-color:var(--border);}}
+.flash-target .chart-block,.flash-target .findings-section{animation:flashBorder 0.6s ease 0s 3,flashFade 0.5s ease 1.8s forwards;}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  .container{padding:16px;}
+  .site-header{padding:14px 16px;}
+  .kpi-grid{grid-template-columns:1fr 1fr;}
+  .chart-row.c2-1,.chart-row.c1-1,.chart-row.c3{grid-template-columns:1fr;}
+  .meta-grid{grid-template-columns:1fr;}
+  .color-legend{padding:8px 16px;gap:10px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ HEADER + COLOR LEGEND + DEFINITIONS ══════════ -->
+<header class="site-header">
+  <div class="header-brand">
+    <h1>會員 × 交易 分析訓練 Dashboard</h1>
+    <div class="header-meta">
+      <span class="meta-chip def-btn" onclick="toggleDefinitions()" id="defToggleBtn" title="點擊展開／收合指標定義">📖 指標定義 <span class="def-btn-chevron">▾</span></span>
+      <span class="meta-chip demo">DEMO 合成資料集</span>
+      <span class="meta-chip">📅 資料期間：2024/01/01 – 2024/12/31</span>
+      <span class="meta-chip">📊 資料範圍：會員 48,263 筆 × 訂單 96,483 筆 × 營收 NT$4,821 萬</span>
+      <span class="meta-chip">🎓 分析能力訓練用途</span>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-btn active" onclick="switchPage('member')">👤 會員分析</button>
+    <button class="nav-btn" onclick="switchPage('transaction')">💳 交易分析</button>
+    <button class="nav-btn" onclick="switchPage('cross')">🔗 交叉分析</button>
+  </div>
+</header>
+
+<!-- 色彩語意圖例 (D7) -->
+<div class="color-legend">
+  <span class="lg-label">色彩語意</span>
+  <span class="cl-item"><span class="cl-dot" style="background:#2d5be3"></span>主資料/事實</span>
+  <span class="cl-item"><span class="cl-dot" style="background:#2aab85"></span>正向/穩定</span>
+  <span class="cl-item"><span class="cl-dot" style="background:#d4870a"></span>注意/季節性</span>
+  <span class="cl-item"><span class="cl-dot" style="background:#d43a2f"></span>警示/流失</span>
+  <span class="cl-item"><span class="cl-dot" style="background:#7c4dff"></span>行為/時間</span>
+  <span style="flex:1"></span>
+  <span class="lg-label">難度</span>
+  <span class="cl-item"><span class="qa-level l1">L1</span>單圖題</span>
+  <span class="cl-item"><span class="qa-level l2">L2</span>同頁跨圖</span>
+  <span class="cl-item"><span class="qa-level l3">L3</span>跨頁交叉</span>
+  <span style="width:1px;height:16px;background:var(--border-strong);margin:0 4px;display:inline-block;"></span>
+  <span class="lg-label">標註</span>
+  <span class="cl-item"><span class="fia f">F</span>事實</span>
+  <span class="cl-item"><span class="fia i">I</span>推論</span>
+  <span class="cl-item"><span class="fia a">A</span>假設</span>
+</div>
+
+<!-- 指標定義面板 (D10) -->
+<div class="def-panel" id="defPanel">
+  <h3>📖 指標定義（明確口徑避免歧義）</h3>
+  <div class="def-grid">
+    <div class="def-item"><strong>總會員</strong><br><span>系統內帳號狀態 = "active" 的所有會員（不含被刪除帳號）</span></div>
+    <div class="def-item"><strong>活躍會員（近90日）</strong><br><span>近 90 天內有過任一次「登入」或「下單」行為的會員</span></div>
+    <div class="def-item"><strong>月新增</strong><br><span>會員註冊日 = 該月的人數（不論是否完成首購）</span></div>
+    <div class="def-item"><strong>月流失</strong><br><span>主動退會、被系統判定無效（90天無活動 + 取消電子報）合計。注意：與「90日不活躍」不完全相同，會有口徑差異</span></div>
+    <div class="def-item"><strong>年流失率</strong><br><span>= 全年流失人數 / 年初總會員數</span></div>
+    <div class="def-item"><strong>有購買者</strong><br><span>2024 年內完成過至少 1 筆訂單的會員</span></div>
+    <div class="def-item"><strong>首購轉化率</strong><br><span>= 有購買者 / 總會員，即整體會員中完成至少 1 次購買的比例</span></div>
+    <div class="def-item"><strong>平均客單價 (AOV)</strong><br><span>= 全年總營收 / 全年總訂單筆數</span></div>
+    <div class="def-item"><strong>回購率</strong><br><span>= 完成 ≥2 筆訂單的會員 / 有購買者</span></div>
+    <div class="def-item"><strong>高頻用戶</strong><br><span>全年下單 ≥9 次的有購買者</span></div>
+    <div class="def-item"><strong>首年 LTV</strong><br><span>新會員從註冊起算 12 個月內的累計消費金額（按獲客渠道分組）</span></div>
+    <div class="def-item"><strong>CAC（獲客成本）</strong><br><span>= 特定期間行銷總支出 / 同期新增有效會員數。本 Dashboard 目前無 CAC 資料；完整渠道評估需用「LTV ÷ CAC」比值，LTV 高但 CAC 亦高的渠道未必優於 LTV 略低但幾乎零成本的自然流量</span></div>
+    <div class="def-item"><strong>會員等級</strong><br><span>依累計消費金額分桶：Bronze &lt; NT$1,500 / Silver NT$1,500–5,000 / Gold NT$5,000–15,000 / Platinum ≥ NT$15,000</span></div>
+  </div>
+</div>
+
+
+<!-- ══════════ PAGE 1: 會員分析 ══════════ -->
+<div id="page-member" class="page active">
+<div class="container">
+
+  <div class="section-label">會員核心指標</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--card-color:#2d5be3">
+      <div class="kpi-label">總會員數</div>
+      <div class="kpi-value">48,263<span class="unit"> 人</span></div>
+      <div class="kpi-footer"><span class="kpi-delta up">↑ +12.4% YoY</span><span class="kpi-note">vs 42,939 (2023)</span></div>
+    </div>
+    <div class="kpi-card" style="--card-color:#2aab85">
+      <div class="kpi-label">活躍會員（近90日）</div>
+      <div class="kpi-value">29,158<span class="unit"> 人</span></div>
+      <div class="kpi-footer"><span class="kpi-delta up">↑ +8.1%</span><span class="kpi-note">活躍率 60.4%</span></div>
+    </div>
+    <div class="kpi-card" style="--card-color:#d4870a">
+      <div class="kpi-label">月均新增</div>
+      <div class="kpi-value">1,187<span class="unit"> 人/月</span></div>
+      <div class="kpi-footer"><span class="kpi-delta down">↓ −5.2% H2</span><span class="kpi-note">增速 H2 放緩</span></div>
+    </div>
+    <div class="kpi-card" style="--card-color:#d43a2f">
+      <div class="kpi-label">年流失率</div>
+      <div class="kpi-value">18.3<span class="unit">%</span></div>
+      <div class="kpi-footer"><span class="kpi-delta down">↑ +2.1pp YoY</span><span class="kpi-note">較去年惡化</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">每月新增 vs 流失趨勢</div>
+  <div class="chart-group" id="group-cMemberTrend">
+    <div class="chart-block">
+      <div class="chart-title">每月新增 vs 流失會員對比</div>
+      <div class="chart-subtitle">觀察新增與流失的動態平衡，識別特定月份的異常信號</div>
+      <div class="chart-wrap"><canvas id="cMemberTrend" height="220"></canvas></div>
+    </div>
+    <div class="findings-section">
+      <div class="findings-label">🔍 問題——請先試著自己回答，討論時再打開參考。</div>
+
+      <div class="qa-item">
+        <div class="qa-question" onclick="toggleQA(this)">
+          <div class="qa-q-icon">Q1</div>
+          <div class="qa-q-text"><span class="qa-level l1">L1</span>H2（7–12月）流失曲線持續上升，最高峰落在哪個月？這代表什麼業務意涵？</div>
+          <div class="qa-chevron">▼</div>
+        </div>
+        <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">A</div><div class="qa-a-text">
+          <div class="ans-block">
+            <span class="ans-head obs">📊 觀察</span>從<span class="ev">每月新增 vs 流失圖</span>的紅色柱可看到，流失人數從 7 月的 758 人起持續攀升，<strong>10 月達全年最高峰 985 人</strong>，隨後 11–12 月略微回落但仍處高檔。
+          </div>
+          <div class="ans-block">
+            <span class="ans-head inf">🧠 推論</span>結合<span class="ev">KPI 卡片</span>年流失率 18.3%、較去年增加 2.1pp 可知：<span class="fia f">F</span> 流失加速確有發生；<span class="fia i">I</span> 時間點剛好對應暑期促銷與 Q3 結束，推測促銷期獲取的低黏性用戶在活動結束後快速離開；<span class="fia a">A</span> 但若沒有「促銷期間獲客 vs 流失」交叉資料，這個解釋仍是假設。
+          </div>
+          <div class="ans-block">
+            <span class="ans-head act">🎯 行動</span>需要 (1) 取得「獲客時間 × 流失時間」交叉表驗證假設；(2) 設計促銷後的留存活動（如獨家會員週、首次回購折扣）；(3) 持續監控 H2 流失曲線是否在隔年同期重現。
+          </div>
+        </div></div></div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-question" onclick="toggleQA(this)">
+          <div class="qa-q-icon">Q2</div>
+          <div class="qa-q-text"><span class="qa-level l2">L2</span>全年淨增會員約多少人？你如何從圖表驗算 KPI 卡的「+12.4% YoY」，並說明數字差異？</div>
+          <div class="qa-chevron">▼</div>
+        </div>
+        <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">A</div><div class="qa-a-text">
+          <div class="ans-block">
+            <span class="ans-head obs">📊 觀察</span>從<span class="ev">新增 vs 流失圖</span>逐月相減：全年新增合計 <strong>14,242 人</strong>，流失合計 <strong>8,830 人</strong>，<strong>圖表淨增 5,412 人</strong>。
+          </div>
+          <div class="ans-block">
+            <span class="ans-head inf">🧠 推論</span>對照<span class="ev">KPI 卡片</span>：2024 年末 48,263 − 2023 年末 42,939 = <strong>KPI 隱含淨增 5,324 人</strong>。兩者差距 88 人（約 1.6%）。<span class="fia f">F</span> 兩個數字確實有差；<span class="fia i">I</span> 差距很小，最可能來源是「流失」的口徑差異——主動退會 vs 系統判定無效，兩種定義會有少量重疊與遺漏；<span class="fia a">A</span> 也可能是月度切點處理的進位誤差。
+          </div>
+          <div class="ans-block">
+            <span class="ans-head act">🎯 行動</span>分析師的好習慣：拿到任何 KPI，**第一步先做「能不能用圖表加減算回來」的內部一致性驗算**。如本例差距在 1–2% 內屬合理口徑差異，但若超過 5%，必須先去釐清定義才能做後續解讀。
+          </div>
+          <div class="trap-block">
+            <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤推論：</strong>實習生看到 KPI 與圖表的小差距會慌張改數字。但<strong>合理的口徑差異是業界常態</strong>，重點不在「消滅差距」，而在「能解釋差距」並把口徑寫清楚。
+          </div>
+        </div></div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section-label">會員結構分析</div>
+  <div class="chart-row c1-1">
+
+    <div class="chart-group" id="group-cMemberTier">
+      <div class="chart-block">
+        <div class="chart-title">會員等級結構</div>
+        <div class="chart-subtitle">四個等級的人數比例分佈</div>
+        <div class="chart-wrap"><canvas id="cMemberTier" height="240"></canvas></div>
+        <div class="chart-legend" id="legendTier"></div>
+      </div>
+      <div class="findings-section">
+        <div class="findings-label">🔍 問題——請先試著自己回答，討論時再打開參考。</div>
+        <div class="qa-item">
+          <div class="qa-question" onclick="toggleQA(this)">
+            <div class="qa-q-icon">Q3</div>
+            <div class="qa-q-text"><span class="qa-level l3">L3</span>Gold + Platinum 合計佔總人數多少？若高階會員流失 10%，對整體營收的衝擊幅度大約是多少？</div>
+            <div class="qa-chevron">▼</div>
+          </div>
+          <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">A</div><div class="qa-a-text">
+            <div class="nav-hint" onclick="switchPage('cross','cTierSpend')"><span class="nh-arrow">👉</span><div class="nh-body"><span class="nh-label">需切換到「🔗 交叉分析」→「各等級年均消費比較圖」</span><span class="nh-sub">用各等級的年均消費精算營收貢獻，才能評估流失衝擊</span></div></div>
+            <div class="ans-block">
+              <span class="ans-head obs">📊 觀察</span>從<span class="ev">等級結構圓餅圖</span>可看到：Gold 5,380 人 (11.2%) + Platinum 1,393 人 (2.9%) = <strong>合計 14.1%</strong>。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head inf">🧠 推論</span>切換到交叉頁等級消費圖可量化：<span class="fia f">F</span> Gold 年均消費 NT$6,612、Platinum NT$18,000；<span class="fia f">F</span> Gold + Platinum 合計年消費 ≈ 5,380×6,612 + 1,393×18,000 = <strong>NT$6,063 萬</strong>；<span class="fia i">I</span> 對照全年總營收 NT$4,821 萬，這個推算值超過總營收——說明等級平均消費含同等級內部的高低差異，真實計算需用個人原始資料。<span class="fia a">A</span> 用較保守估算（取等級中位數的 70%），高階會員實際營收貢獻 ≈ <strong>50–55%</strong>。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head act">🎯 行動</span>結論：14% 高階會員貢獻過半營收 → 流失 10% 衝擊整體 <strong>~5–6%</strong>。這種「少數人貢獻多數營收」稱為<strong>集中風險</strong>，需獨立的留存監控機制（例如 Platinum 客戶每月人工聯繫）。
+            </div>
+            <div class="trap-block">
+              <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤：</strong>用「人均消費 × 流失人數」直接相乘得出衝擊金額，會忽略「等級內部消費差異」（同樣 Gold 等級內部，最高消費 vs 最低可能差 5 倍）。資深分析師會明確區分「人均」與「個體」並標註 A（Assumption）。
+            </div>
+          </div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-group" id="group-cMemberSource">
+      <div class="chart-block">
+        <div class="chart-title">會員來源渠道分佈</div>
+        <div class="chart-subtitle">各獲客渠道貢獻的新會員佔比</div>
+        <div class="chart-wrap"><canvas id="cMemberSource" height="240"></canvas></div>
+      </div>
+      <div class="findings-section">
+        <div class="findings-label">🔍 問題——請先試著自己回答，討論時再打開參考。</div>
+        <div class="qa-item">
+          <div class="qa-question" onclick="toggleQA(this)">
+            <div class="qa-q-icon">Q4</div>
+            <div class="qa-q-text"><span class="qa-level l3">L3</span>社群媒體帶來最多新會員（31%），為什麼不一定代表它是「最好的渠道」？什麼指標才能衡量渠道的真實效益？</div>
+            <div class="qa-chevron">▼</div>
+          </div>
+          <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">A</div><div class="qa-a-text">
+            <div class="nav-hint" onclick="switchPage('cross','cChannelLTV')"><span class="nh-arrow">👉</span><div class="nh-body"><span class="nh-label">需切換到「🔗 交叉分析」→「各渠道首年 LTV 比較圖」</span><span class="nh-sub">官網自然 NT$1,840 / 廣告 NT$1,120 / 社群 NT$940 — 看哪個渠道帶來高價值用戶</span></div></div>
+            <div class="ans-block">
+              <span class="ans-head obs">📊 觀察</span>從<span class="ev">來源渠道圖</span>可看到社群媒體佔 31% 為最高，但這只是「量」的維度。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head inf">🧠 推論</span>切換到交叉頁 LTV 圖可看到：<span class="fia f">F</span> 社群媒體首年 LTV 僅 NT$940 是所有渠道中最低；官網自然 NT$1,840 最高，差距 1.96 倍。<span class="fia i">I</span> 加入 LTV 維度後，社群「人多但每人產出最低」的真面目浮現——可能是因為社群點擊轉成註冊的門檻低，吸引到的多是隨手註冊但缺乏明確購買意圖的用戶。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head act">🎯 行動</span><strong>獲客量 ≠ 獲客質量</strong>。評估渠道效益的完整公式：「LTV ÷ CAC」。本 Dashboard 缺少 CAC 資料，但即使只看 LTV 也能修正「社群最好」這個錯誤直覺。建議下一步補上各渠道的 CAC 數字。
+            </div>
+          </div></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-label">會員年齡分佈</div>
+  <div class="chart-group" id="group-cMemberAge">
+    <div class="chart-block">
+      <div class="chart-title">會員年齡層佔比</div>
+      <div class="chart-subtitle">不同年齡層在總會員中的分佈比例（2024 全年）</div>
+      <div class="chart-wrap"><canvas id="cMemberAge" height="190"></canvas></div>
+    </div>
+    <div class="findings-section">
+      <div class="findings-label">🔍 問題——請先試著自己回答，討論時再打開參考。</div>
+      <div class="qa-item">
+        <div class="qa-question" onclick="toggleQA(this)">
+          <div class="qa-q-icon">Q5</div>
+          <div class="qa-q-text"><span class="qa-level l1">L1</span>25–34 歲會員佔 42% 是優勢還是隱患？這題的關鍵不在答案，在於「你能用現有資料推到哪一步」。</div>
+          <div class="qa-chevron">▼</div>
+        </div>
+        <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">A</div><div class="qa-a-text">
+          <div class="ans-block">
+            <span class="ans-head obs">📊 觀察</span><span class="fia f">F</span> 從<span class="ev">年齡分佈圖</span>可看到 25–34 歲佔 42%，遠高於其他年齡層；35–44 歲第二高佔 27%；兩者合計 69%。
+          </div>
+          <div class="ans-block">
+            <span class="ans-head inf">🧠 推論</span><span class="fia i">I</span> <strong>短期是優勢：</strong>25-34 歲是電商最熟悉、消費力強的核心客群，服務成本低、營收效率高。<br><span class="fia i">I</span> <strong>長期是隱患：</strong>過度依賴單一年齡層，若這批人消費偏好移轉（例如轉向二手平台），整體業務將被集中衝擊。
+          </div>
+          <div class="trap-block">
+            <span class="trap-label">⚠ 陷阱</span><strong>分析師常見過度推論：</strong>「年齡分佈 + 渠道分佈」放在同一頁時，很容易跨度推論「年輕人 = 社群來源」。<span class="fia a">A</span> <strong>這是無資料支持的假設</strong>——35-44 歲也可能大量來自社群，現有資料完全無法區分。<br><br>資深分析師的反射動作：看到「兩個獨立分佈」想做交叉推論時，<strong>必須先確認是否存在「年齡 × 來源」交叉表</strong>。若沒有，停留在「現有資料能說的部分」即可。
+          </div>
+          <div class="ans-block">
+            <span class="ans-head act">🎯 行動</span>能說的：「年齡分佈集中是已知風險，且我們缺乏年齡 × 來源、年齡 × LTV 的交叉資料，建議下一步補上這兩個維度，才能評估『年輕族群是否同時是低 LTV 族群』」——把「需要的資料」明確化，比給一個自圓其說的答案更有價值。
+          </div>
+        </div></div></div>
+      </div>
+    </div>
+  </div>
+
+</div></div>
+
+
+<!-- ══════════ PAGE 2: 交易分析 ══════════ -->
+<div id="page-transaction" class="page">
+<div class="container">
+
+  <div class="section-label">交易核心指標</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--card-color:#2aab85">
+      <div class="kpi-label">年度總交易額</div>
+      <div class="kpi-value" style="font-size:24px;">NT$4,821<span class="unit">萬</span></div>
+      <div class="kpi-footer"><span class="kpi-delta up">↑ +18.7% YoY</span><span class="kpi-note">vs NT$4,062萬 (2023)</span></div>
+    </div>
+    <div class="kpi-card" style="--card-color:#2d5be3">
+      <div class="kpi-label">總訂單筆數</div>
+      <div class="kpi-value">96,483<span class="unit"> 筆</span></div>
+      <div class="kpi-footer"><span class="kpi-delta up">↑ +14.3%</span><span class="kpi-note">月均 8,040 筆</span></div>
+    </div>
+    <div class="kpi-card" style="--card-color:#d4870a">
+      <div class="kpi-label">平均客單價</div>
+      <div class="kpi-value">NT$499</div>
+      <div class="kpi-footer"><span class="kpi-delta up">↑ +3.8%</span><span class="kpi-note">中位數 NT$380</span></div>
+    </div>
+    <div class="kpi-card" style="--card-color:#7c4dff">
+      <div class="kpi-label">回購率（二次以上）</div>
+      <div class="kpi-value">54.2<span class="unit">%</span></div>
+      <div class="kpi-footer"><span class="kpi-delta up">↑ +4.6pp</span><span class="kpi-note">去年 49.6%</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">月度營收趨勢</div>
+  <div class="chart-group" id="group-cRevTrend">
+    <div class="chart-block">
+      <div class="chart-title">月度交易額趨勢（品類拆分堆疊 + 總額折線）</div>
+      <div class="chart-subtitle">各品類每月交易金額堆疊，並疊加總額折線觀察整體趨勢</div>
+      <div class="chart-wrap"><canvas id="cRevTrend" height="240"></canvas></div>
+    </div>
+    <div class="findings-section">
+      <div class="findings-label">🔍 問題——請先試著自己回答，討論時再打開參考。</div>
+
+      <div class="qa-item">
+        <div class="qa-question" onclick="toggleQA(this)">
+          <div class="qa-q-icon">Q1</div>
+          <div class="qa-q-text"><span class="qa-level l1">L1</span>Q4 整體營收大幅拉升，主要是哪個品類在拉動？這是可以預期的嗎？</div>
+          <div class="qa-chevron">▼</div>
+        </div>
+        <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">A</div><div class="qa-a-text">
+          <div class="ans-block">
+            <span class="ans-head obs">📊 觀察</span>從<span class="ev">月度堆疊圖</span>的 10–12 月可看到，3C 家電（最底層藍色區塊）的絕對增量最大，從 9 月 144 萬飆升至 12 月 251 萬，<strong>增幅 +74.3%</strong>。同期服飾、美妝等品類也有上升但幅度遠小於 3C。
+          </div>
+          <div class="ans-block">
+            <span class="ans-head inf">🧠 推論</span><span class="fia f">F</span> 3C 全年佔比 39.5%，是單一最大品類但未過半；<span class="fia i">I</span> Q4 高度承接 3C 的節慶效應（雙 11、雙 12、耶誕禮品季），這是可預期的季節性規律；<span class="fia i">I</span> 但 Q1–Q2 的 3C 月營收僅 100–148 萬，**淡旺季波動極大**。
+          </div>
+          <div class="ans-block">
+            <span class="ans-head act">🎯 行動</span>需思考淡季解方：(1) 在 Q1–Q2 推升美妝（16%）與食品（11.9%）等高頻品類的貢獻；(2) 設計「跨品類組合促銷」分散風險；(3) 監控 3C 在非節慶月的基本盤是否健康。
+          </div>
+        </div></div></div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-question" onclick="toggleQA(this)">
+          <div class="qa-q-icon">Q2</div>
+          <div class="qa-q-text"><span class="qa-level l1">L1</span>服飾品類在夏季出現明顯下滑，從圖中可以看到幾月跌幅最大？</div>
+          <div class="qa-chevron">▼</div>
+        </div>
+        <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">A</div><div class="qa-a-text">
+          <div class="ans-block">
+            <span class="ans-head obs">📊 觀察</span>從<span class="ev">月度堆疊圖</span>的服飾區塊（第二層）可看到，6 月達上半年高點 97 萬後，<strong>7 月驟降至 74 萬，單月環比 −23.7%</strong>，且 8–9 月持續低迷（78、81 萬），直到 10 月才回升至 104 萬。
+          </div>
+          <div class="ans-block">
+            <span class="ans-head inf">🧠 推論</span>這個模式與 3C 的穩步上升形成對比，<span class="fia i">I</span> 推測是夏末到秋裝的庫存換季期，新款補貨或選品節奏不足造成空窗期。
+          </div>
+          <div class="ans-block">
+            <span class="ans-head act">🎯 行動</span>提示供應鏈/選品節奏的管理問題：建議與採購部門檢視「秋裝上架時間 vs 銷售啟動時間」是否錯位 4-6 週。
+          </div>
+        </div></div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section-label">品類結構與訂單分佈</div>
+  <div class="chart-row c1-1">
+
+    <div class="chart-group" id="group-cCatPie">
+      <div class="chart-block">
+        <div class="chart-title">品類全年營收佔比</div>
+        <div class="chart-subtitle">五大品類的年度貢獻比重（2024 全年）</div>
+        <div class="chart-wrap"><canvas id="cCatPie" height="250"></canvas></div>
+      </div>
+      <div class="findings-section">
+        <div class="findings-label">🔍 問題——請先試著自己回答，討論時再打開參考。</div>
+        <div class="qa-item">
+          <div class="qa-question" onclick="toggleQA(this)">
+            <div class="qa-q-icon">Q3</div>
+            <div class="qa-q-text"><span class="qa-level l2">L2</span>3C 家電佔 39.5%，這個分佈對業務意味著什麼風險？相比「過半依賴」與「均勻分散」兩種極端情境，現況屬於哪一端？</div>
+            <div class="qa-chevron">▼</div>
+          </div>
+          <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">A</div><div class="qa-a-text">
+            <div class="ans-block">
+              <span class="ans-head obs">📊 觀察</span>從<span class="ev">品類佔比圓餅圖</span>可看到：3C 家電 39.5%、服飾 22.3%、美妝 16.0%、食品 11.9%、居家 10.2%。前兩名合計 61.8%，<strong>3C 是單一最大品類但未過半</strong>，屬於「中度集中」結構。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head inf">🧠 推論</span>結合<span class="ev">月度趨勢圖</span>可看到 3C 季節性波動最大：Q1 最低 100 萬、Q4 最高 251 萬，<strong>振幅達 151%</strong>。<span class="fia i">I</span> 雖然 3C 沒有「過半依賴」的極端風險，但若 3C 在 Q4 表現不如預期（例如競品降價搶市），全年營收會直接掉 5–10%。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head act">🎯 行動</span>觀察兩個「具備穩定性質」的品類是否值得擴大：<strong>美妝（16%）與食品（11.9%）都具備高頻回購特性</strong>，能穩定基本盤。若能把這兩者從合計 28% 提升到 35-40%，整體營收的季節依賴度會明顯下降。
+            </div>
+            <div class="trap-block">
+              <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤推論：</strong>看到「3C 佔最高」就直覺認為「太集中」要分散。但 40% 在多品類零售算<strong>中度集中</strong>不算高，需先設定「健康集中度的標準」（例如業界平均最大品類佔比 35-50%）再判斷，不能僅看單一數字。
+            </div>
+          </div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-group" id="group-cOrderDist">
+      <div class="chart-block">
+        <div class="chart-title">訂單金額區間分佈</div>
+        <div class="chart-subtitle">各金額區間的訂單筆數，紅色虛線為 NT$500 免運門檻</div>
+        <div class="chart-wrap"><canvas id="cOrderDist" height="250"></canvas></div>
+      </div>
+      <div class="findings-section">
+        <div class="findings-label">🔍 問題——請先試著自己回答，討論時再打開參考。</div>
+        <div class="qa-item">
+          <div class="qa-question" onclick="toggleQA(this)">
+            <div class="qa-q-icon">Q4</div>
+            <div class="qa-q-text"><span class="qa-level l1">L1</span>如果「滿 NT$500 免運費」是現行門檻，這張圖顯示了什麼商機？</div>
+            <div class="qa-chevron">▼</div>
+          </div>
+          <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">A</div><div class="qa-a-text">
+            <div class="ans-block">
+              <span class="ans-head obs">📊 觀察</span>從<span class="ev">訂單金額分佈圖</span>可看到，NT$301–500 區間是訂單量最高峰（<strong>22,640 筆，佔 23.5%</strong>）。紅色虛線標出的免運門檻 NT$500 剛好在這個區間的右端。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head inf">🧠 推論</span>結合<span class="ev">KPI 卡片</span>平均客單價 NT$499（恰在門檻邊緣）、中位數 NT$380 可知：<strong>大量用戶徘徊在免運門檻附近但未跨過</strong>。<span class="fia i">I</span> 推測這 22,640 筆訂單中有相當比例（保守估 1/3 約 7,500 筆）只差 NT$1–199 就能享受免運。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head act">🎯 行動</span>設計「差額提示」與「湊單推薦」功能：在結帳頁顯示「再買 NT$X 即可免運」+ 相關商品快速加購。<span class="fia a">A</span> 假設這類提示能讓其中 30% 的用戶跨越門檻（業界平均），且跨門檻後客單價平均提升 NT$120，則年度可增加營收 ≈ 7,500 × 30% × 120 = <strong>~NT$27 萬/年</strong>。實際效益需 A/B test 驗證。
+            </div>
+          </div></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-label">下單時段與付款行為</div>
+  <div class="chart-row c1-1">
+
+    <div class="chart-group" id="group-cOrderHour">
+      <div class="chart-block">
+        <div class="chart-title">尖峰促銷日 24h 下單分佈</div>
+        <div class="chart-subtitle">以 Q4 大檔期（雙 11/雙 12）典型日為例，呈現一日各小時下單量</div>
+        <div class="chart-wrap"><canvas id="cOrderHour" height="220"></canvas></div>
+        <div class="chart-footnote">📝 <strong>量級註腳：</strong>此圖為旺季尖峰日量級（單日合計 ~800 筆）。一般工作日量級為此圖的 1/3（單日合計 ~265 筆），但<strong>時段分佈模式（上午、晚間雙高峰）一致</strong>。</div>
+      </div>
+      <div class="findings-section">
+        <div class="findings-label">🔍 問題——請先試著自己回答，討論時再打開參考。</div>
+        <div class="qa-item">
+          <div class="qa-question" onclick="toggleQA(this)">
+            <div class="qa-q-icon">Q5</div>
+            <div class="qa-q-text"><span class="qa-level l1">L1</span>一天中有幾個下單高峰？分別在幾點？背後的用戶行為是什麼？</div>
+            <div class="qa-chevron">▼</div>
+          </div>
+          <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">A</div><div class="qa-a-text">
+            <div class="ans-block">
+              <span class="ans-head obs">📊 觀察</span>從<span class="ev">時段下單量折線圖</span>可清楚看到兩個高峰：<strong>上午 9 點</strong>（39 筆）和<strong>晚間 20 點</strong>（78 筆，全天最高），標註的「晚間黃金 1 小時」就在 20–21 點之間。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head inf">🧠 推論</span><span class="fia i">I</span> 早上高峰對應「上班途中或剛到辦公室滑手機」的衝動消費；<span class="fia i">I</span> 晚間高峰對應「下班後放鬆、睡前決策」的情境，且晚間 20 點是上午尖峰的 2 倍——說明用戶有時間做更謹慎/更大額的購買決策。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head act">🎯 行動</span>推播通知、限時促銷、新品上架應優先排在 <strong>晚間 19:00–21:00</strong> 發送，而非常見的午間推播。EDM 與 LINE 訊息同理。<span class="fia a">A</span> 此推論基於「下單時點 ≈ 推播打開時點」的假設，實際應檢視推播打開率的時段分佈做驗證。
+            </div>
+          </div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-group" id="group-cPayMethod">
+      <div class="chart-block">
+        <div class="chart-title">付款方式佔比年度演變</div>
+        <div class="chart-subtitle">Line Pay、Apple Pay、信用卡、其他四類的月度佔比（合計 = 100%）</div>
+        <div class="chart-wrap"><canvas id="cPayMethod" height="220"></canvas></div>
+      </div>
+      <div class="findings-section">
+        <div class="findings-label">🔍 問題——請先試著自己回答，討論時再打開參考。</div>
+        <div class="qa-item">
+          <div class="qa-question" onclick="toggleQA(this)">
+            <div class="qa-q-icon">Q6</div>
+            <div class="qa-q-text"><span class="qa-level l1">L1</span>信用卡佔比從年初到年末有什麼明顯趨勢？這對促銷設計有什麼影響？</div>
+            <div class="qa-chevron">▼</div>
+          </div>
+          <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">A</div><div class="qa-a-text">
+            <div class="ans-block">
+              <span class="ans-head obs">📊 觀察</span>從<span class="ev">付款方式趨勢圖</span>可看到，信用卡佔比從 1 月的 48% <strong>持續下滑至 12 月的 28%</strong>；Line Pay 從 18% 升至 35%、Apple Pay 從 10% 升至 19%，<strong>行動支付（Line+Apple）合計從 28% 升至 54%</strong>。第四類「其他付款方式（轉帳、超商代收）」全年穩定佔 18–24%。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head inf">🧠 推論</span><span class="fia i">I</span> 行動支付已取代信用卡成為第一付款方式；<span class="fia i">I</span> 「其他付款方式」佔比穩定 ~20%，這是<strong>沒有行動支付帳號的長尾用戶</strong>（可能是年長者或對行動支付有顧慮的族群）。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head act">🎯 行動</span>促銷設計三層調整：<strong>(1)</strong> 主力優惠移至 Line Pay / Apple Pay 綁定（覆蓋 54% 用戶）；<strong>(2)</strong> 信用卡優惠縮減但不取消（仍有 28% 用戶）；<strong>(3)</strong> 為「其他付款方式」的 ~20% 用戶設計獨立通路（例如貨到付款專屬折扣），不要讓他們因促銷錯位而流失。
+            </div>
+          </div></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div></div>
+
+
+<!-- ══════════ PAGE 3: 交叉分析 ══════════ -->
+<div id="page-cross" class="page">
+<div class="container">
+
+  <div class="section-label">交叉分析核心指標</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--card-color:#2d5be3">
+      <div class="kpi-label">Gold 會員年均消費</div>
+      <div class="kpi-value" style="font-size:24px;">NT$6,612</div>
+      <div class="kpi-footer"><span class="kpi-delta up">是 Bronze 的 8.4×</span><span class="kpi-note">差距持續拉大</span></div>
+    </div>
+    <div class="kpi-card" style="--card-color:#2aab85">
+      <div class="kpi-label">高頻用戶（≥9次/年）</div>
+      <div class="kpi-value">22.3<span class="unit">%</span></div>
+      <div class="kpi-footer"><span class="kpi-delta up">貢獻 ~67% 交易額</span><span class="kpi-note">極度集中</span></div>
+    </div>
+    <div class="kpi-card" style="--card-color:#d4870a">
+      <div class="kpi-label">首購轉化率</div>
+      <div class="kpi-value">31.8<span class="unit">%</span></div>
+      <div class="kpi-footer"><span class="kpi-delta up">↑ +3.2pp</span><span class="kpi-note">68.2% 從未購買</span></div>
+    </div>
+    <div class="kpi-card" style="--card-color:#d43a2f">
+      <div class="kpi-label">Bronze→Silver 升等率</div>
+      <div class="kpi-value">28.6<span class="unit">%</span></div>
+      <div class="kpi-footer"><span class="kpi-delta down">↓ −1.8pp</span><span class="kpi-note">升等激勵需強化</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">等級消費力 × 頻次分佈</div>
+  <div class="chart-row c1-1">
+
+    <div class="chart-group" id="group-cTierSpend">
+      <div class="chart-block">
+        <div class="chart-title">各會員等級年均消費比較</div>
+        <div class="chart-subtitle">年均總消費 vs 平均客單價（按等級分組）</div>
+        <div class="chart-wrap"><canvas id="cTierSpend" height="250"></canvas></div>
+      </div>
+      <div class="findings-section">
+        <div class="findings-label">🔍 問題——請先試著自己回答，討論時再打開參考。</div>
+        <div class="qa-item">
+          <div class="qa-question" onclick="toggleQA(this)">
+            <div class="qa-q-icon">Q1</div>
+            <div class="qa-q-text"><span class="qa-level l1">L1</span>Gold 年均消費是 Bronze 的 8.4 倍，但兩者客單價差距沒那麼大，這說明什麼？</div>
+            <div class="qa-chevron">▼</div>
+          </div>
+          <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">A</div><div class="qa-a-text">
+            <div class="ans-block">
+              <span class="ans-head obs">📊 觀察</span>從<span class="ev">等級消費比較圖</span>可看到：<span class="fia f">F</span> 年均消費 Gold NT$6,612 / Bronze NT$784，比值 <strong>8.4 倍</strong>；客單價 Gold NT$580 / Bronze NT$280，比值 <strong>2.1 倍</strong>。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head inf">🧠 推論</span><strong>差距主要來自購買頻次而非單次金額</strong>：<span class="fia f">F</span> Gold 年均下單 6,612/580 ≈ 11.4 次，Bronze 784/280 = 2.8 次，<strong>頻次差距 4.1 倍</strong>。把頻次拆出來看，8.4 倍年消費差 = 2.1 倍客單價 × 4.1 倍頻次。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head act">🎯 行動</span>對整體營收貢獻而言：<strong>「讓用戶更常買」比「讓用戶每次買更貴」更重要</strong>。策略應優先設計增加回購頻次的機制——訂閱制、積分兌換週期、定期回購提醒——而非只靠推高客單價商品。
+            </div>
+          </div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-group" id="group-cFreqDist">
+      <div class="chart-block">
+        <div class="chart-title">用戶全年消費頻次分佈</div>
+        <div class="chart-subtitle">基於 15,348 名有購買者（2024 全年）</div>
+        <div class="chart-wrap"><canvas id="cFreqDist" height="250"></canvas></div>
+        <!-- 從未購買 companion block -->
+        <div class="freq-companion">
+          <div class="fc-num">32,915</div>
+          <div class="fc-txt">名會員<strong>全年從未購買</strong>（佔總會員 68.2%）<br>—— 此圖不含這個池子，但這才是最大的潛力池</div>
+        </div>
+      </div>
+      <div class="findings-section">
+        <div class="findings-label">🔍 問題——請先試著自己回答，討論時再打開參考。</div>
+        <div class="qa-item">
+          <div class="qa-question" onclick="toggleQA(this)">
+            <div class="qa-q-icon">Q2</div>
+            <div class="qa-q-text"><span class="qa-level l2">L2</span>「只買 1 次」與「從未購買」是兩個完全不同的池子——你會如何分別設計干預策略？</div>
+            <div class="qa-chevron">▼</div>
+          </div>
+          <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">A</div><div class="qa-a-text">
+            <div class="nav-hint" onclick="scrollToTarget('cRepurchase')"><span class="nh-arrow">👉</span><div class="nh-body"><span class="nh-label">看本頁下方「首購到再購間隔圖」</span><span class="nh-sub">找出再購高峰落在哪個天數區間，作為自動化觸發節點的依據</span></div></div>
+            <div class="ans-block">
+              <span class="ans-head obs">📊 觀察</span>從<span class="ev">頻次分佈圖</span>可看到：<strong>只買 1 次 = 3,601 人</strong>（佔有購買者 23.5%）；圖下方註記顯示<strong>從未購買 = 32,915 人</strong>（佔總會員 68.2%）。兩者合計 36,516 人 ≈ 總會員 75.7%。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head inf">🧠 推論</span>兩個池子本質不同：<br>① <strong>從未購買 32,915 人</strong>：對品牌興趣不明，可能僅領取首購折扣便流失。<span class="fia i">I</span> 推測獲取成本已支付但價值未實現，是 <strong>「沉沒成本最大」的池子</strong>。<br>② <strong>只買 1 次 3,601 人</strong>：已通過「願不願意買」的考驗，差的是「願不願意再買」。<span class="fia i">I</span> 屬於 <strong>「轉換期」用戶</strong>，干預 ROI 通常最高。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head act">🎯 行動</span>兩套不同的干預：<br><strong>對「從未購買」用戶：</strong>聚焦「降低首購門檻」——首購禮包、限時 0 元試用、社群轉介推薦碼。目標是把他們從 0 推到 1。<br><strong>對「只買 1 次」用戶：</strong>聚焦「縮短再購週期」——參考下方再購間隔圖，在首購後 7、14、25 天分別觸發個人化推薦。目標是把他們從 1 推到 2-3。
+            </div>
+            <div class="trap-block">
+              <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤：</strong>把「未首購」與「只買1次」混為一池，用同一套策略對待。前者需要的是「品牌信任建立」，後者需要的是「再購誘因」，搞錯就會在最大的池子上浪費資源。
+            </div>
+          </div></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-label">渠道價值 × 再購時機</div>
+  <div class="chart-row c1-1">
+
+    <div class="chart-group" id="group-cChannelLTV">
+      <div class="chart-block">
+        <div class="chart-title">各渠道首年 LTV 比較</div>
+        <div class="chart-subtitle">不同獲客來源的用戶，首年消費金額差異</div>
+        <div class="chart-wrap"><canvas id="cChannelLTV" height="230"></canvas></div>
+      </div>
+      <div class="findings-section">
+        <div class="findings-label">🔍 問題——請先試著自己回答，討論時再打開參考。</div>
+        <div class="qa-item">
+          <div class="qa-question" onclick="toggleQA(this)">
+            <div class="qa-q-icon">Q3</div>
+            <div class="qa-q-text"><span class="qa-level l3">L3</span>官網自然 LTV 最高，但行銷預算卻往往集中在廣告。若要向主管提案調整預算分配，你如何用數字支持論述？</div>
+            <div class="qa-chevron">▼</div>
+          </div>
+          <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">A</div><div class="qa-a-text">
+            <div class="nav-hint" onclick="switchPage('member','cMemberSource')"><span class="nh-arrow">👉</span><div class="nh-body"><span class="nh-label">需切換到「👤 會員分析」→「來源渠道分佈圖」</span><span class="nh-sub">社群 31% / 廣告 24% / 官網 19% — 結合 LTV 才能評估真實獲客效益</span></div></div>
+            <div class="ans-block">
+              <span class="ans-head obs">📊 觀察</span>從<span class="ev">渠道 LTV 橫向條形圖</span>可看到：<span class="fia f">F</span> 官網自然 NT$1,840 是廣告 NT$1,120 的 1.64 倍、社群 NT$940 的 1.96 倍。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head inf">🧠 推論</span>跨頁對照<span class="ev">會員來源圖</span>可量化「人多但價值低」的問題：<span class="fia f">F</span> 社群佔 31% × 人均 940 = 渠道貢獻指數 291；官網佔 19% × 1,840 = 350。<strong>官網以較低佔比創造更高總價值貢獻</strong>。<span class="fia i">I</span> 若把廣告與社群預算各分 10% 移到官網（SEO、內容行銷），保守估計可拉動 5–8% 整體首年營收。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head act">🎯 行動</span>提案結構：<strong>(1)</strong> 提出 LTV 對比圖作為論據主體；<strong>(2)</strong> 補上「預算分配 vs 渠道貢獻」對照表，把不對齊指出來；<strong>(3)</strong> 提案分階段移轉預算（避免一次性大調動風險）；<strong>(4)</strong> 設定 6 個月後重評時點。<span class="fia a">A</span> 此推論假設「增加投入會等比例放大效益」，實際 SEO/內容行銷有「滯後效應」需 3-6 個月才見效，提案需明說。
+            </div>
+            <div class="trap-block">
+              <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤：</strong>只看 LTV 不看 CAC（獲客成本）。本 Dashboard 缺少 CAC 資料——官網 SEO 雖然「邊際成本低」但「初始投入大」（內容團隊、技術建置），完整的渠道評估必須包含 LTV/CAC 比值才有說服力。
+            </div>
+          </div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-group" id="group-cRepurchase">
+      <div class="chart-block">
+        <div class="chart-title">首購到再購的間隔天數分佈</div>
+        <div class="chart-subtitle">二次購買發生在首購後多少天內？基於 11,747 名有再購者</div>
+        <div class="chart-wrap"><canvas id="cRepurchase" height="230"></canvas></div>
+      </div>
+      <div class="findings-section">
+        <div class="findings-label">🔍 問題——請先試著自己回答，討論時再打開參考。</div>
+        <div class="qa-item">
+          <div class="qa-question" onclick="toggleQA(this)">
+            <div class="qa-q-icon">Q4</div>
+            <div class="qa-q-text"><span class="qa-level l1">L1</span>再購行為集中在前 30 天嗎？若要設計自動化行銷流程，你會在哪幾個節點觸發？</div>
+            <div class="qa-chevron">▼</div>
+          </div>
+          <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">A</div><div class="qa-a-text">
+            <div class="ans-block">
+              <span class="ans-head obs">📊 觀察</span>從<span class="ev">再購間隔分佈圖</span>可看到三個區間：<strong>≤7 天 1,806 人 + 8–14 天 2,465 人 + 15–30 天 2,850 人，前 30 天合計 7,121 人 = 60.6%</strong>。最多人集中在 15–30 天（2,850 人）。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head inf">🧠 推論</span><strong>前 30 天是再購黃金窗口</strong>，過了 30 天再購機率快速下降（31–60 天 17%、61–90 天 10%、90 天以上 13%）。<span class="fia i">I</span> 越快觸發越能搭上「品類興趣」的熱度，過晚則記憶衰退、需要重新喚醒。
+            </div>
+            <div class="ans-block">
+              <span class="ans-head act">🎯 行動</span>設計三個自動觸發節點：<br>① <strong>第 5 天</strong>——推送首購品類的相關推薦（趁興趣最熱，覆蓋 ≤7 天高峰）；<br>② <strong>第 14 天</strong>——推送限時 95 折（8–14 天區間尾端，製造緊迫感）；<br>③ <strong>第 25 天</strong>——推送「一個月過去了，補貨/搭配建議」喚回訊息（覆蓋 15–30 天最高峰）。<br>三個節點成本極低但可覆蓋 60.6% 的潛在再購群體。
+            </div>
+          </div></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TRAINING QUESTIONS -->
+  <div class="section-label" style="margin-top:32px;">實習生綜合訓練題</div>
+  <div class="training-panel">
+    <div class="training-hd">
+      <span class="ico">🎓</span>
+      <div>
+        <h3>開放式分析訓練題（附標準答案）</h3>
+        <p>這些問題沒有唯一答案，但標準答案提供了「有資料支撐的分析思路」——請先試著自己回答，再打開參考。</p>
+      </div>
+    </div>
+
+    <div class="qa-item training">
+      <div class="qa-question" onclick="toggleQA(this)">
+        <div class="qa-q-icon">T1</div>
+        <div class="qa-q-text"><span class="qa-level l3">L3</span>如果你是 PM，你會優先改善哪個會員等級的流失問題？為什麼？</div>
+        <div class="qa-chevron">▼</div>
+      </div>
+      <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">★</div><div class="qa-a-text">
+        <div class="nav-hint" onclick="switchPage('member','cMemberTier')"><span class="nh-arrow">👉</span><div class="nh-body"><span class="nh-label">「👤 會員分析」→「等級結構圓餅圖」</span><span class="nh-sub">Bronze 46.4% / Silver 39.5% / Gold 11.2% / Platinum 2.9%</span></div></div>
+        <div class="nav-hint" onclick="scrollToTarget('cTierSpend')"><span class="nh-arrow">👉</span><div class="nh-body"><span class="nh-label">本頁「各等級年均消費比較圖」</span><span class="nh-sub">Bronze 784 / Silver 2,184 / Gold 6,612 / Platinum 18,000</span></div></div>
+        <div class="ans-block">
+          <strong>優先處理 Silver 等級。</strong>
+        </div>
+        <div class="ans-block">
+          <span class="ans-head obs">📊 觀察</span>Silver 19,080 人（39.5%）是有實質消費的最大群體，年均消費 NT$2,184，是 Bronze（NT$784）的 2.8 倍。
+        </div>
+        <div class="ans-block">
+          <span class="ans-head inf">🧠 推論</span>Silver 流失有雙重損失：既損失穩定的中等消費貢獻，也失去未來升等為 Gold（年均 NT$6,612）的潛在價值。<br>對比：Bronze 22,410 人但人均小（單人損失低）；Platinum 1,393 人量太小且自我維繫動機強（高 LTV 客通常有專屬服務）；Gold 5,380 人值得守但範圍小。
+        </div>
+        <div class="ans-block">
+          <span class="ans-head act">🎯 行動</span>Silver 留存方案 ROI 最高（人數規模 × 單人損失 × 升等潛力的三維乘積最大）。具體可設計「Silver 專屬升等加速器」，讓接近 Gold 門檻的用戶獲得額外動力。
+        </div>
+        <div class="trap-block">
+          <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤：</strong>只看「人數最多」選 Bronze 或只看「人均最高」選 Platinum。資深思維是<strong>人數 × 單人損失 × 替代難度</strong>的綜合判斷。
+        </div>
+      </div></div></div>
+    </div>
+
+    <div class="qa-item training">
+      <div class="qa-question" onclick="toggleQA(this)">
+        <div class="qa-q-icon">T2</div>
+        <div class="qa-q-text"><span class="qa-level l3">L3</span>社群媒體獲客量大但 LTV 最低，你的建議是放棄還是優化？如果優化，從哪裡下手？</div>
+        <div class="qa-chevron">▼</div>
+      </div>
+      <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">★</div><div class="qa-a-text">
+        <div class="nav-hint" onclick="scrollToTarget('cChannelLTV')"><span class="nh-arrow">👉</span><div class="nh-body"><span class="nh-label">本頁「各渠道首年 LTV 比較圖」</span><span class="nh-sub">官網 1,840 / Email 1,620 / Referral 1,480 / 廣告 1,120 / 社群 940</span></div></div>
+        <div class="nav-hint" onclick="switchPage('member','cMemberSource')"><span class="nh-arrow">👉</span><div class="nh-body"><span class="nh-label">「👤 會員分析」→「來源渠道分佈圖」</span><span class="nh-sub">社群 31% / 廣告 24% / 官網 19%</span></div></div>
+        <div class="ans-block">
+          <strong>不是放棄，而是「改變目標」。</strong>
+        </div>
+        <div class="ans-block">
+          <span class="ans-head obs">📊 觀察</span>社群 LTV NT$940 最低、佔比 31% 最高——是「淺層興趣大量註冊但少深度購買」的典型模式。
+        </div>
+        <div class="ans-block">
+          <span class="ans-head inf">🧠 推論</span>社群作為「品牌曝光與流量導入」仍有價值，但若期待社群直接帶來高 LTV 用戶是錯位的。<span class="fia i">I</span> 推測社群來的用戶決策時間短、品牌信任弱，需要在「首次接觸→首購」之間多加一層引導。
+        </div>
+        <div class="ans-block">
+          <span class="ans-head act">🎯 行動</span>三層優化：<br>① <strong>Landing Page 改造</strong>：設計「首購禮包」並引導第一筆消費落在回購率高的品類（美妝、食品）；<br>② <strong>自動化跟進</strong>：對社群來源新用戶，第 7 天觸發個人化推薦（參考本頁<span class="ev">再購間隔圖</span>的黃金窗口）；<br>③ <strong>KPI 改變</strong>：評估社群廣告時從純 CPA 改成「首年 LTV 達標率」——這個改變比任何素材優化都更根本。
+        </div>
+        <div class="trap-block">
+          <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤：</strong>看到「LTV 低」就直覺要停掉社群投放。但社群的真實價值可能在「品牌曝光擴散」與「上層漏斗導流」，停掉會影響後續其他渠道的效率。<strong>渠道評估必須看「整個漏斗」</strong>不是單一渠道指標。
+        </div>
+      </div></div></div>
+    </div>
+
+    <div class="qa-item training">
+      <div class="qa-question" onclick="toggleQA(this)">
+        <div class="qa-q-icon">T3</div>
+        <div class="qa-q-text"><span class="qa-level l2">L2</span>22% 的用戶貢獻 67% 的交易額——這是好現象還是警訊？兩種角度都說。</div>
+        <div class="qa-chevron">▼</div>
+      </div>
+      <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">★</div><div class="qa-a-text">
+        <div class="ans-block">
+          <span class="ans-head obs">📊 觀察</span><span class="fia f">F</span> 從本頁<span class="ev">KPI 卡片</span>「高頻用戶 22.3% 貢獻 ~67% 交易額」可看到極度不均的分佈，符合電商常見的 80/20 法則的變形。
+        </div>
+        <div class="ans-block">
+          <span class="ans-head inf">🧠 推論（好的面向）</span>有一批高度忠誠的核心群體，<span class="fia i">I</span> 服務這批人的效率極高，每投入 1 元維繫成本可保住 N 倍營收，是<strong>最值得投入維繫資源的群體</strong>。
+        </div>
+        <div class="ans-block">
+          <span class="ans-head inf">🧠 推論（警訊面向）</span>其餘 77.7% 用戶只貢獻 33% 交易額，<span class="fia i">I</span> 長尾用戶的潛力未被激活；更危險的是：<span class="fia a">A</span> 若這 22.3% 核心因競品流失 30%，整體營收將損失 22.3% × 30% × 67%/22.3% = <strong>~20%</strong>，且因長尾基本盤太薄，短期內無法填補。
+        </div>
+        <div class="ans-block">
+          <span class="ans-head act">🎯 行動</span>從本頁<span class="ev">頻次分佈圖</span>可看到 3,601 名只買 1 次、加上頻次圖下方註記 32,915 名從未購買——<strong>這是降低集中風險的「補救池」</strong>。雙軌策略：核心守、長尾擴。
+        </div>
+        <div class="trap-block">
+          <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤：</strong>把「集中度」單純視為負面詞。實際上適度集中是「商業效率」的體現，過度分散反而代表「沒有真正忠誠的客戶」。<strong>關鍵是「集中風險是否可控」</strong>——有沒有早期預警、有沒有替補資源、流失多少才會傷骨。
+        </div>
+      </div></div></div>
+    </div>
+
+    <div class="qa-item training">
+      <div class="qa-question" onclick="toggleQA(this)">
+        <div class="qa-q-icon">T4</div>
+        <div class="qa-q-text"><span class="qa-level l3">L3</span>你認為這份 Dashboard 還缺少哪些分析視角？請至少提出 3 個，說明為什麼重要。</div>
+        <div class="qa-chevron">▼</div>
+      </div>
+      <div class="qa-answer"><div class="qa-a-inner"><div class="qa-a-icon">★</div><div class="qa-a-text">
+        <div class="ans-block">
+          <strong>① 地區分佈 × 消費行為：</strong>目前完全沒有地理維度。北中南各區的 ARPU 差異、品類偏好差異、配送成本差異都未被分析。無法判斷是否該為某些地區設計獨立行銷策略，或評估擴展中南部的 ROI。
+        </div>
+        <div class="ans-block">
+          <strong>② 退款 / 退貨率：</strong>交易額是毛數字。若某品類退貨率高（如服飾尺寸問題），真實淨營收可能比圖表低很多。這在評估服飾 Q3 下滑時尤其重要——是「需求不足」還是「退貨率暴增」需要區分。
+        </div>
+        <div class="ans-block">
+          <strong>③ 各等級升等所需時間：</strong>現在只知道 Bronze→Silver 升等率 28.6%，但不知道平均升等需要幾個月。若需要 18 個月才能升等，激勵設計的急迫性與路徑設計都會完全不同。
+        </div>
+        <div class="ans-block">
+          <strong>④（加分）獲客成本（CAC）：</strong>有 LTV 但沒有 CAC，無法計算 LTV/CAC 比值——這才是評估渠道真實效益的完整公式。
+        </div>
+        <div class="ans-block">
+          <strong>⑤（加分）退會原因標籤：</strong>知道流失率 18.3% 但不知道為什麼。沒有原因分類，所有留存策略都是猜測。
+        </div>
+      </div></div></div>
+    </div>
+
+  </div>
+
+  <!-- META-LEVEL DESIGN CHOICES (D12) -->
+  <div class="meta-panel">
+    <h3>📐 這份 Dashboard 的設計選擇與取捨</h3>
+    <div class="meta-intro">教學最有價值的不只是「怎麼分析」，更是「怎麼設計儀表板」。以下揭露這份 Dashboard 的設計決策，請對照思考你會做什麼不同的選擇。</div>
+    <div class="meta-grid">
+      <div class="meta-item">
+        <h4>為什麼選三頁分頁而非單頁長表</h4>
+        <p><span class="tag">取捨</span>單頁適合給「已知答案找證據」的場景；分頁適合給「不同分析意圖」（會員結構 vs 交易行為 vs 跨域洞察）。代價是用戶要記住跨頁切換的觸發點，因此我們設計了 nav-hint 卡片。</p>
+      </div>
+      <div class="meta-item">
+        <h4>為什麼 KPI 卡放最上面</h4>
+        <p><span class="tag">慣性</span>儀表板的標準慣性。但 KPI 卡是「結論」不是「故事」——資深分析師應該訓練自己 <strong>先看圖、再看 KPI</strong>，才能從原始資料形成獨立判斷，而不是被 KPI 預設方向。</p>
+      </div>
+      <div class="meta-item">
+        <h4>為什麼用堆疊圖而非分組柱</h4>
+        <p><span class="tag">目的</span>月度品類圖用堆疊是為了同時呈現「總量趨勢」與「品類結構」。代價是每個品類的細部變化較難讀；補救方式是在圖上疊加總量折線（紅色虛線）。</p>
+      </div>
+      <div class="meta-item">
+        <h4>為什麼免運門檻要畫在圖上</h4>
+        <p><span class="tag">原則</span>「圖會說話」永遠比「答案會說話」強。讓策略訊號直接視覺化（紅色虛線），讀者第一眼就看到問題，不需要看完答案才理解圖的意義。</p>
+      </div>
+      <div class="meta-item">
+        <h4>為什麼頻次圖不畫「從未購買」</h4>
+        <p><span class="tag">視覺權衡</span>從未購買 32,915 人，是其他所有 bucket 加總的 2 倍——畫進去會把所有其他柱子壓扁。改用獨立區塊呈現，反而能凸顯這個「最大的潛力池」。</p>
+      </div>
+      <div class="meta-item">
+        <h4>為什麼故意不放退款率、CAC、地區分佈</h4>
+        <p><span class="tag">教學設計</span>這些是 T4 訓練題的答案。<strong>故意留白</strong>是為了訓練實習生「主動察覺缺失維度」的能力——這比能解讀現有資料更接近資深分析師的核心能力。</p>
+      </div>
+      <div class="meta-item">
+        <h4>為什麼題目分 L1 / L2 / L3 三層</h4>
+        <p><span class="tag">學習階梯</span>單圖題訓練「精準觀察」，同頁跨圖訓練「結構聯想」，跨頁交叉訓練「全局推理」。沒有梯度的訓練只會讓人停在第一層。</p>
+      </div>
+      <div class="meta-item">
+        <h4>為什麼每題都標 F / I / A</h4>
+        <p><span class="tag">習慣養成</span>區分「事實」、「推論」、「假設」是分析師最重要的職業習慣。看到分析報告時能立刻識別「這句是 F 還是 I 還是 A」，就能判斷論述強度與風險所在。</p>
+      </div>
+    </div>
+  </div>
+
+</div></div>
+
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// SINGLE SOURCE OF TRUTH — 所有圖表與文案的數字都從此物件讀取
+// ════════════════════════════════════════════════════════════════
+const DATA = {
+  anchors: {
+    total_members: 48263,
+    total_orders: 96483,
+    total_revenue_wan: 4821,
+    aov: 499,
+    buyers: 15348,
+    non_buyers: 32915,
+    first_purchase_rate: 31.8,
+  },
+  member_flow: {
+    months: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+    new:  [1115, 1062, 1218, 1255, 1290, 1370, 1302, 1185, 1092, 1145, 1118, 1090],
+    loss: [545, 510, 575, 605, 638, 668, 758, 845, 905, 985, 942, 854],
+  },
+  tier: {
+    labels: ['Bronze','Silver','Gold','Platinum'],
+    counts: [22410, 19080, 5380, 1393],
+  },
+  source: {
+    labels: ['社群媒體','廣告投放','官網自然','Email','Referral','其他'],
+    pct:    [31, 24, 19, 12, 9, 5],
+  },
+  age: {
+    labels: ['18–24歲','25–34歲','35–44歲','45–54歲','55歲以上'],
+    pct:    [14, 42, 27, 11, 6],
+  },
+  monthly_category: {
+    '3C家電':   [118, 100, 123, 137, 148, 159, 162, 154, 144, 189, 220, 251],
+    '服飾':     [67, 62, 79, 88, 92, 97, 74, 78, 81, 104, 121, 134],
+    '美妝保養': [41, 37, 46, 51, 55, 60, 62, 65, 67, 83, 96, 109],
+    '食品生鮮': [30, 27, 32, 36, 39, 44, 48, 50, 52, 63, 72, 83],
+    '居家生活': [25, 21, 27, 31, 34, 37, 39, 42, 44, 55, 63, 73],
+  },
+  order_distribution: {
+    labels: ['≤NT$100','NT$101–200','NT$201–300','NT$301–500','NT$501–800','NT$801–1200','NT$1200+'],
+    counts: [10500, 14500, 17200, 22640, 14800, 9600, 7243],
+  },
+  hourly: {
+    data: [11, 6, 4, 3, 2, 3, 8, 20, 37, 39, 36, 34, 28, 30, 32, 37, 43, 49, 60, 71, 78, 72, 59, 36],
+  },
+  payment: {
+    linepay:  [18, 20, 22, 24, 26, 28, 29, 31, 32, 33, 34, 35],
+    applepay: [10, 11, 12, 13, 14, 15, 16, 17, 17, 18, 18, 19],
+    credit:   [48, 45, 43, 41, 39, 37, 35, 33, 32, 30, 29, 28],
+    other:    [24, 24, 23, 22, 21, 20, 20, 19, 19, 19, 19, 18],
+  },
+  tier_spend: {
+    labels: ['Bronze','Silver','Gold','Platinum'],
+    annual: [784, 2184, 6612, 18000],
+    aov:    [280, 390, 580, 720],
+  },
+  frequency: {
+    labels: ['1次','2次','3–4次','5–8次','9–12次','13次+'],
+    counts: [3601, 2683, 2862, 2779, 2071, 1352],
+  },
+  channel_ltv: {
+    labels: ['官網自然','Email','Referral','廣告投放','社群媒體'],
+    values: [1840, 1620, 1480, 1120, 940],
+  },
+  repurchase: {
+    labels: ['≤7天','8–14天','15–30天','31–60天','61–90天','90天以上'],
+    counts: [1806, 2465, 2850, 1937, 1186, 1503],
+  },
+};
+
+// ════════════════════════════════════════════════════════════════
+// 自檢機制：載入時驗證所有資料內部一致性
+// ════════════════════════════════════════════════════════════════
+function assertConsistency() {
+  const A = DATA.anchors;
+  const sum = arr => arr.reduce((a,b)=>a+b, 0);
+  const errors = [];
+
+  // 1. 等級合計 = 總會員
+  const tierSum = sum(DATA.tier.counts);
+  if (tierSum !== A.total_members) errors.push(`Tier counts ${tierSum} ≠ total_members ${A.total_members}`);
+
+  // 2. 來源 / 年齡 = 100%
+  if (sum(DATA.source.pct) !== 100) errors.push(`Source pct sum ${sum(DATA.source.pct)} ≠ 100`);
+  if (sum(DATA.age.pct) !== 100) errors.push(`Age pct sum ${sum(DATA.age.pct)} ≠ 100`);
+
+  // 3. 訂單分佈合計 = 總訂單
+  const ordSum = sum(DATA.order_distribution.counts);
+  if (ordSum !== A.total_orders) errors.push(`Order dist ${ordSum} ≠ total_orders ${A.total_orders}`);
+
+  // 4. 月度品類合計 = 總營收
+  const catSum = Object.values(DATA.monthly_category).reduce((acc, arr) => acc + sum(arr), 0);
+  if (catSum !== A.total_revenue_wan) errors.push(`Monthly cat sum ${catSum} ≠ total_rev ${A.total_revenue_wan}`);
+
+  // 5. 付款方式每月合計 = 100%
+  for (let i = 0; i < 12; i++) {
+    const s = DATA.payment.linepay[i] + DATA.payment.applepay[i] + DATA.payment.credit[i] + DATA.payment.other[i];
+    if (s !== 100) errors.push(`Payment month ${i+1} sum ${s} ≠ 100`);
+  }
+
+  // 6. 頻次合計 = 有購買者
+  const freqSum = sum(DATA.frequency.counts);
+  if (freqSum !== A.buyers) errors.push(`Freq sum ${freqSum} ≠ buyers ${A.buyers}`);
+
+  // 7. 從未購買 = 總會員 - 有購買者
+  if (A.non_buyers !== A.total_members - A.buyers) errors.push(`non_buyers mismatch`);
+
+  // 8. 高頻 22.3%
+  const highFreqPct = (DATA.frequency.counts[4] + DATA.frequency.counts[5]) / freqSum * 100;
+  if (Math.abs(highFreqPct - 22.3) > 0.1) errors.push(`High freq ${highFreqPct.toFixed(2)}% ≠ 22.3%`);
+
+  // 9. 再購合計 ≈ 買者 - 只買1次
+  const repSum = sum(DATA.repurchase.counts);
+  const expectedRep = A.buyers - DATA.frequency.counts[0];
+  if (repSum !== expectedRep) errors.push(`Repurchase sum ${repSum} ≠ expected ${expectedRep}`);
+
+  if (errors.length) {
+    console.error('⚠ Data consistency errors:', errors);
+  } else {
+    console.log('✓ All data consistency checks passed');
+  }
+}
+assertConsistency();
+
+// ════════════════════════════════════════════════════════════════
+// CHART DEFAULTS & THEME
+// ════════════════════════════════════════════════════════════════
+Chart.register(ChartDataLabels);
+if (typeof window['chartjs-plugin-annotation'] !== 'undefined') {
+  Chart.register(window['chartjs-plugin-annotation']);
+}
+Chart.defaults.color = '#6b6b80';
+Chart.defaults.font.family = 'Outfit';
+Chart.defaults.font.size = 12;
+
+const GRID = 'rgba(0,0,0,0.055)';
+const TT = {
+  backgroundColor:'#ffffff', borderColor:'#e2ddd6', borderWidth:1, padding:10,
+  titleFont:{family:'Outfit',weight:'600',size:13},
+  bodyFont:{family:'JetBrains Mono',size:12},
+  titleColor:'#1a1a2e', bodyColor:'#3a3a4a', boxPadding:4, cornerRadius:8
+};
+
+const PALETTES = {
+  blue:'rgba(45,91,227,ALPHA)', teal:'rgba(42,171,133,ALPHA)',
+  orange:'rgba(212,135,10,ALPHA)', red:'rgba(212,58,47,ALPHA)',
+  purple:'rgba(124,77,255,ALPHA)', gray:'rgba(100,110,135,ALPHA)'
+};
+const c = (k,a=1) => PALETTES[k].replace('ALPHA',a);
+
+// ════════════════════════════════════════════════════════════════
+// PAGE SWITCHING
+// ════════════════════════════════════════════════════════════════
+const initialized = {};
+function switchPage(name, targetId) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  (['member','transaction','cross']).forEach((n,i)=>{
+    if(n===name) document.querySelectorAll('.nav-btn')[i].classList.add('active');
+  });
+  if(!initialized[name]){ initialized[name]=true; setTimeout(()=>draw(name),60); }
+  if(targetId){
+    const delay = initialized[name] ? 100 : 400;
+    setTimeout(()=>scrollToTarget(targetId), delay);
+  }
+}
+
+function scrollToTarget(targetId){
+  const el=document.getElementById('group-'+targetId);
+  if(!el) return;
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  el.classList.remove('flash-target');
+  void el.offsetWidth;
+  el.classList.add('flash-target');
+  setTimeout(()=>el.classList.remove('flash-target'),2600);
+}
+
+function toggleQA(el){ el.parentElement.classList.toggle('open'); }
+function toggleDefinitions(){
+  const panel = document.getElementById('defPanel');
+  const btn = document.getElementById('defToggleBtn');
+  panel.classList.toggle('open');
+  btn.classList.toggle('def-btn-open');
+}
+
+// ════════════════════════════════════════════════════════════════
+// CHART FACTORY
+// ════════════════════════════════════════════════════════════════
+function mk(id, type, labels, datasets, opts={}) {
+  const ctx = document.getElementById(id)?.getContext('2d');
+  if(!ctx) return;
+  const defaultPlugins = {legend:{display:false}, tooltip:TT};
+  const mergedPlugins = opts.plugins ? {...defaultPlugins, ...opts.plugins} : defaultPlugins;
+  const finalOpts = {...opts, plugins: mergedPlugins};
+  return new Chart(ctx,{
+    type, data:{labels,datasets},
+    options:{responsive:true, maintainAspectRatio:true,
+      animation:{duration:480, easing:'easeOutQuart'},
+      ...finalOpts}
+  });
+}
+
+function draw(page) {
+  if(page==='member') drawMember();
+  if(page==='transaction') drawTx();
+  if(page==='cross') drawCross();
+}
+
+
+// ════════════════════════════════════════════════════════════════
+// PAGE 1: 會員分析
+// ════════════════════════════════════════════════════════════════
+function drawMember(){
+  // 每月新增 vs 流失
+  mk('cMemberTrend','bar', DATA.member_flow.months, [
+    {label:'新增', data: DATA.member_flow.new,
+     backgroundColor:c('blue',0.72), borderRadius:4,
+     datalabels:{anchor:'end',align:'end',color:'#2d5be3',font:{size:9,weight:'600',family:'JetBrains Mono'},formatter:v=>v}},
+    {label:'流失', data: DATA.member_flow.loss,
+     backgroundColor:c('red',0.65), borderRadius:4,
+     datalabels:{anchor:'end',align:'end',color:'#d43a2f',font:{size:9,weight:'600',family:'JetBrains Mono'},formatter:v=>v}}
+  ], {plugins:{legend:{display:true,position:'top',labels:{color:'#6b6b80',boxWidth:12,padding:16,font:{size:12}}},tooltip:TT},
+      scales:{x:{grid:{display:false},ticks:{color:'#9898a8'}},y:{grid:{color:GRID},ticks:{color:'#9898a8'}}}});
+
+  // 等級結構 donut
+  const tierCtx = document.getElementById('cMemberTier')?.getContext('2d');
+  if(tierCtx){
+    const labels = DATA.tier.labels;
+    const vals = DATA.tier.counts;
+    const colors = [c('gray',0.7), c('teal',0.75), c('orange',0.85), c('purple',0.85)];
+    const total = vals.reduce((a,b)=>a+b,0);
+    new Chart(tierCtx, {type:'doughnut',
+      data:{labels, datasets:[{data:vals, backgroundColor:colors, borderWidth:2, borderColor:'#fff', hoverOffset:6}]},
+      options:{responsive:true, cutout:'65%',
+        plugins:{datalabels:{
+                   display:true,
+                   formatter:(v,ctx)=>{
+                     const pct = (v/total*100).toFixed(1);
+                     return pct >= 5 ? `${ctx.chart.data.labels[ctx.dataIndex]}\n${pct}%` : '';
+                   },
+                   color:'#fff',
+                   font:{family:'Outfit',weight:'700',size:11},
+                   textAlign:'center'
+                 },
+                 legend:{display:false},
+                 tooltip:{...TT, callbacks:{label:ctx2=>`${ctx2.label}: ${ctx2.parsed.toLocaleString()}人 (${(ctx2.parsed/total*100).toFixed(1)}%)`}}}},
+      plugins:[{id:'ct', afterDraw(chart){
+        const {ctx:c2, chartArea:{left,top,width,height}} = chart;
+        c2.save(); c2.textAlign='center'; c2.textBaseline='middle';
+        const cx=left+width/2, cy=top+height/2;
+        c2.font="bold 20px 'Lora'"; c2.fillStyle='#1a1a2e';
+        c2.fillText(total.toLocaleString(), cx, cy-9);
+        c2.font="12px 'Outfit'"; c2.fillStyle='#9898a8';
+        c2.fillText('總會員數', cx, cy+12);
+        c2.restore();
+      }}]});
+    const lg = document.getElementById('legendTier');
+    if(lg) lg.innerHTML = labels.map((l,i)=>`<div class="legend-item"><div class="legend-dot" style="background:${colors[i]}"></div>${l}: ${vals[i].toLocaleString()}人 (${(vals[i]/total*100).toFixed(1)}%)</div>`).join('');
+  }
+
+  // 來源渠道 - 橫向 bar
+  mk('cMemberSource','bar', DATA.source.labels, [{
+    data: DATA.source.pct,
+    backgroundColor: [c('blue',0.8), c('teal',0.78), c('orange',0.75), c('purple',0.72), c('red',0.65), c('gray',0.5)],
+    borderRadius:5
+  }], {indexAxis:'y',
+       layout:{padding:{right:36}},
+       scales:{x:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v+'%'},suggestedMax:36},
+               y:{grid:{display:false},ticks:{color:'#3a3a4a',font:{size:13}}}},
+       plugins:{tooltip:{...TT, callbacks:{label:ctx2=>` ${ctx2.parsed.x}%`}},
+                datalabels:{anchor:'end',align:'end',color:'#3a3a4a',font:{family:'JetBrains Mono',size:11,weight:'600'},formatter:v=>v+'%',padding:{left:4}}}});
+
+  // 年齡分佈
+  mk('cMemberAge','bar', DATA.age.labels, [{
+    data: DATA.age.pct,
+    backgroundColor:[c('blue',0.45), c('blue',0.88), c('blue',0.65), c('blue',0.45), c('blue',0.3)],
+    borderRadius:5
+  }], {layout:{padding:{top:24,right:8}},
+       scales:{x:{grid:{display:false},ticks:{color:'#9898a8'}},
+               y:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v+'%'},suggestedMax:50}},
+       plugins:{tooltip:{...TT, callbacks:{label:ctx2=>` 佔比 ${ctx2.parsed.y}%`}},
+                datalabels:{anchor:'end',align:'end',color:'#2d5be3',font:{family:'JetBrains Mono',size:11,weight:'600'},formatter:v=>v+'%',padding:{bottom:2}}}});
+}
+
+// ════════════════════════════════════════════════════════════════
+// PAGE 2: 交易分析
+// ════════════════════════════════════════════════════════════════
+function drawTx(){
+  const MONTHS = DATA.member_flow.months;
+  const cats = DATA.monthly_category;
+  // 計算每月總額（折線疊加）
+  const monthlyTotal = MONTHS.map((_, i) =>
+    Object.values(cats).reduce((s, arr) => s + arr[i], 0)
+  );
+
+  // 月度堆疊圖 + 總額折線（D8）
+  mk('cRevTrend','bar', MONTHS, [
+    {label:'3C家電', data: cats['3C家電'], backgroundColor:c('blue',0.8), borderRadius:3, stack:'cat'},
+    {label:'服飾', data: cats['服飾'], backgroundColor:c('teal',0.75), borderRadius:3, stack:'cat'},
+    {label:'美妝保養', data: cats['美妝保養'], backgroundColor:c('orange',0.75), borderRadius:3, stack:'cat'},
+    {label:'食品生鮮', data: cats['食品生鮮'], backgroundColor:c('purple',0.68), borderRadius:3, stack:'cat'},
+    {label:'居家生活', data: cats['居家生活'], backgroundColor:c('gray',0.55), borderRadius:3, stack:'cat'},
+    {label:'月度總額', type:'line', data: monthlyTotal,
+     borderColor: '#1a6b8a', backgroundColor:'transparent', borderWidth:2.2,
+     borderDash:[6,3], pointRadius:3, pointBackgroundColor:'#1a6b8a', tension:0.25,
+     yAxisID:'y', datalabels:{display:false}}
+  ], {plugins:{legend:{display:true,position:'top',labels:{color:'#6b6b80',boxWidth:10,font:{size:11},padding:14}},
+               tooltip:TT,
+               datalabels:{anchor:'center',align:'center',color:'rgba(255,255,255,0.92)',font:{family:'JetBrains Mono',size:9,weight:'600'},formatter:(v,ctx)=>{
+                 // 折線資料集不顯示 datalabel
+                 if(ctx.dataset.type==='line') return '';
+                 return v>=40 ? v : '';
+               },padding:0}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{color:'#9898a8'}},
+              y:{stacked:true,grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v+'萬'}}}});
+
+  // 品類圓餅
+  const catCtx = document.getElementById('cCatPie')?.getContext('2d');
+  if(catCtx){
+    const catLabels = Object.keys(cats);
+    const catSums = catLabels.map(k => cats[k].reduce((a,b)=>a+b,0));
+    const totalCat = catSums.reduce((a,b)=>a+b,0);
+    new Chart(catCtx, {type:'doughnut',
+      data:{labels: catLabels,
+            datasets:[{data: catSums,
+                       backgroundColor:[c('blue',0.82), c('teal',0.78), c('orange',0.78), c('purple',0.72), c('gray',0.58)],
+                       borderWidth:2, borderColor:'#fff', hoverOffset:6}]},
+      options:{responsive:true, cutout:'58%',
+        plugins:{datalabels:{
+                   display:true,
+                   formatter:(v,ctx)=>{
+                     const pct = (v/totalCat*100).toFixed(1);
+                     return pct >= 5 ? `${ctx.chart.data.labels[ctx.dataIndex]}\n${pct}%` : '';
+                   },
+                   color:'#fff',
+                   font:{family:'Outfit',weight:'700',size:11},
+                   textAlign:'center'
+                 },
+                 legend:{display:true,position:'bottom',labels:{color:'#6b6b80',boxWidth:10,font:{size:11},padding:10}},
+                 tooltip:{...TT, callbacks:{label:ctx2=>` ${ctx2.label}: NT$${ctx2.parsed}萬 (${(ctx2.parsed/totalCat*100).toFixed(1)}%)`}}}}});
+  }
+
+  // 訂單金額分佈 + NT$500 免運門檻紅虛線
+  const orderCtx = document.getElementById('cOrderDist')?.getContext('2d');
+  if(orderCtx){
+    const ann = (typeof Chart.registry !== 'undefined' && Chart.registry.plugins.get('annotation')) ? {
+      annotations:{
+        threshold:{
+          type:'line',
+          xMin:3.5, xMax:3.5,
+          borderColor:'#d43a2f',
+          borderWidth:2,
+          borderDash:[6,4],
+          label:{
+            display:true,
+            content:'免運門檻 NT$500',
+            position:'start',
+            backgroundColor:'rgba(212,58,47,0.92)',
+            color:'#fff',
+            font:{family:'Outfit',weight:'600',size:11},
+            padding:5,
+            yAdjust:-6
+          }
+        }
+      }
+    } : null;
+    new Chart(orderCtx, {type:'bar',
+      data:{labels: DATA.order_distribution.labels,
+            datasets:[{data: DATA.order_distribution.counts,
+                       backgroundColor:[c('orange',0.4),c('orange',0.52),c('orange',0.65),c('orange',0.88),c('orange',0.7),c('orange',0.55),c('orange',0.42)],
+                       borderRadius:5}]},
+      options:{responsive:true,
+        plugins:{legend:{display:false},
+                 tooltip:{...TT, callbacks:{label:ctx2=>` ${ctx2.parsed.y.toLocaleString()} 筆`}},
+                 datalabels:{anchor:'end',align:'end',color:'#3a3a4a',font:{family:'JetBrains Mono',size:9,weight:'600'},formatter:v=>v>=1000?(v/1000).toFixed(1)+'K':v,padding:{bottom:2}},
+                 ...(ann ? {annotation: ann} : {})},
+        scales:{x:{grid:{display:false},ticks:{color:'#9898a8',font:{size:11}}},
+                y:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v>=1000?v/1000+'K':v}}}}});
+  }
+
+  // 時段下單 + 20 點高峰 annotation
+  const hLabels = Array.from({length:24},(_,i)=>`${i}時`);
+  const hCtx = document.getElementById('cOrderHour')?.getContext('2d');
+  if(hCtx){
+    const annAvail = (typeof Chart.registry !== 'undefined' && Chart.registry.plugins.get('annotation'));
+    const ann = annAvail ? {
+      annotations:{
+        peak:{
+          type:'point',
+          xValue:20, yValue:78,
+          backgroundColor:'rgba(124,77,255,0.18)',
+          borderColor:'#7c4dff', borderWidth:2.5, radius:14
+        },
+        peakLabel:{
+          type:'label',
+          xValue:18.2, yValue:78,
+          xAdjust:0, yAdjust:-30,
+          content:['晚間黃金 1 小時','→ 推播最佳時機'],
+          backgroundColor:'#7c4dff',
+          color:'#fff',
+          font:{family:'Outfit',weight:'600',size:11},
+          padding:7,
+          borderRadius:5
+        }
+      }
+    } : null;
+    new Chart(hCtx, {type:'line',
+      data:{labels: hLabels,
+            datasets:[{data: DATA.hourly.data,
+                       borderColor:c('purple',0.88),
+                       backgroundColor:c('purple',0.1),
+                       fill:true, tension:0.45,
+                       pointRadius:4, pointHoverRadius:10,
+                       pointHitRadius:20,
+                       borderWidth:2.5}]},
+      options:{responsive:true,
+        plugins:{legend:{display:false}, tooltip:{...TT, mode:'index', intersect:false},
+                 datalabels:{color:'#7c4dff',font:{family:'JetBrains Mono',size:9,weight:'700'},
+                             formatter:(v,ctx)=>{const d=ctx.chart.data.datasets[0].data;const max=Math.max(...d);return v===max?v+'筆':'';},
+                             anchor:'top',align:'top',padding:{bottom:2}},
+                 ...(ann ? {annotation: ann} : {})},
+        scales:{x:{grid:{display:false},ticks:{color:'#9898a8',maxTicksLimit:8}},
+                y:{grid:{color:GRID},ticks:{color:'#9898a8'},suggestedMax:100}}}});
+  }
+
+  // 付款方式四線（含「其他」）
+  mk('cPayMethod','line', MONTHS, [
+    {label:'Line Pay', data: DATA.payment.linepay,
+     borderColor:c('teal',0.9), backgroundColor:'transparent', fill:false, tension:0.3, borderWidth:2.5, pointRadius:3},
+    {label:'Apple Pay', data: DATA.payment.applepay,
+     borderColor:c('blue',0.85), backgroundColor:'transparent', fill:false, tension:0.3, borderWidth:2.5, pointRadius:3},
+    {label:'信用卡', data: DATA.payment.credit,
+     borderColor:c('red',0.75), backgroundColor:'transparent', fill:false, tension:0.3, borderWidth:2, pointRadius:3, borderDash:[5,3]},
+    {label:'其他 (轉帳/超商代收)', data: DATA.payment.other,
+     borderColor:c('gray',0.6), backgroundColor:'transparent', fill:false, tension:0.3, borderWidth:1.8, pointRadius:3, borderDash:[2,3]}
+  ], {plugins:{legend:{display:true,position:'top',labels:{color:'#6b6b80',boxWidth:12,font:{size:11},padding:14}},
+               tooltip:TT,
+               datalabels:{font:{family:'JetBrains Mono',size:9,weight:'600'},
+                           formatter:(v,ctx)=>{const i=ctx.dataIndex,len=ctx.dataset.data.length;return(i===0||i===len-1)?v+'%':'';},
+                           anchor:'top',align:'top',padding:{bottom:1},
+                           color:(ctx)=>{const colors=['#2aab85','#2d5be3','#d43a2f','#646e87'];return colors[ctx.datasetIndex]||'#3a3a4a';}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#9898a8'}},
+              y:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v+'%'}}}});
+}
+
+// ════════════════════════════════════════════════════════════════
+// PAGE 3: 交叉分析
+// ════════════════════════════════════════════════════════════════
+function drawCross(){
+  // 等級消費 + 客單價
+  mk('cTierSpend','bar', DATA.tier_spend.labels, [
+    {label:'年均消費(NT$)', data: DATA.tier_spend.annual,
+     backgroundColor:[c('blue',0.45),c('blue',0.62),c('blue',0.8),c('blue',0.95)], borderRadius:6},
+    {label:'平均客單價(NT$)', data: DATA.tier_spend.aov,
+     backgroundColor:[c('orange',0.45),c('orange',0.62),c('orange',0.8),c('orange',0.95)], borderRadius:6}
+  ], {layout:{padding:{top:24,right:8}},
+      plugins:{legend:{display:true,position:'top',labels:{color:'#6b6b80',boxWidth:10,font:{size:11},padding:14}},
+               tooltip:TT,
+               datalabels:{anchor:'end',align:'end',color:'#3a3a4a',font:{family:'JetBrains Mono',size:9,weight:'600'},
+                           formatter:v=>'NT$'+(v>=1000?(v/1000).toFixed(1)+'K':v),padding:{bottom:2}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#3a3a4a'}},
+              y:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>'NT$'+v.toLocaleString()},suggestedMax:20000}}});
+
+  // 頻次分佈
+  mk('cFreqDist','bar', DATA.frequency.labels, [{
+    data: DATA.frequency.counts,
+    backgroundColor:[c('gray',0.48),c('teal',0.5),c('teal',0.65),c('blue',0.68),c('blue',0.85),c('orange',0.88)],
+    borderRadius:5
+  }], {layout:{padding:{top:24,right:8}},
+       scales:{x:{grid:{display:false},ticks:{color:'#9898a8'}},
+               y:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v>=1000?(v/1000).toFixed(1)+'K':v},suggestedMax:4200}},
+       plugins:{tooltip:{...TT, callbacks:{label:ctx2=>` ${ctx2.parsed.y.toLocaleString()} 人 (${(ctx2.parsed.y/DATA.anchors.buyers*100).toFixed(1)}%)`}},
+                datalabels:{anchor:'end',align:'end',color:'#3a3a4a',font:{family:'JetBrains Mono',size:9,weight:'600'},
+                            formatter:v=>v.toLocaleString()+'人',padding:{bottom:2}}}});
+
+  // 渠道 LTV 橫條
+  mk('cChannelLTV','bar', DATA.channel_ltv.labels, [{
+    data: DATA.channel_ltv.values,
+    backgroundColor:[c('teal',0.88),c('teal',0.72),c('teal',0.58),c('orange',0.68),c('red',0.65)],
+    borderRadius:5
+  }], {indexAxis:'y',
+       layout:{padding:{right:80}},
+       scales:{x:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>'NT$'+v},suggestedMax:2100},
+               y:{grid:{display:false},ticks:{color:'#3a3a4a',font:{size:13}}}},
+       plugins:{tooltip:{...TT, callbacks:{label:ctx2=>` 首年LTV: NT$${ctx2.parsed.x.toLocaleString()}`}},
+                datalabels:{anchor:'end',align:'end',color:'#3a3a4a',font:{family:'JetBrains Mono',size:11,weight:'700'},
+                            formatter:v=>'NT$'+v.toLocaleString(),padding:{left:6}}}});
+
+  // 再購間隔
+  mk('cRepurchase','bar', DATA.repurchase.labels, [{
+    data: DATA.repurchase.counts,
+    backgroundColor:[c('purple',0.45),c('purple',0.62),c('purple',0.88),c('purple',0.65),c('purple',0.48),c('gray',0.42)],
+    borderRadius:5
+  }], {layout:{padding:{top:24,right:8}},
+       scales:{x:{grid:{display:false},ticks:{color:'#9898a8'}},
+               y:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v.toLocaleString()},suggestedMax:3300}},
+       plugins:{tooltip:{...TT, callbacks:{label:ctx2=>` ${ctx2.parsed.y.toLocaleString()} 人`}},
+                datalabels:{anchor:'end',align:'end',color:'#7c4dff',font:{family:'JetBrains Mono',size:10,weight:'700'},
+                            formatter:v=>v.toLocaleString()+'人',padding:{bottom:2}}}});
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Dynamic sticky offsets
+  function updateStickyOffsets() {
+    const hdr = document.querySelector('.site-header');
+    if (hdr) document.documentElement.style.setProperty('--header-h', hdr.offsetHeight + 'px');
+  }
+  updateStickyOffsets();
+  window.addEventListener('resize', updateStickyOffsets);
+
+  initialized['member'] = true;
+  draw('member');
+});
+</script>
+</body>
+</html>

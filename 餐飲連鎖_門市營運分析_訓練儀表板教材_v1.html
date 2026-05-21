@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>餐飲連鎖 門市營運分析 訓練儀表板 2024</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Outfit:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d1117;
+      --bg-card: #161b27;
+      --bg-finding: #1a2030;
+      --accent: #3b82f6;
+      --accent2: #2aab85;
+      --warn: #d4870a;
+      --danger: #d43a2f;
+      --purple: #7c4dff;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --border: rgba(255,255,255,0.08);
+      --radius: 14px;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; font-size: 15px; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+
+    /* ── Header ── */
+    .site-header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(13,17,23,0.95); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+    .header-top {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 0 8px;
+      flex-wrap: wrap;
+    }
+    .header-title { font-family: 'Lora', serif; font-size: 1.15rem; font-weight: 600; color: var(--text); }
+    .demo-chip {
+      background: rgba(212,135,10,0.18); color: var(--warn);
+      border: 1px solid rgba(212,135,10,0.35);
+      border-radius: 20px; padding: 2px 10px; font-size: 0.72rem; font-weight: 600;
+    }
+    .year-chip {
+      background: rgba(59,130,246,0.12); color: var(--accent);
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 20px; padding: 2px 10px; font-size: 0.72rem;
+    }
+    .def-btn {
+      margin-left: auto; background: rgba(59,130,246,0.12); color: var(--accent);
+      border: 1px solid rgba(59,130,246,0.3); border-radius: 8px;
+      padding: 5px 14px; font-size: 0.8rem; cursor: pointer; font-family: 'Outfit', sans-serif;
+      transition: background 0.2s;
+    }
+    .def-btn:hover { background: rgba(59,130,246,0.22); }
+    .nav-tabs { display: flex; gap: 4px; padding-bottom: 0; }
+    .nav-tab {
+      padding: 8px 20px; border-radius: 8px 8px 0 0;
+      cursor: pointer; font-size: 0.85rem; font-weight: 500;
+      color: var(--text-muted); border: 1px solid transparent;
+      border-bottom: none; transition: all 0.2s;
+      background: transparent;
+    }
+    .nav-tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+    .nav-tab.active {
+      color: var(--accent); background: var(--bg-card);
+      border-color: var(--border); border-bottom-color: var(--bg-card);
+    }
+
+    /* ── Legend strips ── */
+    .legend-strip {
+      display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+      padding: 8px 24px; font-size: 0.75rem; color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .legend-strip span { display: flex; align-items: center; gap: 5px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+    .badge { display: inline-block; border-radius: 5px; padding: 1px 7px; font-size: 0.7rem; font-weight: 600; }
+    .badge.l1 { background: rgba(42,171,133,0.18); color: var(--accent2); border: 1px solid rgba(42,171,133,0.3); }
+    .badge.l2 { background: rgba(59,130,246,0.18); color: var(--accent); border: 1px solid rgba(59,130,246,0.3); }
+    .badge.l3 { background: rgba(124,77,255,0.18); color: var(--purple); border: 1px solid rgba(124,77,255,0.3); }
+
+    /* ── Def panel ── */
+    .def-panel {
+      background: var(--bg-card); border-bottom: 1px solid var(--border);
+      padding: 20px 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 14px;
+    }
+    .def-panel.hidden { display: none; }
+    .def-item { background: var(--bg-finding); border-radius: 10px; padding: 12px 16px; }
+    .def-item h4 { font-size: 0.78rem; color: var(--accent); margin-bottom: 4px; font-family: 'JetBrains Mono', monospace; }
+    .def-item p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+
+    /* ── Pages ── */
+    .page { display: none; padding: 24px; max-width: 1400px; margin: 0 auto; }
+    .page.active { display: block; }
+
+    /* ── Section heading ── */
+    .section-title {
+      font-family: 'Lora', serif; font-size: 1.05rem; font-weight: 600;
+      color: var(--text); margin: 28px 0 16px; padding-left: 12px;
+      border-left: 3px solid var(--accent);
+    }
+    .section-title:first-child { margin-top: 4px; }
+
+    /* ── KPI cards ── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap: 14px; margin-bottom: 28px; }
+    .kpi-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 18px 20px; position: relative; overflow: hidden;
+    }
+    .kpi-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--kpi-color, var(--accent));
+    }
+    .kpi-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; }
+    .kpi-value { font-family: 'JetBrains Mono', monospace; font-size: 1.6rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .kpi-sub { font-size: 0.72rem; margin-top: 5px; }
+    .kpi-up { color: var(--accent2); }
+    .kpi-neutral { color: var(--text-muted); }
+
+    /* ── Chart grid ── */
+    .chart-grid { display: grid; gap: 18px; margin-bottom: 24px; }
+    .chart-grid-2 { grid-template-columns: 1fr 1fr; }
+    .chart-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .chart-grid-wide { grid-template-columns: 2fr 1fr; }
+    @media(max-width:900px) {
+      .chart-grid-2, .chart-grid-3, .chart-grid-wide { grid-template-columns: 1fr; }
+    }
+
+    /* ── Chart card ── */
+    .chart-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 20px;
+    }
+    .chart-card-title { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); margin-bottom: 14px; letter-spacing: 0.04em; text-transform: uppercase; }
+    .chart-block { position: relative; }
+    .chart-block canvas { display: block; }
+    .h260 { height: 260px; }
+    .h300 { height: 300px; }
+    .h360 { height: 360px; }
+    .h420 { height: 420px; }
+    .h480 { height: 480px; }
+    .h520 { height: 520px; }
+
+    /* ── Findings ── */
+    .findings-section {
+      background: var(--bg-finding); border-radius: 10px;
+      padding: 12px 16px; margin-top: 14px; font-size: 0.8rem; color: var(--text-muted);
+    }
+    .findings-section strong { color: var(--text); }
+
+    /* ── Q&A ── */
+    .qa-section { margin-top: 28px; }
+    .qa-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+    .question {
+      padding: 14px 18px; cursor: pointer; display: flex; align-items: flex-start; gap: 10px;
+      transition: background 0.15s; user-select: none;
+    }
+    .question:hover { background: rgba(255,255,255,0.03); }
+    .question-text { flex: 1; font-weight: 500; font-size: 0.88rem; }
+    .question-arrow { color: var(--text-muted); font-size: 0.8rem; margin-top: 2px; transition: transform 0.2s; flex-shrink: 0; }
+    .qa-item.open .question-arrow { transform: rotate(90deg); }
+    .answer { display: none; padding: 0 18px 18px; font-size: 0.84rem; line-height: 1.7; }
+    .answer.show { display: block; }
+
+    .tag-f { display: inline-block; background: rgba(42,171,133,0.18); color: var(--accent2); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
+    .tag-i { display: inline-block; background: rgba(59,130,246,0.18); color: var(--accent); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
+    .tag-a { display: inline-block; background: rgba(212,135,10,0.18); color: var(--warn); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
+    .fia { display: inline-block; border-radius: 3px; padding: 0 4px; font-size: 0.68rem; font-weight: 700; }
+    .fia.f { background: rgba(42,171,133,0.18); color: var(--accent2); }
+    .fia.i { background: rgba(59,130,246,0.18); color: var(--accent); }
+    .fia.a { background: rgba(212,135,10,0.18); color: var(--warn); }
+
+    .trap-block {
+      background: rgba(212,67,47,0.1); border: 1px solid rgba(212,67,47,0.3);
+      border-radius: 8px; padding: 10px 14px; margin-top: 10px;
+      font-size: 0.8rem; color: #e8847a; display: flex; gap: 8px; align-items: flex-start;
+    }
+    .trap-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+    .nav-hint {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(212,135,10,0.1); border: 1px solid rgba(212,135,10,0.3);
+      border-radius: 8px; padding: 8px 14px; margin-top: 10px;
+      font-size: 0.78rem; color: var(--warn); cursor: pointer;
+      transition: background 0.2s;
+    }
+    .nav-hint:hover { background: rgba(212,135,10,0.18); }
+
+    .answer-block { margin-bottom: 6px; }
+    .answer-block p { margin-top: 4px; }
+
+    /* ── Design choices panel ── */
+    .design-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    @media(max-width:700px) { .design-grid { grid-template-columns: 1fr; } }
+    .design-item {
+      background: var(--bg-finding); border: 1px solid var(--border); border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .design-item h4 { font-size: 0.8rem; color: var(--accent); margin-bottom: 4px; }
+    .design-item p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+
+    /* ── Training block ── */
+    .training-block {
+      background: rgba(124,77,255,0.06); border: 1px solid rgba(124,77,255,0.25);
+      border-radius: var(--radius); padding: 20px; margin-top: 28px;
+    }
+    .training-title { font-family: 'Lora', serif; font-size: 0.95rem; font-weight: 600; color: var(--purple); margin-bottom: 14px; }
+
+    /* ── Divider ── */
+    .section-divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+    /* ── Footer ── */
+    .page-footer { padding: 32px 24px; text-align: center; font-size: 0.75rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<header class="site-header" id="top-header">
+  <div class="header-top">
+    <span class="header-title">餐飲連鎖 門市營運分析 訓練儀表板</span>
+    <span class="demo-chip">DEMO 合成資料</span>
+    <span class="year-chip">2024 年度</span>
+    <button class="def-btn" onclick="toggleDef()">📋 指標定義</button>
+  </div>
+  <div class="nav-tabs">
+    <div class="nav-tab active" id="tab-ops" onclick="switchPage('ops')">📊 門市業績概覽</div>
+    <div class="nav-tab" id="tab-cust" onclick="switchPage('cust')">👤 顧客行為分析</div>
+    <div class="nav-tab" id="tab-deep" onclick="switchPage('deep')">🔗 跨維度深度分析</div>
+  </div>
+</header>
+
+<div class="legend-strip">
+  <span><span class="dot" style="background:var(--accent)"></span>事實數據（藍）</span>
+  <span><span class="dot" style="background:var(--accent2)"></span>正向指標（綠）</span>
+  <span><span class="dot" style="background:var(--warn)"></span>注意/推論（橘）</span>
+  <span><span class="dot" style="background:var(--danger)"></span>警示/流失（紅）</span>
+  <span><span class="dot" style="background:var(--purple)"></span>行為/時序（紫）</span>
+  <span style="margin-left:12px"><span class="badge l1">L1</span> 單圖事實</span>
+  <span><span class="badge l2">L2</span> 同頁交叉</span>
+  <span><span class="badge l3">L3</span> 跨頁推論</span>
+  <span style="margin-left:12px"><span class="tag-f">F</span> 事實（可直接讀圖）</span>
+  <span><span class="tag-i">I</span> 推論（邏輯連結）</span>
+  <span><span class="tag-a">A</span> 假設（需補充資料）</span>
+</div>
+
+<div id="def-panel" class="def-panel hidden">
+  <div class="def-item">
+    <h4>年度總來客（人次）</h4>
+    <p>全年34門市 POS 系統累計消費人次，同一顧客每次消費記1人次，不去重。</p>
+  </div>
+  <div class="def-item">
+    <h4>平均客單價（AOV）</h4>
+    <p>年度總業績（NT$） ÷ 年度總來客人次。公式：13,954×10,000 ÷ 486,217 ≈ NT$287。</p>
+  </div>
+  <div class="def-item">
+    <h4>外帶佔比</h4>
+    <p>當月外帶人次 ÷ 當月總人次。外帶包含櫃檯自取，不含外送平台訂單（口徑說明：本儀表板未拆分外送vs自取，詳見設計選擇）。</p>
+  </div>
+  <div class="def-item">
+    <h4>月均門市業績</h4>
+    <p>年度總業績 ÷ 34店 ÷ 12個月 = NT$34.2万。反映單店月平均業績水準，不代表任何單一門市。</p>
+  </div>
+  <div class="def-item">
+    <h4>30日回購率</h4>
+    <p>本月有消費的顧客中，在後續30天內再次消費的比例。口徑：首次消費後的滾動30天窗口，非自然月。</p>
+  </div>
+  <div class="def-item">
+    <h4>高頻顧客貢獻率</h4>
+    <p>年消費12次以上顧客（含VIP）的總消費額 ÷ 全體顧客總消費額。高頻門檻：年≥12次（月均≥1次）。</p>
+  </div>
+  <div class="def-item">
+    <h4>VIP顧客</h4>
+    <p>年消費≥12次（月均≥1次）的顧客，共12,480人（佔21.4%）。其中年24次以上頂級VIP 4,918人（8.4%）。注意：VIP AOV低於常客（習慣性消費行為），但年度LTV遠高於常客。</p>
+  </div>
+  <div class="def-item">
+    <h4>品類集中度 HHI</h4>
+    <p>Herfindahl-Hirschman Index（赫芬達爾–赫希曼指數），衡量業績集中程度。計算公式：各類別佔比²之總和 × 10,000。本儀表板以三大品類計算：42²+33²+25²= <strong>3,478</strong>（≥2,500為高度集中；10,000為完全壟斷）。品類層級HHI反映套餐組合高度主導業績，任一品類供應異常均有顯著衝擊。</p>
+  </div>
+  <div class="def-item">
+    <h4>YoY（Year-over-Year / 年比）</h4>
+    <p>本期數字相比去年同期的變化幅度。計算公式：(本期 − 前期) ÷ 前期 × 100%。例：來客486,217 vs 前年441,212，YoY = (486,217−441,212)÷441,212 = +10.2%。</p>
+  </div>
+  <div class="def-item">
+    <h4>pp（Percentage Points / 百分點）</h4>
+    <p>兩個百分比數值的「差值」單位，有別於「%的%」。例：外帶佔比從38.1%升至43.2%，差距為 43.2 − 38.1 = +5.1 pp（不是 +5.1%）。當比較兩個百分比時，應說「上升 X pp」而非「上升 X%」。</p>
+  </div>
+  <div class="def-item">
+    <h4>LTV（Lifetime Value / 顧客終身價值）</h4>
+    <p>估算一位顧客在整個關係期間為企業帶來的總消費金額。常見估算公式：年均消費次數 × AOV × 年數。本儀表板中的LTV均為說明原理用的估算值（年均頻次非原始資料），非確定計算結果，對應答案均標註 [A]（假設）。</p>
+  </div>
+  <div class="def-item">
+    <h4>ROI（Return on Investment / 投資報酬率）</h4>
+    <p>衡量投入資源（資金、時間、人力）所獲得的回報比例。公式：(淨收益 − 投入成本) ÷ 投入成本 × 100%。儀表板中「ROI很低」的陳述為定性判斷，指改善效益相對投入成本偏低的情境。</p>
+  </div>
+  <div class="def-item">
+    <h4>KPI（Key Performance Indicators / 關鍵業績指標）</h4>
+    <p>衡量核心業務目標達成程度的量化指標。本儀表板的KPI卡位於每頁頂部，呈現當期數值、YoY變化與前年基準，是進入圖表分析前的「快速定位」工具，而非最終結論。</p>
+  </div>
+  <div class="def-item">
+    <h4>F / I / A 答案標籤系統</h4>
+    <p>本儀表板所有題目答案使用三色標記，訓練分析者區分認知層次：<br>
+    <strong style="color:var(--accent2)">F（Fact 事實）</strong>：可直接從圖表讀取的數字或模式，不需推論。<br>
+    <strong style="color:var(--accent)">I（Inference 推論）</strong>：基於事實的合理解釋或趨勢判斷，需要邏輯連結。<br>
+    <strong style="color:var(--warn)">A（Assumption 假設）</strong>：需要補充資料才能驗證的行動建議，或使用了儀表板未呈現的假設數字。</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     P1: 門市業績概覽
+══════════════════════════════════════════ -->
+<div id="page-ops" class="page active">
+
+  <div class="section-title">關鍵業績指標 KPI</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--kpi-color:var(--accent)">
+      <div class="kpi-label">年度總來客</div>
+      <div class="kpi-value">486,217</div>
+      <div class="kpi-sub"><span class="kpi-up">▲ +10.2% YoY</span> <span class="kpi-neutral">vs 441,212</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--accent2)">
+      <div class="kpi-label">平均客單價</div>
+      <div class="kpi-value">NT$287</div>
+      <div class="kpi-sub"><span class="kpi-up">▲ +3.2% YoY</span> <span class="kpi-neutral">vs NT$278</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--warn)">
+      <div class="kpi-label">外帶佔比</div>
+      <div class="kpi-value">43.2%</div>
+      <div class="kpi-sub"><span class="kpi-up">▲ +5.1pp YoY</span> <span class="kpi-neutral">vs 38.1%</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--purple)">
+      <div class="kpi-label">月均門市業績</div>
+      <div class="kpi-value">NT$34.2万</div>
+      <div class="kpi-sub"><span class="kpi-up">▲ +7.8% YoY</span> <span class="kpi-neutral">vs NT$31.7万</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">月度來客趨勢 × 客單價</div>
+  <div class="chart-card">
+    <div class="chart-card-title">月度來客人次（左軸）× 月均客單價（右軸）</div>
+    <div class="chart-block h300"><canvas id="cVisitAOV"></canvas></div>
+    <div class="findings-section">
+      <strong>圖表解讀：</strong>藍柱 = 月度來客人次（左軸），橘線 = 月均客單價（右軸）。旺季集中於 Q4（10–12月），來客量顯著提升；客單價全年維持穩定（NT$285–287），顯示業績成長由來客人次驅動，非提價效應。Q1二月最低，受農曆春節影響。
+    </div>
+  </div>
+
+  <div class="chart-grid chart-grid-2" style="margin-top:18px">
+    <div class="chart-card">
+      <div class="chart-card-title">內用 vs 外帶比例（月）</div>
+      <div class="chart-block h260"><canvas id="cDineTakeout"></canvas></div>
+      <div class="findings-section">
+        <strong>趨勢：</strong>外帶佔比從1月38%穩定上升至12月47%，全年均值43.2%。外帶佔比上升不等同內用絕對人次下降。
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card-title">月度品類業績結構（万NT$）</div>
+      <div class="chart-block h260"><canvas id="cRevCat"></canvas></div>
+      <div class="findings-section">
+        <strong>品類佔比：</strong>套餐5,861万（42%）、單點4,605万（33%）、飲料3,488万（25%）。紅虛線為月度總業績趨勢。
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">34門市年度業績排行</div>
+  <div class="chart-card">
+    <div class="chart-card-title">門市年度業績（万NT$，降序）— 34門市</div>
+    <div class="chart-block h520"><canvas id="cStoreRank"></canvas></div>
+    <div class="findings-section">
+      <strong>差距：</strong>信義旗艦790万 vs 高雄苓雅139万，差距約5.7倍。前10名均超350万，後10名均低於270万。門市業績受選址、商圈客流量高度影響。
+    </div>
+  </div>
+
+  <hr class="section-divider">
+  <div class="section-title">訓練題組 — 門市業績</div>
+  <div class="qa-section">
+
+    <!-- Q1 -->
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1·F</span>
+        <span class="question-text">Q1：去年全年總來客達到多少？與前年相比的成長幅度？</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 全年總來客 <strong>486,217 人次</strong>，YoY <strong>+10.2%</strong>（前年 441,212 人次）。</p>
+          <p>圖表來源：月度來客趨勢柱狀圖，各月加總即為年度數字。計算驗證：486,217 ÷ 441,212 − 1 ≈ 10.2%。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1·I</span>
+        <span class="question-text">Q2：從月度來客趨勢圖，哪個季節是明顯旺季？可能的原因是什麼？</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 11月（46,596人次）與12月（47,406人次）為全年最高，合計佔年度約19.4%。2月（31,604人次）為全年最低。</p>
+          <p><span class="tag-i">I:</span> 年末旺季可能來自三個因素——① 年終尾牙聚餐需求增加；② 節慶氛圍帶動聚餐頻率；③ 天氣轉涼促使外食意願提升。2月低點則因農曆春節期間大量顧客返鄉，商圈人流下降。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1·F</span>
+        <span class="question-text">Q3：34間門市中，業績最高與最低的門市分別是哪兩間？差距多少倍？</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 最高：<strong>信義旗艦 790万</strong>；最低：<strong>高雄苓雅 139万</strong>。差距 790 ÷ 139 ≈ <strong>5.7倍</strong>。</p>
+          <p>圖表來源：門市業績排行水平柱狀圖，從上至下降序排列。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2·I</span>
+        <span class="question-text">Q4：外帶比例全年持續上升，代表內用市場正在萎縮嗎？</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 外帶佔比從1月38%升至12月47%，全年均值43.2%，上升幅度9個百分點。</p>
+          <p><span class="tag-i">I:</span> 外帶比例上升反映外帶偏好增加，<strong>但不等同於內用絕對人次下降</strong>。若同期總來客人次也在成長（+10.2% YoY），則內用絕對人次可能仍維持或小幅成長，只是成長速度慢於外帶。</p>
+          <p>交叉驗證：需同時看總來客趨勢（月度趨勢圖）與外帶佔比趨勢（本圖）才能下定論。</p>
+        </div>
+        <div class="trap-block">
+          <span class="trap-icon">⚠</span>
+          <div><strong>常見陷阱：</strong>比例上升 ≠ 絕對量下降。看到「外帶佔比上升」就直接推論「內用在萎縮」是比例vs.絕對量的基本混淆，需要同時對照總量圖表才能做出正確判斷。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1·I</span>
+        <span class="question-text">Q5：從品項組成看，哪個品類佔比最高？對毛利率有何潛在含義？</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 套餐組合 5,861万（42.0%），單點餐食 4,605万（33.0%），飲料飲品 3,488万（25.0%）。三類合計 13,954万。</p>
+          <p><span class="tag-i">I:</span> 套餐組合佔比最高，且套餐通常具有較高的綁定性（主餐＋飲料組合定價）。理論上套餐可提升整體客單價，同時利用定量食材控制備料成本，對毛利率有正向潛力——但實際效果需對照成本結構，此儀表板未揭露成本數據。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2·A</span>
+        <span class="question-text">Q6：如果要提升整體業績，你優先建議改善哪類門市：高業績門市，還是低業績門市？</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 前5名門市年業績均超600万（信義旗艦790万），後5名均低於180万（最低高雄苓雅139万）。</p>
+          <p><span class="tag-i">I:</span> 高業績門市已有成熟客群和位置紅利，邊際改善空間受限；低業績門市可能有兩種情況：A) 選址問題（外部因素，難以改變）；B) 運營效率問題（內部因素，有改善空間）。</p>
+          <p><span class="tag-a">A:</span> 建議 <strong>先診斷低業績原因</strong>，再決策資源分配——若是選址導致的低流量，投入改善的ROI很低；若是菜單、服務、效率問題，則有高槓桿改善機會。不應不加區分地「優先改善低業績門市」。</p>
+        </div>
+        <div class="trap-block">
+          <span class="trap-icon">⚠</span>
+          <div><strong>常見陷阱：</strong>直覺上「低業績門市最需要幫助」聽起來合理，但選址差的門市即使大幅改善運營，也難以追趕商圈客流先天不足的劣勢。診斷原因先於資源投入，是分析師vs.直覺決策者的核心差距。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1·F</span>
+        <span class="question-text">Q7：月均門市業績是多少萬元？這個數字是如何計算出來的？</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 月均門市業績 <strong>NT$34.2万</strong>。</p>
+          <p>計算公式：<code style="background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:0.8rem">13,954万 ÷ 34店 ÷ 12月 = 34.2万</code></p>
+          <p>注意：這是加權平均，實際各門市月業績差異巨大（旗艦店可達65万/月，尾端門市僅11万/月）。平均值不代表「典型門市」。</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end qa-section -->
+</div><!-- end page-ops -->
+
+<!-- ══════════════════════════════════════════
+     P2: 顧客行為分析
+══════════════════════════════════════════ -->
+<div id="page-cust" class="page hidden">
+
+  <div class="section-title">顧客行為 KPI</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--kpi-color:var(--accent2)">
+      <div class="kpi-label">30日回購率</div>
+      <div class="kpi-value">36.8%</div>
+      <div class="kpi-sub"><span class="kpi-neutral">首次消費後30天內再訪</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--warn)">
+      <div class="kpi-label">高頻顧客貢獻率</div>
+      <div class="kpi-value">58.3%</div>
+      <div class="kpi-sub"><span class="kpi-neutral">年12次以上顧客的業績佔比</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--purple)">
+      <div class="kpi-label">VIP顧客佔比</div>
+      <div class="kpi-value">21.4%</div>
+      <div class="kpi-sub"><span class="kpi-neutral">12,480人 / 58,320人</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--accent)">
+      <div class="kpi-label">品項集中度 HHI</div>
+      <div class="kpi-value">3,478</div>
+      <div class="kpi-sub"><span class="kpi-neutral">高度集中（品類層級；>2,500）</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">24小時來客分布</div>
+  <div class="chart-card">
+    <div class="chart-card-title">每小時來客指數（0–23時）</div>
+    <div class="chart-block h260"><canvas id="cHourly"></canvas></div>
+    <div class="findings-section">
+      <strong>雙峰型：</strong>午間高峰 12:00（指數54），晚間主高峰 19:00（指數78）。早市（6-8時）有小波峰，宵夜（22時後）快速下滑。排班建議：11:30 和 18:00 前完成備料，19:00–21:00 配置最大人力。
+    </div>
+  </div>
+
+  <div class="chart-grid chart-grid-wide" style="margin-top:18px">
+    <div class="chart-card">
+      <div class="chart-card-title">顧客消費頻率分布</div>
+      <div class="chart-block h280"><canvas id="cFreqDist"></canvas></div>
+      <div class="findings-section">
+        <strong>分布特徵：</strong>年2-3次最多（15,850人，27.2%），顯示大量偶發性顧客。年24次以上VIP族群（4,918人）雖人數少，但貢獻佔比高。
+      </div>
+    </div>
+    <div>
+      <div class="chart-card" style="margin-bottom:18px">
+        <div class="chart-card-title">顧客結構（人數）</div>
+        <div class="chart-block h180"><canvas id="cTierDonut"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">各等級平均客單價（NT$）</div>
+        <div class="chart-block h180"><canvas id="cTierAOV"></canvas></div>
+        <div class="findings-section" style="font-size:0.75rem">
+          <strong style="color:var(--warn)">逆直覺：</strong>VIP客單價(271) &lt; 常客(303)。原因見Q11。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+  <div class="section-title">訓練題組 — 顧客行為</div>
+  <div class="qa-section">
+
+    <!-- Q8 -->
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1·I</span>
+        <span class="question-text">Q8：從24小時來客分布，用餐高峰集中在哪個時段？對人力排班有何意義？</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 晚間 19:00 達到最高峰（指數78），午間 12:00 次高（指數54），為雙峰型分布。6:00–7:00 有小早市波峰（指數9–15）；8:00 指數已升至24，進入往午峰爬坡的過渡段。</p>
+          <p><span class="tag-i">I:</span> 雙峰型分布對排班的含義：① 排班應在 11:30 和 18:00 前完成準備工作；② 19:00–21:00 需配置最大人力；③ 14:00–17:00 為低谷，可安排清潔、備料、訓練；④ 若外帶佔比持續上升，高峰期的外帶打包效率也需納入排班考量。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2·F</span>
+        <span class="question-text">Q9：VIP顧客的人數和佔比各是多少？如何從儀表板數字驗算？</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> VIP 顧客 <strong>12,480 人</strong>，佔全體顧客 <strong>21.4%</strong>。</p>
+          <p>驗算：12,480 ÷ 58,320 × 100 = 21.4%（精確）。圖表來源：顧客結構 Donut 圖（中心文字顯示總顧客數）。</p>
+          <p>另一驗算路徑：頻率分布圖中「年12-23次（7,562人）+ 年24次以上（4,918人）= 12,480人」= VIP人數，兩圖可交叉確認。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1·F</span>
+        <span class="question-text">Q10：回購率36.8%是如何定義的？哪個時間窗口內的回購？</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> <strong>30日回購率 36.8%</strong>，定義為：本月有消費記錄的顧客中，在 <strong>首次消費後30天內</strong> 再次消費的比例。口徑為滾動30天窗口，而非自然月。</p>
+          <p>注意：不同公司的回購率定義差異很大——有些用「任意30天窗口」，有些用「自然月內二次消費」，口徑不同時數字無法直接比較。本儀表板指標定義面板有完整口徑說明。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q11 -->
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2·I</span>
+        <span class="question-text">Q11：VIP顧客的平均客單價（NT$271）低於常客（NT$303），這代表VIP計畫失敗了嗎？</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 三等級AOV：偶訪客 NT$234、常客 NT$303、VIP NT$271。VIP的AOV確實低於常客。</p>
+          <p><span class="tag-i">I:</span> 這是逆直覺的關鍵洞察。VIP的定義是年消費≥12次（月均≥1次），頻率遠高於常客（年4-11次）。<strong>高頻率造成「習慣性點餐」行為</strong>——每次不一定點最貴的組合，但年度總消費額（LTV）遠高於常客。</p>
+          <p><span class="tag-a">A:</span> 估算示意（年均頻次為假設值，非儀表板原始資料）：若VIP年均32次、AOV=271，則年LTV≈ NT$8,672；常客若年均15次、AOV=303，年LTV≈ NT$4,545——VIP的LTV幾乎是常客的1.9倍。實際頻次需從門市點單記錄計算，此處為說明原理的估算。</p>
+        </div>
+        <div class="trap-block">
+          <span class="trap-icon">⚠</span>
+          <div><strong>常見陷阱：</strong>AOV（每次客單價）≠ LTV（全年總價值）。用單次消費金額評估顧客價值，會系統性低估高頻顧客的重要性——這是餐飲分析中最典型的單指標陷阱之一。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q12 -->
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1·F</span>
+        <span class="question-text">Q12：從頻率分佈圖，佔比最大的顧客群是哪個頻次段？人數多少？</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 佔比最大為 <strong>年2-3次，共15,850人（27.2%）</strong>。其次為年4-6次（12,166人，20.9%）。</p>
+          <p>這表示超過一半的顧客（年1-3次合計：8,820+15,850=24,670人，即42.3%）屬於低頻偶發性消費，是擴大回購頻率的主要目標族群。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q13 -->
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2·A</span>
+        <span class="question-text">Q13：如果你要提升高頻顧客貢獻率（58.3%），你的首要行動是什麼？</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 年12次以上顧客（含VIP）共12,480人，高頻業績 NT$8,135萬 ÷ 總營收 NT$13,954萬 = <strong>58.3%</strong>。年4-11次中頻顧客共21,170人（36.3%），為最大中間群體。</p>
+          <p><span class="tag-i">I:</span> 高頻顧客已習慣性高頻消費，維持黏性的成本較低但邊際提升空間有限；中頻顧客（年7-11次）距離12次高頻門檻僅差1-5次，轉化槓桿最高。</p>
+          <p><span class="tag-a">A:</span> 首要行動：<strong>設計「年7-11次→年12次+」的升頻方案</strong>，例如「滿10次送下次折扣」，將中頻轉高頻的槓桿效果（+21,170人×貢獻率提升）遠大於只服務現有12,480名VIP。</p>
+        </div>
+        <div class="trap-block">
+          <span class="trap-icon">⚠</span>
+          <div><strong>常見陷阱：</strong>「提升高頻貢獻率」≠「只服務現有高頻顧客」。如果資源都投在已飽和的VIP族群，分母（總業績）增加有限；真正的槓桿在拉升中間層。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q14 -->
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1·I</span>
+        <span class="question-text">Q14：從再購間隔分布，大多數回購顧客在幾天內再訪？對行銷推播頻率有何建議？</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 回購顧客中：≤7天3,500人，8-14天7,200人（最多，峰值），15-21天5,800人，22-30天4,962人。≤30天內回購合計<strong>21,462人</strong>（= 58,320 × 36.8%），與30日回購率KPI吻合。回購高峰在 <strong>8-14天</strong>。</p>
+          <p><span class="tag-i">I:</span> 建議主要推播在首次消費後 <strong>第7-10天</strong> 觸達——此時顧客記憶尚新且接近自然回購窗口，推播效果最佳。過早推播（≤3天）打擾感高；過晚推播（≥21天後）顧客可能已轉向競品，效果顯著下降。</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end qa-section -->
+</div><!-- end page-cust -->
+
+<!-- ══════════════════════════════════════════
+     P3: 跨維度深度分析
+══════════════════════════════════════════ -->
+<div id="page-deep" class="page hidden">
+
+  <div class="section-title">門市四象限分析：來客×客單價</div>
+  <div class="chart-card">
+    <div class="chart-card-title">34門市散點圖（x=月均來客，y=平均客單價）— 中線：x=1196, y=NT$287</div>
+    <div class="chart-block h420"><canvas id="cStoreScatter"></canvas></div>
+    <div class="findings-section">
+      <strong>四象限解讀：</strong>右上（高流量高客單）= 旗艦型（信義旗艦、101商圈、忠孝復興等商圈核心店）；左上（低流量高客單）= 精品型（淡水、竹北、台中西屯、台南東區），商圈規模小但客單高，需差異化管理目標；右下（高流量低客單）= 效率提升型（士林、萬華等），流量佳但客單有提升空間；左下（低流量低客單）= 需根本診斷（高雄苓雅等），先辨別外部選址問題或內部體驗問題。中線設定：x=月均1,196人次（= 486,217÷12÷34），y=NT$287（全局AOV）。
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:28px">顧客再購間隔分布</div>
+  <div class="chart-card">
+    <div class="chart-card-title">再購間隔天數分布（有回購行為顧客）</div>
+    <div class="chart-block h280"><canvas id="cRepurchase"></canvas></div>
+    <div class="findings-section">
+      <strong>行為特徵：</strong>回購高峰在8-14天（7,200人），顯示大多數回購顧客在約一週後自然回訪。≤7天的快速回購者（3,500人）可能為高頻VIP的子集。≤30天回購合計21,462人 = 總顧客數36.8%，與KPI口徑封閉。
+    </div>
+  </div>
+
+  <hr class="section-divider">
+  <div class="section-title">跨維度訓練題</div>
+  <div class="qa-section">
+
+    <!-- Q15 -->
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2·I</span>
+        <span class="question-text">Q15：從四象限散點圖，哪個象限的門市最需要立即關注？你會採取什麼分析行動？</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 左下象限（低來客 × 低客單）的門市同時面臨流量不足與消費力雙重問題，如高雄苓雅（月均約544人次，AOV NT$213）。</p>
+          <p><span class="tag-i">I:</span> 需優先診斷原因——選址問題（商圈客流本身不足，屬外部因素）還是服務/品項/體驗問題（內部因素，可改善）。診斷工具：比較同一城市其他門市的客流特徵；調查周邊競品密度；分析門市顧客回購率（若回購率尚可，問題是招新不足；若回購率也低，問題在留客）。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q16 -->
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3·I</span>
+        <span class="question-text">Q16：結合P2的顧客等級分析與P3的再購間隔，VIP高頻顧客的行為模式有何特徵？</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> P2 顧客等級：VIP（年12+次）共7,562+4,918=12,480人；P3 再購間隔高峰：8-14天（≈每兩週一次）。</p>
+          <p><span class="tag-i">I:</span> VIP顧客約<strong>每2週來訪一次</strong>，形成穩定習慣性回訪。習慣性消費導致「固定點餐」行為（偏好熟悉品項），進而造成AOV（NT$271）低於偶爾「犒賞自己」的常客（NT$303）。這是高頻熟客的典型行為特徵：頻率高→AOV低→LTV仍高。</p>
+        </div>
+        <div class="nav-hint" onclick="switchPage('cust'); setTimeout(()=>{document.getElementById('cTierAOV')?.scrollIntoView({behavior:'smooth',block:'center'})},350)">
+          ↗ 前往 P2 查看各等級客單價對比圖（cTierAOV）
+        </div>
+      </div>
+    </div>
+
+    <!-- Q17 -->
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3·A</span>
+        <span class="question-text">Q17：如果你是這家連鎖的數據分析師，你會如何設計一份「門市分級改善計畫」？</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 34門市業績差距5.7倍；客單價差距約NT$111（信義旗艦NT$324 vs 高雄苓雅NT$213）；四象限散點圖揭示業績×客單兩維度同時分化。</p>
+          <p><span class="tag-i">I:</span> 單一業績排名只能看規模，無法區分「高流量低客單」（有提升空間）與「低流量高客單」（有不同問題）。</p>
+          <p><span class="tag-a">A:</span> 建議 <strong>四象限分級改善框架</strong>：</p>
+          <ul style="margin:8px 0 0 16px;line-height:2">
+            <li>右上（高業績×高客單）→ 標竿維護：提取最佳實踐，複製到其他門市</li>
+            <li>右下（高業績×低客單）→ 品項升級：推套餐、加值配餐，提升AOV</li>
+            <li>左上（低業績×高客單）→ 流量擴大：行銷投入提升到店率，客質已夠好</li>
+            <li>左下（低業績×低客單）→ 根本診斷：先判斷是選址問題還是運營問題，再決定是否繼續投資</li>
+          </ul>
+        </div>
+        <div class="trap-block">
+          <span class="trap-icon">⚠</span>
+          <div><strong>常見陷阱：</strong>只用單一業績指標分級，會將「高流量低客單」和「低流量低客單」的門市混為一談——前者問題是品項組合，後者問題是選址或品牌認知，改善方法完全不同。雙維度分析是分析師思維的核心。</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end qa-section -->
+
+  <!-- ── Training Questions Block ── -->
+  <div class="training-block">
+    <div class="training-title">進階訓練題組（T1–T4）— 數據局限性與批判思維</div>
+    <div class="qa-section">
+
+      <!-- T1 -->
+      <div class="qa-item">
+        <div class="question" onclick="toggleQA(this)">
+          <span class="badge l3">L3·A</span>
+          <span class="question-text">T1：本份儀表板缺少「翻桌率」數據，這對分析結論有何影響？如何補救？</span>
+          <span class="question-arrow">▶</span>
+        </div>
+        <div class="answer">
+          <div class="answer-block">
+            <p><span class="tag-f">F:</span> 現有數據可見來客人次、AOV、業績，但無翻桌率（桌次周轉次數/小時）。</p>
+            <p><span class="tag-i">I:</span> 缺少翻桌率使「來客成長」的詮釋變得不完整——無法區分成長是來自「更多不同顧客」還是「同樣顧客更多次光顧但座位效率沒提升」。對內用門市而言，翻桌率是空間效率的核心指標。</p>
+            <p><span class="tag-a">A:</span> 補救方案三種：① 加入翻桌率KPI（= 每日桌次使用數 ÷ 桌數）；② 用POS時間戳計算同桌平均停留時長；③ 將來客人次與座位數交叉計算理論翻桌率（= 來客人次 ÷ 座位數 ÷ 營業時數）。</p>
+          </div>
+          <div class="trap-block">
+            <span class="trap-icon">⚠</span>
+            <div><strong>常見陷阱：</strong>用「來客成長=一切向好」替代翻桌率分析，可能掩蓋座位效率下降的問題——在租金固定的門市，翻桌率才是真正的坪效驅動因子。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- T2 -->
+      <div class="qa-item">
+        <div class="question" onclick="toggleQA(this)">
+          <span class="badge l3">L3·A</span>
+          <span class="question-text">T2：如果你發現高業績門市（如信義旗艦）的30日回購率反而低於中型社區門市，你如何解釋？</span>
+          <span class="question-arrow">▶</span>
+        </div>
+        <div class="answer">
+          <div class="answer-block">
+            <p><span class="tag-f">F:</span> 假設情境：信義旗艦30日回購率25%，某中型社區門市42%。兩者業績差距可能>3倍，但回購率倒置。</p>
+            <p><span class="tag-i">I:</span> 旗艦店客群結構以「觀光客/初次嘗鮮客」為主——高流量、低黏性；中型社區店客群以「習慣型回購客/周邊居民/辦公族」為主——低流量、高黏性。<strong>客群結構不同，相同KPI目標毫無意義。</strong></p>
+            <p><span class="tag-a">A:</span> 不應用同一30日回購率目標管理性質不同的門市，應按客群類型設定分層目標：觀光型門市追求客單和首次好評；社區型門市追求回購率和VIP轉化率。</p>
+          </div>
+          <div class="trap-block">
+            <span class="trap-icon">⚠</span>
+            <div><strong>常見陷阱：</strong>用統一KPI目標衡量本質不同的門市，不但無法帶來改善，還可能驅動錯誤行動——例如讓旗艦店花大量資源追求「提升回購率」，但其目標客群根本不住在附近。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- T3 -->
+      <div class="qa-item">
+        <div class="question" onclick="toggleQA(this)">
+          <span class="badge l3">L3·A</span>
+          <span class="question-text">T3：外帶佔比持續上升（38%→47%），但本儀表板未區分「外送平台」vs「自取」，這個缺失如何影響策略建議？</span>
+          <span class="question-arrow">▶</span>
+        </div>
+        <div class="answer">
+          <div class="answer-block">
+            <p><span class="tag-f">F:</span> 外帶佔比43.2%，YoY +5.1pp，但數據未拆分外送平台訂單vs門市自取。</p>
+            <p><span class="tag-i">I:</span> 外送平台（UberEats/Foodpanda等）通常抽成15-30%，是高業績但低利潤的通路；自取外帶的成本結構與內用相近，利潤率不受影響。若外帶成長主要由外送平台貢獻，則表面業績成長可能伴隨利潤侵蝕。</p>
+            <p><span class="tag-a">A:</span> 在做「擴大外帶/外送」策略前，<strong>必須先拆分外送vs自取比例</strong>——兩者成本結構差異巨大，混合數字可能導致推薦了最貴的成長路徑。建議在下版儀表板中加入「外送平台佔比」指標。</p>
+          </div>
+          <div class="trap-block">
+            <span class="trap-icon">⚠</span>
+            <div><strong>常見陷阱：</strong>看到「外帶成長」就建議「強化外送合作」，但若外送已是主要外帶來源，此建議等於在高抽成渠道投入更多——可能是連鎖成本最高的成長路徑。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- T4 -->
+      <div class="qa-item">
+        <div class="question" onclick="toggleQA(this)">
+          <span class="badge l3">L3·A</span>
+          <span class="question-text">T4：品類集中度 HHI=3,478（品類層級），這個數字說明了什麼？對連鎖餐廳的業績風險有何含義？</span>
+          <span class="question-arrow">▶</span>
+        </div>
+        <div class="answer">
+          <div class="answer-block">
+            <p><span class="tag-f">F:</span> HHI=3,478（品類層級計算：42²+33²+25²=3,478；滿分10,000），屬<strong>高度集中</strong>（>2,500即為高度集中）。三大品類佔比：套餐42%、單點33%、飲料25%，套餐組合高度主導業績結構。</p>
+            <p><span class="tag-i">I:</span> 以品類角度分析：套餐組合42%佔比意味著它是業績的最大支柱。任何使套餐品類受衝擊的事件（關鍵食材漲價/缺貨、旗艦套餐口味投訴、競品推出強力替代套餐），都會直接影響業績的42%部分，風險集中而非分散。HHI=3,478顯示即使在品類層級，集中程度已遠超「高度集中」門檻（>2,500）。</p>
+            <p><span class="tag-a">A:</span> 建議：① 定期監控前5名品項的業績佔比趨勢，設定警戒線（如單品佔比>15%需建立備案）；② 建立「品項替代矩陣」——每個高佔比品項需有替代方案；③ 適度多元化品項組合，降低集中度風險，同時不犧牲明星品項的推廣力度。</p>
+          </div>
+          <div class="trap-block">
+            <span class="trap-icon">⚠</span>
+            <div><strong>常見陷阱：</strong>「集中度高=效率好，管理簡單」是常見誤解。集中度高確實降低運營複雜度，但同時也意味著更高的脆弱性（anti-fragility角度）——單一依賴是供應鏈與市場風險的放大器。</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end training qa-section -->
+  </div><!-- end training-block -->
+
+  <!-- ── Design Choices ── -->
+  <hr class="section-divider">
+  <div class="section-title">設計選擇揭露</div>
+  <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px">本儀表板的數據設定與視覺設計均有意為之。以下揭露8個關鍵選擇，幫助學員理解「儀表板設計本身也是分析工作」。</p>
+  <div class="design-grid">
+    <div class="design-item">
+      <h4>1. 深色背景設計選擇</h4>
+      <p>避免白底在餐飲數字密集場景的視覺疲勞。深色背景讓圖表對比度更高，適合分析師長時間審閱，也符合「夜間分析報告」使用情境。</p>
+    </div>
+    <div class="design-item">
+      <h4>2. L1題目比例偏高的原因</h4>
+      <p>訓練初期建立信心比挑戰更重要。L1題讓學員先確認「我真的能從圖表讀出事實」，再進入推論（L2）與行動建議（L3），符合學習漸進原則。</p>
+    </div>
+    <div class="design-item">
+      <h4>3. VIP AOV 刻意低於常客</h4>
+      <p>逆直覺設計。現實中高頻顧客的習慣性消費往往比偶爾「犒賞自己」的常客每次消費金額低——這是AOV vs. LTV混淆最好的教材案例。</p>
+    </div>
+    <div class="design-item">
+      <h4>4. 外送vs自取刻意未拆分</h4>
+      <p>訓練學員識別「看起來完整但實際缺失關鍵維度」的儀表板。這是實務中最常見的數據盲點：一個聚合指標掩蓋了成本結構完全不同的兩個渠道。</p>
+    </div>
+    <div class="design-item">
+      <h4>5. 散點圖：封閉三角 + 四象限均有門市</h4>
+      <p>散點x軸（月均來客）從門市年收入反推：x = round(revenue×10000 / (AOV×12))，確保「來客×客單×12 = 年收入」形成封閉三角，x值不任意設定。淡水、竹北、台中西屯、台南東區的AOV刻意設計為高客單（精品型門市），使四象限均有代表，訓練學員識別四種不同決策處方，而非只看旗艦vs末段的二元對比。</p>
+    </div>
+    <div class="design-item">
+      <h4>6. 翻桌率刻意缺失</h4>
+      <p>與設計選擇4同理，訓練學員主動思考「這份報告能回答什麼問題、不能回答什麼問題」。好的分析師能識別儀表板的邊界，而不只是讀取已呈現的數字。</p>
+    </div>
+    <div class="design-item">
+      <h4>7. 再購間隔用bucket bar而非折線</h4>
+      <p>天數是離散區間（≤7天、8-14天...）而非連續數列，bucket bar比折線更正確地呈現分布形狀。用折線連接離散區間會暗示「連續變化」，是圖表類型的基本錯誤。</p>
+    </div>
+    <div class="design-item">
+      <h4>8. 指標定義面板強制含義解釋</h4>
+      <p>「30日回購率」在不同公司定義不同（首購後30天 vs 任意滾動窗口），定義面板明確口徑，防止學員將自己公司的口徑直接套入，導致跨公司比較失真。</p>
+    </div>
+  </div>
+
+</div><!-- end page-deep -->
+
+<div class="page-footer">
+  餐飲連鎖 門市營運分析 訓練儀表板教材 v1 · 2024 年度資料 · 全部數據為合成資料，僅供訓練用途
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════
+const DATA = {
+  anchors: {
+    total_customers: 58320,
+    total_visits: 486217,
+    total_revenue_wan: 13954,
+    total_stores: 34,
+    aov: 287,
+    monthly_avg_per_store_wan: 34.2,
+    repurchase_rate_30d: 36.8,
+    vip_pct: 21.4,
+    high_freq_revenue_wan: 8135,
+    high_freq_contribution: 58.3,
+    category_hhi: 3478,
+    year: 2024
+  },
+  monthly_visits: [40518,31604,37277,39708,39302,38492,41734,42544,38897,42139,46596,47406],
+  monthly_category: {
+    '套餐組合': [489,381,449,479,474,464,503,513,469,508,562,570],
+    '單點餐食': [384,299,353,376,372,365,395,403,368,399,441,450],
+    '飲料飲品': [291,227,268,285,283,277,302,307,279,302,336,331]
+  },
+  dine_takeout: {
+    takeout_pct: [38,39,40,41,42,43,44,45,45,46,47,47],
+    dine_in_pct: [62,61,60,59,58,57,56,55,55,54,53,53]
+  },
+  store_revenue: [790,752,724,678,654,610,585,562,527,503,452,441,438,427,418,405,396,387,374,361,345,328,312,298,287,271,258,244,231,218,198,179,162,139],
+  store_labels: ['信義旗艦','101商圈','台北車站','西門町','忠孝復興','內湖科技','南港展覽','天母','士林','中山','松山','大安','萬華','板橋','新埔','三重','新莊','蘆洲','土城','中永和','汐止','深坑','淡水','三峽','林口','桃園中壢','新竹北區','竹北','台中西屯','台中北屯','彰化','台南東區','高雄左營','高雄苓雅'],
+  hourly: [3,2,1,1,2,4,9,15,24,38,48,54,62,58,45,32,38,52,68,78,72,54,32,15],
+  customer_tier: {
+    labels: ['偶訪客','常客','VIP'],
+    counts: [24670,21170,12480],
+    aov: [234,303,271]
+  },
+  frequency: {
+    labels: ['年1次','年2-3次','年4-6次','年7-11次','年12-23次','年24次以上'],
+    counts: [8820,15850,12166,9004,7562,4918]
+  },
+  repurchase: {
+    labels: ['≤7天','8-14天','15-21天','22-30天','31-45天','46-60天'],
+    counts: [3500,7200,5800,4962,3800,2400]
+    // ≤30天合計=21462 = 58320×36.8%；總計27662人為60天內有回購行為顧客
+  },
+  // x = round(store_revenue[i] × 10000 / (y[i] × 12)) — 封閉三角：x × y × 12 / 10000 ≈ store_revenue[i]
+  // 淡水/竹北/台中西屯/台南東區 AOV 刻意設為高客單（精品型），使四象限均有門市
+  scatter_data: [
+    {x:2032,y:324,label:'信義旗艦'},{x:1970,y:318,label:'101商圈'},
+    {x:1939,y:311,label:'台北車站'},{x:1895,y:298,label:'西門町'},
+    {x:1770,y:308,label:'忠孝復興'},{x:1723,y:295,label:'內湖科技'},
+    {x:1620,y:301,label:'南港展覽'},{x:1621,y:289,label:'天母'},
+    {x:1574,y:279,label:'士林'},{x:1435,y:292,label:'中山'},
+    {x:1317,y:286,label:'松山'},{x:1336,y:275,label:'大安'},
+    {x:1398,y:261,label:'萬華'},{x:1280,y:278,label:'板橋'},
+    {x:1285,y:271,label:'新埔'},{x:1278,y:264,label:'三重'},
+    {x:1227,y:269,label:'新莊'},{x:1250,y:258,label:'蘆洲'},
+    {x:1231,y:253,label:'土城'},{x:1148,y:262,label:'中永和'},
+    {x:1164,y:247,label:'汐止'},{x:1134,y:241,label:'深坑'},
+    {x:833,y:312,label:'淡水'},{x:1043,y:238,label:'三峽'},
+    {x:909,y:263,label:'林口'},{x:933,y:242,label:'桃園中壢'},
+    {x:907,y:237,label:'新竹北區'},{x:667,y:305,label:'竹北'},
+    {x:605,y:318,label:'台中西屯'},{x:793,y:229,label:'台中北屯'},
+    {x:737,y:224,label:'彰化'},{x:501,y:298,label:'台南東區'},
+    {x:617,y:219,label:'高雄左營'},{x:544,y:213,label:'高雄苓雅'}
+  ]
+};
+
+// ══════════════════════════════════════════════════
+// ASSERT CONSISTENCY
+// ══════════════════════════════════════════════════
+function assertConsistency() {
+  const errs = [];
+  const sum = arr => arr.reduce((a,b)=>a+b,0);
+
+  // 1. tier counts
+  const tierSum = sum(DATA.customer_tier.counts);
+  if (tierSum !== 58320) errs.push(`tier counts sum=${tierSum}, expected 58320`);
+
+  // 2. frequency counts
+  const freqSum = sum(DATA.frequency.counts);
+  if (freqSum !== 58320) errs.push(`frequency counts sum=${freqSum}, expected 58320`);
+
+  // 3. monthly visits
+  const visitSum = sum(DATA.monthly_visits);
+  if (visitSum !== 486217) errs.push(`monthly_visits sum=${visitSum}, expected 486217`);
+
+  // 4. monthly category totals
+  const catSum = sum(DATA.monthly_category['套餐組合']) +
+                 sum(DATA.monthly_category['單點餐食']) +
+                 sum(DATA.monthly_category['飲料飲品']);
+  if (catSum !== 13954) errs.push(`monthly_category total=${catSum}, expected 13954`);
+
+  // 5. dine+takeout = 100 each month
+  for (let i = 0; i < 12; i++) {
+    const tot = DATA.dine_takeout.dine_in_pct[i] + DATA.dine_takeout.takeout_pct[i];
+    if (tot !== 100) errs.push(`dine+takeout month ${i+1}=${tot}, expected 100`);
+  }
+
+  // 6. store revenue sum
+  const storeSum = sum(DATA.store_revenue);
+  if (storeSum !== 13954) errs.push(`store_revenue sum=${storeSum}, expected 13954`);
+
+  // 7. AOV derived
+  const aovDerived = (DATA.anchors.total_revenue_wan * 10000) / DATA.anchors.total_visits;
+  if (Math.abs(aovDerived - 287) > 2) errs.push(`aov_derived=${aovDerived.toFixed(1)}, expected ~287`);
+
+  // 8. vip_pct derived
+  const vipPctDerived = (12480 / 58320) * 100;
+  if (Math.abs(vipPctDerived - 21.4) > 0.2) errs.push(`vip_pct_derived=${vipPctDerived.toFixed(1)}, expected ~21.4`);
+
+  // 9. high-freq = VIP count
+  const highFreq = DATA.frequency.counts[4] + DATA.frequency.counts[5];
+  if (highFreq !== DATA.customer_tier.counts[2]) errs.push(`high_freq=${highFreq} != VIP count=${DATA.customer_tier.counts[2]}`);
+
+  // 10. ≤30-day repurchase count = repurchase_rate_30d × total_customers
+  const repurch30 = DATA.repurchase.counts.slice(0,4).reduce((a,b)=>a+b,0);
+  const expectedRepurch30 = Math.round(DATA.anchors.total_customers * DATA.anchors.repurchase_rate_30d / 100);
+  if (Math.abs(repurch30 - expectedRepurch30) > 5) errs.push(`30-day repurchase=${repurch30}, expected≈${expectedRepurch30}`);
+
+  // 11. scatter triangle: x × y × 12 / 10000 ≈ store_revenue[i] (within 1%)
+  DATA.scatter_data.forEach((s, i) => {
+    const derived = s.x * s.y * 12 / 10000;
+    const pct = Math.abs(derived - DATA.store_revenue[i]) / DATA.store_revenue[i];
+    if (pct > 0.01) errs.push(`scatter triangle [${i}] ${s.label}: derived=${derived.toFixed(1)}, actual=${DATA.store_revenue[i]} (${(pct*100).toFixed(1)}%)`);
+  });
+
+  // 12. high_freq_revenue / total_revenue = high_freq_contribution
+  const hfContrib = DATA.anchors.high_freq_revenue_wan / DATA.anchors.total_revenue_wan;
+  if (Math.abs(hfContrib - DATA.anchors.high_freq_contribution / 100) > 0.005)
+    errs.push(`high_freq_contribution: derived=${(hfContrib*100).toFixed(1)}%, stored=${DATA.anchors.high_freq_contribution}%`);
+
+  // 13. category HHI = round(sum of (cat_rev/total_rev)^2 * 10000)
+  const catRevs = Object.values(DATA.monthly_category).map(arr => arr.reduce((a,b)=>a+b,0));
+  const catTotal = catRevs.reduce((a,b)=>a+b,0);
+  const hhi = Math.round(catRevs.reduce((acc,r) => acc + (r/catTotal)*(r/catTotal), 0) * 10000);
+  if (hhi !== DATA.anchors.category_hhi)
+    errs.push(`category_hhi: computed=${hhi}, stored=${DATA.anchors.category_hhi}`);
+
+  if (errs.length === 0) {
+    console.log('✓ All data consistency checks passed');
+  } else {
+    errs.forEach(e => console.error('✗ Consistency error:', e));
+  }
+}
+assertConsistency();
+
+// ══════════════════════════════════════════════════
+// CHART UTILITIES
+// ══════════════════════════════════════════════════
+Chart.defaults.color = '#8b949e';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.07)';
+Chart.defaults.font.family = "'Outfit', sans-serif";
+
+const TT = {
+  mode: 'index',
+  intersect: false,
+  backgroundColor: '#1e2535',
+  titleColor: '#e6edf3',
+  bodyColor: '#b0bac9',
+  borderColor: 'rgba(255,255,255,0.12)',
+  borderWidth: 1,
+  padding: 10,
+  cornerRadius: 8
+};
+
+function c(key, alpha=1) {
+  const map = {
+    blue: `rgba(59,130,246,${alpha})`,
+    teal: `rgba(42,171,133,${alpha})`,
+    orange: `rgba(212,135,10,${alpha})`,
+    purple: `rgba(124,77,255,${alpha})`,
+    red: `rgba(212,58,47,${alpha})`,
+    gray: `rgba(139,148,158,${alpha})`
+  };
+  return map[key] || `rgba(59,130,246,${alpha})`;
+}
+
+function mk(id, type, labels, datasets, opts={}) {
+  const ctx = document.getElementById(id)?.getContext('2d');
+  if (!ctx) return;
+  const def = { legend: { display: false }, tooltip: TT };
+  const mergedPlugins = opts.plugins ? { ...def, ...opts.plugins } : def;
+  const { plugins: _p, ...restOpts } = opts;
+  return new Chart(ctx, {
+    type,
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 480, easing: 'easeOutQuart' },
+      ...restOpts,
+      plugins: mergedPlugins
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════
+// LAZY INIT
+// ══════════════════════════════════════════════════
+const initialized = { ops: false, cust: false, deep: false };
+
+// ══════════════════════════════════════════════════
+// DRAW P1: ops
+// ══════════════════════════════════════════════════
+function drawOps() {
+  const months = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  const monthlyAov = months.map((_,i) => Math.round(
+    (DATA.monthly_category['套餐組合'][i] + DATA.monthly_category['單點餐食'][i] + DATA.monthly_category['飲料飲品'][i])
+    * 10000 / DATA.monthly_visits[i]
+  ));
+
+  // cVisitAOV: dual-axis bar+line
+  new Chart(document.getElementById('cVisitAOV').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [
+        {
+          type: 'bar',
+          label: '來客人次',
+          data: DATA.monthly_visits,
+          backgroundColor: c('blue', 0.55),
+          borderColor: c('blue', 0.9),
+          borderWidth: 1,
+          yAxisID: 'y'
+        },
+        {
+          type: 'line',
+          label: '平均客單價 (NT$)',
+          data: monthlyAov,
+          borderColor: c('orange'),
+          backgroundColor: c('orange', 0.1),
+          borderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          tension: 0.35,
+          yAxisID: 'y2',
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: 480 },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: true, labels: { color: '#8b949e', boxWidth: 12, font: { size: 11 } } },
+        tooltip: TT,
+        datalabels: { display: false }
+      },
+      scales: {
+        y: {
+          type: 'linear', position: 'left',
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: { color: '#8b949e', callback: v => (v/1000).toFixed(0)+'K' }
+        },
+        y2: {
+          type: 'linear', position: 'right',
+          grid: { drawOnChartArea: false },
+          ticks: { color: c('orange'), callback: v => 'NT$'+v },
+          min: 283, max: 290
+        },
+        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8b949e' } }
+      }
+    }
+  });
+
+  // cDineTakeout: stacked bar
+  mk('cDineTakeout', 'bar', months, [
+    {
+      label: '內用%',
+      data: DATA.dine_takeout.dine_in_pct,
+      backgroundColor: c('blue', 0.55),
+      stack: 'pct'
+    },
+    {
+      label: '外帶%',
+      data: DATA.dine_takeout.takeout_pct,
+      backgroundColor: c('orange', 0.6),
+      stack: 'pct'
+    }
+  ], {
+    plugins: {
+      legend: { display: true, labels: { color: '#8b949e', boxWidth: 10, font: { size: 11 } } },
+      tooltip: { ...TT, mode: 'index' },
+      datalabels: { display: false }
+    },
+    scales: {
+      x: { stacked: true, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8b949e' } },
+      y: { stacked: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b949e', callback: v => v+'%' }, max: 100 }
+    }
+  });
+
+  // cRevCat: stacked bar + total line
+  const catKeys = ['套餐組合','單點餐食','飲料飲品'];
+  const catColors = ['blue','teal','purple'];
+  const monthlyTotal = months.map((_,i) =>
+    DATA.monthly_category['套餐組合'][i] +
+    DATA.monthly_category['單點餐食'][i] +
+    DATA.monthly_category['飲料飲品'][i]
+  );
+  new Chart(document.getElementById('cRevCat').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [
+        ...catKeys.map((k,i) => ({
+          type: 'bar',
+          label: k,
+          data: DATA.monthly_category[k],
+          backgroundColor: c(catColors[i], 0.65),
+          stack: 'rev'
+        })),
+        {
+          type: 'line',
+          label: '月度合計',
+          data: monthlyTotal,
+          borderColor: c('red'),
+          borderDash: [5,3],
+          borderWidth: 2,
+          pointRadius: 2,
+          tension: 0.3,
+          fill: false,
+          stack: undefined
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: 480 },
+      plugins: {
+        legend: { display: true, labels: { color: '#8b949e', boxWidth: 10, font: { size: 11 } } },
+        tooltip: { ...TT, mode: 'index' },
+        datalabels: { display: false }
+      },
+      scales: {
+        x: { stacked: true, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8b949e' } },
+        y: { stacked: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b949e', callback: v => v+'万' } }
+      }
+    }
+  });
+
+  // cStoreRank: horizontal bar
+  mk('cStoreRank', 'bar', DATA.store_labels, [
+    {
+      label: '年度業績（万NT$）',
+      data: DATA.store_revenue,
+      backgroundColor: DATA.store_revenue.map((v,i) => {
+        if (i < 5) return c('teal', 0.75);
+        if (i >= 29) return c('red', 0.65);
+        return c('blue', 0.5);
+      }),
+      borderRadius: 3,
+      borderSkipped: false
+    }
+  ], {
+    indexAxis: 'y',
+    plugins: {
+      legend: { display: false },
+      tooltip: { ...TT, mode: 'nearest' },
+      datalabels: {
+        display: true,
+        color: '#8b949e',
+        anchor: 'end',
+        align: 'end',
+        font: { size: 9, family: "'JetBrains Mono', monospace" },
+        formatter: v => v+'万'
+      }
+    },
+    scales: {
+      x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b949e', callback: v => v+'万' } },
+      y: { grid: { display: false }, ticks: { color: '#8b949e', font: { size: 10 } } }
+    },
+    layout: { padding: { right: 50 } }
+  });
+}
+
+// ══════════════════════════════════════════════════
+// DRAW P2: cust
+// ══════════════════════════════════════════════════
+function drawCust() {
+  const hours = Array.from({length:24}, (_,i) => i+'時');
+
+  // cHourly: line+fill
+  mk('cHourly', 'line', hours, [
+    {
+      label: '來客指數',
+      data: DATA.hourly,
+      borderColor: c('purple'),
+      backgroundColor: c('purple', 0.12),
+      borderWidth: 2.5,
+      pointRadius: 2,
+      pointHoverRadius: 5,
+      tension: 0.4,
+      fill: true
+    }
+  ], {
+    plugins: {
+      legend: { display: false },
+      tooltip: TT,
+      datalabels: { display: false }
+    },
+    scales: {
+      x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8b949e', font: { size: 10 } } },
+      y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b949e' } }
+    }
+  });
+
+  // cFreqDist: vertical bar
+  mk('cFreqDist', 'bar', DATA.frequency.labels, [
+    {
+      label: '顧客人數',
+      data: DATA.frequency.counts,
+      backgroundColor: DATA.frequency.counts.map((v,i) => {
+        if (i >= 4) return c('orange', 0.75);
+        return c('blue', 0.55);
+      }),
+      borderRadius: 5,
+      borderSkipped: false
+    }
+  ], {
+    plugins: {
+      legend: { display: false },
+      tooltip: TT,
+      datalabels: {
+        display: true,
+        color: '#8b949e',
+        anchor: 'end',
+        align: 'end',
+        font: { size: 9 },
+        formatter: v => v.toLocaleString()
+      }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { color: '#8b949e', font: { size: 10 } } },
+      y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b949e' } }
+    },
+    layout: { padding: { top: 20 } }
+  });
+
+  // cTierDonut: doughnut with center text
+  const centerTextPlugin = {
+    id: 'centerText',
+    afterDraw(chart) {
+      const { ctx, chartArea: { left, top, right, bottom } } = chart;
+      const cx = (left+right)/2, cy = (top+bottom)/2;
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#e6edf3';
+      ctx.font = "bold 15px 'JetBrains Mono', monospace";
+      ctx.fillText('58,320', cx, cy-8);
+      ctx.fillStyle = '#8b949e';
+      ctx.font = "11px 'Outfit', sans-serif";
+      ctx.fillText('顧客', cx, cy+10);
+      ctx.restore();
+    }
+  };
+  const tierCtx = document.getElementById('cTierDonut')?.getContext('2d');
+  if (tierCtx) {
+    new Chart(tierCtx, {
+      type: 'doughnut',
+      data: {
+        labels: DATA.customer_tier.labels,
+        datasets: [{
+          data: DATA.customer_tier.counts,
+          backgroundColor: [c('blue',0.65), c('teal',0.65), c('orange',0.8)],
+          borderColor: '#161b27',
+          borderWidth: 3,
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        cutout: '62%',
+        animation: { duration: 480 },
+        plugins: {
+          legend: { display: true, position: 'bottom', labels: { color: '#8b949e', boxWidth: 10, font: { size: 10 }, padding: 10 } },
+          tooltip: { ...TT, mode: 'nearest' },
+          datalabels: {
+            color: '#e6edf3',
+            font: { size: 9, weight: '600' },
+            formatter: (v, ctx) => {
+              const pct = ((v/58320)*100).toFixed(0)+'%';
+              return pct;
+            }
+          }
+        }
+      },
+      plugins: [centerTextPlugin]
+    });
+  }
+
+  // cTierAOV: horizontal bar
+  mk('cTierAOV', 'bar', DATA.customer_tier.labels, [
+    {
+      label: '平均客單價 (NT$)',
+      data: DATA.customer_tier.aov,
+      backgroundColor: [c('blue',0.55), c('teal',0.65), c('orange',0.75)],
+      borderRadius: 5,
+      borderSkipped: false
+    }
+  ], {
+    indexAxis: 'y',
+    plugins: {
+      legend: { display: false },
+      tooltip: TT,
+      datalabels: {
+        display: true,
+        color: '#e6edf3',
+        anchor: 'end',
+        align: 'end',
+        font: { size: 11, weight: '700', family: "'JetBrains Mono', monospace" },
+        formatter: v => 'NT$'+v
+      }
+    },
+    scales: {
+      x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b949e', callback: v => 'NT$'+v }, min: 200, max: 340 },
+      y: { grid: { display: false }, ticks: { color: '#8b949e' } }
+    },
+    layout: { padding: { right: 55 } }
+  });
+}
+
+// ══════════════════════════════════════════════════
+// DRAW P3: deep
+// ══════════════════════════════════════════════════
+function drawDeep() {
+  // cStoreScatter
+  const scatterCtx = document.getElementById('cStoreScatter')?.getContext('2d');
+  if (scatterCtx) {
+    new Chart(scatterCtx, {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          label: '門市',
+          data: DATA.scatter_data,
+          backgroundColor: DATA.scatter_data.map(d => {
+            const hx = d.x >= 1196, hy = d.y >= 287;
+            if (hx && hy) return c('teal', 0.75);
+            if (hx && !hy) return c('blue', 0.65);
+            if (!hx && hy) return c('orange', 0.75);
+            return c('red', 0.65);
+          }),
+          pointRadius: 7,
+          pointHoverRadius: 9
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        animation: { duration: 480 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            ...TT,
+            mode: 'nearest',
+            callbacks: {
+              label: ctx => {
+                const d = ctx.raw;
+                return ` ${d.label}  月均來客:${d.x}  AOV:NT$${d.y}`;
+              }
+            }
+          },
+          datalabels: {
+            display: ctx => {
+            const d = DATA.scatter_data[ctx.dataIndex];
+            // top/bottom 5 by revenue + all top-left (精品型) stores
+            return ctx.dataIndex < 5 || ctx.dataIndex >= 29 || (d.x < 1196 && d.y >= 287);
+          },
+            color: '#b0bac9',
+            font: { size: 9 },
+            anchor: 'end',
+            align: 'top',
+            offset: 2,
+            formatter: (v, ctx) => DATA.scatter_data[ctx.dataIndex].label
+          },
+          annotation: {
+            annotations: {
+              lineX: {
+                type: 'line',
+                xMin: 1196, xMax: 1196,
+                borderColor: 'rgba(255,255,255,0.2)',
+                borderWidth: 1,
+                borderDash: [5,4],
+                label: { content: '中位來客 1196', display: true, position: 'start', color: '#8b949e', font: { size: 9 } }
+              },
+              lineY: {
+                type: 'line',
+                yMin: 287, yMax: 287,
+                borderColor: 'rgba(255,255,255,0.2)',
+                borderWidth: 1,
+                borderDash: [5,4],
+                label: { content: 'AOV 287', display: true, position: 'end', color: '#8b949e', font: { size: 9 } }
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,0.05)' },
+            ticks: { color: '#8b949e' },
+            title: { display: true, text: '月均來客人次', color: '#8b949e', font: { size: 11 } }
+          },
+          y: {
+            grid: { color: 'rgba(255,255,255,0.05)' },
+            ticks: { color: '#8b949e', callback: v => 'NT$'+v },
+            title: { display: true, text: '平均客單價 (NT$)', color: '#8b949e', font: { size: 11 } },
+            min: 200, max: 340
+          }
+        }
+      }
+    });
+  }
+
+  // cRepurchase: vertical bar
+  mk('cRepurchase', 'bar', DATA.repurchase.labels, [
+    {
+      label: '回購顧客數',
+      data: DATA.repurchase.counts,
+      backgroundColor: DATA.repurchase.counts.map((v,i) => i===1 ? c('teal',0.8) : c('blue',0.5)),
+      borderRadius: 5,
+      borderSkipped: false
+    }
+  ], {
+    plugins: {
+      legend: { display: false },
+      tooltip: TT,
+      datalabels: {
+        display: true,
+        color: '#8b949e',
+        anchor: 'end',
+        align: 'end',
+        font: { size: 9 },
+        formatter: v => v.toLocaleString()
+      }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { color: '#8b949e' } },
+      y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b949e' } }
+    },
+    layout: { padding: { top: 20 } }
+  });
+}
+
+// ══════════════════════════════════════════════════
+// PAGE SWITCHING
+// ══════════════════════════════════════════════════
+function switchPage(name) {
+  const pages = ['ops','cust','deep'];
+  pages.forEach(p => {
+    document.getElementById('page-'+p)?.classList.remove('active');
+    document.getElementById('page-'+p)?.classList.add('hidden');
+    document.getElementById('tab-'+p)?.classList.remove('active');
+  });
+  document.getElementById('page-'+name)?.classList.remove('hidden');
+  document.getElementById('page-'+name)?.classList.add('active');
+  document.getElementById('tab-'+name)?.classList.add('active');
+
+  if (!initialized[name]) {
+    initialized[name] = true;
+    if (name === 'ops') drawOps();
+    if (name === 'cust') drawCust();
+    if (name === 'deep') drawDeep();
+  }
+}
+
+function toggleDef() {
+  const p = document.getElementById('def-panel');
+  p.classList.toggle('hidden');
+}
+
+function toggleQA(el) {
+  const item = el.closest('.qa-item');
+  const answer = item.querySelector('.answer');
+  const wasOpen = item.classList.contains('open');
+  item.classList.toggle('open', !wasOpen);
+  answer.classList.toggle('show', !wasOpen);
+}
+
+// Init first page
+switchPage('ops');
+</script>
+</body>
+</html>
