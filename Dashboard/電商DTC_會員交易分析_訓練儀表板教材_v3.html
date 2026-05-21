@@ -52,35 +52,55 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;font-size:15px;line-height:1.65;}
 
-/* HEADER */
-.site-header{background:var(--bg-card);border-bottom:2px solid var(--border);padding:18px 36px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;position:sticky;top:0;z-index:200;box-shadow:var(--shadow-sm);}
-.header-brand h1{font-family:'Lora',serif;font-size:21px;color:var(--text-h);font-weight:600;letter-spacing:-0.2px;}
-.header-meta{font-size:12.5px;color:var(--text-s);margin-top:5px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
-.meta-chip{display:inline-flex;align-items:center;gap:5px;background:var(--bg-alt);border:1px solid var(--border);padding:3px 10px;border-radius:20px;font-size:12px;color:var(--text-s);}
-.meta-chip.demo{background:#eef2ff;border-color:var(--q-border);color:var(--accent);font-weight:600;}
-.meta-chip.def-btn{background:var(--def-bg);border-color:var(--def-border);color:var(--accent-5);font-weight:600;cursor:pointer;transition:all 0.15s;user-select:none;}
-.meta-chip.def-btn:hover{background:#ebe1ff;}
-.def-btn-chevron{display:inline-block;font-size:13px;line-height:1;transition:transform 0.22s;margin-left:1px;font-style:normal;}
-.def-panel.open ~ * .def-btn-chevron,
-.def-btn-open .def-btn-chevron{transform:rotate(180deg);}
+/* ── Header (3-row sticky) ── */
+:root { --header-h: 140px; }
+.site-header { position:sticky; top:0; z-index:200; background:var(--bg-card); border-bottom:1px solid var(--border); box-shadow:var(--shadow-sm); }
+.header-row-1 { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 24px 9px; border-bottom:1px solid var(--border); }
+.header-title { font-family:'Lora',serif; font-size:1.04rem; font-weight:600; color:var(--text-h); letter-spacing:-0.01em; white-space:nowrap; }
+.meta-chip { display:inline-flex; align-items:center; gap:4px; border-radius:20px; padding:2px 10px; font-size:0.68rem; background:var(--bg-alt); color:var(--text-s); border:1px solid var(--border); white-space:nowrap; }
+.meta-chip.demo { background:#eef2ff; border-color:var(--q-border); color:var(--accent); font-weight:600; }
+.header-row-2 { display:flex; align-items:center; padding:0 24px; border-bottom:1px solid var(--border); }
+.def-toggle-btn { display:flex; align-items:center; gap:7px; background:var(--def-bg); border:1px solid var(--def-border); border-radius:7px; padding:7px 13px; margin:7px 16px 7px 0; color:var(--accent-5); font-family:'Outfit',sans-serif; font-size:0.79rem; font-weight:600; cursor:pointer; transition:background 0.2s; flex-shrink:0; user-select:none; white-space:nowrap; }
+.def-toggle-btn:hover { background:#ebe1ff; }
+.def-toggle-btn.open { background:#ebe1ff; border-color:rgba(124,77,255,0.5); }
+.def-toggle-icon { font-size:0.95rem; }
+.def-toggle-arrow { font-size:0.85rem; display:inline-block; transition:transform 0.25s ease; opacity:0.65; }
+.def-toggle-btn.open .def-toggle-arrow { transform:rotate(90deg); }
 .nav-tabs{display:flex;gap:2px;background:var(--bg-alt);border:1px solid var(--border);border-radius:10px;padding:3px;}
 .nav-btn{background:none;border:none;color:var(--text-s);font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:500;padding:8px 18px;border-radius:8px;cursor:pointer;transition:all 0.18s;white-space:nowrap;}
 .nav-btn.active{background:var(--bg-card);color:var(--accent);font-weight:600;box-shadow:var(--shadow-sm);}
 .nav-btn:hover:not(.active){background:rgba(255,255,255,0.6);color:var(--text-b);}
+.header-legend { display:flex; align-items:center; gap:0; flex-wrap:wrap; padding:6px 24px; font-size:0.7rem; color:var(--text-s); background:var(--bg-alt); }
+.legend-colors { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.legend-colors > span { display:flex; align-items:center; gap:5px; }
+.dot { width:8px; height:8px; border-radius:50%; display:inline-block; flex-shrink:0; }
+.legend-vdivider { width:1px; height:14px; background:var(--border-strong); flex-shrink:0; margin:0 12px; }
+.legend-right { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.legend-right > span { display:flex; align-items:center; gap:5px; }
+.badge { display:inline-block; border-radius:3px; padding:1px 5px; font-size:0.67rem; font-weight:600; font-family:'JetBrains Mono',monospace; }
+.badge.l1 { background:#e3f2fd; color:#1565c0; border:1px solid #b3d4f5; }
+.badge.l2 { background:#fff4e0; color:#a36a08; border:1px solid #f0d080; }
+.badge.l3 { background:#fde7e3; color:#a8362a; border:1px solid #f5b9b0; }
 
-/* DEFINITION PANEL (D10) */
-.def-panel{display:none;background:var(--bg-card);border:1px solid var(--def-border);border-top:3px solid var(--accent-5);border-radius:var(--radius);padding:22px 26px;margin:0 36px 16px;box-shadow:var(--shadow-sm);}
-.def-panel.open{display:block;}
-.def-panel h3{font-family:'Lora',serif;font-size:16px;color:var(--accent-5);margin-bottom:14px;}
-.def-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px 24px;font-size:13px;}
-.def-item strong{color:var(--text-h);font-weight:600;}
-.def-item span{color:var(--text-s);}
-
-/* COLOR LEGEND (D7) */
-.color-legend{display:flex;flex-wrap:wrap;gap:14px;padding:10px 36px;background:var(--bg-alt);border-bottom:1px solid var(--border);font-size:11.5px;color:var(--text-s);align-items:center;position:sticky;top:var(--header-h,73px);z-index:190;}
-.color-legend .lg-label{font-weight:600;color:var(--text-b);text-transform:uppercase;letter-spacing:0.8px;}
-.cl-item{display:inline-flex;align-items:center;gap:5px;}
-.cl-dot{width:10px;height:10px;border-radius:3px;}
+/* ── Side def panel ── */
+#main-wrapper { display:flex; align-items:flex-start; }
+#def-panel-outer { flex-shrink:0; width:0; overflow:hidden; transition:width 0.28s cubic-bezier(0.4,0,0.2,1); }
+#def-panel-outer.open { width:323px; }
+#def-panel-inner { width:323px; height:calc((100vh - var(--header-h, 140px)) * 1.2); overflow-y:auto; position:sticky; top:var(--header-h, 140px); background:var(--def-bg); border-right:1px solid var(--def-border); padding:16px 14px; }
+#def-panel-inner::-webkit-scrollbar { width:4px; }
+#def-panel-inner::-webkit-scrollbar-thumb { background:var(--def-border); border-radius:2px; }
+.def-search-wrap { margin-bottom:12px; }
+.def-search-wrap input { width:100%; background:var(--bg-card); border:1px solid var(--def-border); border-radius:7px; padding:7px 11px; color:var(--text-b); font-family:'Outfit',sans-serif; font-size:0.78rem; outline:none; transition:border-color 0.2s; }
+.def-search-wrap input::placeholder { color:var(--text-m); }
+.def-search-wrap input:focus { border-color:var(--accent-5); background:#fff; }
+.def-no-result { font-size:0.75rem; color:var(--text-m); padding:10px 4px; text-align:center; display:none; }
+#def-panel-inner h3 { font-size:0.71rem; color:var(--accent-5); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:0.09em; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--def-border); }
+.def-item { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:10px 12px; margin-bottom:7px; }
+.def-item:last-child { margin-bottom:0; }
+.def-item strong { font-size:0.74rem; color:var(--text-h); font-weight:600; display:block; margin-bottom:3px; }
+.def-item span { font-size:0.72rem; color:var(--text-s); line-height:1.5; display:block; }
+.def-item br { display:none; }
+#content-area { flex:1; min-width:0; }
 
 /* LAYOUT */
 .page{display:none;}.page.active{display:block;}
@@ -224,75 +244,91 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
 /* RESPONSIVE */
 @media(max-width:960px){
   .container{padding:16px;}
-  .site-header{padding:14px 16px;}
+  .header-row-1,.header-row-2,.header-legend{padding-left:16px;padding-right:16px;}
   .kpi-grid{grid-template-columns:1fr 1fr;}
   .chart-row.c2-1,.chart-row.c1-1,.chart-row.c3{grid-template-columns:1fr;}
   .meta-grid{grid-template-columns:1fr;}
-  .color-legend{padding:8px 16px;gap:10px;}
 }
 </style>
 </head>
 <body>
 
-<!-- ══════════ HEADER + COLOR LEGEND + DEFINITIONS ══════════ -->
-<header class="site-header">
-  <div class="header-brand">
-    <h1>會員 × 交易 分析訓練 Dashboard</h1>
-    <div class="header-meta">
-      <span class="meta-chip def-btn" onclick="toggleDefinitions()" id="defToggleBtn" title="點擊展開／收合指標定義">📖 指標定義 <span class="def-btn-chevron">▾</span></span>
-      <span class="meta-chip demo">DEMO 合成資料集</span>
-      <span class="meta-chip">📅 資料期間：2024/01/01 – 2024/12/31</span>
-      <span class="meta-chip">📊 資料範圍：會員 48,263 筆 × 訂單 96,483 筆 × 營收 NT$4,821 萬</span>
-      <span class="meta-chip">🎓 分析能力訓練用途</span>
+<!-- ══════════ HEADER (3-row sticky) ══════════ -->
+<header class="site-header" id="top-header">
+  <!-- Row 1: 文件命名式標題 + 資訊 chips -->
+  <div class="header-row-1">
+    <span class="header-title">電商DTC_會員交易分析_訓練儀表板</span>
+    <span class="meta-chip">📅 資料期間：2024/01/01 – 2024/12/31</span>
+    <span class="meta-chip">📊 資料範圍：會員 48,263 筆 × 訂單 96,483 筆 × 營收 NT$4,821 萬</span>
+    <span class="meta-chip demo">⚗️ DEMO 合成資料集</span>
+    <span style="flex:1"></span>
+    <span class="meta-chip">✏️ 製作者：Blake</span>
+    <span class="meta-chip">🗓️ 製作時間：20260522</span>
+  </div>
+  <!-- Row 2: 指標定義 toggle + 分頁 tabs -->
+  <div class="header-row-2">
+    <button class="def-toggle-btn" id="defToggleBtn" onclick="toggleDef()">
+      <span class="def-toggle-icon">📖</span>
+      <span>指標定義</span>
+      <span class="def-toggle-arrow">›</span>
+    </button>
+    <div class="nav-tabs">
+      <button class="nav-btn active" onclick="switchPage('member')">👤 會員分析</button>
+      <button class="nav-btn" onclick="switchPage('transaction')">💳 交易分析</button>
+      <button class="nav-btn" onclick="switchPage('cross')">🔗 交叉分析</button>
     </div>
   </div>
-  <div class="nav-tabs">
-    <button class="nav-btn active" onclick="switchPage('member')">👤 會員分析</button>
-    <button class="nav-btn" onclick="switchPage('transaction')">💳 交易分析</button>
-    <button class="nav-btn" onclick="switchPage('cross')">🔗 交叉分析</button>
+  <!-- Row 3: 色彩語意 + 難度 + F/I/A -->
+  <div class="header-legend">
+    <div class="legend-colors">
+      <span><span class="dot" style="background:#2d5be3"></span>主資料/事實</span>
+      <span><span class="dot" style="background:#2aab85"></span>正向/穩定</span>
+      <span><span class="dot" style="background:#d4870a"></span>注意/季節性</span>
+      <span><span class="dot" style="background:#d43a2f"></span>警示/流失</span>
+      <span><span class="dot" style="background:#7c4dff"></span>行為/時間</span>
+    </div>
+    <span class="legend-vdivider"></span>
+    <div class="legend-right">
+      <span><span class="badge l1">L1</span> 單圖題</span>
+      <span><span class="badge l2">L2</span> 同頁跨圖</span>
+      <span><span class="badge l3">L3</span> 跨頁交叉</span>
+      <span class="legend-vdivider"></span>
+      <span><span class="fia f">F</span> 事實</span>
+      <span><span class="fia i">I</span> 推論</span>
+      <span><span class="fia a">A</span> 假設</span>
+    </div>
   </div>
 </header>
 
-<!-- 色彩語意圖例 (D7) -->
-<div class="color-legend">
-  <span class="lg-label">色彩語意</span>
-  <span class="cl-item"><span class="cl-dot" style="background:#2d5be3"></span>主資料/事實</span>
-  <span class="cl-item"><span class="cl-dot" style="background:#2aab85"></span>正向/穩定</span>
-  <span class="cl-item"><span class="cl-dot" style="background:#d4870a"></span>注意/季節性</span>
-  <span class="cl-item"><span class="cl-dot" style="background:#d43a2f"></span>警示/流失</span>
-  <span class="cl-item"><span class="cl-dot" style="background:#7c4dff"></span>行為/時間</span>
-  <span style="flex:1"></span>
-  <span class="lg-label">難度</span>
-  <span class="cl-item"><span class="qa-level l1">L1</span>單圖題</span>
-  <span class="cl-item"><span class="qa-level l2">L2</span>同頁跨圖</span>
-  <span class="cl-item"><span class="qa-level l3">L3</span>跨頁交叉</span>
-  <span style="width:1px;height:16px;background:var(--border-strong);margin:0 4px;display:inline-block;"></span>
-  <span class="lg-label">標註</span>
-  <span class="cl-item"><span class="fia f">F</span>事實</span>
-  <span class="cl-item"><span class="fia i">I</span>推論</span>
-  <span class="cl-item"><span class="fia a">A</span>假設</span>
-</div>
-
-<!-- 指標定義面板 (D10) -->
-<div class="def-panel" id="defPanel">
-  <h3>📖 指標定義（明確口徑避免歧義）</h3>
-  <div class="def-grid">
-    <div class="def-item"><strong>總會員</strong><br><span>系統內帳號狀態 = "active" 的所有會員（不含被刪除帳號）</span></div>
-    <div class="def-item"><strong>活躍會員（近90日）</strong><br><span>近 90 天內有過任一次「登入」或「下單」行為的會員</span></div>
-    <div class="def-item"><strong>月新增</strong><br><span>會員註冊日 = 該月的人數（不論是否完成首購）</span></div>
-    <div class="def-item"><strong>月流失</strong><br><span>主動退會、被系統判定無效（90天無活動 + 取消電子報）合計。注意：與「90日不活躍」不完全相同，會有口徑差異</span></div>
-    <div class="def-item"><strong>年流失率</strong><br><span>= 全年流失人數 / 年初總會員數</span></div>
-    <div class="def-item"><strong>有購買者</strong><br><span>2024 年內完成過至少 1 筆訂單的會員</span></div>
-    <div class="def-item"><strong>首購轉化率</strong><br><span>= 有購買者 / 總會員，即整體會員中完成至少 1 次購買的比例</span></div>
-    <div class="def-item"><strong>平均客單價 (AOV)</strong><br><span>= 全年總營收 / 全年總訂單筆數</span></div>
-    <div class="def-item"><strong>回購率</strong><br><span>= 完成 ≥2 筆訂單的會員 / 有購買者</span></div>
-    <div class="def-item"><strong>高頻用戶</strong><br><span>全年下單 ≥9 次的有購買者</span></div>
-    <div class="def-item"><strong>首年 LTV</strong><br><span>新會員從註冊起算 12 個月內的累計消費金額（按獲客渠道分組）</span></div>
-    <div class="def-item"><strong>CAC（獲客成本）</strong><br><span>= 特定期間行銷總支出 / 同期新增有效會員數。本 Dashboard 目前無 CAC 資料；完整渠道評估需用「LTV ÷ CAC」比值，LTV 高但 CAC 亦高的渠道未必優於 LTV 略低但幾乎零成本的自然流量</span></div>
-    <div class="def-item"><strong>會員等級</strong><br><span>依累計消費金額分桶：Bronze &lt; NT$1,500 / Silver NT$1,500–5,000 / Gold NT$5,000–15,000 / Platinum ≥ NT$15,000</span></div>
-  </div>
-</div>
-
+<div id="main-wrapper">
+  <div id="def-panel-outer">
+    <div id="def-panel-inner">
+      <h3>📖 指標定義</h3>
+      <div class="def-search-wrap">
+        <input type="text" id="defSearch" placeholder="🔍 搜尋指標關鍵字…" autocomplete="off" oninput="filterDef(this.value)">
+      </div>
+      <div class="def-no-result" id="defNoResult">沒有符合的指標</div>
+      <div class="def-item"><strong>總會員</strong><span>系統內帳號狀態 = "active" 的所有會員（不含被刪除帳號）</span></div>
+      <div class="def-item"><strong>活躍會員（近90日）</strong><span>近 90 天內有過任一次「登入」或「下單」行為的會員</span></div>
+      <div class="def-item"><strong>月新增</strong><span>會員註冊日 = 該月的人數（不論是否完成首購）</span></div>
+      <div class="def-item"><strong>月流失</strong><span>主動退會、被系統判定無效（90天無活動 + 取消電子報）合計。注意：與「90日不活躍」不完全相同，會有口徑差異</span></div>
+      <div class="def-item"><strong>年流失率</strong><span>= 全年流失人數 / 年初總會員數</span></div>
+      <div class="def-item"><strong>有購買者</strong><span>2024 年內完成過至少 1 筆訂單的會員</span></div>
+      <div class="def-item"><strong>首購轉化率</strong><span>= 有購買者 / 總會員，即整體會員中完成至少 1 次購買的比例</span></div>
+      <div class="def-item"><strong>平均客單價（AOV）</strong><span>= 全年總營收 / 全年總訂單筆數</span></div>
+      <div class="def-item"><strong>回購率</strong><span>= 完成 ≥2 筆訂單的會員 / 有購買者</span></div>
+      <div class="def-item"><strong>高頻用戶</strong><span>全年下單 ≥9 次的有購買者</span></div>
+      <div class="def-item"><strong>首年 LTV</strong><span>新會員從註冊起算 12 個月內的累計消費金額（按獲客渠道分組）</span></div>
+      <div class="def-item"><strong>CAC（獲客成本）</strong><span>= 特定期間行銷總支出 / 同期新增有效會員數。本 Dashboard 目前無 CAC 資料；完整渠道評估需用「LTV ÷ CAC」比值，LTV 高但 CAC 亦高的渠道未必優於 LTV 略低但幾乎零成本的自然流量</span></div>
+      <div class="def-item"><strong>會員等級</strong><span>依累計消費金額分桶：Bronze &lt; NT$1,500 / Silver NT$1,500–5,000 / Gold NT$5,000–15,000 / Platinum ≥ NT$15,000</span></div>
+      <div class="def-item"><strong>YoY（Year-over-Year）</strong><span>年同比成長率 = (本期值 − 前期同期值) / 前期同期值 × 100%，比較同一指標年與年之間的變化幅度</span></div>
+      <div class="def-item"><strong>pp（percentage point，百分點）</strong><span>兩個百分比之間的絕對差距。例如回購率從 49.6% 升至 54.2%，增幅為 4.6pp（非 4.6%）。若誤用 %，數字會被誤解為相對變化</span></div>
+      <div class="def-item"><strong>KPI（Key Performance Indicator）</strong><span>關鍵績效指標，用於衡量業務目標達成程度的量化指標，如總會員數、回購率、AOV 等</span></div>
+      <div class="def-item"><strong>ROI（Return on Investment）</strong><span>投資回報率 = (收益 − 成本) / 成本 × 100%。本 Dashboard 於問答中用於定性比較干預方案的相對效益，非精確財務計算</span></div>
+      <div class="def-item"><strong>ARPU（Average Revenue Per User）</strong><span>每用戶平均收入 = 總營收 / 用戶數，可依時間窗口（月／季／年）或分群（等級／渠道）分組計算</span></div>
+    </div><!-- def-panel-inner -->
+  </div><!-- def-panel-outer -->
+  <div id="content-area">
 
 <!-- ══════════ PAGE 1: 會員分析 ══════════ -->
 <div id="page-member" class="page active">
@@ -308,7 +344,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
     <div class="kpi-card" style="--card-color:#2aab85">
       <div class="kpi-label">活躍會員（近90日）</div>
       <div class="kpi-value">29,158<span class="unit"> 人</span></div>
-      <div class="kpi-footer"><span class="kpi-delta up">↑ +8.1%</span><span class="kpi-note">活躍率 60.4%</span></div>
+      <div class="kpi-footer"><span class="kpi-delta up">↑ +8.1% YoY</span><span class="kpi-note">vs 26,975 (2023)</span></div>
     </div>
     <div class="kpi-card" style="--card-color:#d4870a">
       <div class="kpi-label">月均新增</div>
@@ -318,7 +354,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
     <div class="kpi-card" style="--card-color:#d43a2f">
       <div class="kpi-label">年流失率</div>
       <div class="kpi-value">18.3<span class="unit">%</span></div>
-      <div class="kpi-footer"><span class="kpi-delta down">↑ +2.1pp YoY</span><span class="kpi-note">較去年惡化</span></div>
+      <div class="kpi-footer"><span class="kpi-delta down">↑ +2.1pp YoY</span><span class="kpi-note">vs 16.2% (2023)</span></div>
     </div>
   </div>
 
@@ -495,12 +531,12 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
     <div class="kpi-card" style="--card-color:#2d5be3">
       <div class="kpi-label">總訂單筆數</div>
       <div class="kpi-value">96,483<span class="unit"> 筆</span></div>
-      <div class="kpi-footer"><span class="kpi-delta up">↑ +14.3%</span><span class="kpi-note">月均 8,040 筆</span></div>
+      <div class="kpi-footer"><span class="kpi-delta up">↑ +14.3% YoY</span><span class="kpi-note">vs 84,412 (2023)</span></div>
     </div>
     <div class="kpi-card" style="--card-color:#d4870a">
       <div class="kpi-label">平均客單價</div>
       <div class="kpi-value">NT$499</div>
-      <div class="kpi-footer"><span class="kpi-delta up">↑ +3.8%</span><span class="kpi-note">中位數 NT$380</span></div>
+      <div class="kpi-footer"><span class="kpi-delta up">↑ +3.8% YoY</span><span class="kpi-note">vs NT$481 (2023)</span></div>
     </div>
     <div class="kpi-card" style="--card-color:#7c4dff">
       <div class="kpi-label">回購率（二次以上）</div>
@@ -712,12 +748,12 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
     <div class="kpi-card" style="--card-color:#d4870a">
       <div class="kpi-label">首購轉化率</div>
       <div class="kpi-value">31.8<span class="unit">%</span></div>
-      <div class="kpi-footer"><span class="kpi-delta up">↑ +3.2pp</span><span class="kpi-note">68.2% 從未購買</span></div>
+      <div class="kpi-footer"><span class="kpi-delta up">↑ +3.2pp YoY</span><span class="kpi-note">vs 28.6% (2023)</span></div>
     </div>
     <div class="kpi-card" style="--card-color:#d43a2f">
       <div class="kpi-label">Bronze→Silver 升等率</div>
       <div class="kpi-value">28.6<span class="unit">%</span></div>
-      <div class="kpi-footer"><span class="kpi-delta down">↓ −1.8pp</span><span class="kpi-note">升等激勵需強化</span></div>
+      <div class="kpi-footer"><span class="kpi-delta down">↓ −1.8pp YoY</span><span class="kpi-note">vs 30.4% (2023)</span></div>
     </div>
   </div>
 
@@ -979,45 +1015,52 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
 
   <!-- META-LEVEL DESIGN CHOICES (D12) -->
   <div class="meta-panel">
-    <h3>📐 這份 Dashboard 的設計選擇與取捨</h3>
-    <div class="meta-intro">教學最有價值的不只是「怎麼分析」，更是「怎麼設計儀表板」。以下揭露這份 Dashboard 的設計決策，請對照思考你會做什麼不同的選擇。</div>
+    <h3>📐 設計選擇揭露</h3>
+    <div class="meta-intro">每一個圖表與儀表板設計背後都有三個問題：用哪些指標回答什麼商業問題？這個視覺形式為什麼適合這份資料？讀者應該看到什麼、帶走什麼判斷？以下逐一說明本儀表板的 8 個關鍵設計決策。</div>
     <div class="meta-grid">
       <div class="meta-item">
-        <h4>為什麼選三頁分頁而非單頁長表</h4>
-        <p><span class="tag">取捨</span>單頁適合給「已知答案找證據」的場景；分頁適合給「不同分析意圖」（會員結構 vs 交易行為 vs 跨域洞察）。代價是用戶要記住跨頁切換的觸發點，因此我們設計了 nav-hint 卡片。</p>
+        <h4>1. 三頁分頁 vs 單頁長表</h4>
+        <p><strong>分析資料選擇：</strong>會員行為、交易行為、跨域交叉對應三個不同業務問題，各頁的圖表聚焦回答同一類問題。<br><br>
+        <strong>閱讀設計：</strong>分頁在「切換」的動作中迫使讀者意識到「我換了一種分析視角」，降低同頁面異質資訊導致的認知混亂。</p>
       </div>
       <div class="meta-item">
-        <h4>為什麼 KPI 卡放最上面</h4>
-        <p><span class="tag">慣性</span>儀表板的標準慣性。但 KPI 卡是「結論」不是「故事」——資深分析師應該訓練自己 <strong>先看圖、再看 KPI</strong>，才能從原始資料形成獨立判斷，而不是被 KPI 預設方向。</p>
+        <h4>2. KPI 卡放最上面</h4>
+        <p><strong>閱讀設計：</strong>KPI 呈現方向與幅度，不說明原因。先看 KPI 再看圖會帶預設方向解讀，降低獨立推論的機率。資深分析師應先從圖形成判斷，再用 KPI 驗證一致性。</p>
       </div>
       <div class="meta-item">
-        <h4>為什麼用堆疊圖而非分組柱</h4>
-        <p><span class="tag">目的</span>月度品類圖用堆疊是為了同時呈現「總量趨勢」與「品類結構」。代價是每個品類的細部變化較難讀；補救方式是在圖上疊加總量折線（紅色虛線）。</p>
+        <h4>3. 月度品類：堆疊柱 + 總量折線</h4>
+        <p><strong>分析資料選擇：</strong>「哪個月的哪個品類拉動整體」需要同時看總量趨勢和品類組成，兩個問題用一張圖解決。<br><br>
+        <strong>視覺設計邏輯：</strong>拆成兩張圖則品類 × 總量的交叉關係需讀者在腦中自行疊加，認知成本倍增。</p>
       </div>
       <div class="meta-item">
-        <h4>為什麼免運門檻要畫在圖上</h4>
-        <p><span class="tag">原則</span>「圖會說話」永遠比「答案會說話」強。讓策略訊號直接視覺化（紅色虛線），讀者第一眼就看到問題，不需要看完答案才理解圖的意義。</p>
+        <h4>4. 免運門檻標在訂單分佈圖上</h4>
+        <p><strong>視覺設計邏輯：</strong>策略門檻是「資料與行動的橋接點」。標在圖上讓讀者第一眼就能判斷有多少訂單低於門檻、提升客單的目標池有多大。<br><br>
+        <strong>閱讀設計：</strong>NT$200–450 區間集中超過 40% 訂單——這個視覺事實直接指向提升客單策略的槓桿量級。</p>
       </div>
       <div class="meta-item">
-        <h4>為什麼頻次圖不畫「從未購買」</h4>
-        <p><span class="tag">視覺權衡</span>從未購買 32,915 人，是其他所有 bucket 加總的 2 倍——畫進去會把所有其他柱子壓扁。改用獨立區塊呈現，反而能凸顯這個「最大的潛力池」。</p>
+        <h4>5. 頻次圖排除「從未購買」</h4>
+        <p><strong>視覺設計邏輯：</strong>從未購買 32,915 人是其餘所有 bucket 加總的 2 倍以上，放入同一圖會壓縮所有購買頻次柱到難以比較。<br><br>
+        <strong>閱讀設計：</strong>改用獨立區塊呈現讓「32,915 人的首購轉化潛力池」成為獨立視覺焦點，反而強化其策略意義。</p>
       </div>
       <div class="meta-item">
-        <h4>為什麼故意不放退款率、CAC、地區分佈</h4>
-        <p><span class="tag">教學設計</span>這些是 T4 訓練題的答案。<strong>故意留白</strong>是為了訓練實習生「主動察覺缺失維度」的能力——這比能解讀現有資料更接近資深分析師的核心能力。</p>
+        <h4>6. 未放退款率、CAC、地區分佈</h4>
+        <p><strong>分析資料選擇：</strong>三個維度各自回答不同業務問題（品質控管、獲客效率、地理擴張），加入會模糊「會員 × 交易結構」的分析邊界。<br><br>
+        <strong>閱讀設計：</strong>辨識「這份資料能回答什麼、不能回答什麼」是判斷分析結論可靠性的核心能力。</p>
       </div>
       <div class="meta-item">
-        <h4>為什麼題目分 L1 / L2 / L3 三層</h4>
-        <p><span class="tag">學習階梯</span>單圖題訓練「精準觀察」，同頁跨圖訓練「結構聯想」，跨頁交叉訓練「全局推理」。沒有梯度的訓練只會讓人停在第一層。</p>
+        <h4>7. 題目分 L1 / L2 / L3 三層</h4>
+        <p><strong>閱讀設計：</strong>單圖事實擷取（L1）→ 同頁交叉推論（L2）→ 跨頁策略判斷（L3），對應分析師實務中的三種認知負荷：精準觀察 → 結構聯想 → 全局推理，逐層遞增。</p>
       </div>
       <div class="meta-item">
-        <h4>為什麼每題都標 F / I / A</h4>
-        <p><span class="tag">習慣養成</span>區分「事實」、「推論」、「假設」是分析師最重要的職業習慣。看到分析報告時能立刻識別「這句是 F 還是 I 還是 A」，就能判斷論述強度與風險所在。</p>
+        <h4>8. 每題都標 F / I / A</h4>
+        <p><strong>閱讀設計：</strong>「事實」「推論」「假設」的邊界模糊是分析報告最常見的論述錯誤。F/I/A 讓每個判斷句帶有明確的論述強度標示——讀者同步練習「辨識這個判斷需要多少額外驗證才能採信」。</p>
       </div>
     </div>
   </div>
 
 </div></div>
+  </div><!-- content-area -->
+</div><!-- main-wrapper -->
 
 
 <script>
@@ -1199,12 +1242,6 @@ function scrollToTarget(targetId){
 }
 
 function toggleQA(el){ el.parentElement.classList.toggle('open'); }
-function toggleDefinitions(){
-  const panel = document.getElementById('defPanel');
-  const btn = document.getElementById('defToggleBtn');
-  panel.classList.toggle('open');
-  btn.classList.toggle('def-btn-open');
-}
 
 // ════════════════════════════════════════════════════════════════
 // CHART FACTORY
@@ -1522,14 +1559,41 @@ function drawCross(){
                             formatter:v=>v.toLocaleString()+'人',padding:{bottom:2}}}});
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Dynamic sticky offsets
-  function updateStickyOffsets() {
-    const hdr = document.querySelector('.site-header');
-    if (hdr) document.documentElement.style.setProperty('--header-h', hdr.offsetHeight + 'px');
+function toggleDef() {
+  const outer = document.getElementById('def-panel-outer');
+  const btn   = document.getElementById('defToggleBtn');
+  outer.classList.toggle('open');
+  btn.classList.toggle('open');
+  if (!outer.classList.contains('open')) {
+    document.getElementById('defSearch').value = '';
+    filterDef('');
   }
-  updateStickyOffsets();
-  window.addEventListener('resize', updateStickyOffsets);
+  outer.addEventListener('transitionend', () => {
+    Object.values(Chart.instances).forEach(ch => ch.resize());
+  }, { once: true });
+}
+
+function filterDef(query) {
+  const q = query.trim().toLowerCase();
+  let matched = 0;
+  document.querySelectorAll('#def-panel-inner .def-item').forEach(item => {
+    const text = item.textContent.toLowerCase();
+    const show = q === '' || text.includes(q);
+    item.style.display = show ? '' : 'none';
+    if (show) matched++;
+  });
+  const noResult = document.getElementById('defNoResult');
+  noResult.style.display = (q !== '' && matched === 0) ? 'block' : 'none';
+}
+
+function syncHeaderHeight() {
+  const h = document.getElementById('top-header').offsetHeight;
+  document.documentElement.style.setProperty('--header-h', h + 'px');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  syncHeaderHeight();
+  window.addEventListener('resize', syncHeaderHeight);
 
   initialized['member'] = true;
   draw('member');

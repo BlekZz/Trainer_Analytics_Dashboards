@@ -4,15 +4,14 @@
 
 ## 待完成
 
-- [ ] **電商DTC v3 二次 QA**
+- [x] **電商DTC v3 二次 QA**
   `電商DTC_會員交易分析_訓練儀表板教材_v3.html`
   依照更新後的 skill 標準重新審查，重點項目：
-  - E.1 新增的 Check 19：所有縮寫/專有名詞已在 def-panel 定義
-  - E.1 新增的 Check 20：所有分析依據只引用儀表板呈現的數據（F/I tag）
-  - E.1 新增的 Check 21：F/I/A 標籤系統在 legend strip 或 def-panel 有可見說明
-  - C.4b 原則 1：計算指標的層級一致性（如 HHI 等）
-  - scatter 封閉三角 + 四象限均佈（若有散點圖）
-  - KPI YoY 卡片全部補前年基準值
+  - ✅ Check 19：def-panel 補 YoY / pp / KPI / ROI / ARPU 五個縮寫定義
+  - ✅ Check 20：所有 F/I tag 引用均有 ev 標記且對應圖表，無違規
+  - ✅ Check 21：color-legend strip 已有 F/I/A 三色說明（第 270-273 行）
+  - ✅ C.4b：本 dashboard 無 HHI，無散點圖 → 略過
+  - ✅ KPI YoY 前年基準值：補活躍會員、年流失率、總訂單、AOV、首購轉化率、升等率共 6 張卡片
 
 - [ ] **建立 GitHub remote 並推送**
   本專案目錄尚未 git init 也未連結遠端 repo。
