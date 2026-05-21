@@ -36,7 +36,10 @@ A collection of single-file analytics training dashboards for industry-specific 
 Chart.js 4.4.0
 chartjs-plugin-datalabels 2.2.0
 chartjs-plugin-annotation 3.0.1
-Google Fonts: Lora, Outfit, JetBrains Mono
+Google Fonts: varies by visual preset (see Skill/module-D-diff.md D.9)
+  Baseline (P2): Lora, Outfit, JetBrains Mono
+  Other presets: IBM Plex Sans / Space Grotesk+DM Sans / Plus Jakarta Sans /
+                 Lexend+Source Sans 3 / Rubik+Nunito Sans (see each preset spec)
 ```
 
 ## Architecture
@@ -63,15 +66,18 @@ Each `<div class="qa-item">` follows this pattern:
 
 ## CSS Design Tokens
 
-CSS variables in `:root`. Key semantic mapping:
+CSS variables in `:root`. Key semantic mapping (values below are P2 baseline defaults):
 
-| Variable | Semantic |
-|---|---|
-| `--accent` | Primary data / blue `#3b82f6` (dark) / `#2d5be3` (light) |
-| `--accent2` | Positive / teal `#2aab85` |
-| `--warn` | Caution / orange `#d4870a` |
-| `--danger` | Alert / churn `#d43a2f` |
-| `--purple` | Behavioral / time `#7c4dff` |
+| Variable | Semantic | P2 Baseline |
+|---|---|---|
+| `--accent` | Primary data | `#3b82f6` |
+| `--accent2` | Positive / teal | `#2aab85` |
+| `--warn` | Caution / orange | `#d4870a` |
+| `--danger` | Alert / churn | `#d43a2f` |
+| `--purple` | Behavioral / time | `#7c4dff` |
+
+**Visual Presets:** 7 complete `:root` override sets (P1–P7) are defined in `Skill/module-D-diff.md` D.9.
+Each preset covers bg colors, accent tokens, font imports, and industry fit. Select one per dashboard to ensure visual differentiation across the series.
 
 ## File Naming Convention
 
@@ -93,8 +99,9 @@ Rules:
 
 ## When Adding a New Dashboard
 
-1. Start from `Skill/template.html` — copy to `Dashboard/{產業}_{主題}_訓練儀表板教材.html`.
-2. Fill in `DATA` first; run in browser, confirm `assertConsistency()` passes.
-3. Add cross-check rules to `assertConsistency()` for every anchor value.
-4. Keep everything in one file — single-file constraint is intentional (zero-dependency delivery to interns).
-5. Once complete, the file stays in `Dashboard/`; no version suffix in filename (git tracks versions).
+1. **選 Visual Preset** — 從 `Skill/module-D-diff.md` D.9 選一個 preset，不可與前一份相同。覆蓋 `:root` tokens 與 Google Fonts import。
+2. Start from `Skill/template.html` — copy to `Dashboard/{產業}_{主題}_訓練儀表板教材.html`.
+3. Fill in `DATA` first; run in browser, confirm `assertConsistency()` passes.
+4. Add cross-check rules to `assertConsistency()` for every anchor value.
+5. Keep everything in one file — single-file constraint is intentional (zero-dependency delivery to interns).
+6. Once complete, the file stays in `Dashboard/`; no version suffix in filename (git tracks versions).

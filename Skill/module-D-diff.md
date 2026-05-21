@@ -215,3 +215,193 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 4. **🚫 沒輸出 changelog** — 使用者不知道哪裡不一樣，差異化沒被「看見」
 5. **🚫 同產業同主題差異不足** — 必須教學軸大幅差異
 6. **🚫 隨機差異化沒邏輯** — 「我這份換綠色 + 訓練題改 6 道 + 圓餅變半圓」三個元素互不關聯，看起來像 bug
+
+---
+
+## D.9 視覺 Preset 庫
+
+> 從 UI UX Pro Max 資料庫萃取，針對 analytics/BI dashboard 情境整理成 7 個可直接套用的視覺套餐。
+> 每個 preset 提供完整的 CSS token override + 字型配對，選一個後覆蓋 template 的 `:root` 即可。
+
+**使用規則：**
+- D2 目前預設是 P2（藍系分析型），這是 template 的基線，**每次產出需跟上一份使用不同 preset**
+- Preset 只鎖定色彩語意的「色相」，五個語意角色（主資料 / 正向 / 注意 / 警示 / 行為）不變
+- 深色 preset (P1/P2/P4/P7) 適合長時間盯看的分析工作；淺色 preset (P3/P5/P6) 適合簡報式呈現
+
+---
+
+### Preset 速查表
+
+| # | 名稱 | 底色 | 主色（--accent） | 正向（--accent2） | 字型組合 | 適合產業 |
+|---|---|---|---|---|---|---|
+| **P1** | 深色財務型 | `#020617` | `#3B82F6` | `#22C55E` | IBM Plex Sans × IBM Plex Sans | 金融、FinTech、證券 |
+| **P2** | 藍系分析型 *(預設)* | `#0d1117` | `#2d5be3` | `#2aab85` | Outfit × Lora | 電商、SaaS、通用分析 |
+| **P3** | 輕色企業型 | `#F8FAFC` | `#2563EB` | `#059669` | Plus Jakarta Sans × Plus Jakarta Sans | B2B、CRM、供應鏈 |
+| **P4** | 暗色科技型 | `#0F172A` | `#22D3EE` | `#22C55E` | Space Grotesk × DM Sans | 製造、IoT、物流 |
+| **P5** | 醫療信任型 | `#ECFEFF` | `#0891B2` | `#059669` | Lexend × Source Sans 3 | 醫療、健康、公衛 |
+| **P6** | 電商活力型 | `#ECFDF5` | `#059669` | `#10B981` | Rubik × Nunito Sans | 零售、電商、DTC |
+| **P7** | 銀行深色型 | `#020617` | `#1E3A8A` | `#A16207` | IBM Plex Sans × IBM Plex Sans | 銀行、保險、傳統金融 |
+
+---
+
+### P1 深色財務型
+
+```css
+:root {
+  --bg: #020617; --bg-card: #0E1223; --bg-finding: #131B2F;
+  --accent: #3B82F6; --accent2: #22C55E; --warn: #D97706; --danger: #EF4444; --purple: #8B5CF6;
+  --text: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.07);
+  --radius: 10px;
+}
+```
+```html
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap">
+/* font-family: 'IBM Plex Sans', sans-serif; 標題與內文同字族，靠字重區分層級 */
+```
+- **調性：** 嚴肅、資料密度高、信任感強
+- **圖表色建議：** 正向指標用 `#22C55E`，負向用 `#EF4444`，中性資料用 `#3B82F6`
+- **反模式：** 不可用淺色背景 / 不可用圓角 > 12px / 不可用裝飾性動畫
+
+---
+
+### P2 藍系分析型（預設 baseline）
+
+```css
+/* template 原始 :root，無需修改 */
+:root {
+  --bg: #0d1117; --bg-card: #161b27; --bg-finding: #1a2030;
+  --accent: #3b82f6; --accent2: #2aab85; --warn: #d4870a; --danger: #d43a2f; --purple: #7c4dff;
+  --text: #e6edf3; --text-muted: #8b949e; --border: rgba(255,255,255,0.08);
+  --radius: 14px;
+}
+```
+```html
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Outfit:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap">
+```
+- **調性：** 中性專業，資料導向，適合多數分析情境
+- **注意：** 這是 baseline，不應連續兩份都用 P2
+
+---
+
+### P3 輕色企業型
+
+```css
+:root {
+  --bg: #F8FAFC; --bg-card: #FFFFFF; --bg-finding: #F1F5FD;
+  --accent: #2563EB; --accent2: #059669; --warn: #D97706; --danger: #DC2626; --purple: #7C3AED;
+  --text: #0F172A; --text-muted: #64748B; --border: rgba(0,0,0,0.08);
+  --radius: 12px;
+}
+/* header 背景改為白底 */
+.site-header { background: rgba(248,250,252,0.97); border-bottom: 1px solid rgba(0,0,0,0.08); }
+/* nav-tab active 調整 */
+.nav-tab.active { background: rgba(248,250,252,0.97); color: var(--accent); }
+```
+```html
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap">
+```
+- **調性：** 明亮、親和、適合簡報式呈現給非技術決策者
+- **注意：** 淺色模式需確認 chart 資料顏色仍具足夠對比度（建議 `rgba()` alpha 提高至 0.9）
+
+---
+
+### P4 暗色科技型
+
+```css
+:root {
+  --bg: #0F172A; --bg-card: #1B2336; --bg-finding: #202D3F;
+  --accent: #22D3EE; --accent2: #22C55E; --warn: #F59E0B; --danger: #EF4444; --purple: #A78BFA;
+  --text: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.07);
+  --radius: 8px;
+}
+```
+```html
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap">
+/* 標題: Space Grotesk；內文: DM Sans */
+```
+- **調性：** 科技感、高密度、偏硬派（radius 8px 強調精確）
+- **適用場景：** 製造業 OEE 分析、物流追蹤、IoT 感測器 dashboard
+
+---
+
+### P5 醫療信任型
+
+```css
+:root {
+  --bg: #ECFEFF; --bg-card: #FFFFFF; --bg-finding: #E0F9FB;
+  --accent: #0891B2; --accent2: #059669; --warn: #D97706; --danger: #DC2626; --purple: #7C3AED;
+  --text: #164E63; --text-muted: #64748B; --border: rgba(0,0,0,0.07);
+  --radius: 16px;
+}
+.site-header { background: rgba(236,254,255,0.97); }
+```
+```html
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap">
+/* 標題: Lexend（高可及性設計）；內文: Source Sans 3 */
+```
+- **調性：** 清晰、低刺激、符合 WCAG AA
+- **反模式：** 不可用高飽和紅色（用橘代替警示）/ 不可用暗色背景
+
+---
+
+### P6 電商活力型
+
+```css
+:root {
+  --bg: #ECFDF5; --bg-card: #FFFFFF; --bg-finding: #E8F8F1;
+  --accent: #059669; --accent2: #10B981; --warn: #D97706; --danger: #DC2626; --purple: #7C3AED;
+  --text: #064E3B; --text-muted: #64748B; --border: rgba(0,0,0,0.07);
+  --radius: 14px;
+}
+.site-header { background: rgba(236,253,245,0.97); }
+```
+```html
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600&display=swap">
+/* 標題: Rubik；內文: Nunito Sans */
+```
+- **調性：** 積極、轉換導向、電商氣氛
+- **注意：** --accent 和 --accent2 同為綠系，使用時需用色相差或飽和度差異來區分語意
+
+---
+
+### P7 銀行深色型
+
+```css
+:root {
+  --bg: #020617; --bg-card: #0A1628; --bg-finding: #0F1E35;
+  --accent: #1E3A8A; --accent2: #A16207; --warn: #D97706; --danger: #EF4444; --purple: #6366F1;
+  --text: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.06);
+  --radius: 8px;
+}
+```
+```html
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap">
+```
+- **調性：** 莊重、傳統、合規感強（金色 `--accent2` 作為正向/獲利指標）
+- **反模式：** 不可用亮色主視覺 / 不可用圓角 > 10px / 不可使用 AI 紫色系漸層
+
+---
+
+## D.10 圖表選型擴充
+
+> 補充 module-B 未收錄的圖表類型。這些圖表適合特定分析主題，未來新增產業 dashboard 時可作為差異化工具。
+
+| 圖表類型 | 適合訓練主題 | 用 Chart.js 實現難度 | 教學價值 |
+|---|---|---|---|
+| **Waterfall / 瀑布圖** | 毛利拆解、預算差異、P&L 說明 | 中（需自訂 stacked bar offset） | 高：強迫學員理解加法結構 |
+| **Bullet Chart / 子彈圖** | KPI vs 目標、績效達成率 | 中（橫向 bar + annotation） | 高：訓練「目標對比」而非只看絕對值 |
+| **Funnel / 漏斗圖** | 轉換分析、會員旅程、購買漏斗 | 低（可用遞減 bar 模擬） | 高：訓練「drop-off 歸因」思維 |
+| **Calendar Heatmap** | 時段節律分析、週/月熱力圖 | 高（需自行用 grid 實現） | 中：訓練「時序模式」識別 |
+| **Waffle Chart** | 佔比進度（比 pie 更易讀） | 中（CSS grid + 色塊） | 中：適合取代 donut 呈現單一比例 |
+| **Candlestick** | 金融/股價資料（銀行、證券產業） | 高（需 chartjs-chart-financial 插件） | 中：限金融產業 dashboard 使用 |
+| **Radar / 蜘蛛圖** | 多維度能力評比（員工績效、產品對比） | 低（Chart.js 原生支援） | 中：訓練「多維權衡」思維 |
+
+### 圖表使用底線（來自 UI UX Pro Max charts.csv）
+
+| 規則 | 說明 |
+|---|---|
+| Donut > 6 類 → 改 stacked bar | 超過 6 個扇形視覺上無法分辨 |
+| 散點 < 20 個點 → 改 bar | 樣本太少看不出分佈模式 |
+| Pie 禁止在 a11y 優先情境使用 | 色盲者無法分辨扇形 — 必須提供 table 備案 |
+| 3D 圖表禁用 | 學術與業界已棄用；訓練 dashboard 中出現 3D 是反面教材 |
+| 折線 series > 6 條 → 拆頁或改其他呈現 | 顏色數量超限，視覺雜訊大於資訊量 |
