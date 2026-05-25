@@ -161,7 +161,7 @@
     .section-title:first-child { margin-top: 4px; }
 
     /* ── KPI cards ── */
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap: 14px; margin-bottom: 28px; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 14px; margin-bottom: 28px; }
     .kpi-card {
       background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
       padding: 18px 20px; position: relative; overflow: hidden;
@@ -171,7 +171,7 @@
       background: var(--kpi-color, var(--accent));
     }
     .kpi-label { font-size: 0.75rem; color: var(--text2); margin-bottom: 6px; }
-    .kpi-value { font-family: var(--font-mono); font-size: 1.55rem; font-weight: 600; color: var(--text); line-height: 1.2; }
+    .kpi-value { font-family: var(--font-mono); font-size: clamp(1.05rem, 2.4vw, 1.55rem); font-weight: 600; color: var(--text); line-height: 1.2; }
     .kpi-sub { font-size: 0.72rem; margin-top: 5px; }
     .kpi-up { color: #34D399; }
     .kpi-neutral { color: var(--text2); }
@@ -281,6 +281,38 @@
       font-size: 0.72rem; color: var(--warn); background: rgba(245,158,11,0.1);
       border: 1px solid rgba(245,158,11,0.25); border-radius: 6px;
       padding: 5px 10px; margin-top: 8px; display: inline-block;
+    }
+
+    /* ── Chart flash animation ── */
+    @keyframes chartFlash {
+      0%,100% { box-shadow: none; border-color: var(--border); }
+      50% { box-shadow: 0 0 0 3px rgba(96,165,250,0.85), 0 0 20px rgba(96,165,250,0.35); border-color: rgba(96,165,250,0.9); }
+    }
+    .chart-flash { animation: chartFlash 0.55s ease-in-out 4; }
+
+    /* ── Chart reference button ── */
+    .chart-ref-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.28);
+      border-radius: 6px; padding: 5px 12px; margin-top: 8px;
+      font-size: 0.76rem; color: var(--accent); cursor: pointer;
+      font-family: var(--font-body); transition: background 0.2s;
+    }
+    .chart-ref-btn:hover { background: rgba(59,130,246,0.14); }
+
+    /* ── Responsive: narrow header ── */
+    @media(max-width:600px) {
+      .header-row-1 { padding: 10px 12px 8px; }
+      .header-row-2 { padding: 0 12px; overflow-x: auto; }
+      .header-legend { padding: 5px 12px; row-gap: 4px; }
+      .header-legend .legend-vdivider { display: none; }
+      .legend-colors { gap: 8px; }
+      .legend-right { gap: 8px; }
+      .page { padding: 16px; }
+    }
+    /* ── Responsive: KPI grid narrow ── */
+    @media(max-width:480px) {
+      .kpi-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -434,17 +466,17 @@
 
   <div class="section-title">各通道轉換表現</div>
   <div class="chart-grid chart-grid-2">
-    <div class="chart-card">
+    <div class="chart-card" id="card-c1-ch-conv">
       <div class="chart-card-title">各通道轉換數對比</div>
       <div class="chart-block h300"><canvas id="c1-ch-conv"></canvas></div>
     </div>
-    <div class="chart-card">
+    <div class="chart-card" id="card-c1-src-donut">
       <div class="chart-card-title">新會員來源分佈</div>
       <div class="chart-block h300"><canvas id="c1-src-donut"></canvas></div>
     </div>
   </div>
 
-  <div class="chart-card" style="margin-top:0">
+  <div class="chart-card" id="card-c1-push-conv-bar" style="margin-top:0">
     <div class="chart-card-title">推播 vs 對話型 通道轉換貢獻</div>
     <div class="chart-block h260"><canvas id="c1-push-conv-bar"></canvas></div>
     <div class="findings-section">
@@ -468,6 +500,7 @@
         <div class="answer-block">
           <p><span class="tag-f">F:</span> <strong>LINE 通道</strong>帶來最多新會員，共 <strong>1,287 位</strong>（占總新會員 3,218 位的 40.0%）。圖表來源：新會員來源分佈 Donut 圖。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-1','card-c1-src-donut')">📍 查看：新會員來源分佈</button>
       </div>
     </div>
 
@@ -481,6 +514,7 @@
         <div class="answer-block">
           <p><span class="tag-i">I:</span> 對話型通道的單次對話轉換率（962÷19,500 ≈ <strong>4.93%</strong>）遠高於推播通道的觸達轉換率（888÷110,000 ≈ <strong>0.81%</strong>）。這反映出「雙向互動」在推進決策上比「單向推播」更有效率，但不意味著推播沒有價值——推播的規模效益仍在，且觸達成本通常更低。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-1','card-c1-push-conv-bar')">📍 查看：推播 vs 對話型轉換貢獻</button>
         <div class="trap-block">
           <span class="trap-icon">⚠</span>
           <div><strong>陷阱：</strong>不能直接說「對話型通道比推播好」——兩者成本結構完全不同。推播的邊際成本極低，對話型需要人力或 AI 客服資源，ROI 需考量成本才能比較。</div>
@@ -498,6 +532,7 @@
         <div class="answer-block">
           <p><span class="tag-i">I:</span> Meta 對話 6,800 次帶來 773 新會員，比率 = <strong>11.4%</strong>。LINE 推播 72,000 觸達帶來 1,287 新會員，比率 = <strong>1.79%</strong>。若用「每百次觸及帶來的新會員」衡量，Meta 遠比 LINE 更高效。但這是不同口徑的比較（對話 vs 觸達），需謹慎解讀。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-1','card-c1-src-donut')">📍 查看：新會員來源分佈</button>
         <div class="trap-block">
           <span class="trap-icon">⚠</span>
           <div><strong>口徑陷阱：</strong>LINE 的分母是「觸達數（到達收件匣的推播量）」，Meta 的分母是「主動發起對話的用戶數」。後者本質上是已篩選過意圖強度的族群，直接比率不具可比性。</div>
@@ -516,6 +551,7 @@
           <div class="nav-hint" onclick="switchPage('page-3')">👉 切換到「對話型通道」頁查看 Chat 的 FCR、棄單率等細節</div>
           <p style="margin-top:10px"><span class="tag-a">A:</span> Chat 的棄單率達 <strong>13%</strong>（三通道最高），意味著有 8,500×13% = <strong>1,105 次</strong>對話在未轉換前流失。若能將棄單率從 13% 降至 7%（同時 FCR 71% 的水準顯示服務品質不差），每季可多挽回約 509 次對話。若維持現有轉換率（2.75%），可多轉化約 14 個新會員。這是最直接的改善槓桿。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-3','card-c3-resolution')">📍 查看：解決狀態分佈（含棄單率）</button>
         <div class="trap-block">
           <span class="trap-icon">⚠</span>
           <div><strong>假設陷阱：</strong>上述推算假設「被挽回的棄單用戶」轉換率與現有用戶相同，但棄單者通常意圖較弱，實際效果可能低估。此為假設，需 A/B test 驗證。</div>
@@ -533,6 +569,7 @@
         <div class="answer-block">
           <p><span class="tag-f">F:</span> 總轉換 <strong>1,850 筆</strong>，推播貢獻 888 筆（<strong>48.0%</strong>），對話型貢獻 962 筆（<strong>52.0%</strong>）。兩大類通道貢獻各占約一半。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-1','card-c1-push-conv-bar')">📍 查看：推播 vs 對話型轉換貢獻</button>
       </div>
     </div>
 
@@ -570,22 +607,22 @@
 
   <div class="section-title">推播通道漏斗與效率</div>
   <div class="chart-grid chart-grid-2">
-    <div class="chart-card">
-      <div class="chart-card-title">LINE vs Email 漏斗對比（對數刻度）</div>
+    <div class="chart-card" id="card-c2-funnel">
+      <div class="chart-card-title">LINE vs Email 漏斗對比（雙Y軸）</div>
       <div class="chart-block h320"><canvas id="c2-funnel"></canvas></div>
     </div>
-    <div class="chart-card">
+    <div class="chart-card" id="card-c2-rates">
       <div class="chart-card-title">開封率 vs CTR 對比 (%)</div>
       <div class="chart-block h320"><canvas id="c2-rates"></canvas></div>
     </div>
   </div>
 
   <div class="chart-grid chart-grid-2" style="margin-top:0">
-    <div class="chart-card">
+    <div class="chart-card" id="card-c2-monthly">
       <div class="chart-card-title">月度推播觸達趨勢（堆疊）</div>
       <div class="chart-block h300"><canvas id="c2-monthly"></canvas></div>
     </div>
-    <div class="chart-card">
+    <div class="chart-card" id="card-c2-cvr">
       <div class="chart-card-title">觸達→轉換率對比 (%)</div>
       <div class="chart-block h300"><canvas id="c2-cvr"></canvas></div>
     </div>
@@ -611,6 +648,7 @@
         <div class="answer-block">
           <p><span class="tag-f">F:</span> CTR = 點擊連結人數 ÷ <strong>觸達數</strong>（送達收件匣的推播量）。2025Q4 LINE CTR = 8,640 ÷ 72,000 = <strong>12%</strong>。注意：此處分母是觸達數，非開封數。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-2','card-c2-rates')">📍 查看：開封率 vs CTR 對比</button>
       </div>
     </div>
 
@@ -624,6 +662,7 @@
         <div class="answer-block">
           <p><span class="tag-i">I:</span> LINE CTOR（Click-to-Open Rate）= 8,640 ÷ 27,360 = <strong>31.6%</strong>；Email CTOR = 3,040 ÷ 8,360 = <strong>36.4%</strong>。此口徑下 Email 反而高於 LINE，這顯示「有打開的人，Email 更傾向點擊」。兩個口徑各有用途：觸達 CTR 衡量整體效率；CTOR 衡量內容吸引力。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-2','card-c2-rates')">📍 查看：開封率 vs CTR 對比</button>
         <div class="trap-block">
           <span class="trap-icon">⚠</span>
           <div><strong>口徑陷阱：</strong>只看「觸達 CTR」會錯誤結論「LINE 內容比 Email 更吸引人點擊」，但 Email 低 CTR 主要來自低開封率。正確結論是：Email 的瓶頸在開封，而非點擊意願。</div>
@@ -641,6 +680,7 @@
         <div class="answer-block">
           <p><span class="tag-i">I:</span> 觸達成長 +18.2%，轉換成長 +20%，轉換率微幅提升。可能原因：(1) 訊息內容或 CTA 優化；(2) 季節性因素（Q4 末年終購物旺季）；(3) 受眾名單品質提升（優化退訂清單）。這是正向信號，但需排除季節性干擾才能確認。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-2','card-c2-monthly')">📍 查看：月度推播觸達趨勢</button>
         <div class="trap-block">
           <span class="trap-icon">⚠</span>
           <div><strong>歸因陷阱：</strong>Q4 的轉換率提升可能主要來自節慶消費行為，而非行銷操作改善。若與 Q3 比較後依然有增長，結論才更可信。</div>
@@ -658,6 +698,7 @@
         <div class="answer-block">
           <p><span class="tag-f">F:</span> 推播新會員合計 <strong>1,802 位</strong>。LINE：1,287 位（<strong>71.4%</strong>）；Email：515 位（<strong>28.6%</strong>）。LINE 是推播通道中帶來新會員的主要來源。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-4','card-c4-src-bar')">📍 查看：新會員來源分佈（P4）</button>
       </div>
     </div>
 
@@ -671,6 +712,7 @@
         <div class="answer-block">
           <p><span class="tag-a">A:</span> 以當前轉換率計算：LINE 觸達轉換率 <strong>0.917%</strong>（660÷72,000），Email <strong>0.600%</strong>（228÷38,000）。若把所有 110,000 觸達都給 LINE，理論最大轉換 = 110,000×0.917% ≈ <strong>1,009 筆</strong>，比現在 888 多 121 筆。但這假設 LINE 名單可擴展至 110,000 且維持相同轉換率，實際上名單品質會因擴充而稀釋。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-2','card-c2-cvr')">📍 查看：觸達→轉換率對比</button>
         <div class="trap-block">
           <span class="trap-icon">⚠</span>
           <div><strong>假設陷阱：</strong>轉換率不是固定不變的——增加觸達量意味著觸及更多「邊際用戶」，這些人的轉換率通常更低。等比例放大的計算會高估實際效果。</div>
@@ -713,23 +755,23 @@
 
   <div class="section-title">對話型通道服務品質</div>
   <div class="chart-grid chart-grid-2">
-    <div class="chart-card">
+    <div class="chart-card" id="card-c3-fcr">
       <div class="chart-card-title">FCR 首次解決率對比 (%)</div>
       <div class="chart-block h300"><canvas id="c3-fcr"></canvas></div>
     </div>
-    <div class="chart-card">
+    <div class="chart-card" id="card-c3-resolution">
       <div class="chart-card-title">解決狀態分佈（堆疊 100%）</div>
       <div class="chart-block h300"><canvas id="c3-resolution"></canvas></div>
     </div>
   </div>
 
   <div class="chart-grid chart-grid-2" style="margin-top:0">
-    <div class="chart-card">
+    <div class="chart-card" id="card-c3-efficiency">
       <div class="chart-card-title">平均輪數 vs 首回時間 (分鐘)</div>
       <div class="chart-block h300"><canvas id="c3-efficiency"></canvas></div>
       <div class="chart-warn-label">⚠️ 兩軸量級不同：左軸=輪數，右軸=分鐘，勿跨軸直接比較數值</div>
     </div>
-    <div class="chart-card">
+    <div class="chart-card" id="card-c3-cvr">
       <div class="chart-card-title">對話型通道轉換率 (%)</div>
       <div class="chart-block h300"><canvas id="c3-cvr"></canvas></div>
     </div>
@@ -755,6 +797,7 @@
         <div class="answer-block">
           <p><span class="tag-f">F:</span> FCR（First Contact Resolution）= 首次對話即成功解決問題的比例。<strong>官網客服 FCR 最高，為 71%</strong>（即 71% 的對話在一輪對話內完成，無需升級或回訪）。WhatsApp 68%，Meta 54%。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-3','card-c3-fcr')">📍 查看：FCR 首次解決率對比</button>
       </div>
     </div>
 
@@ -768,6 +811,7 @@
         <div class="answer-block">
           <p><span class="tag-i">I:</span> 可能原因：(1) Meta Messaging 的用戶族群通常來自廣告，問題多樣且複雜，超出 FAQ/bot 能處理的範圍；(2) Meta 平台的用戶習慣傾向長篇對話，平均 6.8 輪也印證複雜度；(3) 客服資源可能未針對 Meta 來源用戶的問題類型做特化訓練。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-3','card-c3-resolution')">📍 查看：解決狀態分佈</button>
         <div class="trap-block">
           <span class="trap-icon">⚠</span>
           <div><strong>陷阱：</strong>高升級率不一定是壞事——若升級後轉換率更高，這可能是一個「品質篩選」機制，把高意圖用戶轉給人工，效果反而更好。需要看升級後的轉換數據才能下結論。</div>
@@ -785,6 +829,7 @@
         <div class="answer-block">
           <p><span class="tag-i">I:</span> 不矛盾。FCR 衡量「<strong>有完成對話的用戶中</strong>，一次解決的比例」；棄單率衡量「在對話完成前就離開的比例」。兩者分母不同。可能的解釋：官網 Chat 的入口門檻低（頁面彈窗），吸引了大量輕度意圖用戶，這些人容易中途放棄；而真正堅持完成對話的用戶，客服效率高（平均 2.9 輪、1.2 分鐘首回）。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-3','card-c3-resolution')">📍 查看：解決狀態分佈</button>
         <div class="trap-block">
           <span class="trap-icon">⚠</span>
           <div><strong>FCR 偽象陷阱：</strong>高 FCR + 高棄單率 可能代表「分母被篩小了」——留下來的都是願意等待的用戶，FCR 自然高。如果改善棄單（讓更多人留下），FCR 可能反而下降。</div>
@@ -802,6 +847,7 @@
         <div class="answer-block">
           <p><span class="tag-f">F:</span> WhatsApp：252÷4,200 = <strong>6.0%</strong>；Meta：476÷6,800 = <strong>7.0%</strong>（最高）；官網客服：234÷8,500 = <strong>2.75%</strong>。Meta 雖然 FCR 最低、升級率最高，但轉換率反而最高——這反映對話型升級流程可能帶來更高轉換。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-3','card-c3-cvr')">📍 查看：對話型通道轉換率</button>
       </div>
     </div>
 
@@ -816,6 +862,7 @@
           <div class="nav-hint" onclick="switchPage('page-1')">👉 回到「全通道全貌」頁查看各通道絕對轉換量</div>
           <p style="margin-top:10px"><span class="tag-a">A:</span> 需找槓桿最大的改善點。若改善 Meta FCR 從 54%→64%，直接影響 6,800×10% = 680 次原本升級的對話，若以 7% 轉換率估算可多 <strong>48 筆轉換</strong>。若改善官網 Chat 棄單率從 13%→8%，多 425 次完成對話，以 2.75% 轉換率多 <strong>12 筆</strong>。Meta FCR 改善空間最大，且基數高（6,800 對話），是最值得優先投入的槓桿點。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-1','card-c1-ch-conv')">📍 查看：各通道轉換數對比（P1）</button>
         <div class="trap-block">
           <span class="trap-icon">⚠</span>
           <div><strong>假設：</strong>以上推算假設轉換率維持恆定，但改善 FCR 也可能改變用戶體驗的整體品質，帶動轉換率本身的提升，效果可能被低估。</div>
@@ -857,24 +904,24 @@
 
   <div class="section-title">新會員來源分析</div>
   <div class="chart-grid chart-grid-2">
-    <div class="chart-card">
+    <div class="chart-card" id="card-c4-src-bar">
       <div class="chart-card-title">新會員來源分佈（各通道絕對量）</div>
       <div class="chart-block h320"><canvas id="c4-src-bar"></canvas></div>
     </div>
-    <div class="chart-card">
+    <div class="chart-card" id="card-c4-push-conv">
       <div class="chart-card-title">推播 vs 對話型新會員貢獻</div>
       <div class="chart-block h320"><canvas id="c4-push-conv"></canvas></div>
     </div>
   </div>
 
   <div class="chart-grid chart-grid-2" style="margin-top:0">
-    <div class="chart-card">
+    <div class="chart-card" id="card-c4-monthly">
       <div class="chart-card-title">月度新會員累積（各通道堆疊）</div>
       <div class="chart-block h320"><canvas id="c4-monthly"></canvas></div>
     </div>
-    <div class="chart-card">
+    <div class="chart-card" id="card-c4-efficiency">
       <div class="chart-card-title">每百次觸及/對話帶來的新會員效率</div>
-      <div class="chart-block h280"><canvas id="c4-efficiency"></canvas></div>
+      <div class="chart-block h320"><canvas id="c4-efficiency"></canvas></div>
       <div class="chart-warn-label">⚠️ 推播以觸達數計，對話型以對話次數計，分母不同勿直接比較</div>
     </div>
   </div>
@@ -899,6 +946,7 @@
         <div class="answer-block">
           <p><span class="tag-f">F:</span> <strong>LINE 貢獻最多新會員</strong>，共 <strong>1,287 位</strong>，占全通道新會員總量 3,218 的 <strong>40.0%</strong>。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-4','card-c4-src-bar')">📍 查看：新會員來源分佈（各通道絕對量）</button>
       </div>
     </div>
 
@@ -912,6 +960,7 @@
         <div class="answer-block">
           <p><span class="tag-i">I:</span> <strong>不能。</strong>原因：(1) 口徑不同——Meta 分母是「主動發起對話的高意圖用戶」，LINE 是「被動收到推播的廣泛受眾」，母體性質不同；(2) 成本結構不同——LINE 邊際成本極低，Meta 需客服人力回覆；(3) 規模天花板不同——Meta 對話量受限於願意主動發訊的用戶數，無法像 LINE 一樣大規模主動觸及。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-4','card-c4-efficiency')">📍 查看：每百次觸及/對話帶來的新會員效率</button>
         <div class="trap-block">
           <span class="trap-icon">⚠</span>
           <div><strong>量質倒置陷阱：</strong>效率指標（per unit）高，不代表絕對貢獻可以等比例放大。這是最常見的通道決策錯誤。</div>
@@ -929,6 +978,7 @@
         <div class="answer-block">
           <p><span class="tag-i">I:</span> 值得，但需調整評估框架。官網 Chat 的「新會員」貢獻看起來低，但應考慮：(1) 這是用戶主動尋求協助的通道，取得新會員的「意向品質」可能高於推播通道；(2) 高 FCR 代表客服效率高，成本相對可控；(3) 高棄單率（13%）是明顯的改善機會——若能降低棄單，新會員可能進一步增長。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-4','card-c4-efficiency')">📍 查看：每百次觸及/對話帶來的新會員效率</button>
         <div class="trap-block">
           <span class="trap-icon">⚠</span>
           <div><strong>假設：</strong>「意向品質高」是推測，需 LTV 數據才能驗證。若 Chat 帶來的新會員 LTV 與其他通道相近，則無法支持此論點。</div>
@@ -947,6 +997,7 @@
           <div class="nav-hint" onclick="switchPage('page-2')">👉 回到「推播通道」頁查看月度觸達趨勢</div>
           <p style="margin-top:10px"><span class="tag-a">A:</span> 需增加 644 位新會員（3,218×20%）的策略組合：(1) LINE 觸達量若從 72,000 增至 85,000（+18%），以目前 1.79% 效率約多 <strong>234 位</strong>；(2) Meta 對話量從 6,800 增至 8,500，以 11.37% 效率約多 <strong>193 位</strong>；(3) 官網 Chat 棄單率從 13% 降至 8%，多 425 次完成對話，以 3.4% 效率多 <strong>14 位</strong>；(4) 其餘從 Email 或 WA 最佳化補足。以上合計約 441–600 位，若加上季節性 Q1 成長（若 Q4 月均增長 12% 延續），有機會達標。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-2','card-c2-monthly')">📍 查看：月度推播觸達趨勢（P2）</button>
         <div class="trap-block">
           <span class="trap-icon">⚠</span>
           <div><strong>假設疊加：</strong>此策略堆疊了 4 個假設（擴量不稀釋轉換率、廣告效益維持、季節性延續、棄單改善有效），實際結果的不確定性隨假設數量指數增加。</div>
@@ -964,6 +1015,7 @@
         <div class="answer-block">
           <p><span class="tag-f">F:</span> 推播通道：<strong>1,802 位（56.0%）</strong>；對話型通道：<strong>1,416 位（44.0%）</strong>。推播通道貢獻略多，但對話型通道也佔有相當比重，顯示兩類通道在新會員取得上各有其角色。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('page-4','card-c4-push-conv')">📍 查看：推播 vs 對話型新會員貢獻</button>
       </div>
     </div>
 
@@ -1053,6 +1105,10 @@
 
 
 <script>
+// Register plugins globally (required for Chart.js 4)
+Chart.register(ChartDataLabels);
+if (window['chartjs-plugin-annotation']) Chart.register(window['chartjs-plugin-annotation']);
+
 // ═══════════════════════════════════════════════
 // DATA OBJECT
 // ═══════════════════════════════════════════════
@@ -1191,15 +1247,15 @@ const initialized = { 'page-1': false, 'page-2': false, 'page-3': false, 'page-4
 // PAGE 1 CHARTS
 // ═══════════════════════════════════════════════
 function drawPage1() {
-  // Chart 1: 各通道轉換數對比 (horizontal bar)
+  // Chart 1: 各通道轉換數對比 (horizontal bar, sorted desc)
   charts['c1-ch-conv'] = mk(
     'c1-ch-conv', 'bar',
-    ['LINE','Email','WhatsApp','Meta Messaging','官網客服'],
+    ['LINE','Meta Messaging','WhatsApp','官網客服','Email'],
     [{
       label: '轉換數',
-      data: [660, 228, 252, 476, 234],
-      backgroundColor: [c('blue',0.75), c('teal',0.75), c('orange',0.75), c('red',0.75), c('purple',0.75)],
-      borderColor:     [c('blue',1),    c('teal',1),    c('orange',1),    c('red',1),    c('purple',1)],
+      data: [660, 476, 252, 234, 228],
+      backgroundColor: [c('blue',0.75), c('red',0.75), c('orange',0.75), c('purple',0.75), c('teal',0.75)],
+      borderColor:     [c('blue',1),    c('red',1),    c('orange',1),    c('purple',1),    c('teal',1)],
       borderWidth: 1, borderRadius: 4
     }],
     {
@@ -1249,10 +1305,10 @@ function drawPage1() {
     charts['c1-src-donut'] = new Chart(donutCanvas.getContext('2d'), {
       type: 'doughnut',
       data: {
-        labels: ['LINE 40%','Email 16%','Meta 24%','WA 11%','Chat 9%'],
+        labels: ['LINE 40%','Meta 24%','Email 16%','WA 11%','Chat 9%'],
         datasets: [{
-          data: [40, 16, 24, 11, 9],
-          backgroundColor: [c('blue',0.8), c('teal',0.8), c('orange',0.8), c('red',0.8), c('purple',0.8)],
+          data: [40, 24, 16, 11, 9],
+          backgroundColor: [c('blue',0.8), c('orange',0.8), c('teal',0.8), c('red',0.8), c('purple',0.8)],
           borderColor: '#1E293B',
           borderWidth: 2,
           hoverOffset: 6
@@ -1265,7 +1321,12 @@ function drawPage1() {
         plugins: {
           legend: { position: 'right', labels: { color: '#94A3B8', font: { family: "'IBM Plex Sans', sans-serif", size: 11 }, boxWidth: 12, padding: 12 } },
           tooltip: TT.plugins.tooltip,
-          datalabels: { display: false }
+          datalabels: {
+            display: (ctx) => ctx.dataset.data[ctx.dataIndex] >= 15,
+            color: '#F1F5F9',
+            font: { family: "'IBM Plex Mono', monospace", size: 10, weight: '600' },
+            formatter: v => v + '%'
+          }
         }
       }
     });
@@ -1303,13 +1364,13 @@ function drawPage1() {
 // PAGE 2 CHARTS
 // ═══════════════════════════════════════════════
 function drawPage2() {
-  // Chart 1: Funnel (log scale grouped bar)
+  // Chart 1: Funnel (dual Y-axis grouped bar)
   charts['c2-funnel'] = mk(
     'c2-funnel', 'bar',
     ['觸達','開封','點擊','轉換'],
     [
-      { label: 'LINE', data: [72000, 27360, 8640, 660], backgroundColor: c('blue',0.7), borderColor: c('blue',1), borderWidth: 1, borderRadius: 4 },
-      { label: 'Email', data: [38000, 8360, 3040, 228], backgroundColor: c('teal',0.7), borderColor: c('teal',1), borderWidth: 1, borderRadius: 4 }
+      { label: 'LINE', data: [72000, 27360, 8640, 660], backgroundColor: c('blue',0.7), borderColor: c('blue',1), borderWidth: 1, borderRadius: 4, yAxisID: 'y' },
+      { label: 'Email', data: [38000, 8360, 3040, 228], backgroundColor: c('teal',0.7), borderColor: c('teal',1), borderWidth: 1, borderRadius: 4, yAxisID: 'y2' }
     ],
     {
       plugins: {
@@ -1324,13 +1385,18 @@ function drawPage2() {
       scales: {
         x: { grid: { display: false }, ticks: { color: '#F1F5F9', font: { size: 11 } } },
         y: {
-          type: 'logarithmic',
+          position: 'left',
+          title: { display: true, text: 'LINE', color: 'rgba(59,130,246,1)', font: { size: 10, weight: '600' } },
           grid: { color: 'rgba(148,163,184,0.08)' },
-          ticks: {
-            color: '#94A3B8',
-            font: { family: "'IBM Plex Mono', monospace", size: 9 },
-            callback: v => v >= 1000 ? (v/1000).toFixed(0)+'K' : v
-          }
+          ticks: { color: 'rgba(59,130,246,0.8)', font: { family: "'IBM Plex Mono', monospace", size: 9 }, callback: v => v >= 1000 ? (v/1000).toFixed(0)+'K' : v },
+          suggestedMax: 80000
+        },
+        y2: {
+          position: 'right',
+          title: { display: true, text: 'Email', color: 'rgba(217,119,6,1)', font: { size: 10, weight: '600' } },
+          grid: { drawOnChartArea: false },
+          ticks: { color: 'rgba(217,119,6,0.8)', font: { family: "'IBM Plex Mono', monospace", size: 9 }, callback: v => v >= 1000 ? (v/1000).toFixed(0)+'K' : v },
+          suggestedMax: 42000
         }
       },
       layout: { padding: { top: 20 } }
@@ -1443,7 +1509,7 @@ function drawPage2() {
 // PAGE 3 CHARTS
 // ═══════════════════════════════════════════════
 function drawPage3() {
-  const convLabels = ['WhatsApp','Meta Messaging','官網客服'];
+  const convLabels = ['官網客服','WhatsApp','Meta Messaging'];
 
   // Chart 1: FCR 對比 with annotation
   charts['c3-fcr'] = mk(
@@ -1451,9 +1517,9 @@ function drawPage3() {
     convLabels,
     [{
       label: 'FCR (%)',
-      data: [68, 54, 71],
-      backgroundColor: [c('blue',0.7), c('red',0.7), c('teal',0.7)],
-      borderColor: [c('blue',1), c('red',1), c('teal',1)],
+      data: [71, 68, 54],
+      backgroundColor: [c('teal',0.7), c('blue',0.7), c('red',0.7)],
+      borderColor: [c('teal',1), c('blue',1), c('red',1)],
       borderWidth: 1, borderRadius: 6
     }],
     {
@@ -1499,10 +1565,10 @@ function drawPage3() {
     'c3-resolution', 'bar',
     convLabels,
     [
-      { label: 'FCR 首次解決', data: [68, 54, 71], backgroundColor: c('teal',0.75), stack: 'res', borderRadius: 0 },
-      { label: '升級客服',     data: [12, 28,  9], backgroundColor: c('orange',0.75), stack: 'res', borderRadius: 0 },
-      { label: '未解決',       data: [8,  10,  7], backgroundColor: c('red',0.75), stack: 'res', borderRadius: 0 },
-      { label: '棄單',         data: [12,  8, 13], backgroundColor: c('gray',0.75), stack: 'res', borderRadius: 0 }
+      { label: 'FCR 首次解決', data: [71, 68, 54], backgroundColor: c('teal',0.75), stack: 'res', borderRadius: 0 },
+      { label: '升級客服',     data: [ 9, 12, 28], backgroundColor: c('orange',0.75), stack: 'res', borderRadius: 0 },
+      { label: '未解決',       data: [ 7,  8, 10], backgroundColor: c('red',0.75), stack: 'res', borderRadius: 0 },
+      { label: '棄單',         data: [13, 12,  8], backgroundColor: c('gray',0.75), stack: 'res', borderRadius: 0 }
     ],
     {
       plugins: {
@@ -1531,8 +1597,8 @@ function drawPage3() {
     'c3-efficiency', 'bar',
     convLabels,
     [
-      { label: '平均輪數', data: [4.2, 6.8, 2.9], backgroundColor: c('purple',0.7), borderColor: c('purple',1), borderWidth: 1, borderRadius: 4, yAxisID: 'y' },
-      { label: '首回時間 (分鐘)', data: [3.1, 8.4, 1.2], backgroundColor: c('orange',0.7), borderColor: c('orange',1), borderWidth: 1, borderRadius: 4, yAxisID: 'y2' }
+      { label: '平均輪數', data: [2.9, 4.2, 6.8], backgroundColor: c('purple',0.7), borderColor: c('purple',1), borderWidth: 1, borderRadius: 4, yAxisID: 'y' },
+      { label: '首回時間 (分鐘)', data: [1.2, 3.1, 8.4], backgroundColor: c('orange',0.7), borderColor: c('orange',1), borderWidth: 1, borderRadius: 4, yAxisID: 'y2' }
     ],
     {
       plugins: {
@@ -1571,9 +1637,9 @@ function drawPage3() {
     convLabels,
     [{
       label: '轉換率 (%)',
-      data: [6.0, 7.0, 2.75],
-      backgroundColor: [c('blue',0.7), c('teal',0.7), c('orange',0.7)],
-      borderColor: [c('blue',1), c('teal',1), c('orange',1)],
+      data: [2.75, 6.0, 7.0],
+      backgroundColor: [c('orange',0.7), c('blue',0.7), c('teal',0.7)],
+      borderColor: [c('orange',1), c('blue',1), c('teal',1)],
       borderWidth: 1, borderRadius: 6
     }],
     {
@@ -1604,15 +1670,15 @@ function drawPage3() {
 // PAGE 4 CHARTS
 // ═══════════════════════════════════════════════
 function drawPage4() {
-  // Chart 1: 新會員來源分佈 (horizontal bar)
+  // Chart 1: 新會員來源分佈 (horizontal bar, sorted desc)
   charts['c4-src-bar'] = mk(
     'c4-src-bar', 'bar',
-    ['LINE','Email','Meta Messaging','WhatsApp','官網客服'],
+    ['LINE','Meta Messaging','Email','WhatsApp','官網客服'],
     [{
       label: '新會員數',
-      data: [1287, 515, 773, 354, 289],
-      backgroundColor: [c('blue',0.75), c('teal',0.75), c('orange',0.75), c('red',0.75), c('purple',0.75)],
-      borderColor:     [c('blue',1),    c('teal',1),    c('orange',1),    c('red',1),    c('purple',1)],
+      data: [1287, 773, 515, 354, 289],
+      backgroundColor: [c('blue',0.75), c('orange',0.75), c('teal',0.75), c('red',0.75), c('purple',0.75)],
+      borderColor:     [c('blue',1),    c('orange',1),    c('teal',1),    c('red',1),    c('purple',1)],
       borderWidth: 1, borderRadius: 4
     }],
     {
@@ -1625,7 +1691,7 @@ function drawPage4() {
           font: { family: "'IBM Plex Mono', monospace", size: 10, weight: '600' },
           anchor: 'end', align: 'right',
           formatter: (v, ctx) => {
-            const pct = [40,16,24,11,9][ctx.dataIndex];
+            const pct = [40,24,16,11,9][ctx.dataIndex];
             return v.toLocaleString() + ' (' + pct + '%)';
           }
         }
@@ -1692,7 +1758,12 @@ function drawPage4() {
         plugins: {
           legend: { position: 'bottom', labels: { color: '#94A3B8', font: { family: "'IBM Plex Sans', sans-serif", size: 11 }, boxWidth: 12, padding: 14 } },
           tooltip: TT.plugins.tooltip,
-          datalabels: { display: false },
+          datalabels: {
+            display: true,
+            color: '#F1F5F9',
+            font: { family: "'IBM Plex Mono', monospace", size: 11, weight: '600' },
+            formatter: (v) => v.toLocaleString()
+          },
           centerText: {}
         },
         animation: {
@@ -1719,12 +1790,12 @@ function drawPage4() {
   // Chart 4: 效率對比 (bar) — different denominator types
   charts['c4-efficiency'] = mk(
     'c4-efficiency', 'bar',
-    ['LINE\n(觸達)', 'Email\n(觸達)', 'WA\n(對話)', 'Meta\n(對話)', 'Chat\n(對話)'],
+    ['LINE (觸達)', 'Email (觸達)', 'Meta (對話)', 'WA (對話)', 'Chat (對話)'],
     [{
       label: '每百次帶來新會員',
-      data: [1.79, 1.36, 8.43, 11.37, 3.40],
-      backgroundColor: [c('blue',0.7), c('teal',0.7), c('red',0.5), c('orange',0.7), c('purple',0.7)],
-      borderColor:     [c('blue',1),   c('teal',1),   c('red',0.8), c('orange',1),   c('purple',1)],
+      data: [1.79, 1.36, 11.37, 8.43, 3.40],
+      backgroundColor: [c('blue',0.7), c('teal',0.7), c('orange',0.7), c('red',0.5), c('purple',0.7)],
+      borderColor:     [c('blue',1),   c('teal',1),   c('orange',1), c('red',0.8),   c('purple',1)],
       borderWidth: 1, borderRadius: 6
     }],
     {
@@ -1756,14 +1827,14 @@ function drawPage4() {
         }
       },
       scales: {
-        x: { grid: { display: false }, ticks: { color: '#F1F5F9', font: { size: 10 } } },
+        x: { grid: { display: false }, ticks: { color: '#F1F5F9', font: { size: 10 }, maxRotation: 0 } },
         y: {
           grid: { color: 'rgba(148,163,184,0.08)' },
           ticks: { color: '#94A3B8', font: { family: "'IBM Plex Mono', monospace", size: 10 } },
           suggestedMax: 14
         }
       },
-      layout: { padding: { top: 20 } }
+      layout: { padding: { top: 30, right: 10 } }
     }
   );
 }
@@ -1872,6 +1943,22 @@ function filterDef(val) {
   });
   const noResult = document.getElementById('defNoResult');
   if (noResult) noResult.style.display = (visible === 0 && q) ? 'block' : 'none';
+}
+
+// ═══════════════════════════════════════════════
+// CHART NAVIGATION + FLASH
+// ═══════════════════════════════════════════════
+function goToChart(page, cardId) {
+  switchPage(page);
+  setTimeout(function() {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    card.classList.remove('chart-flash');
+    void card.offsetWidth; // force reflow to restart animation
+    card.classList.add('chart-flash');
+    setTimeout(function() { card.classList.remove('chart-flash'); }, 2400);
+  }, 200);
 }
 
 // ═══════════════════════════════════════════════

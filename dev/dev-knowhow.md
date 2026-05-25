@@ -181,6 +181,76 @@ assertConsistency 新增 Check 11，驗證每個門市的推算值與 store_reve
 
 ---
 
+## 14. Chart.js 4.x 圖表不渲染的三大靜默陷阱
+
+以下三個問題在 Chart.js 4.x 中均**不報錯、只是圖表靜默不顯示**，極難診斷。
+
+### 14-A：`Chart.register(ChartDataLabels)` 必須存在
+
+**問題：** Chart.js v4 移除全域 plugin 自動掛載。若未呼叫 `Chart.register(ChartDataLabels)`，所有 `datalabels: { display: true }` 均為死碼——不報錯，數值就是不出現。
+
+**解法：** 在 script 最末（assertConsistency 之後）立即呼叫：
+```javascript
+Chart.register(ChartDataLabels);
+if (typeof window['chartjs-plugin-annotation'] !== 'undefined') {
+  Chart.register(window['chartjs-plugin-annotation']);
+}
+```
+
+**注意：** 不要緊跟著加 `Chart.defaults.set('plugins.datalabels', { display: false })`（見 14-B）。
+
+---
+
+### 14-B：禁用 `Chart.defaults.set('plugins.datalabels', { display: false })`
+
+**問題：** 這行看似「全域關閉再個別開啟」的 best practice，實際上會覆蓋 ChartDataLabels 插件的內部 option merger，導致雙 Y 軸圖（dual-axis bar+line）和填色折線圖（fill line）的**整個圖形消失**（不只是 label 消失），且不報任何錯誤。
+
+**解法：** 直接刪除這行。在每個不需要 label 的圖表中，逐一指定 `datalabels: { display: false }` 即可。每個需要 label 的圖表則顯式設定 `datalabels: { display: true, ... }`。
+
+---
+
+### 14-C：`switchPage` 必須用 `setTimeout(60ms)` 包住 draw 呼叫
+
+**問題：** `switchPage` 呼叫 DOM classList 修改（hidden/active）後，若立即同步呼叫 drawXxx()，瀏覽器尚未完成 layout——Chart.js 讀到的 canvas 尺寸仍是 0×0，導致圖表初始化成空白且不報錯。
+
+**現象：** 第一頁（直接載入）的圖表正常，切換到其他頁面後的圖表全部空白或只顯示背景色。
+
+**解法：** 使用 60ms 延遲，與工作版（電商DTC）保持一致：
+```javascript
+if (!initialized[name]) {
+  initialized[name] = true;
+  setTimeout(() => {
+    if (name === 'ops') drawOps();
+    if (name === 'cust') drawCust();
+    if (name === 'deep') drawDeep();
+  }, 60);
+}
+```
+
+---
+
+### 14-D：所有 canvas 容器的 CSS 高度 class 必須實際定義
+
+**問題：** HTML 中 `<div class="h280">` 若 `.h280 { height: 280px }` 不在 CSS 中，容器高度為 0，圖表完全不可見（Chart.js 不報錯）。
+
+**症狀：** 圖表在 DOM 中存在（F12 可查到 canvas），但視覺上完全消失，不是白色而是完全不佔空間。
+
+**解法：** 統一定義所有使用到的 `.hNNN` class。建議完整組：
+```css
+.h240 { height: 240px; }
+.h260 { height: 260px; }
+.h280 { height: 280px; }
+.h300 { height: 300px; }
+.h360 { height: 360px; }
+.h420 { height: 420px; }
+.h480 { height: 480px; }
+.h520 { height: 520px; }
+```
+
+每次新增圖表前，先確認對應的 height class 存在。
+
+---
+
 ## 13. 計算指標的層級一致性
 
 **問題：** 儀表板顯示品類（3 欄）資料，但 HHI KPI 使用 SKU 層級計算值（需要品項明細），學員無法驗算，違反「所有分析依據只使用儀表板呈現數據」原則。

@@ -41,6 +41,9 @@
 - [ ] **24. KPI 卡值不截斷** — `.kpi-value` 禁用 `overflow: hidden; text-overflow: ellipsis; white-space: nowrap`；改用 `font-size: clamp()` + `word-break: break-word`；在 1400px 寬度下確認最長 KPI 值完整顯示
 - [ ] **25. Bar/Column chart 資料依顯示值降序排列** — 月份時間軸例外；多圖共享標籤時使用一致的固定排序順序
 - [ ] **26. 值域差距 >10x 的雙數列使用雙 Y-axis** — 禁用對數刻度；右軸加 `grid: { drawOnChartArea: false }`，避免格線重疊
+- [ ] **27. 禁止使用 `Chart.defaults.set('plugins.datalabels', ...)`** — 此呼叫覆蓋 ChartDataLabels 內部 option merger，會導致 dual-axis 圖和 fill-line 圖整個消失（不只是 label 消失），且不報錯；改為在每個圖表逐一設定 `datalabels: { display: false/true }`
+- [ ] **28. `switchPage` 用 `setTimeout(60ms)` 包住 draw 呼叫** — DOM classList 切換後瀏覽器尚未完成 layout；同步呼叫 drawXxx() 時 canvas 尺寸為 0，圖表靜默初始化成空白；正確寫法：`setTimeout(() => { if (name==='ops') drawOps(); ... }, 60)`
+- [ ] **29. 所有用到的 `.hNNN` CSS class 必須有定義** — 容器高度 0 = 圖表完全不可見且不報錯；生成 HTML 前確認 `.h240/.h260/.h280/.h300/.h360/.h420/.h480/.h520` 全部在 `:root` 下方定義
 
 ---
 
