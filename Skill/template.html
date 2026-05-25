@@ -179,7 +179,7 @@
     .section-title:first-child { margin-top: 4px; }
 
     /* ── KPI cards ── */
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap: 14px; margin-bottom: 28px; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 14px; margin-bottom: 28px; }
     .kpi-card {
       background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
       padding: 18px 20px; position: relative; overflow: hidden;
@@ -189,7 +189,7 @@
       background: var(--kpi-color, var(--accent));
     }
     .kpi-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; }
-    .kpi-value { font-family: 'JetBrains Mono', monospace; font-size: 1.6rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .kpi-value { font-family: 'JetBrains Mono', monospace; font-size: clamp(1.05rem, 2.4vw, 1.55rem); font-weight: 600; color: var(--text); line-height: 1.2; word-break: break-word; }
     .kpi-sub { font-size: 0.72rem; margin-top: 5px; }
     .kpi-up { color: var(--accent2); }
     .kpi-neutral { color: var(--text-muted); }
@@ -288,6 +288,37 @@
 
     /* ── Footer ── */
     .page-footer { padding: 32px 24px; text-align: center; font-size: 0.75rem; color: var(--text-muted); }
+
+    /* ── Chart flash animation ── */
+    @keyframes chartFlash {
+      0%,100% { box-shadow: none; border-color: var(--border); }
+      50% { box-shadow: 0 0 0 3px rgba(96,165,250,0.85), 0 0 20px rgba(96,165,250,0.35); border-color: rgba(96,165,250,0.9); }
+    }
+    .chart-flash { animation: chartFlash 0.55s ease-in-out 4; }
+
+    /* ── Chart reference button ── */
+    .chart-ref-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.28);
+      border-radius: 6px; padding: 5px 12px; margin-top: 8px;
+      font-size: 0.76rem; color: var(--accent); cursor: pointer;
+      font-family: 'Outfit', sans-serif; transition: background 0.2s;
+    }
+    .chart-ref-btn:hover { background: rgba(59,130,246,0.14); }
+
+    /* ── Responsive ── */
+    @media(max-width:600px) {
+      .header-row-1 { padding: 10px 12px 8px; }
+      .header-row-2 { padding: 0 12px; overflow-x: auto; }
+      .header-legend { padding: 5px 12px; row-gap: 4px; }
+      .header-legend .legend-vdivider { display: none; }
+      .legend-colors { gap: 8px; }
+      .legend-right { gap: 8px; }
+      .page { padding: 16px; }
+    }
+    @media(max-width:480px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -439,7 +470,7 @@
   </div>
 
   <div class="section-title">月度來客趨勢 × 客單價</div>
-  <div class="chart-card">
+  <div class="chart-card" id="card-cVisitAOV">
     <div class="chart-card-title">月度來客人次（左軸）× 月均客單價（右軸）</div>
     <div class="chart-block h300"><canvas id="cVisitAOV"></canvas></div>
     <div class="findings-section">
@@ -448,14 +479,14 @@
   </div>
 
   <div class="chart-grid chart-grid-2" style="margin-top:18px">
-    <div class="chart-card">
+    <div class="chart-card" id="card-cDineTakeout">
       <div class="chart-card-title">內用 vs 外帶比例（月）</div>
       <div class="chart-block h260"><canvas id="cDineTakeout"></canvas></div>
       <div class="findings-section">
         <strong>趨勢：</strong>外帶佔比從1月38%穩定上升至12月47%，全年均值43.2%。外帶佔比上升不等同內用絕對人次下降。
       </div>
     </div>
-    <div class="chart-card">
+    <div class="chart-card" id="card-cRevCat">
       <div class="chart-card-title">月度品類業績結構（万NT$）</div>
       <div class="chart-block h260"><canvas id="cRevCat"></canvas></div>
       <div class="findings-section">
@@ -465,7 +496,7 @@
   </div>
 
   <div class="section-title">34門市年度業績排行</div>
-  <div class="chart-card">
+  <div class="chart-card" id="card-cStoreRank">
     <div class="chart-card-title">門市年度業績（万NT$，降序）— 34門市</div>
     <div class="chart-block h520"><canvas id="cStoreRank"></canvas></div>
     <div class="findings-section">
@@ -489,6 +520,7 @@
           <p><span class="tag-f">F:</span> 全年總來客 <strong>486,217 人次</strong>，YoY <strong>+10.2%</strong>（前年 441,212 人次）。</p>
           <p>圖表來源：月度來客趨勢柱狀圖，各月加總即為年度數字。計算驗證：486,217 ÷ 441,212 − 1 ≈ 10.2%。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('ops','card-cVisitAOV')">📍 查看：月度來客趨勢</button>
       </div>
     </div>
 
@@ -504,6 +536,7 @@
           <p><span class="tag-f">F:</span> 11月（46,596人次）與12月（47,406人次）為全年最高，合計佔年度約19.4%。2月（31,604人次）為全年最低。</p>
           <p><span class="tag-i">I:</span> 年末旺季可能來自三個因素——① 年終尾牙聚餐需求增加；② 節慶氛圍帶動聚餐頻率；③ 天氣轉涼促使外食意願提升。2月低點則因農曆春節期間大量顧客返鄉，商圈人流下降。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('ops','card-cVisitAOV')">📍 查看：月度來客趨勢</button>
       </div>
     </div>
 
@@ -519,6 +552,7 @@
           <p><span class="tag-f">F:</span> 最高：<strong>信義旗艦 790万</strong>；最低：<strong>高雄苓雅 139万</strong>。差距 790 ÷ 139 ≈ <strong>5.7倍</strong>。</p>
           <p>圖表來源：門市業績排行水平柱狀圖，從上至下降序排列。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('ops','card-cStoreRank')">📍 查看：34門市業績排行</button>
       </div>
     </div>
 
@@ -539,6 +573,7 @@
           <span class="trap-icon">⚠</span>
           <div><strong>常見陷阱：</strong>比例上升 ≠ 絕對量下降。看到「外帶佔比上升」就直接推論「內用在萎縮」是比例vs.絕對量的基本混淆，需要同時對照總量圖表才能做出正確判斷。</div>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('ops','card-cDineTakeout')">📍 查看：內用 vs 外帶比例</button>
       </div>
     </div>
 
@@ -554,6 +589,7 @@
           <p><span class="tag-f">F:</span> 套餐組合 5,861万（42.0%），單點餐食 4,605万（33.0%），飲料飲品 3,488万（25.0%）。三類合計 13,954万。</p>
           <p><span class="tag-i">I:</span> 套餐組合佔比最高，且套餐通常具有較高的綁定性（主餐＋飲料組合定價）。理論上套餐可提升整體客單價，同時利用定量食材控制備料成本，對毛利率有正向潛力——但實際效果需對照成本結構，此儀表板未揭露成本數據。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('ops','card-cRevCat')">📍 查看：月度品類業績結構</button>
       </div>
     </div>
 
@@ -574,6 +610,7 @@
           <span class="trap-icon">⚠</span>
           <div><strong>常見陷阱：</strong>直覺上「低業績門市最需要幫助」聽起來合理，但選址差的門市即使大幅改善運營，也難以追趕商圈客流先天不足的劣勢。診斷原因先於資源投入，是分析師vs.直覺決策者的核心差距。</div>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('ops','card-cStoreRank')">📍 查看：34門市業績排行</button>
       </div>
     </div>
 
@@ -590,6 +627,7 @@
           <p>計算公式：<code style="background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:0.8rem">13,954万 ÷ 34店 ÷ 12月 = 34.2万</code></p>
           <p>注意：這是加權平均，實際各門市月業績差異巨大（旗艦店可達65万/月，尾端門市僅11万/月）。平均值不代表「典型門市」。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('ops','card-cRevCat')">📍 查看：月度品類業績結構</button>
       </div>
     </div>
 
@@ -626,7 +664,7 @@
   </div>
 
   <div class="section-title">24小時來客分布</div>
-  <div class="chart-card">
+  <div class="chart-card" id="card-cHourly">
     <div class="chart-card-title">每小時來客指數（0–23時）</div>
     <div class="chart-block h260"><canvas id="cHourly"></canvas></div>
     <div class="findings-section">
@@ -634,7 +672,7 @@
     </div>
   </div>
 
-  <div class="chart-card" style="margin-top:18px">
+  <div class="chart-card" id="card-cFreqDist" style="margin-top:18px">
     <div class="chart-card-title">顧客消費頻率分布</div>
     <div class="chart-block h280"><canvas id="cFreqDist"></canvas></div>
     <div class="findings-section">
@@ -643,11 +681,11 @@
   </div>
 
   <div class="chart-grid chart-grid-2" style="margin-top:18px">
-    <div class="chart-card">
+    <div class="chart-card" id="card-cTierDonut">
       <div class="chart-card-title">顧客結構（人數）</div>
       <div class="chart-block h240"><canvas id="cTierDonut"></canvas></div>
     </div>
-    <div class="chart-card">
+    <div class="chart-card" id="card-cTierAOV">
       <div class="chart-card-title">各等級平均客單價（NT$）</div>
       <div class="chart-block h240"><canvas id="cTierAOV"></canvas></div>
       <div class="findings-section" style="font-size:0.75rem">
@@ -672,6 +710,7 @@
           <p><span class="tag-f">F:</span> 晚間 19:00 達到最高峰（指數78），午間 12:00 次高（指數54），為雙峰型分布。6:00–7:00 有小早市波峰（指數9–15）；8:00 指數已升至24，進入往午峰爬坡的過渡段。</p>
           <p><span class="tag-i">I:</span> 雙峰型分布對排班的含義：① 排班應在 11:30 和 18:00 前完成準備工作；② 19:00–21:00 需配置最大人力；③ 14:00–17:00 為低谷，可安排清潔、備料、訓練；④ 若外帶佔比持續上升，高峰期的外帶打包效率也需納入排班考量。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('cust','card-cHourly')">📍 查看：24小時來客分布</button>
       </div>
     </div>
 
@@ -688,6 +727,7 @@
           <p>驗算：12,480 ÷ 58,320 × 100 = 21.4%（精確）。圖表來源：顧客結構 Donut 圖（中心文字顯示總顧客數）。</p>
           <p>另一驗算路徑：頻率分布圖中「年12-23次（7,562人）+ 年24次以上（4,918人）= 12,480人」= VIP人數，兩圖可交叉確認。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('cust','card-cTierDonut')">📍 查看：顧客結構</button>
       </div>
     </div>
 
@@ -703,6 +743,7 @@
           <p><span class="tag-f">F:</span> <strong>30日回購率 36.8%</strong>，定義為：本月有消費記錄的顧客中，在 <strong>首次消費後30天內</strong> 再次消費的比例。口徑為滾動30天窗口，而非自然月。</p>
           <p>注意：不同公司的回購率定義差異很大——有些用「任意30天窗口」，有些用「自然月內二次消費」，口徑不同時數字無法直接比較。本儀表板指標定義面板有完整口徑說明。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('deep','card-cRepurchase')">📍 查看：再購間隔分布</button>
       </div>
     </div>
 
@@ -723,6 +764,7 @@
           <span class="trap-icon">⚠</span>
           <div><strong>常見陷阱：</strong>AOV（每次客單價）≠ LTV（全年總價值）。用單次消費金額評估顧客價值，會系統性低估高頻顧客的重要性——這是餐飲分析中最典型的單指標陷阱之一。</div>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('cust','card-cTierAOV')">📍 查看：各等級平均客單價</button>
       </div>
     </div>
 
@@ -738,6 +780,7 @@
           <p><span class="tag-f">F:</span> 佔比最大為 <strong>年2-3次，共15,850人（27.2%）</strong>。其次為年4-6次（12,166人，20.9%）。</p>
           <p>這表示超過一半的顧客（年1-3次合計：8,820+15,850=24,670人，即42.3%）屬於低頻偶發性消費，是擴大回購頻率的主要目標族群。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('cust','card-cFreqDist')">📍 查看：顧客消費頻率分布</button>
       </div>
     </div>
 
@@ -758,6 +801,7 @@
           <span class="trap-icon">⚠</span>
           <div><strong>常見陷阱：</strong>「提升高頻貢獻率」≠「只服務現有高頻顧客」。如果資源都投在已飽和的VIP族群，分母（總業績）增加有限；真正的槓桿在拉升中間層。</div>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('cust','card-cFreqDist')">📍 查看：顧客消費頻率分布</button>
       </div>
     </div>
 
@@ -773,6 +817,7 @@
           <p><span class="tag-f">F:</span> 回購顧客中：≤7天3,500人，8-14天7,200人（最多，峰值），15-21天5,800人，22-30天4,962人。≤30天內回購合計<strong>21,462人</strong>（= 58,320 × 36.8%），與30日回購率KPI吻合。回購高峰在 <strong>8-14天</strong>。</p>
           <p><span class="tag-i">I:</span> 建議主要推播在首次消費後 <strong>第7-10天</strong> 觸達——此時顧客記憶尚新且接近自然回購窗口，推播效果最佳。過早推播（≤3天）打擾感高；過晚推播（≥21天後）顧客可能已轉向競品，效果顯著下降。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('deep','card-cRepurchase')">📍 查看：再購間隔分布</button>
       </div>
     </div>
 
@@ -785,7 +830,7 @@
 <div id="page-deep" class="page hidden">
 
   <div class="section-title">門市四象限分析：來客×客單價</div>
-  <div class="chart-card">
+  <div class="chart-card" id="card-cStoreScatter">
     <div class="chart-card-title">34門市散點圖（x=月均來客，y=平均客單價）— 中線：x=1196, y=NT$287</div>
     <div class="chart-block h420"><canvas id="cStoreScatter"></canvas></div>
     <div class="findings-section">
@@ -794,7 +839,7 @@
   </div>
 
   <div class="section-title" style="margin-top:28px">顧客再購間隔分布</div>
-  <div class="chart-card">
+  <div class="chart-card" id="card-cRepurchase">
     <div class="chart-card-title">再購間隔天數分布（有回購行為顧客）</div>
     <div class="chart-block h280"><canvas id="cRepurchase"></canvas></div>
     <div class="findings-section">
@@ -818,6 +863,7 @@
           <p><span class="tag-f">F:</span> 左下象限（低來客 × 低客單）的門市同時面臨流量不足與消費力雙重問題，如高雄苓雅（月均約544人次，AOV NT$213）。</p>
           <p><span class="tag-i">I:</span> 需優先診斷原因——選址問題（商圈客流本身不足，屬外部因素）還是服務/品項/體驗問題（內部因素，可改善）。診斷工具：比較同一城市其他門市的客流特徵；調查周邊競品密度；分析門市顧客回購率（若回購率尚可，問題是招新不足；若回購率也低，問題在留客）。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('deep','card-cStoreScatter')">📍 查看：門市四象限散點圖</button>
       </div>
     </div>
 
@@ -836,6 +882,7 @@
         <div class="nav-hint" onclick="switchPage('cust'); setTimeout(()=>{document.getElementById('cTierAOV')?.scrollIntoView({behavior:'smooth',block:'center'})},350)">
           ↗ 前往 P2 查看各等級客單價對比圖（cTierAOV）
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('cust','card-cTierAOV')">📍 查看：各等級平均客單價</button>
       </div>
     </div>
 
@@ -862,6 +909,7 @@
           <span class="trap-icon">⚠</span>
           <div><strong>常見陷阱：</strong>只用單一業績指標分級，會將「高流量低客單」和「低流量低客單」的門市混為一談——前者問題是品項組合，後者問題是選址或品牌認知，改善方法完全不同。雙維度分析是分析師思維的核心。</div>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('deep','card-cStoreScatter')">📍 查看：門市四象限散點圖</button>
       </div>
     </div>
 
@@ -890,6 +938,7 @@
             <div><strong>常見陷阱：</strong>用「來客成長=一切向好」替代翻桌率分析，可能掩蓋座位效率下降的問題——在租金固定的門市，翻桌率才是真正的坪效驅動因子。</div>
           </div>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('ops','card-cVisitAOV')">📍 查看：月度來客趨勢</button>
       </div>
 
       <!-- T2 -->
@@ -910,6 +959,7 @@
             <div><strong>常見陷阱：</strong>用統一KPI目標衡量本質不同的門市，不但無法帶來改善，還可能驅動錯誤行動——例如讓旗艦店花大量資源追求「提升回購率」，但其目標客群根本不住在附近。</div>
           </div>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('deep','card-cRepurchase')">📍 查看：再購間隔分布</button>
       </div>
 
       <!-- T3 -->
@@ -930,6 +980,7 @@
             <div><strong>常見陷阱：</strong>看到「外帶成長」就建議「強化外送合作」，但若外送已是主要外帶來源，此建議等於在高抽成渠道投入更多——可能是連鎖成本最高的成長路徑。</div>
           </div>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('ops','card-cDineTakeout')">📍 查看：內用 vs 外帶比例</button>
       </div>
 
       <!-- T4 -->
@@ -950,6 +1001,7 @@
             <div><strong>常見陷阱：</strong>「集中度高=效率好，管理簡單」是常見誤解。集中度高確實降低運營複雜度，但同時也意味著更高的脆弱性（anti-fragility角度）——單一依賴是供應鏈與市場風險的放大器。</div>
           </div>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('ops','card-cRevCat')">📍 查看：月度品類業績結構</button>
       </div>
 
     </div><!-- end training qa-section -->
@@ -1127,6 +1179,9 @@ assertConsistency();
 // ══════════════════════════════════════════════════
 // CHART UTILITIES
 // ══════════════════════════════════════════════════
+Chart.register(ChartDataLabels);
+if (window['chartjs-plugin-annotation']) Chart.register(window['chartjs-plugin-annotation']);
+
 Chart.defaults.color = '#8b949e';
 Chart.defaults.borderColor = 'rgba(255,255,255,0.07)';
 Chart.defaults.font.family = "'Outfit', sans-serif";
@@ -1158,7 +1213,7 @@ function c(key, alpha=1) {
 function mk(id, type, labels, datasets, opts={}) {
   const ctx = document.getElementById(id)?.getContext('2d');
   if (!ctx) return;
-  const def = { legend: { display: false }, tooltip: TT };
+  const def = { legend: { display: false }, tooltip: TT, datalabels: { display: false } };
   const mergedPlugins = opts.plugins ? { ...def, ...opts.plugins } : def;
   const { plugins: _p, ...restOpts } = opts;
   return new Chart(ctx, {
@@ -1684,6 +1739,19 @@ function toggleQA(el) {
   const wasOpen = item.classList.contains('open');
   item.classList.toggle('open', !wasOpen);
   answer.classList.toggle('show', !wasOpen);
+}
+
+function goToChart(page, cardId) {
+  switchPage(page);
+  setTimeout(function() {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    card.classList.remove('chart-flash');
+    void card.offsetWidth;
+    card.classList.add('chart-flash');
+    setTimeout(function() { card.classList.remove('chart-flash'); }, 2400);
+  }, 200);
 }
 
 // Init first page

@@ -36,6 +36,11 @@
 - [ ] **19. 所有縮寫/專有名詞已在 def-panel 定義** — 搜尋全文大寫縮寫（YoY、pp、LTV、ROI、KPI、AOV 等），逐一確認 def-panel 有對應條目；無定義者不得出現在正文
 - [ ] **20. 所有分析依據只引用儀表板呈現的數據** — F/I tag 中的每個數字需有圖表出處；引用未呈現數據者必須改為 [A] tag 並說明來源假設
 - [ ] **21. F/I/A 標籤系統在可見位置有說明** — legend strip 或 def-panel 必須有 F/I/A 三色標籤的含義說明，不可只在摺疊答案內使用
+- [ ] **22. `Chart.register(ChartDataLabels)` 為 script 啟動第一呼叫** — 缺少此行，所有 `datalabels: { display: true }` 為死碼（Chart.js 不報錯，只是靜默不渲染）；在 console 確認數值出現才算通過
+- [ ] **23. 每道 QA 訓練題答案都有 `chart-ref-btn`** — 點擊執行 `goToChart(page, cardId)`，觸發頁切換 + scrollIntoView + chartFlash 動畫；所有對應 `chart-card` 必須有 `id="card-{id}"`
+- [ ] **24. KPI 卡值不截斷** — `.kpi-value` 禁用 `overflow: hidden; text-overflow: ellipsis; white-space: nowrap`；改用 `font-size: clamp()` + `word-break: break-word`；在 1400px 寬度下確認最長 KPI 值完整顯示
+- [ ] **25. Bar/Column chart 資料依顯示值降序排列** — 月份時間軸例外；多圖共享標籤時使用一致的固定排序順序
+- [ ] **26. 值域差距 >10x 的雙數列使用雙 Y-axis** — 禁用對數刻度；右軸加 `grid: { drawOnChartArea: false }`，避免格線重疊
 
 ---
 
@@ -115,6 +120,7 @@ def verify_dashboard(html_path):
             '.ev',                     # 證據碼
             '.trap-block',             # 陷阱區塊
             '.nav-hint',               # 跨頁提示
+            '.chart-ref-btn',          # 圖表索引按鈕
             '#defPanel',               # 定義面板
             '.training-panel',         # 訓練題區塊
             '.meta-panel',             # 設計選擇揭露

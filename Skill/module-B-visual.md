@@ -148,27 +148,59 @@
 
 ---
 
-## B.4 標準 mk() Chart Factory
+## B.4 Plugin 初始化 & 標準 mk() Chart Factory
 
-所有圖表透過此 factory 創建，確保 plugins 深合併、避免覆寫預設：
+### Plugin 強制初始化（🔴 紅線）
+
+每份 dashboard 的 `<script>` 區塊第一件事，**必須**呼叫：
+
+```javascript
+Chart.register(ChartDataLabels);
+if (window['chartjs-plugin-annotation']) Chart.register(window['chartjs-plugin-annotation']);
+```
+
+**缺少第一行 = 所有 `datalabels: { display: true }` 為靜默死碼。** Chart.js 4 不再自動啟動 CDN 載入的 plugin，必須手動 register。
+
+### mk() Chart Factory
+
+所有圖表透過此 factory 創建，確保 plugins 深合併、datalabels 預設關閉：
 
 ```javascript
 function mk(id, type, labels, datasets, opts={}) {
   const ctx = document.getElementById(id)?.getContext('2d');
-  if(!ctx) return;
-  const defaultPlugins = {legend:{display:false}, tooltip:TT};
-  const mergedPlugins = opts.plugins ? {...defaultPlugins, ...opts.plugins} : defaultPlugins;
-  const finalOpts = {...opts, plugins: mergedPlugins};
-  return new Chart(ctx,{
-    type, data:{labels,datasets},
-    options:{responsive:true, maintainAspectRatio:true,
-      animation:{duration:480, easing:'easeOutQuart'},
-      ...finalOpts}
+  if (!ctx) return;
+  const def = {
+    legend: { display: false },
+    tooltip: TT,
+    datalabels: { display: false }   // 預設關閉，每張圖需顯示時才在 opts.plugins 覆蓋
+  };
+  const mergedPlugins = opts.plugins ? { ...def, ...opts.plugins } : def;
+  const { plugins: _p, ...restOpts } = opts;
+  return new Chart(ctx, {
+    type,
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 480, easing: 'easeOutQuart' },
+      ...restOpts,
+      plugins: mergedPlugins
+    }
   });
 }
 ```
 
-**重要：** 不要在 mk() 外另寫 `new Chart()`，除非需要 custom plugin（如 donut 中央文字）。所有圖表行為要可預測。
+**規則：**
+- `maintainAspectRatio: false` — 高度由 `.chart-block.hXXX` CSS 控制
+- 需顯示 datalabels 時，在 opts.plugins 中覆蓋：`datalabels: { display: true, anchor: 'end', align: 'end', font: { family: "'JetBrains Mono', monospace", size: 10 }, formatter: v => v.toLocaleString() }`
+- 不要在 mk() 外另寫 `new Chart()`，除非需要 custom plugin（如 donut 中央文字）
+
+### 圖表資料排序規則（🔴 紅線）
+
+1. **Bar / Column chart** — 資料依「顯示值」**降序排列**（最大值在左/上）。若有語意固定順序（月份時間軸）則例外。
+2. **Donut / Pie chart** — 切片依「值」**降序排列**（最大切片從 12 點鐘位置順時針開始）。
+3. **多圖共享標籤陣列** — 以最核心指標降序排定後，所有圖使用相同順序，確保視覺一致。
+4. **值域差距 >10x** — 禁用對數刻度；改用**雙 Y-axis**，右軸加 `grid: { drawOnChartArea: false }`。
 
 ---
 
@@ -190,6 +222,54 @@ function mk(id, type, labels, datasets, opts={}) {
 - 點擊觸發 page-switch + scroll-to-chart + flash animation
 - 用 `👉` icon 強化「跳轉」直覺
 - 摺疊時隱藏，展開答案才出現（避免問題列表變雜亂）
+
+### Chart Ref Button（圖表索引按鈕）（🔴 紅線）
+
+**每一道 QA 訓練題的答案都必須有至少一個 `chart-ref-btn`**，讓讀者可直接跳轉到答案引用的圖表。
+
+```html
+<button class="chart-ref-btn" onclick="goToChart('page-name','card-chart-id')">📍 查看：圖表名稱</button>
+```
+
+CSS（加在 style 末尾）：
+```css
+@keyframes chartFlash {
+  0%,100% { box-shadow: none; border-color: var(--border); }
+  50% { box-shadow: 0 0 0 3px rgba(96,165,250,0.85), 0 0 20px rgba(96,165,250,0.35);
+        border-color: rgba(96,165,250,0.9); }
+}
+.chart-flash { animation: chartFlash 0.55s ease-in-out 4; }
+
+.chart-ref-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.28);
+  border-radius: 6px; padding: 5px 12px; margin-top: 8px;
+  font-size: 0.76rem; color: var(--accent); cursor: pointer;
+  font-family: var(--font-body); transition: background 0.2s;
+}
+.chart-ref-btn:hover { background: rgba(59,130,246,0.14); }
+```
+
+JavaScript：
+```javascript
+function goToChart(page, cardId) {
+  switchPage(page);
+  setTimeout(function() {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    card.classList.remove('chart-flash');
+    void card.offsetWidth;               // force reflow to restart animation
+    card.classList.add('chart-flash');
+    setTimeout(function() { card.classList.remove('chart-flash'); }, 2400);
+  }, 200);
+}
+```
+
+每個被引用的 `chart-card` 必須有 `id="card-{canvas-id}"`：
+```html
+<div class="chart-card" id="card-cVisitAOV">
+```
 
 ### Definition Panel（D10）— 側板規格（見 B.3）
 - Header Row 2 最左有 `📖 指標定義 ›` 按鈕，點擊從**左側滑出**側板
@@ -221,6 +301,41 @@ function mk(id, type, labels, datasets, opts={}) {
 
 不需要支援手機版 — 訓練型 dashboard 一定是桌機/平板情境，不要為了 mobile 犧牲桌機資訊密度。
 
+### KPI Grid 必用規格（🔴 紅線）
+
+```css
+/* ✅ 正確：auto-fit 讓卡片撐滿整列，4 張卡各得 ~338px（1400px 寬時） */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 14px; }
+
+/* ❌ 錯誤：auto-fill 產生幽靈空欄，4 張卡只有 ~200px 寬，KPI 值截斷 */
+/* .kpi-grid { grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); } */
+```
+
+KPI 值禁止截斷（🔴 紅線）：
+```css
+/* ✅ 正確 */
+.kpi-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(1.05rem, 2.4vw, 1.55rem);
+  font-weight: 600; line-height: 1.2;
+  word-break: break-word;          /* 允許折行，禁止截斷 */
+}
+/* ❌ 禁止以下三條任一出現在 .kpi-value 上 */
+/* overflow: hidden; text-overflow: ellipsis; white-space: nowrap; */
+```
+
+響應式標準兩段：
+```css
+@media(max-width:600px) {
+  .header-legend .legend-vdivider { display: none; }
+  .legend-colors, .legend-right { gap: 8px; }
+  .page { padding: 16px; }
+}
+@media(max-width:480px) {
+  .kpi-grid { grid-template-columns: 1fr; }
+}
+```
+
 ---
 
 ## B.8 視覺反模式（避免做這些）
@@ -232,3 +347,5 @@ function mk(id, type, labels, datasets, opts={}) {
 5. **🚫 圓餅圖切超過 6 塊** — 切到第 7 塊以後變成「色塊大亂鬥」，改用縱向 bar
 6. **🚫 用陰影、漸層、3D 效果** — 訓練型 dashboard 要「平實」，不是 pitch deck
 7. **🚫 QA item 預設展開** — 一打開頁面看到 18 道答案會直接放棄
+8. **🚫 對數刻度處理大值域差距** — 兩條線相差 100x 時，log scale 刻度讓讀者無法判斷絕對值；改用雙 Y-axis（各軸有語意單位）
+9. **🚫 `Chart.register(ChartDataLabels)` 缺失** — datalabels 全靜默失效，Chart.js 不報錯；每次生成後必須在瀏覽器 console 確認數值出現
