@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SaaS訂閱制_MRR訂閱指標分析_訓練儀表板</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F8FAFC;--bg-card:#FFFFFF;--bg-finding:#F1F5FD;
+  --accent:#2563EB;--accent2:#059669;--warn:#D97706;--danger:#DC2626;--purple:#7C3AED;
+  --text:#0F172A;--text-muted:#64748B;--border:rgba(0,0,0,0.08);--radius:12px;
+  --header-h:138px;
+}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;line-height:1.6}
+a{color:var(--accent);text-decoration:none}
+
+/* Header */
+.site-header{position:sticky;top:0;z-index:200;background:rgba(248,250,252,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.header-row-1{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:13px 24px 10px;border-bottom:1px solid rgba(0,0,0,0.05)}
+.header-title{font-size:1.05rem;font-weight:700;color:var(--text);letter-spacing:-0.01em;white-space:nowrap}
+.meta-chip{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:2px 10px;font-size:0.69rem;background:rgba(0,0,0,0.04);color:var(--text-muted);border:1px solid rgba(0,0,0,0.09);white-space:nowrap}
+.meta-chip.demo{background:rgba(217,119,6,0.1);color:var(--warn);border-color:rgba(217,119,6,0.3);font-weight:600}
+.header-row-2{display:flex;align-items:center;padding:0 24px;border-bottom:1px solid rgba(0,0,0,0.05)}
+.def-toggle-btn{display:flex;align-items:center;gap:7px;background:rgba(37,99,235,0.07);border:1px solid rgba(37,99,235,0.25);border-radius:7px;padding:7px 13px;margin:7px 16px 7px 0;color:var(--accent);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.79rem;font-weight:600;cursor:pointer;transition:background .2s;flex-shrink:0;white-space:nowrap}
+.def-toggle-btn:hover{background:rgba(37,99,235,0.12)}
+.def-toggle-btn.open{background:rgba(37,99,235,0.12);border-color:rgba(37,99,235,0.45)}
+.def-toggle-arrow{font-size:.85rem;display:inline-block;transition:transform .25s ease;opacity:.65}
+.def-toggle-btn.open .def-toggle-arrow{transform:rotate(90deg)}
+.nav-tabs{display:flex;gap:3px}
+.nav-tab{padding:9px 18px;border-radius:7px 7px 0 0;cursor:pointer;font-size:0.83rem;font-weight:500;color:var(--text-muted);border:1px solid transparent;border-bottom:none;transition:all .2s;background:transparent;margin-bottom:-1px;white-space:nowrap}
+.nav-tab:hover{color:var(--text);background:rgba(0,0,0,0.03)}
+.nav-tab.active{color:var(--accent);background:rgba(248,250,252,0.97);border-color:var(--border);border-bottom-color:rgba(248,250,252,0.97)}
+.header-legend{display:flex;align-items:center;flex-wrap:wrap;padding:7px 24px;font-size:0.71rem;color:var(--text-muted)}
+.legend-colors{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.legend-colors>span{display:flex;align-items:center;gap:5px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.legend-vdivider{width:1px;height:15px;background:rgba(0,0,0,0.12);flex-shrink:0;margin:0 14px}
+.legend-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.legend-right>span{display:flex;align-items:center;gap:5px}
+.badge{display:inline-block;border-radius:4px;padding:1px 6px;font-size:0.67rem;font-weight:600}
+.badge.l1{background:rgba(5,150,105,0.12);color:var(--accent2);border:1px solid rgba(5,150,105,0.3)}
+.badge.l2{background:rgba(37,99,235,0.1);color:var(--accent);border:1px solid rgba(37,99,235,0.25)}
+.badge.l3{background:rgba(124,58,237,0.1);color:var(--purple);border:1px solid rgba(124,58,237,0.25)}
+
+/* Def panel */
+#main-wrapper{display:flex;align-items:flex-start}
+#def-panel-outer{flex-shrink:0;width:0;overflow:hidden;transition:width .28s cubic-bezier(.4,0,.2,1)}
+#def-panel-outer.open{width:323px}
+#def-panel-inner{width:323px;height:calc((100vh - var(--header-h))*1.2);overflow-y:auto;position:sticky;top:var(--header-h);background:var(--bg-card);border-right:1px solid var(--border);padding:18px 16px}
+#def-panel-inner::-webkit-scrollbar{width:4px}
+#def-panel-inner::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.15);border-radius:2px}
+.def-search-wrap{margin-bottom:12px}
+.def-search-wrap input{width:100%;background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.12);border-radius:7px;padding:7px 11px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:.78rem;outline:none;transition:border-color .2s}
+.def-search-wrap input::placeholder{color:var(--text-muted)}
+.def-search-wrap input:focus{border-color:rgba(37,99,235,.5);background:rgba(37,99,235,.04)}
+.def-no-result{font-size:.76rem;color:var(--text-muted);padding:10px 4px;text-align:center;display:none}
+#def-panel-inner h3{font-size:.72rem;color:var(--accent);text-transform:uppercase;letter-spacing:.09em;margin-bottom:14px;padding-bottom:9px;border-bottom:1px solid var(--border)}
+.def-item{background:var(--bg-finding);border-radius:8px;padding:11px 13px;margin-bottom:8px}
+.def-item h4{font-size:.75rem;color:var(--accent);margin-bottom:4px;font-weight:600}
+.def-item p{font-size:.74rem;color:var(--text-muted);line-height:1.55}
+
+/* Content */
+#content-area{flex:1;min-width:0}
+.page{display:none;padding:24px;max-width:1400px;margin:0 auto}
+.page.active{display:block}
+.section-title{font-size:1.02rem;font-weight:700;color:var(--text);margin:28px 0 16px;padding-left:12px;border-left:3px solid var(--accent)}
+.section-title:first-child{margin-top:4px}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:28px}
+.kpi-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kpi-color,var(--accent))}
+.kpi-label{font-size:.75rem;color:var(--text-muted);margin-bottom:6px;font-weight:500}
+.kpi-value{font-size:clamp(1.05rem,2.4vw,1.5rem);font-weight:700;color:var(--text);line-height:1.2;word-break:break-word;font-variant-numeric:tabular-nums}
+.kpi-sub{font-size:.72rem;margin-top:5px}
+.kpi-up{color:var(--accent2)}
+.kpi-down{color:var(--danger)}
+.kpi-neutral{color:var(--text-muted)}
+
+/* Charts */
+.chart-grid{display:grid;gap:18px;margin-bottom:24px}
+.chart-grid-2{grid-template-columns:1fr 1fr}
+.chart-grid-3{grid-template-columns:1fr 1fr 1fr}
+.chart-grid-wide{grid-template-columns:2fr 1fr}
+.chart-grid-wide2{grid-template-columns:3fr 2fr}
+@media(max-width:900px){.chart-grid-2,.chart-grid-3,.chart-grid-wide,.chart-grid-wide2{grid-template-columns:1fr}}
+.chart-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;min-width:0;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+.chart-card-title{font-size:.8rem;font-weight:600;color:var(--text-muted);margin-bottom:14px;letter-spacing:.03em;text-transform:uppercase}
+.chart-block{position:relative}
+.chart-block canvas{display:block}
+.h240{height:240px}.h280{height:280px}.h300{height:300px}.h340{height:340px}.h380{height:380px}.h420{height:420px}.h460{height:460px}
+
+/* Findings */
+.findings-section{background:var(--bg-finding);border-radius:10px;padding:12px 16px;margin-top:14px;font-size:.8rem;color:var(--text-muted)}
+.findings-section strong{color:var(--text)}
+
+/* Q&A */
+.qa-section{margin-top:28px}
+.qa-section-title{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.qa-item{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.question{padding:14px 18px;cursor:pointer;display:flex;align-items:flex-start;gap:10px;transition:background .15s;user-select:none}
+.question:hover{background:rgba(0,0,0,0.02)}
+.question-text{flex:1;font-weight:500;font-size:.87rem;color:var(--text)}
+.question-arrow{color:var(--text-muted);font-size:.8rem;margin-top:2px;transition:transform .2s;flex-shrink:0}
+.qa-item.open .question-arrow{transform:rotate(90deg)}
+.answer{display:none;padding:0 18px 18px;font-size:.83rem;line-height:1.72;color:var(--text-muted)}
+.answer.show{display:block}
+.answer-block{margin-bottom:6px}
+.answer-block p{margin-top:4px}
+.tag-f{display:inline-block;background:rgba(5,150,105,0.12);color:#047857;border-radius:4px;padding:0 5px;font-size:.7rem;font-weight:700;margin-right:3px}
+.tag-i{display:inline-block;background:rgba(37,99,235,0.1);color:var(--accent);border-radius:4px;padding:0 5px;font-size:.7rem;font-weight:700;margin-right:3px}
+.tag-a{display:inline-block;background:rgba(217,119,6,0.12);color:var(--warn);border-radius:4px;padding:0 5px;font-size:.7rem;font-weight:700;margin-right:3px}
+.fia{display:inline-block;border-radius:3px;padding:0 4px;font-size:.68rem;font-weight:700}
+.fia.f{background:rgba(5,150,105,0.12);color:#047857}
+.fia.i{background:rgba(37,99,235,0.1);color:var(--accent)}
+.fia.a{background:rgba(217,119,6,0.12);color:var(--warn)}
+.trap-block{background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.2);border-radius:8px;padding:10px 14px;margin-top:10px;font-size:.79rem;color:#B91C1C;display:flex;gap:8px;align-items:flex-start}
+.trap-icon{font-size:1rem;flex-shrink:0;margin-top:1px}
+.nav-hint{display:inline-flex;align-items:center;gap:6px;background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.25);border-radius:8px;padding:8px 14px;margin-top:10px;font-size:.78rem;color:var(--warn);cursor:pointer;transition:background .2s}
+.nav-hint:hover{background:rgba(217,119,6,0.14)}
+.chart-ref-btn{display:inline-flex;align-items:center;gap:5px;background:rgba(37,99,235,0.06);border:1px solid rgba(37,99,235,0.2);border-radius:6px;padding:5px 12px;margin-top:8px;font-size:.76rem;color:var(--accent);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:background .2s}
+.chart-ref-btn:hover{background:rgba(37,99,235,0.12)}
+
+/* Training block */
+.training-block{background:rgba(124,58,237,0.05);border:1px solid rgba(124,58,237,0.2);border-radius:var(--radius);padding:20px;margin-top:28px}
+.training-title{font-size:.95rem;font-weight:700;color:var(--purple);margin-bottom:14px}
+
+/* Design choices */
+.design-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-top:20px;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+.design-panel-title{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:12px;cursor:pointer;display:flex;align-items:center;justify-content:between;gap:8px}
+.design-panel-body{display:none}
+.design-panel-body.show{display:block}
+.design-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+@media(max-width:700px){.design-grid{grid-template-columns:1fr}}
+.design-item{background:var(--bg-finding);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.design-item h4{font-size:.8rem;color:var(--accent);margin-bottom:4px;font-weight:600}
+.design-item p{font-size:.78rem;color:var(--text-muted);line-height:1.5}
+
+/* Cohort table */
+.cohort-wrap{overflow-x:auto;margin-top:8px}
+.cohort-table{border-collapse:collapse;font-size:.75rem;min-width:100%}
+.cohort-table th{background:var(--bg-finding);color:var(--text-muted);padding:6px 10px;font-weight:600;border:1px solid var(--border);white-space:nowrap}
+.cohort-table td{padding:5px 10px;border:1px solid var(--border);text-align:center;font-weight:500;font-variant-numeric:tabular-nums}
+
+/* Divider/Footer */
+.section-divider{border:none;border-top:1px solid var(--border);margin:24px 0}
+.page-footer{padding:32px 24px;text-align:center;font-size:.75rem;color:var(--text-muted)}
+
+/* Flash animation */
+@keyframes chartFlash{0%,100%{box-shadow:0 1px 3px rgba(0,0,0,.05);border-color:var(--border)}50%{box-shadow:0 0 0 3px rgba(37,99,235,.5),0 0 20px rgba(37,99,235,.2);border-color:rgba(37,99,235,.7)}}
+.chart-flash{animation:chartFlash .55s ease-in-out 4}
+
+@media(max-width:600px){.header-row-1{padding:10px 12px 8px}.header-row-2{padding:0 12px;overflow-x:auto}.header-legend{padding:5px 12px}.page{padding:16px}}
+@media(max-width:480px){.kpi-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="site-header" id="top-header">
+  <div class="header-row-1">
+    <span class="header-title">SaaS訂閱制_MRR訂閱指標分析_訓練儀表板</span>
+    <span class="meta-chip">📅 資料期間：2024/01/01 – 2024/12/31</span>
+    <span class="meta-chip">📊 B2B SaaS（協作工具）· 1,876 付費客戶</span>
+    <span class="meta-chip demo">⚗️ DEMO 合成資料集</span>
+    <span style="flex:1"></span>
+    <span class="meta-chip">✏️ 製作者：Blake</span>
+    <span class="meta-chip">🗓️ 製作時間：20260612</span>
+  </div>
+  <div class="header-row-2">
+    <button class="def-toggle-btn" id="defToggleBtn" onclick="toggleDef()">
+      <span>📖</span><span>指標定義</span><span class="def-toggle-arrow">›</span>
+    </button>
+    <div class="nav-tabs">
+      <div class="nav-tab active" id="tab-mrr" onclick="switchPage('mrr')">📈 MRR 健康度</div>
+      <div class="nav-tab" id="tab-churn" onclick="switchPage('churn')">🔄 流失與留存</div>
+      <div class="nav-tab" id="tab-ltv" onclick="switchPage('ltv')">💡 LTV/CAC 與方案</div>
+      <div class="nav-tab" id="tab-funnel" onclick="switchPage('funnel')">🚀 付費轉換漏斗</div>
+    </div>
+  </div>
+  <div class="header-legend">
+    <div class="legend-colors">
+      <span><span class="dot" style="background:var(--accent)"></span>事實數據</span>
+      <span><span class="dot" style="background:var(--accent2)"></span>正向/成長</span>
+      <span><span class="dot" style="background:var(--warn)"></span>注意/推論</span>
+      <span><span class="dot" style="background:var(--danger)"></span>警示/流失</span>
+      <span><span class="dot" style="background:var(--purple)"></span>行為/轉換</span>
+    </div>
+    <span class="legend-vdivider"></span>
+    <div class="legend-right">
+      <span><span class="badge l1">L1</span> 單圖事實</span>
+      <span><span class="badge l2">L2</span> 同頁交叉</span>
+      <span><span class="badge l3">L3</span> 跨頁推論</span>
+      <span class="legend-vdivider"></span>
+      <span><span class="tag-f">F</span> 事實</span>
+      <span><span class="tag-i">I</span> 推論</span>
+      <span><span class="tag-a">A</span> 假設</span>
+    </div>
+  </div>
+</header>
+
+<div id="main-wrapper">
+  <div id="def-panel-outer">
+    <div id="def-panel-inner">
+      <h3>📖 指標定義</h3>
+      <div class="def-search-wrap">
+        <input type="text" id="defSearch" placeholder="🔍 搜尋指標關鍵字…" autocomplete="off" oninput="filterDef(this.value)">
+      </div>
+      <div class="def-no-result" id="defNoResult">沒有符合的指標</div>
+      <div class="def-item"><h4>MRR（Monthly Recurring Revenue）</h4><p>月度經常性收入。訂閱制產品每月來自有效訂閱的固定收入總額，不含一次性費用或服務費。本儀表板 MRR = 付費客戶數 × 平均月費（ARPU）。</p></div>
+      <div class="def-item"><h4>ARR（Annual Recurring Revenue）</h4><p>年度經常性收入 = MRR × 12。用於衡量業務規模與成長速度，是 SaaS 估值的核心指標之一。注意：ARR 是年化推算值，非實際全年累計收入。</p></div>
+      <div class="def-item"><h4>New MRR</h4><p>當月新增付費客戶帶來的 MRR 增量。計算：本月新轉換客戶數 × 其訂閱方案月費。不含既有客戶升級部分（升級算 Expansion）。</p></div>
+      <div class="def-item"><h4>Expansion MRR</h4><p>既有客戶升級方案或增購席位所帶來的 MRR 增量。代表「Land & Expand」策略的成效。Expansion MRR 高 → 產品黏性強，客戶主動擴大使用。</p></div>
+      <div class="def-item"><h4>Contraction MRR</h4><p>既有客戶降級方案或減少席位導致的 MRR 減少量（負值）。常見原因：預算縮減、需求下降、降至免費方案。與 Churned MRR 不同：客戶仍在付費，只是金額減少。</p></div>
+      <div class="def-item"><h4>Churned MRR</h4><p>本月流失客戶（完全取消訂閱）所造成的 MRR 減少量（負值）。計算：流失客戶數 × 其原訂閱金額。Churned MRR 是 MRR 健康度最直接的負向指標。</p></div>
+      <div class="def-item"><h4>NRR（Net Revenue Retention）</h4><p>淨收入留存率，追蹤既有客戶群的收入變化。公式：（期初 MRR + Expansion − Contraction − Churned）÷ 期初 MRR × 100%。NRR &gt; 100% = 即使完全不獲新客，收入仍在成長（Land &amp; Expand 成功）。</p></div>
+      <div class="def-item"><h4>ARPU（Average Revenue Per User）</h4><p>每位付費客戶的平均月費收入。計算：當期 MRR ÷ 當期付費客戶數。ARPU 提升通常來自：升級率提升、新方案定價調整、低 ARPU 客戶流失。</p></div>
+      <div class="def-item"><h4>Customer Churn Rate</h4><p>當月流失客戶數 ÷ 月初付費客戶數 × 100%。衡量客戶流失速度。月度 2.3% ≈ 年度 25% 客戶流失率。注意：Customer Churn 與 Revenue Churn 可能方向相反（大客戶流失，收入衝擊更大）。</p></div>
+      <div class="def-item"><h4>Revenue Churn Rate</h4><p>當月 Churned MRR ÷ 月初 MRR × 100%。衡量流失對收入的實際衝擊。Revenue Churn 可能高於 Customer Churn（大客戶流失），也可能低於（小客戶流失）。</p></div>
+      <div class="def-item"><h4>Retention Cohort（留存世代分析）</h4><p>將同月份開始訂閱的客戶視為一個 Cohort，追蹤其後續每月留存比例。Row = 起始月份，Col = 距離起始的第 N 個月，格值 = 該 Cohort 在第 N 月的留存率 %。用於判斷：哪個月份取得的客戶留存最好、留存率在哪個月穩定（核心用戶）。</p></div>
+      <div class="def-item"><h4>LTV（Lifetime Value）</h4><p>客戶終身價值。簡化公式：ARPU ÷ Monthly Churn Rate。含義：在平均流失率下，一位客戶預期帶來的總收入。本儀表板 LTV 為估算值，使用 Customer Churn Rate 作為分母（不含退款、服務成本）。</p></div>
+      <div class="def-item"><h4>CAC（Customer Acquisition Cost）</h4><p>客戶獲取成本。計算：當期銷售 + 行銷總支出 ÷ 同期新增付費客戶數。本儀表板使用混合 CAC（blended CAC），不區分渠道別獲客成本。渠道別 CAC 另在 P3 頁呈現。</p></div>
+      <div class="def-item"><h4>LTV:CAC Ratio</h4><p>LTV 與 CAC 的比值，衡量獲客效率。行業基準：&lt;1 = 每獲一個客戶就虧損；1-3 = 尚可；3-5 = 健康；&gt;5 = 高效率（需注意是否成長過慢）。本儀表板 LTV:CAC = 3.9，處於健康區間。</p></div>
+      <div class="def-item"><h4>Payback Period（回收期）</h4><p>收回單一客戶獲取成本所需的月數。計算：CAC ÷ ARPU。Payback &lt; 12 個月通常被認為是健康的 SaaS 業務。本儀表板 Payback = 11.1 個月，剛好在合格線內。</p></div>
+      <div class="def-item"><h4>Trial Conversion Rate</h4><p>試用申請用戶中，成功轉換為付費的比例。計算：付費轉換數 ÷ 試用申請數 × 100%。注意：不同定義下的分母可能是「試用申請數」或「活躍試用數」，需確認口徑再比較。本儀表板分母 = 試用申請數。</p></div>
+      <div class="def-item"><h4>F / I / A 答案標籤</h4><p><strong style="color:#047857">F（Fact）</strong>：可直接從圖表讀取的數字或模式。<br><strong style="color:var(--accent)">I（Inference）</strong>：基於事實的合理推論，需邏輯連結。<br><strong style="color:var(--warn)">A（Assumption）</strong>：需補充資料才能驗證的行動建議，或使用了儀表板外的假設。</p></div>
+    </div>
+  </div>
+
+  <div id="content-area">
+    <div id="page-mrr" class="page active">
+  <div class="section-title">關鍵業績指標 KPI（2024年12月快照）</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--kpi-color:var(--accent)">
+      <div class="kpi-label">期末 MRR（12月）</div>
+      <div class="kpi-value">NT$ 4,847,200</div>
+      <div class="kpi-sub"><span class="kpi-down">▼ −0.8% MoM</span> <span class="kpi-neutral">vs 期初 NT$4,885,000</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--accent2)">
+      <div class="kpi-label">ARR（年化經常性收入）</div>
+      <div class="kpi-value">NT$ 58,166,400</div>
+      <div class="kpi-sub"><span class="kpi-up">▲ +15.0% YoY</span> <span class="kpi-neutral">= MRR × 12</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--warn)">
+      <div class="kpi-label">NRR（淨收入留存率）</div>
+      <div class="kpi-value">104.2%</div>
+      <div class="kpi-sub"><span class="kpi-neutral">trailing 12mo</span> <span class="kpi-down">▼ vs 標竿 110%</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--purple)">
+      <div class="kpi-label">年度 MRR 淨成長</div>
+      <div class="kpi-value">NT$ 632,200</div>
+      <div class="kpi-sub"><span class="kpi-up">▲ +15.0%</span> <span class="kpi-neutral">Jan NT$4,215,000 → Dec NT$4,847,200</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">MRR 四元素瀑布分析（2024年12月）</div>
+  <div class="chart-grid" style="grid-template-columns:1fr">
+    <div class="chart-card" id="card-waterfall">
+      <div class="chart-card-title">📊 MRR Waterfall — 12月增減拆解</div>
+      <div class="chart-block h300"><canvas id="chart-waterfall"></canvas></div>
+      <div class="findings-section">
+        <strong>關鍵發現：</strong>12月 Churned MRR <strong>NT$178,800</strong> 為全年單月最高，推測為年末合約到期批次流失，遠超 New MRR（NT$125,000）與 Expansion MRR（NT$68,000）合計，導致期末 MRR 月環比下滑 <strong>0.8%</strong>。
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">MRR 月度趨勢（2024全年）</div>
+  <div class="chart-grid chart-grid-wide2">
+    <div class="chart-card" id="card-mrr-trend">
+      <div class="chart-card-title">📈 月末 MRR 走勢</div>
+      <div class="chart-block h280"><canvas id="chart-mrr-trend"></canvas></div>
+      <div class="findings-section">
+        <strong>成長模式：</strong>全年 MRR 呈整體成長趨勢（+15%），但 7月出現唯一下滑（NT$4,601K→4,569K），12月因年末合約到期再次下滑。Q4整體 Oct–Nov 為全年高峰。
+      </div>
+    </div>
+    <div class="chart-card" id="card-exp-churn">
+      <div class="chart-card-title">⚖️ Expansion vs Churned MRR</div>
+      <div class="chart-block h280"><canvas id="chart-exp-churn"></canvas></div>
+      <div class="findings-section">
+        <strong>缺口分析：</strong>每月 Churned MRR 均大於 Expansion，代表淨流失（負向 Net Expansion），業務成長須依賴 New MRR 補充。
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">月度 MRR 增減拆解（2024全年）</div>
+  <div class="chart-grid" style="grid-template-columns:1fr">
+    <div class="chart-card" id="card-mrr-decomp">
+      <div class="chart-card-title">🔢 各月 MRR 四元素（New / Expansion / Contraction / Churned）</div>
+      <div class="chart-block h300"><canvas id="chart-mrr-decomp"></canvas></div>
+      <div class="findings-section">
+        <strong>季節規律：</strong>New MRR 在 Q2（Apr）和 Q4（Oct）出現明顯高峰，與 SaaS 業界 Q2/Q4 預算旺季吻合；7月為全年 New MRR 最低（NT$108K），同期 Churned MRR 最高（NT$154K）。
+      </div>
+    </div>
+  </div>
+
+  <div class="qa-section">
+    <div class="qa-section-title">📝 分析訓練 Q&A</div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1</span><span class="tag-f">F</span>
+        <span class="question-text">Q1. 從 MRR 瀑布圖看，2024年12月哪個元素對 MRR 下滑影響最大？數值是多少？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> 從瀑布圖可直接讀取：<span class="fia f">F</span> Churned MRR 為 <strong>−NT$178,800</strong>，是12月唯一數值超過 New MRR（+NT$125,000）與 Expansion MRR（+NT$68,000）合計（+NT$193,000）之後仍使 MRR 淨減少的主因。<span class="fia f">F</span> 期末 MRR 比期初減少 NT$37,800（−0.8%）。</p>
+        </div>
+        <div class="trap-block"><span class="trap-icon">⚠️</span>注意：不要把「MRR 下滑」歸因於 Contraction（−NT$52,000），Contraction 雖然是負向元素，但 Churned 的衝擊幅度是 Contraction 的 3.4 倍。單看「有幾個元素是負的」不等於「哪個元素影響最大」。</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1</span><span class="tag-i">I</span>
+        <span class="question-text">Q2. New MRR 在7月降至全年最低（NT$108,000）。你認為最可能的成因是什麼？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> 從月度拆解圖：<span class="fia f">F</span> 7月 New MRR = NT$108,000，為全年最低；同月 Churned MRR 達 NT$154,000，為 Jan–Nov 最高，雙重打擊導致當月 MRR 淨減少 NT$32,000。</p>
+          <p><span class="tag-i">I</span> 推論成因：<span class="fia i">I</span> B2B SaaS 的7月通常是決策凍結期（企業 IT 預算上半年已用盡，下半年預算未開放），新簽約速度放慢；<span class="fia i">I</span> 同時部分客戶在合約到期後選擇夏季暫停，加劇流失。</p>
+        </div>
+        <div class="nav-hint" onclick="goToChart('churn','card-churn-trend')">→ 對照 P2「流失與留存」查看7月 Customer Churn Rate（2.9%，全年次高）</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2</span><span class="tag-i">I</span>
+        <span class="question-text">Q3. 若 Expansion MRR 長期小於 Churned MRR，對公司長期 MRR 健康度有何影響？需要觀察哪個指標確認？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> 從「Expansion vs Churned」圖：<span class="fia f">F</span> 全年12個月中，每月 Churned MRR 均大於 Expansion MRR，最大缺口在12月（Churned NT$178,800 vs Expansion NT$68,000，差距 NT$110,800）。</p>
+          <p><span class="tag-i">I</span> 長期影響：<span class="fia i">I</span> 這意味公司必須持續依賴 New MRR（新客）來填補流失缺口——一旦新客獲取放緩（如7月），MRR 即出現負成長。健康的「Land & Expand」模型應使 Expansion > Churned，達到 NRR > 100% 且不依賴新客。<span class="fia i">I</span> 應追蹤 NRR（本儀表板為 104.2%，含 New MRR 貢獻後才勉強達標）。</p>
+        </div>
+        <div class="trap-block"><span class="trap-icon">⚠️</span>NRR 104.2% 看起來健康，但若拆除 New MRR 貢獻，純粹從既有客戶角度（Expansion−Contraction−Churn），净额是負的。這份 104.2% 的 NRR 依賴新客補貼，屬於「弱 Land & Expand」。</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2</span><span class="tag-a">A</span>
+        <span class="question-text">Q4. NRR 為 104.2%，低於 SaaS 標竿 110%。你會優先改善哪個 MRR 元素？需要哪些額外數據支撐決策？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> <span class="fia f">F</span> NRR = 104.2%；全年 Expansion 合計約 NT$896K，Churned 合計約 NT$1,574K（含12月異常值）。</p>
+          <p><span class="tag-i">I</span> <span class="fia i">I</span> 最快提升 NRR 的路徑有兩條：（A）降低 Churned MRR（減少流失）；（B）提升 Expansion MRR（促進升級）。從數字看，Churned 是 Expansion 的 1.76 倍，即使 Expansion 翻倍也無法填補 Churned 缺口。</p>
+          <p><span class="tag-a">A</span> <span class="fia a">A</span> 假設：降低 Churned 20%（約 NT$26K/月）比提升 Expansion 30%（約 NT$22K/月）更有效，且前者通常透過客戶成功（CS）介入即可實現，ROI 更高。但此假設需驗證：流失客戶的 CS 接觸紀錄、健康分趨勢、以及 CSM 人力成本。</p>
+        </div>
+        <div class="trap-block"><span class="trap-icon">⚠️</span>陷阱：不要直接跳到「擴大 Expansion」而忽略 Churned。在沒有看過 Cohort 留存數據之前，無法判斷哪批客戶最值得投入 CS 資源。建議先看 P2 Cohort 矩陣再做決策。</div>
+        <div class="nav-hint" onclick="goToChart('churn','card-cohort')">→ 先看 P2 Cohort 留存矩陣，再決定優先客群</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1</span><span class="tag-f">F</span>
+        <span class="question-text">Q5. 2024年全年 New MRR 合計與 Churned MRR 合計各是多少？New MRR 是否足以覆蓋所有流失？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> 從月度拆解圖加總：<span class="fia f">F</span> 全年 New MRR 合計 = NT$1,758,000；<span class="fia f">F</span> 全年 Churned MRR 合計 = NT$1,573,800（含12月 NT$178,800）。<span class="fia f">F</span> New MRR 超過 Churned NT$184,200，差距約 10.5%——勉強覆蓋，但安全邊際薄。</p>
+        </div>
+        <div class="trap-block"><span class="trap-icon">⚠️</span>這只算了新客 vs 流失的直接抵銷。真正健康的成長還需要 Expansion > Contraction。實際上全年 Contraction 合計 NT$428,000 也需計入，New MRR 尚不足以全部補足所有負向元素。</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3</span><span class="tag-a">A</span>
+        <span class="question-text">Q6. 如果12月的 Churned MRR 回到全年平均水準（而非異常高點），ARR 會有何變化？這個估算有哪些假設？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> <span class="fia f">F</span> 11月前 Churned MRR 平均（Jan–Nov）= (134+126+123+127+130+134+154+123+126+120+118)÷11 = 1,395,000÷11 ≈ NT$126,818。12月實際 = NT$178,800，超出平均 NT$51,982。</p>
+          <p><span class="tag-i">I</span> <span class="fia i">I</span> 若12月 Churned = NT$126,818：期末 MRR = 4,885,000 + 125,000 + 68,000 − 52,000 − 126,818 = NT$4,899,182；ARR = 4,899,182 × 12 = NT$58,790,184，比現況高 NT$623,784。</p>
+          <p><span class="tag-a">A</span> <span class="fia a">A</span> 假設：「回到平均」意味著12月異常 Churned 是偶發性（年末合約集中到期），而非結構性問題。若是結構性，這個估算就高估了正常狀態下的 ARR。需要看 P2 流失原因與 Cohort 資料才能判斷。</p>
+        </div>
+        <div class="nav-hint" onclick="goToChart('churn','card-churn-reason')">→ P2「流失原因分佈」可提供判斷是否為結構性問題的線索</div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div id="page-churn" class="page">
+  <div class="section-title">關鍵業績指標 KPI（流失與留存）</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--kpi-color:var(--danger)">
+      <div class="kpi-label">月均 Customer Churn Rate</div>
+      <div class="kpi-value">2.3%</div>
+      <div class="kpi-sub"><span class="kpi-down">▲ 高峰：7月 2.9%</span> <span class="kpi-neutral">低點：10月 2.0%</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--warn)">
+      <div class="kpi-label">12月 Revenue Churn Rate</div>
+      <div class="kpi-value">3.66%</div>
+      <div class="kpi-sub"><span class="kpi-down">▲ 全年最高</span> <span class="kpi-neutral">vs Customer Churn 2.8%（+0.86pp）</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--accent2)">
+      <div class="kpi-label">Jan Cohort 12 個月留存率</div>
+      <div class="kpi-value">60%</div>
+      <div class="kpi-sub"><span class="kpi-neutral">啟動時 100% → 第1月 86% → 第6月 69%</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--purple)">
+      <div class="kpi-label">最佳第3月留存（Sep Cohort）</div>
+      <div class="kpi-value">81%</div>
+      <div class="kpi-sub"><span class="kpi-up">▲ 最差同期（Jan）75%，差距 6pp</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">Customer vs Revenue Churn Rate 月度趨勢</div>
+  <div class="chart-grid" style="grid-template-columns:1fr">
+    <div class="chart-card" id="card-churn-trend">
+      <div class="chart-card-title">📉 月度 Churn Rate 雙線比較（Customer % vs Revenue %）</div>
+      <div class="chart-block h280"><canvas id="chart-churn-trend"></canvas></div>
+      <div class="findings-section">
+        <strong>關鍵分叉：</strong>12月 Revenue Churn（3.66%）比 Customer Churn（2.8%）高出 <strong>0.86pp</strong>，說明流失的是相對高付費客戶（大客戶流失）。反之，7月 Revenue Churn（3.35%）僅比 Customer Churn（2.9%）高 0.45pp，說明7月流失客戶的 ARPU 較接近平均。
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Retention Cohort 矩陣（2024年1–10月起始世代）</div>
+  <div class="chart-card" id="card-cohort" style="margin-bottom:24px">
+    <div class="chart-card-title">🔢 Cohort 留存率矩陣（%）— 行=起始月份，欄=距起始第N月</div>
+    <div class="cohort-wrap" id="cohort-table-wrap"></div>
+    <div class="findings-section" style="margin-top:14px">
+      <strong>三個觀察點：</strong>
+      <br>① <strong>留存改善趨勢</strong>：較晚的 Cohort（Sep、Oct）在同期第1月留存率（90%）明顯優於早期 Cohort（Jan 86%），顯示產品或 onboarding 在持續改善。
+      <br>② <strong>7月 Cohort 異常</strong>：7月起始世代第1月留存僅 86%，低於相鄰月份（Jun 89%、Aug 88%），佐證7月客質較差（可能來自夏季折扣促銷）。
+      <br>③ <strong>第3月穩定化</strong>：所有 Cohort 在第3月後留存率下降速度顯著放緩，代表通過第3月的客戶已成為「核心用戶」。
+    </div>
+  </div>
+
+  <div class="section-title">流失原因與方案層流失率</div>
+  <div class="chart-grid chart-grid-2">
+    <div class="chart-card" id="card-churn-reason">
+      <div class="chart-card-title">📋 流失原因分佈（% of 流失客戶）</div>
+      <div class="chart-block h300"><canvas id="chart-churn-reason"></canvas></div>
+    </div>
+    <div class="chart-card" id="card-plan-churn">
+      <div class="chart-card-title">📊 各方案月度 Churn Rate（%）</div>
+      <div class="chart-block h300"><canvas id="chart-plan-churn"></canvas></div>
+      <div class="findings-section">
+        <strong>方案差異：</strong>Starter 流失率（3.4%）為 Enterprise（0.6%）的 5.7 倍。若以 MRR 加權，Enterprise 單一客戶的 LTV 是 Starter 的 4.8 倍，流失一個 Enterprise 客戶等於流失約 8 個 Starter 客戶的收入。
+      </div>
+    </div>
+  </div>
+
+  <div class="qa-section">
+    <div class="qa-section-title">📝 分析訓練 Q&A</div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1</span><span class="tag-f">F</span>
+        <span class="question-text">Q1. 從雙線圖讀取：哪個月的 Customer Churn Rate 最高？Revenue Churn Rate 最高月是否相同？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> 從雙線圖直接讀取：<span class="fia f">F</span> Customer Churn Rate 最高月 = <strong>7月（2.9%）</strong>；<span class="fia f">F</span> Revenue Churn Rate 最高月 = <strong>12月（3.66%）</strong>。兩者最高月不同——這是一個重要的分析起點，不要假設兩條線的峰值一致。</p>
+        </div>
+        <div class="trap-block"><span class="trap-icon">⚠️</span>常見錯誤：把「流失客戶最多的月份」等同於「流失收入最多的月份」。7月雖然客戶流失率最高，但流失的多是 Starter 小客戶；12月流失的含較多大額合約，Revenue Churn 更高。</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1</span><span class="tag-i">I</span>
+        <span class="question-text">Q2. 12月 Revenue Churn（3.66%）遠高於 Customer Churn（2.8%）。這個分叉代表什麼業務現象？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> <span class="fia f">F</span> 12月差距 = 3.66% − 2.8% = 0.86pp，為全年各月最大分叉。</p>
+          <p><span class="tag-i">I</span> <span class="fia i">I</span> Revenue Churn > Customer Churn 意味著本月流失的客戶「平均 ARPU 高於在庫客戶平均」。直覺解讀：12月年末合約到期，流失的是較高方案（Pro/Enterprise）客戶，而非 Starter。<span class="fia i">I</span> 這也解釋了為什麼 Dec MRR 的月環比下滑（−0.8%）比 Customer Churn 暗示的幅度更大。</p>
+        </div>
+        <div class="nav-hint" onclick="goToChart('ltv','card-plan-dist')">→ P3「方案分佈」可確認12月 Enterprise 佔比是否有異動</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2</span><span class="tag-i">I</span>
+        <span class="question-text">Q3. 從 Cohort 矩陣，Jan 和 Jul 兩個 Cohort 在第3個月的留存率各是多少？差距代表什麼？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> 從 Cohort 矩陣讀取：<span class="fia f">F</span> Jan Cohort 第3月 = <strong>75%</strong>；<span class="fia f">F</span> Jul Cohort 第3月 = <strong>77%</strong>。差距為 2pp（Jul 反而較高？）</p>
+          <p><span class="tag-i">I</span> <span class="fia i">I</span> 仔細看：Jul Cohort 第1月留存（86%）低於 Jan（86% 相同），但第3月反超。推論：Jul 的「留下來的客戶」更黏，第1月的快速流失篩掉了低黏性用戶，留存的人反而更穩定。這是「早期強淘汰 → 後期強留存」的典型模式，業界稱為 survivor bias in cohort。</p>
+        </div>
+        <div class="trap-block"><span class="trap-icon">⚠️</span>陷阱：看 Cohort 時不要只比較單一時間點。Jul 第1月留存最差，但後期反彈，代表需要看完整曲線形狀，而非單一月份數字。同時，Jul 第3月後資料仍少，結論仍需時間驗證。</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2</span><span class="tag-a">A</span>
+        <span class="question-text">Q4. 流失原因中「切換至競品」佔 31.2%，「功能不符需求」佔 18.5%。你會建議 PM 優先處理哪個？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> <span class="fia f">F</span> 競品流失 31.2%、功能缺口 18.5%，兩者合計 49.7%，幾乎佔流失原因的一半。</p>
+          <p><span class="tag-i">I</span> <span class="fia i">I</span> 「切換至競品」是結果而非成因——客戶流向競品可能是因功能缺口或定價問題。「功能不符需求」是可直接對應的 Product 行動項目。</p>
+          <p><span class="tag-a">A</span> <span class="fia a">A</span> 建議：優先調查「切換至競品」群體中，他們提到的競品是哪些（Notion、Asana、Linear？），以及他們在離開前是否曾提出功能 request。假設：若多數競品切換客戶曾提出相同 3 個功能需求，則功能缺口是竟品流失的根本成因，應合併處理。</p>
+        </div>
+        <div class="trap-block"><span class="trap-icon">⚠️</span>流失原因資料通常來自問卷或 CS 訪談，本身有選擇性偏誤：願意回答的客戶不代表全部流失客戶，且客戶可能給「禮貌性答案」而非真實原因。單憑這張圖做決策風險較高。</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2</span><span class="tag-i">I</span>
+        <span class="question-text">Q5. Starter 流失率（3.4%）是 Enterprise（0.6%）的 5.7 倍。這個差異對 CS 資源分配有何影響？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> <span class="fia f">F</span> Starter 客戶 842 人，月流失約 29 人（842×3.4%）；Enterprise 客戶 278 人，月流失約 2 人（278×0.6%）。</p>
+          <p><span class="tag-i">I</span> <span class="fia i">I</span> 按客戶數量看，Starter 流失最多；按 MRR 衝擊看，1 個 Enterprise 流失（NT$5,712）≈ 4.8 個 Starter 流失（NT$1,188×4.8）。<span class="fia i">I</span> CS 策略差異應為：Enterprise 用高接觸（High-touch，指定 CSM）；Starter 用低接觸自動化（in-app 提醒、流失預警觸發）；資源投入比例應按 MRR 衝擊而非客戶數量決定。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3</span><span class="tag-a">A</span>
+        <span class="question-text">Q6. 結合 P1 MRR 數據與本頁 Cohort，若要將 NRR 從 104.2% 提升至 110%，最快的路徑是什麼？需要哪些假設？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> <span class="fia f">F</span> 提升 NRR 5.8pp（從 104.2% 至 110%），以當前 Start MRR 約 NT$4.5M 計，每月需額外改善約 NT$261,000（4,500,000 × 5.8%÷12）的 Expansion−Contraction−Churn 淨值。</p>
+          <p><span class="tag-i">I</span> <span class="fia i">I</span> 三條路徑：（A）減少 Churned 約 NT$174K/月（26,000×6.7 次月均流失）；（B）增加 Expansion NT$174K/月（每月多升級 ~58 個 Pro→Ent）；（C）混合策略。路徑 A 通常比路徑 B 更快見效（CS 介入 vs 產品功能擴充）。</p>
+          <p><span class="tag-a">A</span> <span class="fia a">A</span> 假設：Cohort 顯示第3月後留存穩定，因此 CS 介入應聚焦在第1-2月的高風險期，搭配早期功能採用（見 P4 Feature Adoption 數據）。但需假設 CS 資源可擴充，且成本低於增量 MRR。</p>
+        </div>
+        <div class="nav-hint" onclick="goToChart('funnel','card-feature-adopt')">→ P4「功能採用率對比」可幫助設計 CS 早期介入的觸發點</div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div id="page-ltv" class="page">
+  <div class="section-title">關鍵業績指標 KPI（LTV / CAC）</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--kpi-color:var(--accent)">
+      <div class="kpi-label">LTV（客戶終身價值）</div>
+      <div class="kpi-value">NT$ 112,300</div>
+      <div class="kpi-sub"><span class="kpi-neutral">= ARPU NT$2,584 ÷ Churn 2.3%</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--warn)">
+      <div class="kpi-label">CAC（混合獲客成本）</div>
+      <div class="kpi-value">NT$ 28,600</div>
+      <div class="kpi-sub"><span class="kpi-neutral">blended CAC（含所有渠道）</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--accent2)">
+      <div class="kpi-label">LTV : CAC 比值</div>
+      <div class="kpi-value">3.9 ×</div>
+      <div class="kpi-sub"><span class="kpi-up">✓ 健康區間（3–5×）</span> <span class="kpi-neutral">標竿 &gt;3</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--purple)">
+      <div class="kpi-label">Payback Period（回收期）</div>
+      <div class="kpi-value">11.1 個月</div>
+      <div class="kpi-sub"><span class="kpi-up">✓ &lt; 12 個月（合格線）</span> <span class="kpi-neutral">= CAC ÷ ARPU</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">LTV:CAC 渠道效率分析</div>
+  <div class="chart-grid chart-grid-2">
+    <div class="chart-card" id="card-ltv-cac">
+      <div class="chart-card-title">💰 各渠道 LTV:CAC 比值（越高越好）</div>
+      <div class="chart-block h300"><canvas id="chart-ltv-cac"></canvas></div>
+      <div class="findings-section">
+        <strong>最佳渠道：</strong>口碑推薦（8.5×）與自然搜尋（6.2×）LTV:CAC 遠優於付費廣告（1.8×）。但口碑推薦試用量僅 614，難以規模化；自然搜尋試用量 1,680，是效率最佳的可擴充渠道。
+      </div>
+    </div>
+    <div class="chart-card" id="card-cac-channel">
+      <div class="chart-card-title">💸 各渠道 CAC（NT$）與試用量</div>
+      <div class="chart-block h300"><canvas id="chart-cac-channel"></canvas></div>
+      <div class="findings-section">
+        <strong>成本差距：</strong>活動/Webinar（NT$51,200）與付費廣告（NT$48,200）的 CAC 是口碑推薦（NT$13,200）的 3.9 倍，但 LTV:CAC 卻不到後者四分之一。
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">方案組合演化 × 升降級流動</div>
+  <div class="chart-grid chart-grid-2">
+    <div class="chart-card" id="card-plan-dist">
+      <div class="chart-card-title">📊 月度方案佔比（% of 付費客戶）</div>
+      <div class="chart-block h280"><canvas id="chart-plan-dist"></canvas></div>
+      <div class="findings-section">
+        <strong>組合演化：</strong>Starter 佔比持續下降（Jan 54.2% → Dec 44.9%），Enterprise 大幅提升（Jan 6.7% → Dec 14.8%），顯示客戶群正在高端化（Upmarket）。這解釋了為何 ARPU 可隨時間上升。
+      </div>
+    </div>
+    <div class="chart-card" id="card-migration">
+      <div class="chart-card-title">🔀 方案升降級流動量（季度）</div>
+      <div class="chart-block h280"><canvas id="chart-migration"></canvas></div>
+      <div class="findings-section">
+        <strong>Q3 警訊：</strong>Q3 降級數（68）為全年最高，接近升級數（118）的 58%，升降比惡化；Q4 強勢反彈，升級數（195）創全年單季最高，升降比達 4.4×。Q3 降級與7月 MRR 下滑時間吻合。
+      </div>
+    </div>
+  </div>
+
+  <div class="qa-section">
+    <div class="qa-section-title">📝 分析訓練 Q&A</div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1</span><span class="tag-f">F</span>
+        <span class="question-text">Q1. LTV:CAC 為 3.9×，Payback 為 11.1 個月。單看這兩個數字，業務獲客效率是否健康？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> <span class="fia f">F</span> LTV:CAC = 3.9×，處於行業健康基準（3–5×）內；Payback = 11.1 個月，低於 12 個月警戒線。從數字看，兩個指標均在合格範圍。</p>
+        </div>
+        <div class="trap-block"><span class="trap-icon">⚠️</span>LTV 是「估算值」，基於簡化公式 ARPU÷Churn，未扣除服務成本（COGS）。若加入 CS 成本、技術支援成本，實際 LTV 可能下降 20–30%，LTV:CAC 可能降至 2.7–3.1×，接近警戒線。單看公式結果不等於業務真的健康。</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2</span><span class="tag-i">I</span>
+        <span class="question-text">Q2. 口碑推薦 LTV:CAC 8.5× 是所有渠道最高，但試用量只有 614。應該如何在行銷預算分配上處理這個「品質 vs 規模」的矛盾？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> <span class="fia f">F</span> 口碑推薦：CAC NT$13,200，LTV:CAC 8.5×，試用量 614；付費廣告：CAC NT$48,200，LTV:CAC 1.8×，試用量 1,152。量相差 1.88 倍，但效率相差 4.7 倍。</p>
+          <p><span class="tag-i">I</span> <span class="fia i">I</span> 口碑推薦規模受限的原因通常是自然增長（無法直接購買），但可透過正式推薦計畫（Referral Program）、客戶成功故事、案例研究來放大。<span class="fia i">I</span> 付費廣告高量低效，可能需要重新設計廣告目標受眾或著陸頁，或將部分預算轉移至 SEO（自然搜尋已是第二高效渠道）。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2</span><span class="tag-i">I</span>
+        <span class="question-text">Q3. 方案組合圖顯示 Starter 佔比從 54.2% 降至 44.9%，Enterprise 從 6.7% 升至 14.8%。這對 MRR 和 Churn Rate 有什麼影響？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> <span class="fia f">F</span> Starter 佔比 −9.3pp，Enterprise +8.1pp，Professional 小幅調整。若客戶總數不變，Enterprise mix 提升直接推升 ARPU（Enterprise ARPU NT$5,712 vs Starter NT$1,188）。</p>
+          <p><span class="tag-i">I</span> <span class="fia i">I</span> 正向影響：ARPU 上升 → MRR 成長速度可能超過客戶數成長速度（正向 Expansion 效應）；Enterprise 流失率 0.6% 遠低於 Starter 3.4% → 整體加權 Churn Rate 有下降趨勢，NRR 應改善。<span class="fia i">I</span> 但需警惕：Enterprise 客戶 LTV 高，一旦流失（如12月批次到期）對 Revenue Churn 的衝擊遠大於 Starter。</span>
+        </div>
+        <div class="nav-hint" onclick="goToChart('churn','card-churn-trend')">→ 回到 P2 看12月 Revenue Churn 異常（Enterprise 流失的典型表現）</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2</span><span class="tag-a">A</span>
+        <span class="question-text">Q4. Q3 降級數（68）創全年季度最高，且與 Q3 MRR 下滑同步。你會建議哪種「降級預防」機制？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> <span class="fia f">F</span> Q3 降級 68，Q2 僅 52，QoQ +30.8%；同期 Q3 升級 118，升降比 1.74×（vs Q4 的 4.43×）。Q3 整體淨流向惡化。</p>
+          <p><span class="tag-i">I</span> <span class="fia i">I</span> 降級通常在合約到期前 30–60 天決定，Q3 降級暗示這些客戶在 Q2 末已有降級意向。</p>
+          <p><span class="tag-a">A</span> <span class="fia a">A</span> 建議：建立「降級預警儀表板」，在客戶合約到期前 60 天主動介入。觸發信號可包含：功能使用率下降、登入頻率降低、未啟用付費功能。假設 CS 提前介入可將降級率降低 30%（業界參考），Q3 降級將從 68 降至 48，等效 Contraction MRR 減少約 NT$12,000。</p>
+        </div>
+        <div class="nav-hint" onclick="goToChart('funnel','card-feature-adopt')">→ P4「功能採用率對比」可作為 CS 預警信號設計的參考</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1</span><span class="tag-f">F</span>
+        <span class="question-text">Q5. 哪個渠道的 CAC 最高？哪個 LTV:CAC 最低？這兩個問題的答案是同一個渠道嗎？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> 直接讀圖：<span class="fia f">F</span> CAC 最高 = 活動/Webinar（NT$51,200）；<span class="fia f">F</span> LTV:CAC 最低 = 付費廣告（1.8×）。兩個問題的答案<strong>不是同一個渠道</strong>。活動/Webinar 的 LTV:CAC = 2.2×，高於付費廣告 1.8×，儘管它的 CAC 更高（NT$51,200 vs NT$48,200），說明活動吸引的客戶 LTV 也相對較高。</p>
+        </div>
+        <div class="trap-block"><span class="trap-icon">⚠️</span>「最貴的渠道」≠「最差的渠道」。評估渠道效率應用 LTV:CAC，而非單看 CAC 絕對值。一個 NT$100K CAC 的渠道，如果帶來的客戶 LTV 是 NT$600K，比 NT$10K CAC 帶來 NT$20K LTV 的渠道更划算。</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3</span><span class="tag-a">A</span>
+        <span class="question-text">Q6. 結合 P1 MRR、P2 Churn、P3 LTV:CAC，如果今天要決定「將有限預算投入 CS 留客 vs 行銷獲客」，你的建議和理由是什麼？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> <span class="fia f">F</span> P1：Churned MRR 全年合計 NT$1,574K，New MRR 合計 NT$1,758K，新客僅勉強蓋住流失。P2：客戶每月流失率 2.3%，Enterprise 僅 0.6%。P3：Payback 11.1 個月，LTV:CAC 3.9×，付費廣告效率最差（1.8×）。</p>
+          <p><span class="tag-i">I</span> <span class="fia i">I</span> 每留住一個現有客戶節省的成本 = CAC（NT$28,600）+ 重新獲客的機會成本。CS 成本通常遠低於 CAC，故留客 ROI 理論上更高。</p>
+          <p><span class="tag-a">A</span> <span class="fia a">A</span> 建議：將 30% 現有行銷預算從付費廣告移至 CS 擴充（特別針對第1–2月的 Cohort 高流失期），同時保留自然搜尋 SEO 投入（最高效可規模化渠道）。假設：CS 介入能降低 Starter 流失率從 3.4% 至 2.5%，每月挽留約 8 個 Starter 客戶（842×0.9%），折合 NT$9,500/月 MRR，年效益 NT$114K，遠高於 CS 人力增量成本。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div id="page-funnel" class="page">
+  <div class="section-title">關鍵業績指標 KPI（付費轉換漏斗）</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--kpi-color:var(--accent)">
+      <div class="kpi-label">試用轉換率（全年）</div>
+      <div class="kpi-value">38.2%</div>
+      <div class="kpi-sub"><span class="kpi-neutral">3,840 試用 → 1,468 付費</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--accent2)">
+      <div class="kpi-label">活躍試用率</div>
+      <div class="kpi-value">60.0%</div>
+      <div class="kpi-sub"><span class="kpi-neutral">3,840 試用申請 → 2,304 活躍使用</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--purple)">
+      <div class="kpi-label">轉換後 30 天留存率</div>
+      <div class="kpi-value">79.8%</div>
+      <div class="kpi-sub"><span class="kpi-neutral">1,468 付費 → 1,172 留存 30 天</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">付費轉換漏斗（全年）</div>
+  <div class="chart-grid chart-grid-wide">
+    <div class="chart-card" id="card-funnel">
+      <div class="chart-card-title">🚀 訪客 → 試用 → 轉換 → 留存 漏斗</div>
+      <div class="chart-block h340"><canvas id="chart-funnel"></canvas></div>
+      <div class="findings-section">
+        <strong>最大 Drop-off：</strong>訪客→試用申請僅 8.0%（-92%），為漏斗最大缺口。試用申請→活躍試用流失 40%（未真正使用產品），是第二大瓶頸。付費轉換→30天留存（79.8%）已相對健康，代表轉換品質尚可。
+      </div>
+    </div>
+    <div class="chart-card" id="card-days-convert">
+      <div class="chart-card-title">⏱️ 試用轉換天數分佈</div>
+      <div class="chart-block h340"><canvas id="chart-days-convert"></canvas></div>
+      <div class="findings-section">
+        <strong>轉換集中期：</strong>8–14 天為高峰（498 人，33.9%），顯示大多數用戶在完整體驗一週後決定付費。0–7 天快速轉換者（285 人）可能是高意向客戶（Warm lead），留存率應更高。
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">功能採用率 × 渠道轉換率</div>
+  <div class="chart-grid chart-grid-2">
+    <div class="chart-card" id="card-feature-adopt">
+      <div class="chart-card-title">🎯 試用期功能採用率：已轉換 vs 未轉換</div>
+      <div class="chart-block h300"><canvas id="chart-feature-adopt"></canvas></div>
+      <div class="findings-section">
+        <strong>最強預測信號：</strong>「邀請團隊」功能採用率差距最大（已轉換 72% vs 未轉換 31%，差距 41pp）。其次是「整合設定」（78% vs 42%，差距 36pp）。這兩個行為是轉換的強效領先指標。
+      </div>
+    </div>
+    <div class="chart-card" id="card-channel-conv">
+      <div class="chart-card-title">📡 各渠道試用轉換率（%）</div>
+      <div class="chart-block h300"><canvas id="chart-channel-conv"></canvas></div>
+      <div class="findings-section">
+        <strong>渠道品質差異：</strong>合作夥伴轉換率（79.5%）為最高，但試用量僅 268；活動/Webinar 轉換率僅 1.6%——帶來大量試用但幾乎不轉換，可能需要重新設計 Demo 到 Trial 的銜接流程。
+      </div>
+    </div>
+  </div>
+
+  <div class="qa-section">
+    <div class="qa-section-title">📝 分析訓練 Q&A</div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1</span><span class="tag-f">F</span>
+        <span class="question-text">Q1. 從漏斗圖，哪個轉換步驟的絕對流失人數最多？哪個步驟的轉換率最低？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> 直接從漏斗數字計算：<span class="fia f">F</span> 絕對流失最多 = 訪客→試用申請，流失 <strong>44,160 人</strong>（48,000−3,840）；<span class="fia f">F</span> 轉換率最低 = 同一步驟，僅 <strong>8.0%</strong>（3,840÷48,000）。兩個問題答案指向同一步驟。</p>
+        </div>
+        <div class="trap-block"><span class="trap-icon">⚠️</span>「流失最多」（絕對數量）與「轉換率最低」（比例）通常指向漏斗的頂端。但不代表頂端一定是「優先改善」的地方——若產品客群本就是精準小眾，訪客少 + 轉換率低可能是正常的（如 Enterprise 專注型 PLG）。</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2</span><span class="tag-i">I</span>
+        <span class="question-text">Q2. 活動/Webinar 渠道試用量 126，轉換率僅 1.6%（約 2 人付費）。你認為這個渠道應該砍掉嗎？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> <span class="fia f">F</span> 活動/Webinar：126 試用 × 1.6% = 約 2 人付費；CAC（P3）NT$51,200，LTV:CAC 僅 2.2×。直觀上這是最差渠道之一。</p>
+          <p><span class="tag-i">I</span> <span class="fia i">I</span> 但在決定砍掉之前，需考慮：① 活動的潛在「品牌聲量」效益是否無法從轉換率衡量；② 這 126 個試用申請的平均方案是否是 Enterprise（雖然轉換慢，但 LTV 高）；③ 轉換率 1.6% 是否因為後續追蹤流程不足而非客戶無意願。</p>
+          <p><span class="tag-a">A</span> <span class="fia a">A</span> 建議：先改進活動後 14 天的 Trial Nurture Sequence（自動化 email drip），而非直接砍渠道。假設可將轉換率從 1.6% 提升至 8%（接近自然搜尋的一半），則活動每年可增加 8 個付費客戶，額外 MRR 約 NT$20,000+。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2</span><span class="tag-i">I</span>
+        <span class="question-text">Q3. 「邀請團隊」功能的採用率差距（已轉換 72% vs 未轉換 31%）是5個功能中最大的。如何利用這個發現設計 Trial 介入策略？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> <span class="fia f">F</span> 「邀請團隊」差距 = 72% − 31% = 41pp，為所有功能中最大。「整合設定」次之（36pp）。</p>
+          <p><span class="tag-i">I</span> <span class="fia i">I</span> 這兩個功能都是「多人協作觸發點」——使用者邀請他人後，離開成本（轉換成本）大幅提升（轉換為付費才能繼續協作），這是典型的「Network Lock-in」效應。未完成這些行為的 Trial 用戶，更可能是單人試用、沒有協作需求。</p>
+          <p><span class="tag-a">A</span> <span class="fia a">A</span> 策略設計：在 Trial Day 3 觸發 in-app 提醒「邀請第一位隊友可解鎖協作功能」；Day 5 觸發 email「整合您的工具（Slack/Google）節省 3 小時」。將這兩個行為設為 Trial 健康分的主要指標，低於門檻者優先 CS 電話介入。</p>
+        </div>
+        <div class="trap-block"><span class="trap-icon">⚠️</span>相關性 ≠ 因果性。「使用邀請功能的人更容易轉換」，可能只是因為本來就有購買意願的人才會認真使用所有功能。推動所有 Trial 用戶「硬用」邀請功能不一定能提升轉換率，需要 A/B 測試驗證因果。</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1</span><span class="tag-f">F</span>
+        <span class="question-text">Q4. 全年 3,840 個試用申請中，有多少人「從未真正使用產品」（非活躍試用）？佔多少比例？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> <span class="fia f">F</span> 活躍試用 = 2,304；非活躍試用 = 3,840 − 2,304 = <strong>1,536 人</strong>，佔試用申請的 <strong>40%</strong>。這 1,536 人申請了試用但從未認真使用（可能完成了註冊但沒有進行有意義的操作），是漏斗的隱性浪費。</p>
+        </div>
+        <div class="trap-block"><span class="trap-icon">⚠️</span>這 40% 的非活躍試用者並非全部無效：其中可能有「看了一眼、還在評估期」的潛在客戶。沒有進一步的 email 開信率、再訪率、決策時間線資料，無法判斷他們是「死的 lead」還是「還在決策週期中的 lead」。</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2</span><span class="tag-a">A</span>
+        <span class="question-text">Q5. 0–7 天快速轉換者（285 人）與 22–30 天慢轉換者（273 人）數量接近，但你認為哪組的 30 天留存率更高？為什麼？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> <span class="fia f">F</span> 從天數分佈圖：0–7 天 285 人，22–30 天 273 人，兩組數量相近（差 12 人），但本儀表板未提供各組的 30 天留存率拆分。</p>
+          <p><span class="tag-i">I</span> <span class="fia i">I</span> 業界常見模式：快速轉換（0–7 天）可能是 Warm lead（已有明確需求、從競品轉來），留存率通常較高；慢轉換（22–30 天）可能是在 Trial 末期「避免失去 access」而付費，動機相對弱，留存風險較高。</p>
+          <p><span class="tag-a">A</span> <span class="fia a">A</span> 假設：快速轉換者 30 天留存率 ≥ 85%，慢轉換者 ≤ 73%（低於平均 79.8%）。若此假設成立，應設計「早期轉換激勵」（Trial Day 5–7 提供首月折扣）來前移轉換時間，同時對 Day 25+ 仍未轉換者標記為「高流失風險付費客戶」，加強 CS 跟進。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3</span><span class="tag-a">A</span>
+        <span class="question-text">Q6. 結合四頁所有數據，若你是 Growth PM，今年最優先的一個改善項目是什麼？請給出完整的業務邏輯鏈。</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F</span> 關鍵事實串接：<span class="fia f">F</span> P1：Churned MRR 每月均超過 Expansion，NRR 僅 104.2%。P2：月均 Customer Churn 2.3%，Jan Cohort 第1月流失 14%。P3：LTV:CAC 3.9×，付費廣告效率最差。P4：40% 試用者從未活躍使用，「邀請團隊」是最強轉換預測信號。</p>
+          <p><span class="tag-i">I</span> <span class="fia i">I</span> 邏輯鏈：① 40% 的 Trial 非活躍者無法到達「邀請團隊」這個關鍵行為；② 未完成關鍵行為的 Trial 用戶轉換率低；③ 即使轉換，沒有產品黏性的客戶在第1–2月更容易流失（Cohort 數據）；④ 這些流失直接增加了 Churned MRR，壓低 NRR。</p>
+          <p><span class="tag-a">A</span> <span class="fia a">A</span> 優先項目：「Trial Activation Optimization」——在 Trial Day 1–3 設計強制性 onboarding flow，引導用戶完成「邀請第一位隊友」和「設定第一個整合」。假設：將 Trial 活躍率從 60% 提升至 75%，且活躍用戶轉換率維持在 63.7%，全年額外轉換 = (3,840×15%)×63.7% = 367 人 × ARPU NT$2,584 = 年增 MRR NT$948,000，效益遠超任何廣告投入增量。</p>
+        </div>
+        <div class="trap-block"><span class="trap-icon">⚠️</span>上述邏輯鏈有多個假設未被驗證：Activation 提升是否等比例提升轉換率、新用戶特徵是否與當前 Trial 相同。在投入資源前，應先用 A/B 測試在 100–200 個 Trial 用戶上驗證因果關係，再決定全量推出。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 進階訓練題 -->
+  <div class="training-block">
+    <div class="training-title">🏋️ 進階訓練題（無標準答案）</div>
+
+    <div class="qa-item" style="margin-bottom:10px">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3</span><span class="tag-a">A</span>
+        <span class="question-text">訓練題 1. 如果你只能從這四頁資料中選「一張圖」向 CEO 彙報「業務健康度」，你選哪張？為什麼？有什麼圖是你不會選的，原因是什麼？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-i">I</span> 這是一道「溝通設計 + 分析思維」的綜合題，沒有唯一正確答案。評估你的選擇是否包含以下思考維度：<br>① 目標受眾：CEO 需要宏觀判斷，不需要細節操作。<br>② 信息密度：一張圖是否能傳遞最多的業務信號？<br>③ 行動性：這張圖是否能讓 CEO 立即判斷需要作什麼決策？</p>
+          <p><span class="tag-a">A</span> 常見高分答案：<br>選 MRR Waterfall（P1）—— 展示業務的「水龍頭模型」，New+Expansion 是流入，Churn+Contraction 是流出，一眼看出12月在漏水。<br>選 NRR 趨勢（若有多期）—— NRR 是 SaaS 單一最重要指標，但本儀表板只有一個時間點，無法看趨勢，選擇需附加說明。</p>
+          <p><span class="tag-a">A</span> 常見低分答案：選漏斗圖（太細節）、選 Cohort 矩陣（CEO 可能無法快速解讀）。</p>
+        </div>
+        <div class="trap-block"><span class="trap-icon">⚠️</span>最常見的陷阱：選「最複雜的圖」以顯示分析能力。優秀的分析師懂得「簡化呈現」，而非「炫耀數據量」。</div>
+      </div>
+    </div>
+
+    <div class="qa-item" style="margin-bottom:10px">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3</span><span class="tag-a">A</span>
+        <span class="question-text">訓練題 2. 這份儀表板有哪些「你感覺到了但數據無法確認」的問題？至少列出三個需要追加調查的數據缺口。</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-i">I</span> 這道題訓練的是「知道自己不知道什麼」的後設認知能力。以下為參考答案，不限於此：<br>① <strong>流失原因的「真相」</strong>：本儀表板的流失原因來自問卷/CS 紀錄，存在選擇性偏誤和社交期望偏誤。缺口：需要客戶離開前的產品使用日誌（功能下降趨勢）作為交叉驗證。<br>② <strong>Cohort 改善是否因為 Onboarding 優化</strong>：Sept/Oct Cohort 第1月留存率提升到 90%，但我們不知道這是因為產品改善、客戶特性改變（渠道組合變化），還是季節效應。缺口：需要同期的渠道別 Cohort 拆分。<br>③ <strong>NRR 104.2% 的可信度</strong>：NRR 的精確計算需要追蹤「相同 Cohort 的 MRR 變化」，但本儀表板的 NRR 是引用值，無法從現有月度數據精確復原。缺口：需要 Cohort MRR 追蹤表。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="qa-item" style="margin-bottom:10px">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2</span><span class="tag-a">A</span>
+        <span class="question-text">訓練題 3. 如果12月的「年末合約批次到期」每年都會發生，這是否意味著 Annual Contract 策略本身有問題？你會如何重新設計合約結構來平滑這個風險？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-i">I</span> 這是一道「商業模式設計」題。評分重點：<br>① 能否辨識「合約集中到期」的系統性風險（而非個月的偶發事件）。<br>② 提出的解決方案是否具可執行性。<br>③ 是否考慮到解決方案本身的代價（如分散合約可能增加 CS 管理複雜度）。</p>
+          <p><span class="tag-a">A</span> 參考解法：① 推行「錯峰合約到期」政策，新簽客戶根據當月業務負荷分配到期月份；② 對12月到期合約在11月提前介入（CS Check-in）；③ 提供「多年合約優惠」以鼓勵 2–3 年合約，減少年度集中流失風險。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 設計選擇揭露 -->
+  <div class="design-panel" style="margin-top:28px">
+    <div class="design-panel-title" onclick="toggleDesign()" style="cursor:pointer">
+      📐 這份 Dashboard 的設計選擇 <span style="color:var(--text-muted);font-weight:400;font-size:.8rem;margin-left:8px">（點擊展開）</span>
+    </div>
+    <div class="design-panel-body">
+      <div class="design-grid">
+        <div class="design-item"><h4>① 為何選用 Waterfall 而非折線展示 MRR？</h4><p>折線只顯示「MRR 總量變化」，無法看出成長來源。Waterfall 強制學員理解「MRR = 加法結構」，是訓練 SaaS 分析思維的最直接工具。代價：12 個月的 Waterfall 視覺雜訊較大，本儀表板選擇只呈現單月（12月），用月度拆解圖補充全年趨勢。</p></div>
+        <div class="design-item"><h4>② Cohort 為何用 HTML 表格而非圖表？</h4><p>Chart.js 原生不支援 Cohort Heatmap，用 Canvas 模擬複雜度高且效能差。HTML 表格搭配條件格式化顏色，反而是業界分析師日常使用的真實呈現方式（Amplitude、Mixpanel 均採用此格式），訓練價值更高。</p></div>
+        <div class="design-item"><h4>③ 為何 NRR 不從月度數據推算？</h4><p>嚴格的 NRR 計算需追蹤「特定起始 Cohort 的 MRR 在 12 個月後的狀態」，不能從月度匯總數字簡單加減。為避免給學員示範錯誤的計算口徑，NRR 作為外部引入的 trailing 12-month 指標呈現，這是 assertConsistency 不驗證 NRR 的原因。</p></div>
+        <div class="design-item"><h4>④ 流失原因圖的數據代表性問題</h4><p>故意設計成「聽起來很確定、但實際上有嚴重偏誤風險」的資料，目的是訓練學員對「問卷/CS 訪談型資料」保持懷疑。問題：回答者是否代表所有流失客戶？回答是否真實反映決策原因？這類問題在 A 題的陷阱區塊中明確揭示。</p></div>
+        <div class="design-item"><h4>⑤ 為何 LTV 用簡化公式（ARPU÷Churn）？</h4><p>真實 LTV 應扣除毛利率、服務成本、折現率。本儀表板使用簡化版是為了讓公式可直接驗算（assertConsistency 檢查），同時在定義面板中明確說明簡化假設，訓練學員「知道公式的邊界條件」而非「盲目使用公式」。</p></div>
+        <div class="design-item"><h4>⑥ P3 視覺 Preset 選用「輕色企業型」</h4><p>前兩份儀表板（餐飲連鎖、電商 DTC）均採深色系。SaaS 企業工具通常以明亮白色系為設計語言（Notion、Linear、Stripe 均為白底），P3 preset 同時實現「視覺差異化」與「情境真實性」雙重目標。</p></div>
+        <div class="design-item"><h4>⑦ 12月為何設計成 MRR 下滑月？</h4><p>教學陷阱：學員通常預期「Q4 是旺季，MRR 應成長」。12月 MRR 下滑打破此假設，強迫學員探究成因（年末合約批次到期），訓練「反直覺查因」能力。若全年12個月均正成長，儀表板訓練價值大幅降低。</p></div>
+        <div class="design-item"><h4>⑧ 試用轉換率口徑的刻意設計</h4><p>本儀表板 Trial Conversion Rate = 付費數 ÷ 試用申請數（38.2%），而非 ÷ 活躍試用數（63.7%）。兩個口徑均合理但數字差異巨大。在 Q1 和定義面板中均明確揭示口徑，訓練學員「先確認口徑，再比較數字」的分析習慣。</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="page-footer">SaaS訂閱制_MRR訂閱指標分析_訓練儀表板教材 · 合成資料集 · 僅供分析能力培訓使用 · Blake © 2026</div>
+
+<script>
+/* ── DATA ── */
+const DATA = {
+  anchors: {
+    year: 2024,
+    paying_customers: 1876,
+    trial_customers: 267,
+    mrr: 4847200,
+    arr: 58166400,
+    arpu: 2584,
+    monthly_churn_rate: 2.3,
+    nrr: 104.2,
+    ltv: 112300,
+    cac: 28600,
+    ltv_cac_ratio: 3.9,
+    payback_months: 11.1,
+    trial_starts: 3840,
+    trial_conv_rate: 38.2
+  },
+  mrr_monthly: {
+    labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    start:      [4215000,4277000,4315000,4410000,4518000,4573000,4601000,4569000,4587000,4665000,4783000,4885000],
+    end:        [4277000,4315000,4410000,4518000,4573000,4601000,4569000,4587000,4665000,4783000,4885000,4847200],
+    new_mrr:    [152000,128000,165000,178000,148000,132000,108000,118000,158000,178000,168000,125000],
+    expansion:  [72000,68000,78000,85000,75000,72000,62000,68000,78000,88000,82000,68000],
+    contraction:[-28000,-32000,-25000,-28000,-38000,-42000,-48000,-45000,-32000,-28000,-30000,-52000],
+    churned:    [-134000,-126000,-123000,-127000,-130000,-134000,-154000,-123000,-126000,-120000,-118000,-178800]
+  },
+  churn_monthly: {
+    customer_churn: [2.8,2.5,2.4,2.2,2.2,2.3,2.9,2.4,2.1,2.0,2.1,2.8],
+    revenue_churn:  [3.18,2.95,2.85,2.88,2.88,2.93,3.35,2.69,2.75,2.57,2.47,3.66]
+  },
+  cohort: {
+    cohorts: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'],
+    retention: [
+      [100,86,79,75,72,69,67,65,63,62,61,60],
+      [100,87,80,76,73,70,68,66,64,63,62],
+      [100,88,81,77,74,71,69,67,65,64],
+      [100,88,82,78,75,72,70,68,66],
+      [100,89,83,79,76,73,71,69],
+      [100,89,83,80,77,74,72],
+      [100,86,80,77,74,71],
+      [100,88,82,79,76],
+      [100,90,84,81],
+      [100,90,85]
+    ]
+  },
+  churn_reasons: {
+    labels: ['切換至競品','預算削減/凍結','功能不符需求','使用頻率偏低','團隊縮減','其他'],
+    values: [31.2,24.8,18.5,13.6,8.2,3.7]
+  },
+  plan_churn: {
+    plans: ['Starter','Professional','Enterprise'],
+    churn_rates: [3.4,1.8,0.6],
+    customer_count: [842,756,278]
+  },
+  plan_mrr: {
+    starter_arpu: 1188,
+    pro_arpu: 2988,
+    ent_arpu: 5712
+  },
+  plan_distribution: {
+    starter:    [54.2,53.8,53.1,52.4,51.8,51.2,50.8,50.3,49.6,48.8,47.5,44.9],
+    pro:        [39.1,39.2,39.6,39.8,39.9,40.0,40.0,40.0,40.0,40.0,40.0,40.3],
+    enterprise: [6.7,7.0,7.3,7.8,8.3,8.8,9.2,9.7,10.4,11.2,12.5,14.8]
+  },
+  ltv_cac_by_channel: {
+    channels: ['自然搜尋','口碑推薦','合作夥伴','活動/Webinar','付費廣告'],
+    ltv_cac:  [6.2,8.5,5.1,2.2,1.8],
+    cac:      [18100,13200,22100,51200,48200],
+    trial_vol:[1680,614,268,126,1152]
+  },
+  plan_migration: {
+    labels: ['Q1','Q2','Q3','Q4'],
+    upgrades:   [168,142,118,195],
+    downgrades: [38,52,68,44],
+    churn_count:[42,48,58,51]
+  },
+  funnel: {
+    stages: ['訪客','試用申請','活躍試用','付費轉換','30天留存'],
+    counts: [48000,3840,2304,1468,1172],
+    rates:  [null,8.0,60.0,38.2,79.8]
+  },
+  feature_adoption: {
+    features: ['核心功能使用','整合設定','邀請團隊','報表檢視','API 串接'],
+    converted:     [94,78,72,65,42],
+    not_converted: [67,42,31,28,18]
+  },
+  days_to_convert: {
+    labels: ['0–7 天','8–14 天','15–21 天','22–30 天'],
+    values: [285,498,412,273]
+  },
+  channel_conversion: {
+    channels: ['口碑推薦','合作夥伴','自然搜尋','活動/Webinar','付費廣告'],
+    conv_rates:[52.1,79.5,38.5,1.6,24.8],
+    trial_vol: [614,268,1680,126,1152]
+  }
+};
+
+/* ── assertConsistency ── */
+function assertConsistency() {
+  const D = DATA, errors = [];
+  const check = (lbl, got, exp, tol=0.01) => {
+    if (Math.abs(got - exp) > Math.abs(exp) * tol + 1) errors.push(`[FAIL] ${lbl}: got ${got}, expected ${exp}`);
+  };
+  check('ARR = MRR×12', D.anchors.arr, D.anchors.mrr * 12);
+  check('LTV ≈ ARPU/churn', D.anchors.ltv, Math.round(D.anchors.arpu / (D.anchors.monthly_churn_rate/100)), 0.01);
+  check('Payback ≈ CAC/ARPU', D.anchors.payback_months, Math.round(D.anchors.cac/D.anchors.arpu*10)/10, 0.05);
+  D.mrr_monthly.start.forEach((s,i) => {
+    const net = D.mrr_monthly.new_mrr[i]+D.mrr_monthly.expansion[i]+D.mrr_monthly.contraction[i]+D.mrr_monthly.churned[i];
+    check(`MRR end[${i}]`, D.mrr_monthly.end[i], Math.round(s+net));
+  });
+  for(let i=0;i<11;i++) check(`MRR continuity[${i}→${i+1}]`, D.mrr_monthly.start[i+1], D.mrr_monthly.end[i]);
+  check('Dec MRR = anchor', D.mrr_monthly.end[11], D.anchors.mrr);
+  check('Plan customers = paying', D.plan_churn.customer_count.reduce((a,b)=>a+b,0), D.anchors.paying_customers, 0.001);
+  check('Days-to-convert sum = converted', D.days_to_convert.values.reduce((a,b)=>a+b,0), D.funnel.counts[3]);
+  check('Churn reasons sum ≈ 100', D.churn_reasons.values.reduce((a,b)=>a+b,0), 100, 0.01);
+  const f = D.funnel.counts;
+  for(let i=1;i<f.length;i++) if(f[i]>f[i-1]) errors.push(`[FAIL] Funnel[${i}]>Funnel[${i-1}]`);
+  if(errors.length===0) console.log('%c✓ All data consistency checks passed','color:#059669;font-weight:bold');
+  else errors.forEach(e=>console.error(e));
+}
+
+/* ── color helper ── */
+function c(key, alpha=1) {
+  const m = {
+    blue:`rgba(37,99,235,${alpha})`,teal:`rgba(5,150,105,${alpha})`,
+    orange:`rgba(217,119,6,${alpha})`,red:`rgba(220,38,38,${alpha})`,
+    purple:`rgba(124,58,237,${alpha})`,gray:`rgba(100,116,139,${alpha})`
+  };
+  return m[key]||m.blue;
+}
+
+/* ── Chart base config ── */
+const BASE_PLG = {
+  tooltip:{backgroundColor:'rgba(15,23,42,0.9)',titleColor:'#F8FAFC',bodyColor:'#CBD5E1',borderColor:'rgba(37,99,235,0.2)',borderWidth:1,padding:10,cornerRadius:8},
+  legend:{labels:{color:'#475569',font:{family:"'Plus Jakarta Sans',sans-serif",size:12},boxWidth:10,boxHeight:10}},
+  datalabels:{display:false}
+};
+const BASE_SC = {
+  x:{ticks:{color:'#64748B',font:{size:11}},grid:{color:'rgba(0,0,0,0.05)'},border:{color:'rgba(0,0,0,0.08)'}},
+  y:{ticks:{color:'#64748B',font:{size:11}},grid:{color:'rgba(0,0,0,0.05)'},border:{color:'rgba(0,0,0,0.08)'}}
+};
+
+function mk(id, type, labels, datasets, opts={}) {
+  const ctx = document.getElementById(id);
+  if(!ctx) return null;
+  const plugins = Object.assign({}, BASE_PLG, opts.plugins||{});
+  const scales  = opts.noScales ? {} : Object.assign({}, {x:{...BASE_SC.x,...(opts.scales?.x||{})}, y:{...BASE_SC.y,...(opts.scales?.y||{})}});
+  const {plugins:_,scales:__,noScales:___,...rest} = opts;
+  return new Chart(ctx,{type, data:{labels,datasets}, options:{responsive:true,maintainAspectRatio:false,animation:{duration:480,easing:'easeOutQuart'},plugins,scales,...rest}});
+}
+
+/* ── Interaction ── */
+const initialized = {};
+function switchPage(name) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  if(!initialized[name]){
+    initialized[name]=true;
+    if(name==='mrr') drawMrr();
+    else if(name==='churn') drawChurn();
+    else if(name==='ltv') drawLtv();
+    else if(name==='funnel') drawFunnel();
+  }
+}
+function toggleDef(){
+  const o=document.getElementById('def-panel-outer'),b=document.getElementById('defToggleBtn');
+  o.classList.toggle('open'); b.classList.toggle('open');
+}
+function filterDef(q){
+  const items=document.querySelectorAll('.def-item'),lq=q.toLowerCase();
+  let visible=0;
+  items.forEach(it=>{
+    const match=it.textContent.toLowerCase().includes(lq);
+    it.style.display=match?'':'none'; if(match) visible++;
+  });
+  document.getElementById('defNoResult').style.display=visible?'none':'block';
+}
+function toggleQA(el){
+  const item=el.closest('.qa-item');
+  item.classList.toggle('open');
+  const ans=item.querySelector('.answer');
+  if(ans) ans.classList.toggle('show');
+}
+function goToChart(pageId, chartId){
+  switchPage(pageId);
+  setTimeout(()=>{
+    const el=document.getElementById(chartId);
+    if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.closest('.chart-card')?.classList.add('chart-flash')}
+  },150);
+}
+function toggleDesign(){
+  const b=document.querySelector('.design-panel-body');
+  if(b) b.classList.toggle('show');
+}
+
+/* ── Draw stubs (filled by layers 2-4) ── */
+function drawMrr(){
+  const D = DATA.mrr_monthly;
+  const labs = D.labels;
+
+  // Chart 1-1: Waterfall (Dec)
+  const wfBase = D.start[11]; // 4885000
+  const wfNew  = D.new_mrr[11];     // 125000
+  const wfExp  = D.expansion[11];   // 68000
+  const wfCon  = D.contraction[11]; // -52000
+  const wfChu  = D.churned[11];     // -178800
+  const wfEnd  = D.end[11];         // 4847200
+  // running totals
+  const r0=wfBase, r1=r0+wfNew, r2=r1+wfExp, r3=r2+wfCon, r4=r3+wfChu;
+  mk('chart-waterfall','bar',
+    ['期初 MRR','New MRR','Expansion','Contraction','Churned MRR','期末 MRR'],
+    [{
+      data:[[0,r0],[r0,r1],[r1,r2],[r3,r2],[r4,r3],[0,wfEnd]],
+      backgroundColor:[c('blue',.75),c('teal',.85),c('blue',.55),c('orange',.85),c('red',.85),c('blue',.75)],
+      borderRadius:4, borderSkipped:false
+    }],
+    {plugins:{datalabels:{display:true,anchor:'end',align:(ctx)=>ctx.dataIndex>=3&&ctx.dataIndex<=4?'start':'end',
+      color:(ctx)=>['#2563EB','#059669','#2563EB','#D97706','#DC2626','#2563EB'][ctx.dataIndex],
+      font:{weight:'600',size:11},
+      formatter:(v,ctx)=>{
+        const vals=[r0,wfNew,wfExp,wfCon,wfChu,wfEnd];
+        const n=vals[ctx.dataIndex];
+        const s=n<0?'−':'';
+        return s+'NT$'+(Math.abs(n)/1000).toFixed(0)+'K';
+      }
+    },legend:{display:false},tooltip:{callbacks:{label:(item)=>{
+      const vals=[r0,wfNew,wfExp,wfCon,wfChu,wfEnd];
+      const n=vals[item.dataIndex];
+      return (n>=0?'+':'')+n.toLocaleString()+' NT$';
+    }}}},
+    scales:{
+      x:{ticks:{color:'#475569',font:{size:12}}},
+      y:{ticks:{color:'#64748B',font:{size:10},callback:v=>'NT$'+(v/10000).toFixed(0)+'萬'},min:4600000,max:5150000}
+    }
+  });
+
+  // Chart 1-2: MRR trend line
+  mk('chart-mrr-trend','line',labs,
+    [{label:'月末 MRR',data:D.end,borderColor:c('blue'),backgroundColor:c('blue',.08),fill:true,tension:.35,pointRadius:3,pointBackgroundColor:c('blue')}],
+    {scales:{y:{ticks:{callback:v=>'NT$'+(v/10000).toFixed(0)+'萬'}}},plugins:{datalabels:{display:false},legend:{display:false}}}
+  );
+
+  // Chart 1-4: Expansion vs Churned
+  mk('chart-exp-churn','bar',labs,
+    [
+      {label:'Expansion MRR',data:D.expansion,backgroundColor:c('blue',.75),borderRadius:3},
+      {label:'Churned MRR',data:D.churned.map(v=>Math.abs(v)),backgroundColor:c('red',.75),borderRadius:3}
+    ],
+    {scales:{y:{ticks:{callback:v=>'NT$'+(v/1000).toFixed(0)+'K'}}},plugins:{datalabels:{display:false}}}
+  );
+
+  // Chart 1-3: Monthly MRR decomposition (stacked)
+  mk('chart-mrr-decomp','bar',labs,
+    [
+      {label:'New MRR',data:D.new_mrr,backgroundColor:c('teal',.8),borderRadius:2,stack:'pos'},
+      {label:'Expansion',data:D.expansion,backgroundColor:c('blue',.65),borderRadius:2,stack:'pos'},
+      {label:'Contraction',data:D.contraction,backgroundColor:c('orange',.8),borderRadius:2,stack:'neg'},
+      {label:'Churned',data:D.churned,backgroundColor:c('red',.75),borderRadius:2,stack:'neg'}
+    ],
+    {scales:{y:{ticks:{callback:v=>'NT$'+(v/1000).toFixed(0)+'K'},stacked:false},x:{stacked:false}},
+     plugins:{datalabels:{display:false}}}
+  );
+}
+function drawChurn(){
+  const DC = DATA.churn_monthly;
+  const labs = DATA.mrr_monthly.labels;
+
+  // Chart 2-1: Dual churn line
+  mk('chart-churn-trend','line',labs,
+    [
+      {label:'Customer Churn %',data:DC.customer_churn,borderColor:c('red'),backgroundColor:c('red',.08),fill:true,tension:.35,pointRadius:4,pointBackgroundColor:c('red')},
+      {label:'Revenue Churn %', data:DC.revenue_churn, borderColor:c('orange'),backgroundColor:c('orange',.06),fill:true,tension:.35,pointRadius:4,pointBackgroundColor:c('orange'),borderDash:[5,3]}
+    ],
+    {scales:{y:{min:1.5,max:4.2,ticks:{callback:v=>v.toFixed(1)+'%'}}},plugins:{datalabels:{display:false}}}
+  );
+
+  // Cohort Heatmap — HTML table
+  const coData = DATA.cohort;
+  const maxCols = 12;
+  function retentionColor(v){
+    if(v===null||v===undefined) return '#F8FAFC';
+    if(v>=90) return 'rgba(5,150,105,0.75)';
+    if(v>=80) return 'rgba(16,185,129,0.55)';
+    if(v>=70) return 'rgba(245,158,11,0.4)';
+    if(v>=60) return 'rgba(217,119,6,0.45)';
+    return 'rgba(220,38,38,0.5)';
+  }
+  function textColor(v){
+    if(v===null||v===undefined) return '#94A3B8';
+    if(v>=80) return '#064E3B';
+    if(v>=60) return '#78350F';
+    return '#7F1D1D';
+  }
+  let html = '<table class="cohort-table"><thead><tr><th>Cohort</th>';
+  for(let m=0;m<maxCols;m++) html+=`<th>M+${m}</th>`;
+  html+='</tr></thead><tbody>';
+  coData.cohorts.forEach((name,i)=>{
+    html+=`<tr><td style="font-weight:600;color:var(--text);background:var(--bg-finding)">${name} 2024</td>`;
+    for(let m=0;m<maxCols;m++){
+      const v=(coData.retention[i])?coData.retention[i][m]:undefined;
+      if(v===undefined){
+        html+='<td style="background:#F8FAFC;color:#CBD5E1">—</td>';
+      } else {
+        html+=`<td style="background:${retentionColor(v)};color:${textColor(v)}">${v}%</td>`;
+      }
+    }
+    html+='</tr>';
+  });
+  html+='</tbody></table>';
+  document.getElementById('cohort-table-wrap').innerHTML=html;
+
+  // Chart 2-3: Churn reasons horizontal bar
+  const DR = DATA.churn_reasons;
+  mk('chart-churn-reason','bar',
+    DR.labels,
+    [{label:'流失佔比',data:DR.values,backgroundColor:[c('red',.8),c('orange',.8),c('purple',.7),c('gray',.7),c('blue',.6),c('teal',.6)],borderRadius:4}],
+    {indexAxis:'y',scales:{x:{ticks:{callback:v=>v+'%'},max:38},y:{ticks:{font:{size:12}}}},
+     plugins:{datalabels:{display:true,anchor:'end',align:'end',color:'#475569',font:{size:11},formatter:v=>v+'%'},legend:{display:false}}}
+  );
+
+  // Chart 2-4: Plan churn rates
+  const DP = DATA.plan_churn;
+  mk('chart-plan-churn','bar',
+    DP.plans,
+    [{label:'月度 Churn Rate %',data:DP.churn_rates,
+      backgroundColor:[c('orange',.8),c('blue',.7),c('teal',.75)],borderRadius:6,maxBarThickness:60}],
+    {scales:{y:{min:0,max:4.5,ticks:{callback:v=>v+'%'}}},
+     plugins:{datalabels:{display:true,anchor:'end',align:'top',color:(ctx)=>['#D97706','#2563EB','#059669'][ctx.dataIndex],font:{size:13,weight:'700'},formatter:v=>v+'%'},legend:{display:false}}}
+  );
+}
+function drawLtv(){
+  const DL = DATA.ltv_cac_by_channel;
+  const DPD = DATA.plan_distribution;
+  const DM = DATA.plan_migration;
+  const labs = DATA.mrr_monthly.labels;
+
+  // Chart 3-1: LTV:CAC by channel (horizontal bar)
+  mk('chart-ltv-cac','bar',DL.channels,
+    [{label:'LTV:CAC',data:DL.ltv_cac,
+      backgroundColor:DL.ltv_cac.map(v=>v>=5?c('teal',.85):v>=3?c('blue',.75):c('red',.75)),
+      borderRadius:4,maxBarThickness:36}],
+    {indexAxis:'y',
+     scales:{x:{min:0,max:10,ticks:{callback:v=>v+'×'}},y:{ticks:{font:{size:12}}}},
+     plugins:{datalabels:{display:true,anchor:'end',align:'end',color:'#475569',font:{size:12,weight:'600'},formatter:v=>v+'×'},
+              legend:{display:false}}}
+  );
+
+  // Chart 3-2: CAC by channel (horizontal bar with bubble size for trial vol)
+  mk('chart-cac-channel','bar',DL.channels,
+    [{label:'CAC（NT$）',data:DL.cac,
+      backgroundColor:[c('teal',.8),c('blue',.7),c('purple',.7),c('orange',.8),c('red',.75)],
+      borderRadius:4,maxBarThickness:36}],
+    {indexAxis:'y',
+     scales:{x:{ticks:{callback:v=>'NT$'+(v/1000).toFixed(0)+'K'}},y:{ticks:{font:{size:12}}}},
+     plugins:{datalabels:{display:true,anchor:'end',align:'end',color:'#475569',font:{size:11},formatter:v=>'NT$'+(v/1000).toFixed(0)+'K'},
+              legend:{display:false}}}
+  );
+
+  // Chart 3-3: Plan distribution stacked area
+  mk('chart-plan-dist','line',labs,
+    [
+      {label:'Starter',data:DPD.starter,backgroundColor:c('orange',.25),borderColor:c('orange'),fill:'origin',tension:.3,pointRadius:0},
+      {label:'Professional',data:DPD.pro,backgroundColor:c('blue',.2),borderColor:c('blue'),fill:'origin',tension:.3,pointRadius:0},
+      {label:'Enterprise',data:DPD.enterprise,backgroundColor:c('teal',.3),borderColor:c('teal'),fill:'origin',tension:.3,pointRadius:0}
+    ],
+    {scales:{y:{min:0,max:70,ticks:{callback:v=>v+'%'},stacked:false}},
+     plugins:{datalabels:{display:false}}}
+  );
+
+  // Chart 3-4: Plan migration quarterly
+  mk('chart-migration','bar',DM.labels,
+    [
+      {label:'升級（→ 上一方案）',data:DM.upgrades,backgroundColor:c('teal',.8),borderRadius:4},
+      {label:'降級（→ 下一方案）',data:DM.downgrades,backgroundColor:c('orange',.8),borderRadius:4},
+      {label:'流失（取消訂閱）',data:DM.churn_count,backgroundColor:c('red',.75),borderRadius:4}
+    ],
+    {scales:{y:{ticks:{stepSize:25}}},
+     plugins:{datalabels:{display:true,anchor:'end',align:'top',font:{size:11,weight:'600'},
+       color:(ctx)=>['#059669','#D97706','#DC2626'][ctx.datasetIndex],
+       formatter:v=>v}}}
+  );
+}
+function drawFunnel(){
+  const DF = DATA.funnel;
+  const DFeat = DATA.feature_adoption;
+  const DD = DATA.days_to_convert;
+  const DC = DATA.channel_conversion;
+
+  // Chart 4-1: Funnel (horizontal descending bar)
+  mk('chart-funnel','bar',DF.stages,
+    [{label:'人數',data:DF.counts,
+      backgroundColor:[c('blue',.8),c('blue',.65),c('purple',.75),c('teal',.8),c('teal',.65)],
+      borderRadius:4,maxBarThickness:42}],
+    {indexAxis:'y',
+     scales:{x:{ticks:{callback:v=>v>=1000?(v/1000).toFixed(0)+'K':v},max:56000},y:{ticks:{font:{size:12}}}},
+     plugins:{datalabels:{display:true,anchor:'end',align:'end',
+       color:'#475569',font:{size:11,weight:'600'},
+       formatter:(v,ctx)=>{
+         const rates=DF.rates;
+         const r=rates[ctx.dataIndex];
+         return v.toLocaleString()+(r?` (${r}%)`:'');
+       }
+     },legend:{display:false}}}
+  );
+
+  // Chart 4-2: Days to convert
+  mk('chart-days-convert','bar',DD.labels,
+    [{label:'轉換人數',data:DD.values,
+      backgroundColor:[c('blue',.75),c('teal',.8),c('purple',.7),c('orange',.75)],
+      borderRadius:4,maxBarThickness:60}],
+    {scales:{y:{ticks:{stepSize:100}}},
+     plugins:{datalabels:{display:true,anchor:'end',align:'top',color:'#475569',font:{size:12,weight:'600'},
+       formatter:(v,ctx)=>{
+         const pct=Math.round(v/1468*1000)/10;
+         return v+'\n('+pct+'%)';
+       }
+     },legend:{display:false}}}
+  );
+
+  // Chart 4-3: Feature adoption
+  mk('chart-feature-adopt','bar',DFeat.features,
+    [
+      {label:'已轉換用戶',data:DFeat.converted,backgroundColor:c('teal',.8),borderRadius:3},
+      {label:'未轉換用戶',data:DFeat.not_converted,backgroundColor:c('gray',.55),borderRadius:3}
+    ],
+    {scales:{y:{min:0,max:105,ticks:{callback:v=>v+'%'}}},
+     plugins:{datalabels:{display:false}}}
+  );
+
+  // Chart 4-4: Channel conversion rates
+  mk('chart-channel-conv','bar',DC.channels,
+    [{label:'試用轉換率',data:DC.conv_rates,
+      backgroundColor:DC.conv_rates.map(v=>v>=50?c('teal',.85):v>=30?c('blue',.75):v>=10?c('orange',.8):c('red',.75)),
+      borderRadius:4,maxBarThickness:48}],
+    {indexAxis:'y',
+     scales:{x:{min:0,max:90,ticks:{callback:v=>v+'%'}},y:{ticks:{font:{size:12}}}},
+     plugins:{datalabels:{display:true,anchor:'end',align:'end',
+       color:'#475569',font:{size:11,weight:'600'},formatter:v=>v+'%'},
+       legend:{display:false}}}
+  );
+}
+
+document.addEventListener('DOMContentLoaded',()=>{assertConsistency();switchPage('mrr');});
+</script>
+</body>
+</html>
