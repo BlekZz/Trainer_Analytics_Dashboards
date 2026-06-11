@@ -1059,7 +1059,6 @@ function c(key, alpha=1) {
 }
 
 /* ── Chart base config ── */
-Chart.defaults.plugins.datalabels.display = false; // off by default; mk() opts in per-chart
 const BASE_PLG = {
   tooltip:{backgroundColor:'rgba(15,23,42,0.9)',titleColor:'#F8FAFC',bodyColor:'#CBD5E1',borderColor:'rgba(37,99,235,0.2)',borderWidth:1,padding:10,cornerRadius:8},
   legend:{labels:{color:'#475569',font:{family:"'Plus Jakarta Sans',sans-serif",size:12},boxWidth:10,boxHeight:10}},
@@ -1073,33 +1072,25 @@ const BASE_SC = {
 function mk(id, type, labels, datasets, opts={}) {
   const ctx = document.getElementById(id);
   if(!ctx) return null;
-  const isHorizBar = opts.indexAxis === 'y';
-  const isStacked  = opts.scales?.x?.stacked || opts.scales?.y?.stacked ||
-                     (datasets[0] && datasets[0].stack);
-  let dl = { display: false };
-  if (type === 'bar' && !isHorizBar && !isStacked) {
-    dl = { display: true, anchor: 'end', align: 'top', clip: false,
-      color: '#374151', font: { size: 10, weight: '600', family: "'Plus Jakarta Sans',sans-serif" },
-      padding: { bottom: 2 },
-      formatter: v => (v == null) ? '' : (Math.abs(v) >= 1000 ? (v/1000).toFixed(1)+'K' : String(v)) };
-  }
-  if (opts.plugins?.datalabels) {
-    dl = { ...dl, display: true, ...opts.plugins.datalabels };
-  }
+  // Fix: line charts — enlarge hover hit area
   if (type === 'line') {
     datasets = datasets.map(ds => ({
-      pointHitRadius: 18, pointRadius: ds.pointRadius ?? 3, pointHoverRadius: ds.pointHoverRadius ?? 7, ...ds
+      pointHitRadius: 18, pointRadius: ds.pointRadius ?? 3, pointHoverRadius: ds.pointHoverRadius ?? 7,
+      ...ds
     }));
   }
-  const scales = opts.noScales ? {} : Object.assign({}, {x:{...BASE_SC.x,...(opts.scales?.x||{})}, y:{...BASE_SC.y,...(opts.scales?.y||{})}});
-  const mergedPlugins = { ...BASE_PLG, ...(opts.plugins || {}), datalabels: dl };
-  const topPad = (type === 'bar' && !isHorizBar && !isStacked) ? 28 : 18;
-  const {plugins:_, scales:__, noScales:___, layout:____, ...rest} = opts;
-  return new Chart(ctx, { type, data: { labels, datasets },
-    options: { responsive:true, maintainAspectRatio:false, animation:{duration:480,easing:'easeOutQuart'},
-      interaction: { mode: 'index', intersect: false },
-      layout: { padding: { top: topPad, ...(opts.layout?.padding || {}) } },
-      plugins: mergedPlugins, scales, ...rest }});
+  // Fix: datalabels — explicit config defaults display to true; explicit display:false still overrides
+  const pluginsIn = opts.plugins || {};
+  const dlFinal = pluginsIn.datalabels
+    ? { display: true, ...pluginsIn.datalabels }
+    : BASE_PLG.datalabels;
+  const plugins = { ...BASE_PLG, ...pluginsIn, datalabels: dlFinal };
+  const scales  = opts.noScales ? {} : Object.assign({}, {x:{...BASE_SC.x,...(opts.scales?.x||{})}, y:{...BASE_SC.y,...(opts.scales?.y||{})}});
+  const {plugins:_,scales:__,noScales:___,...rest} = opts;
+  return new Chart(ctx,{type, data:{labels,datasets},
+    options:{responsive:true, maintainAspectRatio:false, animation:{duration:480,easing:'easeOutQuart'},
+      interaction:{mode:'index', intersect:false},
+      plugins, scales, ...rest}});
 }
 
 /* ── Interaction ── */
