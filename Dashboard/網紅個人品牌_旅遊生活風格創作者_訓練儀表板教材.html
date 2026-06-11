@@ -66,12 +66,12 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
 .nav-btn{background:none;border:none;color:var(--text-s);font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;font-weight:500;padding:8px 18px;border-radius:8px;cursor:pointer;transition:all 0.18s;white-space:nowrap;}
 .nav-btn.active{background:#fff;color:var(--accent);font-weight:700;box-shadow:0 1px 4px rgba(124,58,237,0.15);}
 .nav-btn:hover:not(.active){background:rgba(255,255,255,0.6);color:var(--text);}
-.header-legend{display:flex;align-items:center;gap:0;flex-wrap:wrap;padding:6px 24px;font-size:0.7rem;color:var(--text-s);background:var(--bg-alt);}
-.legend-colors{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.header-legend{display:flex;align-items:center;justify-content:space-between;gap:0;flex-wrap:wrap;padding:6px 24px;font-size:0.7rem;color:var(--text-s);background:var(--bg-alt);}
+.legend-colors{display:flex;align-items:center;flex:1;gap:0;justify-content:space-evenly;flex-wrap:wrap;}
 .legend-colors>span{display:flex;align-items:center;gap:5px;}
 .dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0;}
 .legend-vdivider{width:1px;height:14px;background:var(--border-strong);flex-shrink:0;margin:0 12px;}
-.legend-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.legend-right{display:flex;align-items:center;flex:1;gap:0;justify-content:space-evenly;flex-wrap:wrap;}
 .legend-right>span{display:flex;align-items:center;gap:5px;}
 .badge{display:inline-block;border-radius:3px;padding:1px 5px;font-size:0.67rem;font-weight:700;font-family:monospace;}
 .badge.l1{background:#e3f2fd;color:#1565c0;border:1px solid #b3d4f5;}
@@ -1129,7 +1129,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
             <div class="chart-block">
               <div class="chart-title">受眾質量雷達圖（5 維度，0–100 標準化）</div>
               <div class="chart-subtitle">互動率 / 活躍率 / 評論深度 / 分享率 / 存儲率；打破「追蹤越多越好」的單一評估視角</div>
-              <div class="chart-wrap"><canvas id="chart-p4-radar" height="200"></canvas></div>
+              <div class="chart-wrap" style="height:210px"><canvas id="chart-p4-radar"></canvas></div>
             </div>
             <div class="findings-section">
               <div class="findings-label">📊 Findings</div>
@@ -1540,6 +1540,11 @@ function c(key, a=1) {
   return m[key];
 }
 
+// Register plugins (chartjs-plugin-datalabels v2+ requires explicit registration)
+Chart.register(ChartDataLabels);
+if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
+Chart.defaults.plugins.datalabels.display = false; // off by default; mk() opts in per-chart
+
 // Shared tooltip style
 const TT = {
   plugins: {
@@ -1667,6 +1672,7 @@ function toggleFindings(el) {
   el.closest('.findings-section').classList.toggle('collapsed');
 }
 document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.findings-section').forEach(s => s.classList.add('collapsed'));
   document.querySelectorAll('.findings-label').forEach(label => {
     label.addEventListener('click', () => toggleFindings(label));
   });
@@ -1957,6 +1963,8 @@ function drawP4() {
         ]
       },
       options:{
+        responsive: true,
+        maintainAspectRatio: false,
         plugins:{
           legend:{ position:'bottom', labels:{ boxWidth:12, padding:12, font:{size:11} } },
           datalabels:{ display:false }
@@ -1967,7 +1975,7 @@ function drawP4() {
             min:0, max:100, ticks:{ display:false, stepSize:20 },
             grid:{ color:'rgba(0,0,0,0.1)' },
             angleLines:{ color:'rgba(0,0,0,0.1)' },
-            pointLabels:{ font:{ size:12, weight:'600' }, color:'#1E1B4B' }
+            pointLabels:{ font:{ size:11, weight:'600' }, color:'#1E1B4B' }
           }
         }
       }

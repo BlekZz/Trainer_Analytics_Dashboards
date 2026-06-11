@@ -1253,9 +1253,24 @@ function c(key, alpha=1) {
 function mk(id, type, labels, datasets, opts={}) {
   const ctx = document.getElementById(id)?.getContext('2d');
   if (!ctx) return;
+  const isHorizBar = opts.indexAxis === 'y';
+  const isStacked  = opts.scales?.x?.stacked || opts.scales?.y?.stacked ||
+                     (datasets[0] && datasets[0].stack);
+  let autoDl = { display: false };
+  if (type === 'bar' && !isHorizBar && !isStacked) {
+    autoDl = {
+      display: true, anchor: 'end', align: 'end', clip: false,
+      color: '#8b949e',
+      font: { size: 9, family: "'JetBrains Mono', monospace" },
+      padding: { bottom: 2 },
+      formatter: v => (v == null) ? '' : (Math.abs(v) >= 1000 ? (v/1000).toFixed(0)+'K' : String(v))
+    };
+  }
+  if (opts.plugins?.datalabels) Object.assign(autoDl, opts.plugins.datalabels);
   const def = { legend: { display: false }, tooltip: TT };
-  const mergedPlugins = opts.plugins ? { ...def, ...opts.plugins } : def;
-  const { plugins: _p, ...restOpts } = opts;
+  const mergedPlugins = { ...def, ...(opts.plugins || {}), datalabels: autoDl };
+  const { plugins: _p, layout: _l, ...restOpts } = opts;
+  const topPad = (type === 'bar' && !isHorizBar && !isStacked) ? 24 : 16;
   return new Chart(ctx, {
     type,
     data: { labels, datasets },
@@ -1263,6 +1278,7 @@ function mk(id, type, labels, datasets, opts={}) {
       responsive: true,
       maintainAspectRatio: false,
       animation: { duration: 480, easing: 'easeOutQuart' },
+      layout: { padding: { top: topPad, ...(opts.layout?.padding || {}) } },
       ...restOpts,
       plugins: mergedPlugins
     }
