@@ -4,6 +4,9 @@
 # Temp files
 Claude Temp Files/
 
+# Playwright MCP browser session cache
+.playwright-mcp/
+
 # OS
 .DS_Store
 Thumbs.db

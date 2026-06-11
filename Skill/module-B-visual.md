@@ -89,11 +89,48 @@
 
 ### 指標定義側板（推左側滑出，D10 新規格）
 
-- 按鈕在 Row 2 最左，點擊後**從左側滑出**定義側板（`#def-panel-outer` width 0 → 323px）
+- 按鈕在 Row 2 最左，點擊後**從左側滑出**定義側板（`#def-panel-outer` width 0 → 320px）
 - 側板**推擠佈局**（`#main-wrapper: flex`），不蓋在內容上層
 - 側板有**模糊搜尋欄**（`filterDef()` 過濾 `.def-item`，無結果時顯示提示）
-- 側板有獨立捲動（`position: sticky; top: var(--header-h); height: calc((100vh - var(--header-h)) * 1.2); overflow-y: auto`）
+- 側板有獨立捲動（`overflow-y: auto`，高度繼承 outer 的 `height: calc(100vh - var(--header-h))`）
 - 關閉時：清空搜尋欄 + 重置 filterDef + 呼叫 `Chart.instances` 全部 resize（修復圖表寬度）
+
+> **🔴 sticky 定位陷阱（2026-06 確認）**
+>
+> `position: sticky` **必須加在 `#def-panel-outer`（flex child）上，不能加在 `#def-panel-inner` 上。**
+>
+> 原因：`#def-panel-outer` 有 `overflow: hidden`（用於 width 過渡動畫）；任何具有 `overflow: hidden/auto/scroll` 的祖先都會讓子元素的 `position: sticky` 失效——子元素會被降級為 static 定位，導致面板出現在錯誤位置（通常是頁面頂部多出一段空白）。
+>
+> **正確 CSS 規格：**
+>
+> ```css
+> /* ✅ 正確：sticky 在 outer (flex child) 上 */
+> #def-panel-outer {
+>   width: 0;
+>   overflow: hidden;             /* 用於 width 過渡，不影響 outer 自身的 sticky */
+>   transition: width .3s ease;
+>   flex-shrink: 0;
+>   position: sticky;             /* ← sticky 在 outer */
+>   top: var(--header-h);
+>   height: calc(100vh - var(--header-h));
+>   align-self: flex-start;       /* ← 必要：防止 flex stretch 撐滿容器高度破壞 sticky */
+> }
+> #def-panel-inner {
+>   width: 320px;
+>   height: 100%;                 /* ← 繼承 outer 高度 */
+>   padding: 18px 16px;
+>   overflow-y: auto;             /* ← 面板內容自行捲動 */
+>   background: var(--bg-card);
+>   border-right: 1px solid var(--border);
+> }
+>
+> /* ❌ 錯誤：sticky 在 overflow:hidden 的子元素上 → sticky 靜默失效 */
+> #def-panel-inner {
+>   position: sticky;             /* 被 outer 的 overflow:hidden 阻斷，完全無效 */
+>   top: var(--header-h);
+>   height: calc(100vh - var(--header-h));
+> }
+> ```
 
 ```html
 <!-- wrapper 結構 -->
@@ -156,8 +193,10 @@
 
 ```javascript
 Chart.register(ChartDataLabels);
-if (window['chartjs-plugin-annotation']) Chart.register(window['chartjs-plugin-annotation']);
+if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
 ```
+
+> **🔴 annotation plugin 全域名稱陷阱（2026-06 確認）**：CDN UMD bundle 的全域變數是 `window.ChartAnnotation`，**不是** `window['chartjs-plugin-annotation']`。用錯名稱時 `if(...)` 為 false，plugin 靜默未 register，所有 annotation（基準線、標籤、點）全部消失且不報錯。
 
 **缺少第一行 = 所有 `datalabels: { display: true }` 為靜默死碼。** Chart.js 4 不再自動啟動 CDN 載入的 plugin，必須手動 register。
 
@@ -349,3 +388,5 @@ KPI 值禁止截斷（🔴 紅線）：
 7. **🚫 QA item 預設展開** — 一打開頁面看到 18 道答案會直接放棄
 8. **🚫 對數刻度處理大值域差距** — 兩條線相差 100x 時，log scale 刻度讓讀者無法判斷絕對值；改用雙 Y-axis（各軸有語意單位）
 9. **🚫 `Chart.register(ChartDataLabels)` 缺失** — datalabels 全靜默失效，Chart.js 不報錯；每次生成後必須在瀏覽器 console 確認數值出現
+10. **🚫 `position:sticky` 加在 `overflow:hidden` 子元素上** — sticky 靜默失效，側板位置錯誤；sticky 必須加在 flex child（`#def-panel-outer`）上，見 B.3 規格
+11. **🚫 annotation plugin 用 `window['chartjs-plugin-annotation']` 判斷** — CDN UMD 全域是 `window.ChartAnnotation`；用錯名稱導致 plugin 未 register，所有 annotation 靜默消失

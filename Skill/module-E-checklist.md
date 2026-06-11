@@ -44,6 +44,8 @@
 - [ ] **27. 禁止使用 `Chart.defaults.set('plugins.datalabels', ...)`** — 此呼叫覆蓋 ChartDataLabels 內部 option merger，會導致 dual-axis 圖和 fill-line 圖整個消失（不只是 label 消失），且不報錯；改為在每個圖表逐一設定 `datalabels: { display: false/true }`
 - [ ] **28. `switchPage` 用 `setTimeout(60ms)` 包住 draw 呼叫** — DOM classList 切換後瀏覽器尚未完成 layout；同步呼叫 drawXxx() 時 canvas 尺寸為 0，圖表靜默初始化成空白；正確寫法：`setTimeout(() => { if (name==='ops') drawOps(); ... }, 60)`
 - [ ] **29. 所有用到的 `.hNNN` CSS class 必須有定義** — 容器高度 0 = 圖表完全不可見且不報錯；生成 HTML 前確認 `.h240/.h260/.h280/.h300/.h360/.h420/.h480/.h520` 全部在 `:root` 下方定義
+- [ ] **30. 定義側板 sticky 定位結構正確** — `position:sticky; top:var(--header-h); height:calc(100vh - var(--header-h)); align-self:flex-start` 必須加在 `#def-panel-outer`（flex child）上；`#def-panel-inner` 只設 `height:100%; overflow-y:auto`。若 sticky 加在 `overflow:hidden` 的子元素上會靜默失效，導致面板頂部出現錯誤空白
+- [ ] **31. annotation plugin 用正確全域名稱 register** — CDN UMD 全域是 `window.ChartAnnotation`，**不是** `window['chartjs-plugin-annotation']`；確認 script 頂部為：`if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);`
 
 ---
 

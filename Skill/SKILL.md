@@ -101,10 +101,30 @@ author: Blake
 9. 任何 assertion 失敗都要先修資料
 
 ### Phase 3 — HTML 建構（依模組 B）
-10. 載入 `template.html` 骨架
-11. 注入 DATA 物件
-12. 依模組 B 規範繪製所有圖表（用標準 mk() factory）
-13. 依模組 C 規範撰寫問題與答案
+
+> **🔴 大型建構強制採用「分層分批次」策略**
+>
+> 完整 dashboard HTML 約 1,200–2,000 行，單次輸出極易觸碰 32,000 token 輸出上限，導致連線中斷、檔案不完整寫入，且 agent 不報錯只是靜默截斷。
+>
+> **強制分 4 層依序建構，每層完成後確認再進下一層：**
+>
+> | 層次 | 內容 | 完成標誌 |
+> |---|---|---|
+> | **Layer 1 — 骨架** | HEAD + P4 CSS + `<body>` 結構（header/main-wrapper/def-panel/content-area 空殼）+ 完整 DATA 物件 + `assertConsistency()` + utility functions（`mk`, `c`, `TT`, `switchPage`, `goToChart`, `toggleDef`, `toggleQA`） | `assertConsistency()` 通過，console 無錯 |
+> | **Layer 2 — P1 圖表+QA** | P1 所有 canvas 元素 + KPI HTML + `drawMember()` 完整實作 + P1 所有 QA items | P1 分頁開啟後所有圖表渲染，QA 可展開 |
+> | **Layer 3 — P2 圖表+QA** | P2 所有 canvas 元素 + KPI HTML + `drawBehavior()` 完整實作 + P2 所有 QA items | P2 分頁開啟後所有圖表渲染 |
+> | **Layer 4 — P3 + 收尾** | P3 所有 canvas 元素 + KPI HTML + `drawRetention()` + P3 QA + 訓練題面板 + 設計選擇面板 + 定義面板 `<dl>` 內容 | P3 渲染，面板可開合，assertConsistency 再跑一次 |
+>
+> **執行規則：**
+> - 每層用 **Write tool**（Layer 1）或 **Edit tool 追加**（Layer 2–4）寫入檔案，不要在 agent prompt 裡一次輸出整份 HTML
+> - 若有 agent 協助，**每個 agent 只負責一層**，由主 Claude 把關資料數字正確性後再觸發下一層
+> - Layer 1 完成後立即用瀏覽器開啟確認 `assertConsistency` 通過，再進 Layer 2
+> - 任何層次寫入後發現資料錯誤，**先修 DATA 物件，再重跑 assertConsistency，再繼續**
+
+10. 從 `Skill/template.html` 骨架開始，按 Layer 1–4 順序建構
+11. Layer 1：注入 DATA 物件 + utility functions，確認 assertConsistency 通過
+12. Layer 2–4：依模組 B 規範繪製所有圖表（用標準 mk() factory），依模組 C 規範撰寫問題與答案
+13. 每層 Write/Edit 後在瀏覽器確認渲染正常再繼續
 
 ### Phase 4 — 差異化注入（依模組 D）
 14. 從 **D.9 Preset 庫**選一個視覺套餐（P1–P7），覆蓋 `:root` tokens 與字型 import，不可與前一份相同
