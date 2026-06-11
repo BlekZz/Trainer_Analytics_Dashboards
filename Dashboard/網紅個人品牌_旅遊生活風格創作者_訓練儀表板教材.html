@@ -1,0 +1,1997 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>網紅個人品牌_旅遊生活風格創作者_訓練儀表板</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+<style>
+/* ── Social Creator Preset ─────────────────────────
+   主色：Vibrant Violet #7C3AED
+   正向：Emerald #059669
+   背景：Soft Lavender-White #FDFCFF
+   字型：Plus Jakarta Sans（全站統一）
+──────────────────────────────────────────────────── */
+:root {
+  --bg: #FDFCFF;
+  --bg-card: #FFFFFF;
+  --bg-alt: #F3F0FF;
+  --bg-finding: #F5F3FF;
+  --accent: #7C3AED;
+  --accent-light: rgba(124,58,237,0.1);
+  --accent2: #059669;
+  --warn: #D97706;
+  --danger: #DC2626;
+  --purple: #9333EA;
+  --text: #1E1B4B;
+  --text-b: #312E6E;
+  --text-s: #6B7280;
+  --text-m: #9CA3AF;
+  --border: #E5E7EB;
+  --border-strong: #C4B5FD;
+  --q-bg: #EEF2FF;
+  --q-border: #C7D2FE;
+  --a-bg: #F0FDF4;
+  --a-border: #A7F3D0;
+  --trap-bg: #FFF7ED;
+  --trap-border: #FED7AA;
+  --def-bg: #F5F3FF;
+  --def-border: #DDD6FE;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 4px 12px rgba(124,58,237,0.1), 0 2px 6px rgba(0,0,0,0.04);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --header-h: 140px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;line-height:1.65;}
+
+/* ── Header (3-row sticky) ── */
+.site-header{position:sticky;top:0;z-index:200;background:rgba(253,252,255,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);box-shadow:0 2px 12px rgba(124,58,237,0.08);}
+.header-row-1{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 24px 9px;border-bottom:1px solid var(--border);}
+.header-title{font-size:1.05rem;font-weight:800;color:var(--text);letter-spacing:-0.02em;white-space:nowrap;background:linear-gradient(135deg,#7C3AED,#9333EA);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.meta-chip{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:2px 10px;font-size:0.68rem;background:var(--bg-alt);color:var(--text-s);border:1px solid var(--border);white-space:nowrap;}
+.meta-chip.demo{background:linear-gradient(135deg,rgba(124,58,237,0.12),rgba(147,51,234,0.08));color:var(--accent);border-color:var(--border-strong);font-weight:700;}
+.header-row-2{display:flex;align-items:center;padding:0 24px;border-bottom:1px solid var(--border);}
+.def-toggle-btn{display:flex;align-items:center;gap:7px;background:var(--def-bg);border:1px solid var(--def-border);border-radius:7px;padding:7px 13px;margin:7px 16px 7px 0;color:var(--accent);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.79rem;font-weight:700;cursor:pointer;transition:background 0.2s;flex-shrink:0;user-select:none;white-space:nowrap;}
+.def-toggle-btn:hover{background:#EDE9FF;}
+.def-toggle-btn.open{background:#EDE9FF;border-color:rgba(124,58,237,0.5);}
+.def-toggle-arrow{font-size:0.85rem;display:inline-block;transition:transform 0.25s ease;opacity:0.65;}
+.def-toggle-btn.open .def-toggle-arrow{transform:rotate(90deg);}
+.nav-tabs{display:flex;gap:2px;background:var(--bg-alt);border:1px solid var(--border);border-radius:10px;padding:3px;}
+.nav-btn{background:none;border:none;color:var(--text-s);font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;font-weight:500;padding:8px 18px;border-radius:8px;cursor:pointer;transition:all 0.18s;white-space:nowrap;}
+.nav-btn.active{background:#fff;color:var(--accent);font-weight:700;box-shadow:0 1px 4px rgba(124,58,237,0.15);}
+.nav-btn:hover:not(.active){background:rgba(255,255,255,0.6);color:var(--text);}
+.header-legend{display:flex;align-items:center;gap:0;flex-wrap:wrap;padding:6px 24px;font-size:0.7rem;color:var(--text-s);background:var(--bg-alt);}
+.legend-colors{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.legend-colors>span{display:flex;align-items:center;gap:5px;}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0;}
+.legend-vdivider{width:1px;height:14px;background:var(--border-strong);flex-shrink:0;margin:0 12px;}
+.legend-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.legend-right>span{display:flex;align-items:center;gap:5px;}
+.badge{display:inline-block;border-radius:3px;padding:1px 5px;font-size:0.67rem;font-weight:700;font-family:monospace;}
+.badge.l1{background:#e3f2fd;color:#1565c0;border:1px solid #b3d4f5;}
+.badge.l2{background:#fff4e0;color:#a36a08;border:1px solid #f0d080;}
+.badge.l3{background:#fde7e3;color:#a8362a;border:1px solid #f5b9b0;}
+
+/* ── Def panel (sticky on outer, not inner — 2026-06 fix) ── */
+#main-wrapper{display:flex;align-items:flex-start;}
+#def-panel-outer{flex-shrink:0;width:0;overflow:hidden;transition:width 0.28s cubic-bezier(0.4,0,0.2,1);position:sticky;top:var(--header-h,140px);height:calc(100vh - var(--header-h,140px));align-self:flex-start;}
+#def-panel-outer.open{width:323px;}
+#def-panel-inner{width:323px;height:100%;overflow-y:auto;background:var(--def-bg);border-right:1px solid var(--def-border);padding:16px 14px;}
+#def-panel-inner::-webkit-scrollbar{width:4px;}
+#def-panel-inner::-webkit-scrollbar-thumb{background:var(--def-border);border-radius:2px;}
+.def-search-wrap{margin-bottom:12px;}
+.def-search-wrap input{width:100%;background:#fff;border:1px solid var(--def-border);border-radius:7px;padding:7px 11px;color:var(--text-b);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.78rem;outline:none;transition:border-color 0.2s;}
+.def-search-wrap input::placeholder{color:var(--text-m);}
+.def-search-wrap input:focus{border-color:var(--accent);background:#fff;}
+.def-no-result{font-size:0.75rem;color:var(--text-m);padding:10px 4px;text-align:center;display:none;}
+#def-panel-inner h3{font-size:0.71rem;color:var(--accent);font-family:monospace;text-transform:uppercase;letter-spacing:0.09em;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--def-border);}
+.def-item{background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:7px;}
+.def-item:last-child{margin-bottom:0;}
+.def-item strong{font-size:0.74rem;color:var(--text);font-weight:700;display:block;margin-bottom:3px;}
+.def-item span{font-size:0.72rem;color:var(--text-s);line-height:1.5;display:block;}
+#content-area{flex:1;min-width:0;}
+
+/* ── Layout ── */
+.page{display:none;}.page.active{display:block;}
+.container{max-width:1360px;margin:0 auto;padding:24px 36px 60px;}
+.section-label{font-size:11.5px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--text-m);margin-bottom:14px;margin-top:30px;display:flex;align-items:center;gap:10px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.section-label:first-child{margin-top:0;}
+
+/* ── KPI Cards ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:4px;}
+.kpi-grid.c4{grid-template-columns:repeat(4,1fr);}
+.kpi-grid.c3{grid-template-columns:repeat(3,1fr);}
+.kpi-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow 0.2s,transform 0.2s;}
+.kpi-card:hover{box-shadow:var(--shadow);transform:translateY(-1px);}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--card-color,var(--accent)),var(--card-color2,var(--purple)));border-radius:var(--radius) var(--radius) 0 0;}
+.kpi-label{font-size:11px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;color:var(--text-s);margin-bottom:6px;}
+.kpi-value{font-size:26px;font-weight:800;color:var(--text);line-height:1;margin-bottom:8px;letter-spacing:-0.5px;}
+.kpi-value .unit{font-size:13px;font-weight:400;color:var(--text-s);}
+.kpi-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;}
+.kpi-delta{font-size:12px;font-weight:700;font-family:monospace;}
+.kpi-delta.up{color:var(--accent2);}.kpi-delta.down{color:var(--danger);}
+.kpi-note{font-size:11px;color:var(--text-m);}
+.kpi-platform-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--text-s);}
+
+/* ── Chart Grid ── */
+.chart-row{display:grid;gap:16px;margin-bottom:0;}
+.chart-row.c2-1{grid-template-columns:2fr 1fr;}
+.chart-row.c1-1{grid-template-columns:1fr 1fr;}
+.chart-row.c3{grid-template-columns:1fr 1fr 1fr;}
+.chart-row.c1{grid-template-columns:1fr;}
+.chart-group{margin-bottom:16px;}
+.chart-row .chart-group{margin-bottom:0;}
+.chart-row.c1-1{align-items:start;}
+.chart-row.c1-1 .chart-block canvas{max-height:260px;}
+.chart-block{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;padding:20px 22px;box-shadow:var(--shadow-sm);border-bottom:none;}
+.chart-block.standalone{border-radius:var(--radius);border-bottom:1px solid var(--border);}
+.chart-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.chart-subtitle{font-size:13px;color:var(--text-s);margin-bottom:14px;font-weight:400;}
+.chart-wrap canvas{width:100%!important;}
+.chart-footnote{font-size:11.5px;color:var(--text-m);margin-top:10px;padding:7px 10px;background:var(--bg-alt);border-radius:6px;border-left:3px solid var(--border-strong);}
+.findings-section{background:var(--bg-finding);border:1px solid var(--border);border-top:1px dashed var(--border-strong);border-left:4px solid var(--accent);border-radius:0 0 var(--radius) var(--radius);padding:16px 20px;}
+.findings-label{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+
+/* ── Q&A ── */
+.qa-item{border-left:3px solid var(--q-border);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);border-radius:0 8px 8px 0;margin-bottom:8px;overflow:hidden;background:var(--bg-card);transition:border-color 0.18s;}
+.qa-item:last-child{margin-bottom:0;}
+.qa-item.open{border-left-color:var(--accent);}
+.qa-question{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;cursor:pointer;user-select:none;transition:background 0.15s;}
+.qa-question:hover{background:var(--q-bg);}
+.qa-q-icon{flex-shrink:0;width:24px;height:24px;border-radius:6px;background:var(--q-bg);border:1px solid var(--q-border);color:var(--accent);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:monospace;margin-top:1px;}
+.qa-q-text{flex:1;font-size:13.5px;font-weight:500;color:var(--text);line-height:1.55;}
+.qa-item.open .qa-q-text{font-weight:700;}
+.qa-level{display:inline-block;font-family:monospace;font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:6px;letter-spacing:0.4px;vertical-align:middle;position:relative;top:-1px;}
+.qa-level.l1{background:#e3f2fd;color:#1565c0;}
+.qa-level.l2{background:#fff4e0;color:#a36a08;}
+.qa-level.l3{background:#fde7e3;color:#a8362a;}
+.qa-depth{display:inline-block;font-family:monospace;font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:6px;letter-spacing:0.4px;vertical-align:middle;position:relative;top:-1px;}
+.qa-depth.f{background:#dbe7ff;color:#1a3a99;}
+.qa-depth.i{background:#fef4d9;color:#8a5d00;}
+.qa-depth.a{background:#fde7e3;color:#a8362a;}
+.qa-chevron{flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text-s);transition:transform 0.22s,background 0.15s;margin-top:3px;}
+.qa-item.open .qa-chevron{transform:rotate(180deg);background:var(--a-border);color:var(--accent2);}
+.qa-answer{display:none;border-top:1px solid var(--border);background:var(--a-bg);}
+.qa-item.open .qa-answer{display:block;}
+.qa-a-inner{display:flex;gap:10px;padding:14px 16px;}
+.qa-a-icon{flex-shrink:0;width:24px;height:24px;border-radius:6px;background:var(--a-border);color:var(--accent2);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:monospace;margin-top:1px;}
+.qa-a-text{flex:1;font-size:13.5px;color:var(--text-b);line-height:1.72;}
+.qa-a-text strong{color:var(--text);font-weight:700;}
+.ans-block{margin-bottom:10px;}
+.ans-block:last-child{margin-bottom:0;}
+.ans-head{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:0.6px;padding:1px 8px;border-radius:3px;margin-right:7px;font-family:monospace;}
+.ans-head.obs{background:#dbe7ff;color:#1a3a99;}
+.ans-head.inf{background:#fef4d9;color:#8a5d00;}
+.ans-head.act{background:#d0f0e2;color:#0e6f4f;}
+.fia{display:inline-block;font-family:monospace;font-size:9.5px;font-weight:700;padding:0 4px;border-radius:2px;margin:0 1px;vertical-align:middle;position:relative;top:-1px;}
+.fia.f{background:#dbe7ff;color:#1a3a99;}
+.fia.i{background:#fef4d9;color:#8a5d00;}
+.fia.a{background:#fde7e3;color:#a8362a;}
+.ev{display:inline;background:rgba(124,58,237,0.09);border-radius:4px;padding:1px 5px;font-family:monospace;font-size:11.5px;color:var(--accent);font-weight:600;}
+.trap-block{background:var(--trap-bg);border:1px solid var(--trap-border);border-left:3px solid var(--danger);border-radius:6px;padding:10px 13px;margin:10px 0;font-size:12.5px;color:#7a3c1a;line-height:1.6;}
+.trap-block strong{color:var(--danger);font-weight:700;}
+.trap-label{display:inline-block;font-family:monospace;font-size:10px;font-weight:700;background:var(--danger);color:#fff;padding:1px 6px;border-radius:3px;margin-right:6px;letter-spacing:0.4px;}
+.qa-item.training{border-left-color:#DDD6FE;}
+.qa-item.training.open{border-left-color:var(--purple);}
+.qa-item.training .qa-question:hover{background:#F5F3FF;}
+.qa-item.training .qa-q-icon{background:#F5F3FF;border-color:#DDD6FE;color:var(--purple);}
+.qa-item.training.open .qa-chevron{background:#DDD6FE;color:var(--purple);}
+.qa-item.training .qa-answer{background:#FAFAFF;}
+.qa-item.training .qa-a-icon{background:#DDD6FE;color:var(--purple);}
+.training-panel{background:#fff;border:1px solid #DDD6FE;border-top:3px solid var(--purple);border-radius:var(--radius);padding:22px;margin-top:16px;box-shadow:var(--shadow-sm);}
+.training-hd{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.training-hd .ico{font-size:20px;}
+.training-hd h3{font-size:15px;font-weight:700;color:var(--purple);margin-bottom:2px;}
+.training-hd p{font-size:13px;color:var(--text-s);}
+.nav-hint{display:flex;align-items:flex-start;gap:7px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:6px;padding:7px 11px;margin-bottom:10px;font-size:12.5px;color:#78350F;line-height:1.4;cursor:pointer;transition:background 0.15s;}
+.nav-hint:hover{background:#FEF3C7;}
+.nav-hint .nh-body{flex:1;}
+.nav-hint .nh-label{font-weight:700;display:block;margin-bottom:1px;}
+.nav-hint .nh-sub{color:#92400E;font-size:11.5px;}
+.meta-panel{background:linear-gradient(135deg,#F5F3FF 0%,#fff 100%);border:1px solid var(--border-strong);border-top:3px solid var(--accent);border-radius:var(--radius);padding:24px 26px;margin-top:24px;box-shadow:var(--shadow-sm);}
+.meta-panel h3{font-size:16px;font-weight:800;color:var(--accent);margin-bottom:6px;}
+.meta-panel .meta-intro{font-size:13px;color:var(--text-s);margin-bottom:16px;}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.meta-item{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.65;}
+.meta-item h4{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.meta-item h4::before{content:'📐';font-size:14px;}
+.meta-item p{color:var(--text-b);font-size:12.5px;}
+
+/* ── Platform badges ── */
+.plt{display:inline-flex;align-items:center;gap:3px;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:700;font-family:monospace;}
+.plt.ig{background:#fce4ec;color:#c2185b;}
+.plt.tiktok{background:#e0f7fa;color:#006064;}
+.plt.yt{background:#ffebee;color:#c62828;}
+.plt.fb{background:#e3f2fd;color:#1565c0;}
+.plt.blog{background:#e8f5e9;color:#1b5e20;}
+
+/* ── KPI comparison strip (P3) ── */
+.kpi-compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.kpi-compare-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-sm);}
+.kpi-compare-card.organic{border-top:3px solid var(--accent2);}
+.kpi-compare-card.paid{border-top:3px solid var(--accent);}
+.kcc-title{font-size:13px;font-weight:700;margin-bottom:12px;}
+.kcc-title.organic{color:var(--accent2);}
+.kcc-title.paid{color:var(--accent);}
+.kcc-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);}
+.kcc-row:last-child{border-bottom:none;}
+.kcc-label{font-size:12px;color:var(--text-s);}
+.kcc-val{font-size:14px;font-weight:700;color:var(--text);}
+.kcc-sub{font-size:11px;color:var(--text-m);}
+
+/* ── Funnel (HTML-based) ── */
+.funnel-wrap{padding:8px 0;}
+.funnel-stage{margin-bottom:8px;}
+.funnel-bar{width:var(--fw,100%);background:var(--fc,var(--accent));border-radius:6px;padding:7px 14px;display:flex;align-items:center;justify-content:space-between;transition:width 0.8s ease;}
+.funnel-label{font-size:13px;font-weight:700;color:#fff;}
+.funnel-count{font-size:15px;font-weight:800;color:#fff;}
+.funnel-rate{font-size:11px;color:var(--text-m);padding-left:4px;margin-top:3px;}
+.funnel-step{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.funnel-bar-outer{flex:1;background:var(--bg-alt);border-radius:4px;height:32px;position:relative;overflow:hidden;}
+.funnel-bar-inner{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:10px;transition:width 0.8s ease;}
+.funnel-step-label{font-size:12px;font-weight:600;color:var(--text-s);width:48px;text-align:right;flex-shrink:0;}
+.funnel-step-count{font-size:13px;font-weight:700;color:#fff;white-space:nowrap;}
+.funnel-step-pct{font-size:11px;color:var(--text-m);width:52px;flex-shrink:0;}
+.funnel-step-rate{font-size:11px;font-weight:600;padding:1px 6px;border-radius:3px;margin-left:auto;flex-shrink:0;}
+.funnel-step-rate.ok{background:#d0f0e2;color:#0e6f4f;}
+.funnel-step-rate.warn{background:#fde7e3;color:#a8362a;}
+
+/* ── Scatter legend ── */
+.scatter-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;}
+.sc-item{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--text-s);}
+.sc-dot{width:10px;height:10px;border-radius:50%;}
+
+/* ── Chart legend ── */
+.chart-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-s);}
+.legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+
+/* ── Flash animation ── */
+@keyframes flashBorder{0%,50%,100%{box-shadow:0 0 0 3px var(--accent);border-color:var(--accent);}25%,75%{box-shadow:none;border-color:var(--border);}}
+@keyframes flashFade{0%{box-shadow:0 0 0 3px var(--accent);}100%{box-shadow:none;border-color:var(--border);}}
+.flash-target .chart-block,.flash-target .findings-section{animation:flashBorder 0.6s ease 0s 3,flashFade 0.5s ease 1.8s forwards;}
+
+/* ── Responsive ── */
+@media(max-width:960px){
+  .container{padding:16px;}
+  .header-row-1,.header-row-2,.header-legend{padding-left:16px;padding-right:16px;}
+  .kpi-grid{grid-template-columns:1fr 1fr!important;}
+  .chart-row.c2-1,.chart-row.c1-1,.chart-row.c3{grid-template-columns:1fr;}
+  .kpi-compare-grid{grid-template-columns:1fr;}
+  .meta-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<header class="site-header" id="top-header">
+  <div class="header-row-1">
+    <span class="header-title">網紅個人品牌_旅遊生活風格創作者_訓練儀表板</span>
+    <span class="meta-chip">📅 資料期間：2025/07 – 2026/06</span>
+    <span class="meta-chip">🎯 Persona：Jessica W.（旅遊生活風格）</span>
+    <span class="meta-chip">📡 5 平台 × 12 個月追蹤</span>
+    <span class="meta-chip demo">⚗️ DEMO 合成資料集</span>
+    <span style="flex:1"></span>
+    <span class="meta-chip">✏️ 製作者：Blake</span>
+    <span class="meta-chip">🗓️ 製作時間：20260611</span>
+  </div>
+  <div class="header-row-2">
+    <button class="def-toggle-btn" id="defToggleBtn" onclick="toggleDef()">
+      <span>📖</span><span>指標定義</span><span class="def-toggle-arrow">›</span>
+    </button>
+    <div class="nav-tabs">
+      <button class="nav-btn active"  onclick="switchPage('p1')">📈 平台成長</button>
+      <button class="nav-btn"         onclick="switchPage('p2')">🤝 品牌合作</button>
+      <button class="nav-btn"         onclick="switchPage('p3')">📡 媒體績效</button>
+      <button class="nav-btn"         onclick="switchPage('p4')">👥 受眾質量</button>
+    </div>
+  </div>
+  <div class="header-legend">
+    <div class="legend-colors">
+      <span><span class="dot" style="background:#7C3AED"></span>主資料/事實</span>
+      <span><span class="dot" style="background:#059669"></span>正向/成長</span>
+      <span><span class="dot" style="background:#D97706"></span>注意/季節性</span>
+      <span><span class="dot" style="background:#DC2626"></span>警示/風險</span>
+      <span><span class="dot" style="background:#9333EA"></span>行為/時間</span>
+    </div>
+    <span class="legend-vdivider"></span>
+    <div class="legend-right">
+      <span><span class="badge l1">L1</span> 單圖題</span>
+      <span><span class="badge l2">L2</span> 同頁跨圖</span>
+      <span><span class="badge l3">L3</span> 跨頁交叉</span>
+      <span class="legend-vdivider"></span>
+      <span><span class="fia f">F</span> 事實</span>
+      <span><span class="fia i">I</span> 推論</span>
+      <span><span class="fia a">A</span> 假設</span>
+    </div>
+  </div>
+</header>
+
+<div id="main-wrapper">
+  <!-- ── Def Panel ── -->
+  <div id="def-panel-outer">
+    <div id="def-panel-inner">
+      <h3>📖 指標定義</h3>
+      <div class="def-search-wrap">
+        <input type="text" id="defSearch" placeholder="🔍 搜尋指標關鍵字…" autocomplete="off" oninput="filterDef(this.value)">
+      </div>
+      <div class="def-no-result" id="defNoResult">沒有符合的指標</div>
+      <div class="def-item"><strong>追蹤人數</strong><span>各平台官方顯示的追蹤 / 訂閱數（以月底快照為準）。Blog 以月活訪客（Monthly Unique Visitors）代替。</span></div>
+      <div class="def-item"><strong>30日活躍率</strong><span>近 30 天內有互動行為（點讚、評論、分享、觀看、點擊）的受眾 / 追蹤數 × 100%</span></div>
+      <div class="def-item"><strong>互動率（Engagement Rate）</strong><span>= 互動數（讚 + 評論 + 分享 + 存儲）/ 觸及人數 × 100%。各平台計算口徑略有差異，此處統一以觸及為分母。</span></div>
+      <div class="def-item"><strong>自然觸及（Organic Reach）</strong><span>未付費、由平台演算法分發觸及的不重複受眾數量。TikTok 因演算法特性可能使觸及率超過 100%。</span></div>
+      <div class="def-item"><strong>廣告觸及（Paid Reach）</strong><span>透過付費廣告觸及的不重複受眾，與自然觸及獨立統計（兩者可有重疊）。</span></div>
+      <div class="def-item"><strong>自然觸及率</strong><span>= 自然觸及 / 追蹤人數 × 100%。反映平台演算法對帳號內容的分發支持程度。</span></div>
+      <div class="def-item"><strong>合作收入</strong><span>品牌支付給創作者的合作費（含稅）。分四種類型：實體活動、代言廣告、貼文合作、影片拍攝。</span></div>
+      <div class="def-item"><strong>CPM（每千次曝光成本）</strong><span>= 廣告花費 / 廣告曝光數 × 1000。反映廣告採購效率，低 CPM 表示曝光單價低。</span></div>
+      <div class="def-item"><strong>評論深度指數</strong><span>綜合評論平均字數、回覆率、問句佔比，標準化至 0–100 分。分數越高代表受眾參與越深。</span></div>
+      <div class="def-item"><strong>品牌集中度</strong><span>= Top N 品牌合作收入 / 總合作收入。比例越高代表業務風險越集中，建議 Top 3 < 50%。</span></div>
+      <div class="def-item"><strong>重複合作率</strong><span>= 本月合作中，與近 6 個月內曾合作過品牌的件數 / 本月總件數。反映老客戶黏性。</span></div>
+      <div class="def-item"><strong>合作轉換率</strong><span>= 最終簽約件數 / 總洽詢件數。反映提案能力與報價競爭力。</span></div>
+    </div>
+  </div>
+
+  <!-- ── Content Area ── -->
+  <div id="content-area">
+
+    <!-- ════ P1 平台成長全景 ════ -->
+    <div class="page active" id="page-p1">
+      <div class="container">
+        <div class="section-label">📊 各平台當月追蹤快照</div>
+        <div class="kpi-grid" id="p1-kpis">
+          <div class="kpi-card" style="--card-color:rgba(225,48,108,1);--card-color2:rgba(225,48,108,0.5)">
+            <div class="kpi-label">📸 Instagram</div>
+            <div class="kpi-value">18.5<span class="unit"> 萬</span></div>
+            <div class="kpi-footer">
+              <span class="kpi-delta up">▲ +1,300 MoM</span>
+              <span class="kpi-note">活躍率 62%</span>
+            </div>
+          </div>
+          <div class="kpi-card" style="--card-color:rgba(0,185,201,1);--card-color2:rgba(0,185,201,0.5)">
+            <div class="kpi-label">🎵 TikTok</div>
+            <div class="kpi-value">12.7<span class="unit"> 萬</span></div>
+            <div class="kpi-footer">
+              <span class="kpi-delta up">▲ +1,700 MoM</span>
+              <span class="kpi-note">活躍率 71% 🏆</span>
+            </div>
+          </div>
+          <div class="kpi-card" style="--card-color:rgba(220,38,38,1);--card-color2:rgba(220,38,38,0.5)">
+            <div class="kpi-label">▶️ YouTube</div>
+            <div class="kpi-value">8.95<span class="unit"> 萬</span></div>
+            <div class="kpi-footer">
+              <span class="kpi-delta up">▲ +500 MoM</span>
+              <span class="kpi-note">活躍率 55%</span>
+            </div>
+          </div>
+          <div class="kpi-card" style="--card-color:rgba(24,119,242,1);--card-color2:rgba(24,119,242,0.5)">
+            <div class="kpi-label">👥 Facebook</div>
+            <div class="kpi-value">6.12<span class="unit"> 萬</span></div>
+            <div class="kpi-footer">
+              <span class="kpi-delta down">▼ −100 MoM</span>
+              <span class="kpi-note">活躍率 38%</span>
+            </div>
+          </div>
+          <div class="kpi-card" style="--card-color:rgba(22,163,74,1);--card-color2:rgba(22,163,74,0.5)">
+            <div class="kpi-label">📝 Blog（MUV）</div>
+            <div class="kpi-value">2.80<span class="unit"> 萬</span></div>
+            <div class="kpi-footer">
+              <span class="kpi-delta up">▲ +1,000 MoM</span>
+              <span class="kpi-note">活躍率 32%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:24px">📈 12 個月追蹤人數趨勢</div>
+        <div class="chart-group">
+          <div class="chart-block">
+            <div class="chart-title">五平台追蹤人數趨勢（2025/07 – 2026/06）</div>
+            <div class="chart-subtitle">追蹤人數月底快照，觀察各平台成長斜率差異</div>
+            <div class="chart-wrap"><canvas id="chart-p1-trend" height="240"></canvas></div>
+            <div class="chart-footnote">Blog 追蹤數以月活訪客（MUV）代替；Facebook 因有機觸及衰退呈自然下滑趨勢</div>
+          </div>
+          <div class="findings-section">
+            <div class="findings-label">📊 Findings</div>
+            <div id="findings-p1-trend">
+              <p><span class="fia f">F</span> TikTok 12 個月從 7.2 萬成長至 12.7 萬，增幅 <strong>+76.4%</strong>，是五平台成長最快的引擎。</p>
+              <p><span class="fia f">F</span> Instagram 以 18.5 萬居首，年增 +21.7%（+33,000）；YouTube 年增 +17.8%（+13,500）穩定累積。</p>
+              <p><span class="fia f">F</span> Facebook 是唯一衰退平台，12 個月累積流失 4,800 人（−7.3%）。</p>
+              <p><span class="fia i">I</span> TikTok 斜率明顯比 IG 陡峭，若趨勢延續，預計 2026/09–10 追蹤數可能超越 YouTube，成為第二大平台。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label">📊 月增追蹤人數 by Platform</div>
+        <div class="chart-row c1-1">
+          <div class="chart-group">
+            <div class="chart-block">
+              <div class="chart-title">月增追蹤人數（各平台，12 個月）</div>
+              <div class="chart-subtitle">每月相較上月新增的追蹤數；負值代表淨流失</div>
+              <div class="chart-wrap"><canvas id="chart-p1-growth" height="240"></canvas></div>
+            </div>
+            <div class="findings-section">
+              <div class="findings-label">📊 Findings</div>
+              <div id="findings-p1-growth">
+                <p><span class="fia f">F</span> TikTok 月增高峰在 2025/10（+7,700），近三個月已收斂至 1,700–2,600，放緩幅度達 78%。</p>
+                <p><span class="fia i">I</span> 成長放緩不等於衰退——活躍率同期維持最高（71%），反映受眾從「被動觸及」轉向「主動追蹤」的質量升級。</p>
+                <p><span class="fia f">F</span> Facebook 每月持續小幅流失，但幅度從年初 −700 收斂至 −100，流失速度減緩。</p>
+              </div>
+            </div>
+          </div>
+          <div class="chart-group">
+            <div class="chart-block">
+              <div class="chart-title">30 日活躍率趨勢（%）</div>
+              <div class="chart-subtitle">各平台近 30 日有互動的受眾佔追蹤數比例</div>
+              <div class="chart-wrap"><canvas id="chart-p1-active" height="240"></canvas></div>
+            </div>
+            <div class="findings-section">
+              <div class="findings-label">📊 Findings</div>
+              <div id="findings-p1-active">
+                <p><span class="fia f">F</span> TikTok 活躍率 71% 為五平台最高，且全年幾乎持平，顯示演算法對帳號分發支持穩定。</p>
+                <p><span class="fia f">F</span> IG 活躍率從 68% 緩降至 62%（−6pp），與 P3 有機觸及率衰退趨勢吻合——演算法縮減有機分發。</p>
+                <p><span class="fia i">I</span> Blog 活躍率（32%）看似最低，但需注意口徑差：Blog 分母是 email 訂閱數，分子是月活訪客，兩者定義不同；真正的深度互動在 P4 評論深度指數中有更全面體現。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:16px">🗂️ 當月平台組合分佈</div>
+        <div class="chart-row c1-1">
+          <div class="chart-group">
+            <div class="chart-block">
+              <div class="chart-title">當前追蹤人數平台佔比（2026/06）</div>
+              <div class="chart-subtitle">視覺化平台依賴集中度</div>
+              <div class="chart-wrap"><canvas id="chart-p1-dist" height="220"></canvas></div>
+            </div>
+            <div class="findings-section">
+              <div class="findings-label">📊 Findings</div>
+              <div id="findings-p1-dist">
+                <p><span class="fia f">F</span> IG 佔總追蹤 37.7%，最接近「單一平台 >40% = 高集中風險」門檻，但尚未超標。</p>
+                <p><span class="fia f">F</span> IG + TikTok 合計 63.6%，對短影音 / 圖文雙平台的依賴度偏高。</p>
+                <p><span class="fia i">I</span> Blog（5.7%）雖佔比最低，卻是唯一不依賴演算法分發的自控管道，其受眾的電郵訂閱具較高的長期抗風險價值。</p>
+              </div>
+            </div>
+          </div>
+          <div id="p1-qa-right" style="padding-top:0">
+            <div class="chart-block standalone" style="margin-bottom:16px">
+              <div class="chart-title">⚡ 平台依賴風險快覽</div>
+              <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;justify-content:space-between;padding:8px 10px;background:var(--bg-alt);border-radius:8px;align-items:center">
+                  <span style="font-size:12px;color:var(--text-s)">最高單一平台佔比</span>
+                  <span style="font-size:14px;font-weight:700;color:var(--warn)">IG 37.7%</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:8px 10px;background:var(--bg-alt);border-radius:8px;align-items:center">
+                  <span style="font-size:12px;color:var(--text-s)">IG + TikTok 合計</span>
+                  <span style="font-size:14px;font-weight:700;color:var(--warn)">63.6%</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:8px 10px;background:var(--a-bg);border-radius:8px;align-items:center">
+                  <span style="font-size:12px;color:var(--text-s)">高集中度門檻</span>
+                  <span style="font-size:13px;font-weight:700;color:var(--accent2)">> 40% 警示</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:8px 10px;background:var(--bg-alt);border-radius:8px;align-items:center">
+                  <span style="font-size:12px;color:var(--text-s)">自控管道（Blog）</span>
+                  <span style="font-size:14px;font-weight:700;color:var(--accent2)">5.7%</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:8px 10px;background:var(--bg-alt);border-radius:8px;align-items:center">
+                  <span style="font-size:12px;color:var(--text-s)">唯一衰退平台</span>
+                  <span style="font-size:13px;font-weight:700;color:var(--danger)">Facebook −7.3%</span>
+                </div>
+              </div>
+              <div style="margin-top:12px;padding:8px 10px;background:var(--trap-bg);border-left:3px solid var(--warn);border-radius:6px;font-size:11.5px;color:#78350F">
+                💡 若 TikTok 遭遇政策風險，IG + TikTok 合計 63.6% 的觸及將直接受衝擊。建議持續擴大 Blog email 訂閱作為備援。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:16px">🧠 問答練習 — 平台成長分析</div>
+        <div id="p1-qa">
+          <!-- Q1 L1·F -->
+          <div class="qa-item">
+            <div class="qa-question" onclick="toggleQA(this)">
+              <div class="qa-q-icon">Q1</div>
+              <div class="qa-q-text"><span class="qa-level l1">L1</span><span class="qa-depth f">F</span>本月 TikTok 與 Instagram 各新增了多少追蹤人數？兩者哪個增量較大？</div>
+              <div class="qa-chevron">▼</div>
+            </div>
+            <div class="qa-answer"><div class="qa-a-inner">
+              <div class="qa-a-icon">A</div>
+              <div class="qa-a-text">
+                <div class="ans-block"><span class="ans-head obs">📊 觀察</span>
+                  從<span class="ev">月增追蹤人數圖</span>最末一格（2026/06）直接讀取：<br>
+                  <span class="fia f">F</span> TikTok 本月新增 <strong>1,700 人</strong>（127,000 − 125,300）。<br>
+                  <span class="fia f">F</span> Instagram 本月新增 <strong>1,300 人</strong>（185,000 − 183,700）。<br>
+                  <span class="fia f">F</span> 雖然 IG 總追蹤數仍遠高於 TikTok（18.5 萬 vs 12.7 萬），本月的<strong>新增量</strong>是 TikTok 較大。
+                </div>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- Q2 L2·I -->
+          <div class="qa-item">
+            <div class="qa-question" onclick="toggleQA(this)">
+              <div class="qa-q-icon">Q2</div>
+              <div class="qa-q-text"><span class="qa-level l2">L2</span><span class="qa-depth i">I</span>TikTok 月增追蹤從年初的 7,700 人降至本月 1,700（放緩 78%），但活躍率仍維持 71%（五平台最高）。交叉兩張圖，這個現象代表什麼？</div>
+              <div class="qa-chevron">▼</div>
+            </div>
+            <div class="qa-answer"><div class="qa-a-inner">
+              <div class="qa-a-icon">A</div>
+              <div class="qa-a-text">
+                <div class="ans-block"><span class="ans-head obs">📊 觀察</span>
+                  <span class="fia f">F</span> <span class="ev">月增追蹤圖</span>：TikTok 月增從 2025/10 高峰 7,700 降至 2026/06 的 1,700，放緩幅度顯著。<br>
+                  <span class="fia f">F</span> <span class="ev">活躍率趨勢圖</span>：TikTok 活躍率同期維持 70–72%，無明顯下滑。
+                </div>
+                <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
+                  <span class="fia i">I</span> 初期高增長通常由演算法「病毒式推送」驅動，帶入大量看過一支影片就追蹤的輕度用戶。<br>
+                  <span class="fia i">I</span> 成長放緩但活躍率維穩，推測追蹤者組成已從「被動接觸」轉向「主動選擇」的核心受眾——這是比追蹤數更有業配價值的訊號。<br>
+                  <span class="fia a">A</span> 若要驗證，需對比近期新增追蹤者 vs 舊有追蹤者的互動率差異，此 dashboard 未提供此維度。
+                </div>
+                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span><strong>增速放緩 ≠ 平台走弱。</strong>若活躍率同步維持甚至提升，增速放緩可能是受眾「自我篩選」的健康訊號，而非需要緊急介入的警報。</div>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- Q3 L2·I -->
+          <div class="qa-item">
+            <div class="qa-question" onclick="toggleQA(this)">
+              <div class="qa-q-icon">Q3</div>
+              <div class="qa-q-text"><span class="qa-level l2">L2</span><span class="qa-depth i">I</span>Facebook 追蹤數 12 個月累計下滑 −7.3%，但活躍率僅從 46% 小幅降至 38%（相對穩定）。這代表什麼？</div>
+              <div class="qa-chevron">▼</div>
+            </div>
+            <div class="qa-answer"><div class="qa-a-inner">
+              <div class="qa-a-icon">A</div>
+              <div class="qa-a-text">
+                <div class="ans-block"><span class="ans-head obs">📊 觀察</span>
+                  <span class="fia f">F</span> <span class="ev">追蹤趨勢圖</span>：FB 從 66,000 降至 61,200，年流失 4,800 人（−7.3%）。<br>
+                  <span class="fia f">F</span> <span class="ev">活躍率趨勢圖</span>：FB 活躍率從 46% 降至 38%，降幅約 8pp，但與其追蹤人數的降幅（7.3%）相近。
+                </div>
+                <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
+                  <span class="fia i">I</span> 離開的主要是「沉默追蹤者」（不互動、也未主動取消，最終被 Meta 演算法過濾掉觸及）——這在 Facebook 業主頁上是長期常態。<br>
+                  <span class="fia i">I</span> 留下來的受眾可能是早期深度粉絲或特定社群成員，其互動黏性相對穩定。<br>
+                  <span class="fia a">A</span> 若此受眾偏熟齡旅遊族群（假設），對飯店、保險等高單價合作仍有對特定品牌的轉介紹價值——但需人口統計數據佐證。
+                </div>
+                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>不要因 FB 追蹤下滑就立即放棄此平台。剩餘受眾的組成與消費能力，可能對特定旅遊品牌合作仍具價值，決策應建立在受眾數據而非單純追蹤數變化。</div>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- Q4 L3·A -->
+          <div class="qa-item">
+            <div class="qa-question" onclick="toggleQA(this)">
+              <div class="qa-q-icon">Q4</div>
+              <div class="qa-q-text"><span class="qa-level l3">L3</span><span class="qa-depth a">A</span>以「單一平台追蹤佔比 > 40% = 高集中風險」為門檻，目前有哪些平台風險需要注意？你的因應建議為何？</div>
+              <div class="qa-chevron">▼</div>
+            </div>
+            <div class="qa-answer"><div class="qa-a-inner">
+              <div class="qa-a-icon">A</div>
+              <div class="qa-a-text">
+                <div class="ans-block"><span class="ans-head obs">📊 觀察</span>
+                  <span class="fia f">F</span> 從<span class="ev">平台佔比圖</span>讀取：IG 37.7% / TikTok 25.9% / YouTube 18.2% / FB 12.5% / Blog 5.7%。<br>
+                  <span class="fia f">F</span> 無任何單一平台超過 40% 硬性門檻，但 IG 以 37.7% 最接近警戒線。<br>
+                  <span class="fia f">F</span> IG + TikTok 合計 63.6%，短影音 / 圖文雙平台合計依賴度偏高。
+                </div>
+                <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
+                  <span class="fia i">I</span> 單一平台雖未觸發門檻，但雙平台集中（63.6%）意味著若 Meta 或 TikTok 其中一個演算法驟變，整體觸及損失可能超過 60%。<br>
+                  <span class="fia a">A</span> 若 TikTok 禁令發生，需假設 TikTok 25.9% 觸及短期歸零，評估這對品牌合作收入（P2）的影響幅度。
+                </div>
+                <div class="ans-block"><span class="ans-head act">🎯 行動</span>
+                  (1) 優先擴充 Blog email 訂閱（自控管道，不依賴演算法）；(2) 強化 YouTube 長影片積累作為 TikTok 的高信任度替代備援；(3) 每季檢視平台集中度，設定 IG < 40% 的管控目標。
+                </div>
+                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>「跨平台分散」不代表品牌合作議價能力等值。IG 18.5 萬追蹤 vs Blog 2.8 萬月訪客在報價談判中的槓桿差距很大，分散的前提是各平台受眾質量達到特定門檻（參考 P4 受眾質量分析）。</div>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- Q5 L3·A Training -->
+          <div class="qa-item training">
+            <div class="qa-question" onclick="toggleQA(this)">
+              <div class="qa-q-icon">⭐</div>
+              <div class="qa-q-text"><span class="qa-level l3">L3</span><span class="qa-depth a">A</span>🎯 訓練題：假設某平台本月追蹤人數「暴漲 8,000」，但活躍率同步從 68% 跌到 54%。你如何解讀？這對業配業務有什麼實際影響？</div>
+              <div class="qa-chevron">▼</div>
+            </div>
+            <div class="qa-answer"><div class="qa-a-inner">
+              <div class="qa-a-icon">A</div>
+              <div class="qa-a-text">
+                <div class="ans-block"><span class="ans-head obs">📊 觀察</span>
+                  <span class="fia f">F</span> 追蹤數暴漲 8,000（假設以 IG 185,000 為基礎，約 +4.3%）；活躍率從 68% 跌至 54%（−14pp）。<br>
+                  <span class="fia f">F</span> 實際活躍人數：原 185,000 × 68% = 125,800 人 → 新 193,000 × 54% = 104,220 人。<strong>絕對活躍人數減少約 21,580 人。</strong>
+                </div>
+                <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
+                  <span class="fia i">I</span> 追蹤數暴增 + 活躍率急跌，最常見成因是「非目標受眾大量流入」——例如某支內容被演算法推給非旅遊族群，帶來大批追蹤後不再互動的輕度用戶。<br>
+                  <span class="fia i">I</span> 這類追蹤者「膨脹分母、縮小分子」，使互動率大幅下滑，甚至導致實際互動人數不升反降。<br>
+                  <span class="fia a">A</span> 需確認：(1) 該月是否有病毒式內容？(2) 新增追蹤者的地區 / 興趣標籤是否符合 niche？此 dashboard 未提供此維度。
+                </div>
+                <div class="ans-block"><span class="ans-head act">🎯 行動</span>
+                  向品牌報價時，應以「絕對互動人數」（而非互動率 %）作為核心指標；同時建議監控追蹤者的興趣分類標籤比例，確保 niche 純度未被稀釋。
+                </div>
+                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span><strong>追蹤數暴漲是視覺上最顯眼的正面 KPI，卻可能是業配能力的實質負訊號。</strong>這是「虛榮指標」陷阱的教科書案例——若只看追蹤數，你以為狀況變好了；計算絕對活躍人數才發現能觸及的有效受眾反而減少了。</div>
+                <div class="nav-hint" onclick="goToChart('p4','chart-p4-engagement')">
+                  <span class="nh-body"><span class="nh-label">→ 前往 P4 受眾質量</span><span class="nh-sub">查看各平台互動率 vs 業界基準，了解「有效受眾」的計算方法</span></span>
+                  <span class="nh-arrow">›</span>
+                </div>
+              </div>
+            </div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ P2 品牌合作 × 業務健康度 ════ -->
+    <div class="page" id="page-p2">
+      <div class="container">
+        <div class="section-label">💰 本月品牌合作業務健康度</div>
+        <div class="kpi-grid c4" id="p2-kpis">
+          <div class="kpi-card" style="--card-color:#7C3AED;--card-color2:#9333EA">
+            <div class="kpi-label">本月合作件數</div>
+            <div class="kpi-value">10 <span class="kpi-unit">件</span></div>
+            <div class="kpi-delta positive">↑ +3 vs 上月（7 件）</div>
+            <div class="kpi-sub">年累積 89 件</div>
+          </div>
+          <div class="kpi-card" style="--card-color:#059669;--card-color2:#10B981">
+            <div class="kpi-label">本月合作收入</div>
+            <div class="kpi-value">$318K</div>
+            <div class="kpi-delta positive">↑ +46.5% vs 上月（$217K）</div>
+            <div class="kpi-sub">年累積 NT$2,842,000</div>
+          </div>
+          <div class="kpi-card" style="--card-color:#D97706;--card-color2:#F59E0B">
+            <div class="kpi-label">平均每件收入</div>
+            <div class="kpi-value">$31,800</div>
+            <div class="kpi-delta neutral">→ 年均 $31,933</div>
+            <div class="kpi-sub">最高：實體活動 $45K / 件</div>
+          </div>
+          <div class="kpi-card" style="--card-color:#DC2626;--card-color2:#EF4444">
+            <div class="kpi-label">回頭客率</div>
+            <div class="kpi-value">42 <span class="kpi-unit">%</span></div>
+            <div class="kpi-delta neutral">→ 健康門檻 40%+</div>
+            <div class="kpi-sub">4.2 成合作來自回頭品牌</div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:24px">📅 合作件數 × 收入趨勢（12 個月）</div>
+        <div class="chart-row c2-1">
+          <div class="chart-group">
+            <div class="chart-block">
+              <div class="chart-title">月合作件數（by 類型，堆疊）</div>
+              <div class="chart-subtitle">12 個月合作件數組合，觀察季節性與類型轉變</div>
+              <div class="chart-wrap"><canvas id="chart-p2-monthly" height="240"></canvas></div>
+            </div>
+            <div class="findings-section">
+              <div class="findings-label">📊 Findings</div>
+              <div id="findings-p2-monthly">
+                <div class="finding-item"><span class="fi-tag fi-f">F</span>10 月（旅遊旺季）與 6 月各有一個年內高峰，月合作件數達 10 件，顯示業配量與旅遊季節高度同步。</div>
+                <div class="finding-item"><span class="fi-tag fi-f">F</span>1 月件數驟降至 5 件（全年最低），通常對應農曆年前品牌凍結預算的淡季規律。</div>
+                <div class="finding-item"><span class="fi-tag fi-i">I</span>「貼文合作」佔全年 46 件（52%），是組合核心；「代言廣告」17 件（19%）次之，代表品牌願意投入長約關係的信心指標。</div>
+                <div class="finding-item"><span class="fi-tag fi-i">I</span>「實體活動」全年僅 7 件但單件收入最高（$45K），屬高門檻、低頻但高利潤的品類——拿下一件等於三件貼文合作的收入。</div>
+              </div>
+            </div>
+          </div>
+          <div class="chart-group">
+            <div class="chart-block">
+              <div class="chart-title">本月收入結構（by 合作類型）</div>
+              <div class="chart-subtitle">2026/06，NT$318,000 合計</div>
+              <div class="chart-wrap"><canvas id="chart-p2-donut" height="220"></canvas></div>
+            </div>
+            <div class="findings-section">
+              <div class="findings-label">📊 Findings</div>
+              <div id="findings-p2-donut">
+                <div class="finding-item"><span class="fi-tag fi-f">F</span>本月代言廣告 $98K（30.8%）為四類型之冠，雖僅 2 件但平均單件 $49K，顯著高於整體均值 $31,800。</div>
+                <div class="finding-item"><span class="fi-tag fi-f">F</span>貼文合作 5 件、$95K（29.9%）；影片拍攝 2 件、$80K（25.2%）；實體活動 1 件、$45K（14.2%）。</div>
+                <div class="finding-item"><span class="fi-tag fi-i">I</span>「件數多但單價低」（貼文）vs「件數少但單價高」（代言/影片）形成互補：貼文維持頻率與曝光，代言貢獻利潤槓桿。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:16px">🎯 旅遊 Niche 子品類績效矩陣</div>
+        <div class="chart-row c1-1">
+          <div class="chart-group">
+            <div class="chart-block">
+              <div class="chart-title">子品類：互動率 vs 每件收入（散點矩陣）</div>
+              <div class="chart-subtitle">泡泡大小 = 本月合作件數；識別高互動 vs 高收益的不同策略位置</div>
+              <div class="chart-wrap"><canvas id="chart-p2-scatter" height="230"></canvas></div>
+              <div class="chart-footnote">四象限分類：右上＝明星（高互動高收入）/ 左上＝問題（高互動低收入）/ 右下＝現金牛（低互動高收入）/ 左下＝重評估</div>
+            </div>
+            <div class="findings-section">
+              <div class="findings-label">📊 Findings</div>
+              <div id="findings-p2-scatter">
+                <div class="finding-item"><span class="fi-tag fi-f">F</span>旅遊體驗（互動率 7.3%）與旅遊配件（6.8%）落在左上象限（高互動、低收入）——粉絲反應熱烈但品牌預算偏低。</div>
+                <div class="finding-item"><span class="fi-tag fi-f">F</span>航空（互動率 5.1%、$74K）落在右上「明星」象限，是目前 niche 中兼顧互動品質與收入的最佳子品類。</div>
+                <div class="finding-item"><span class="fi-tag fi-i">I</span>保險（互動率 2.1%）雖落在低互動區但每件 $68K（最高），代表「現金牛」型合作——受眾信任品牌推薦但不熱烈公開表態屬正常，不應以互動率否定此品類。</div>
+              </div>
+            </div>
+          </div>
+          <div class="chart-group">
+            <div class="chart-block">
+              <div class="chart-title">品牌收入集中度（Top 5 + Others）</div>
+              <div class="chart-subtitle">評估業務風險：Top 1 / Top 3 集中比例</div>
+              <div class="chart-wrap"><canvas id="chart-p2-brands" height="230"></canvas></div>
+            </div>
+            <div class="findings-section">
+              <div class="findings-label">📊 Findings</div>
+              <div id="findings-p2-brands">
+                <div class="finding-item"><span class="fi-tag fi-f">F</span>Top 1 品牌長榮航空佔本月收入 23.3%（$74K），Top 3 合計 60.4%（$192K），集中度中高。</div>
+                <div class="finding-item"><span class="fi-tag fi-i">I</span>若長榮本季凍結預算，單月收入可能驟降約 $74K（−23%），業務穩定性存在非對稱風險。</div>
+                <div class="finding-item"><span class="fi-tag fi-i">I</span>Others 類別 $56K（17.6%）代表小品牌長尾，策略上保留此部分可作為新品牌培育池，避免過度依賴大品牌單一窗口。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:16px">🔻 合作轉換漏斗（年累積）</div>
+        <div class="chart-group">
+          <div class="chart-block">
+            <div class="chart-title">品牌合作轉換漏斗（2025/07 – 2026/06 年累積）</div>
+            <div class="chart-subtitle">從品牌洽詢到實際回款的完整流程，識別最高流失節點</div>
+            <div id="chart-p2-funnel" class="funnel-wrap">
+              <div class="funnel-stage" style="--fw:100%;--fc:var(--accent)">
+                <div class="funnel-bar"><span class="funnel-label">洽詢</span><span class="funnel-count">228</span></div>
+                <div class="funnel-rate">基準</div>
+              </div>
+              <div class="funnel-stage" style="--fw:64.5%;--fc:#7C5CC0">
+                <div class="funnel-bar"><span class="funnel-label">報價</span><span class="funnel-count">147</span></div>
+                <div class="funnel-rate">轉換 64.5%　流失 −81</div>
+              </div>
+              <div class="funnel-stage" style="--fw:39.0%;--fc:#9333EA">
+                <div class="funnel-bar"><span class="funnel-label">簽約</span><span class="funnel-count">89</span></div>
+                <div class="funnel-rate">轉換 60.5%　流失 −58 ⚠ 最大漏斗</div>
+              </div>
+              <div class="funnel-stage" style="--fw:36.8%;--fc:#A855F7">
+                <div class="funnel-bar"><span class="funnel-label">交件</span><span class="funnel-count">84</span></div>
+                <div class="funnel-rate">轉換 94.4%　流失 −5</div>
+              </div>
+              <div class="funnel-stage" style="--fw:34.6%;--fc:#C084FC">
+                <div class="funnel-bar"><span class="funnel-label">回款</span><span class="funnel-count">79</span></div>
+                <div class="funnel-rate">轉換 94.0%　流失 −5</div>
+              </div>
+            </div>
+          </div>
+          <div class="findings-section">
+            <div class="findings-label">📊 Findings</div>
+            <div id="findings-p2-funnel">
+              <div class="finding-item"><span class="fi-tag fi-f">F</span>年累積 228 次洽詢 → 89 件簽約，整體洽詢轉簽率 39%；最大漏斗節點在「報價→簽約」（流失 58 件，39.5% 流失率）。</div>
+              <div class="finding-item"><span class="fi-tag fi-f">F</span>「交件→回款」轉換率 94%，壞帳風險低；收款流程健康，非主要優化標的。</div>
+              <div class="finding-item"><span class="fi-tag fi-i">I</span>報價→簽約流失 58 件，可能原因：定價超出品牌預算、提案說服力不足、競爭對手搶單——需分析哪類型品牌在此節點流失比例最高。</div>
+              <div class="finding-item"><span class="fi-tag fi-i">I</span>簽約轉交件 94.4%、回款 94% 代表執行端能力強、合約保護完善。優化重心應集中在「提升報價品質」而非後端流程。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:16px">🧠 問答練習 — 品牌合作分析</div>
+        <div id="p2-qa">
+          <!-- Q1 L1·F -->
+          <div class="qa-item">
+            <div class="qa-question" onclick="toggleQA(this)">
+              <div class="qa-q-icon">Q1</div>
+              <div class="qa-q-text"><span class="qa-level l1">L1</span><span class="qa-depth f">F</span>本月四種合作類型（實體活動/代言廣告/貼文合作/影片拍攝）的件數和收入各是多少？哪種類型單件收入最高？</div>
+              <div class="qa-chevron">▼</div>
+            </div>
+            <div class="qa-answer"><div class="qa-a-inner">
+              <div class="qa-a-icon">A</div>
+              <div class="qa-a-text">
+                <div class="ans-block"><span class="ans-head obs">📊 觀察</span>
+                  從<span class="ev">本月收入結構甜甜圈圖</span>直接讀取：<br>
+                  <span class="fia f">F</span> 實體活動：1 件，$45,000（單件最高）<br>
+                  <span class="fia f">F</span> 代言廣告：2 件，$98,000（$49K / 件）<br>
+                  <span class="fia f">F</span> 貼文合作：5 件，$95,000（$19K / 件，件數最多）<br>
+                  <span class="fia f">F</span> 影片拍攝：2 件，$80,000（$40K / 件）<br>
+                  <span class="fia f">F</span> 單件收入最高為<strong>實體活動（$45,000）</strong>，但本月僅有 1 件。
+                </div>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- Q2 L2·I -->
+          <div class="qa-item">
+            <div class="qa-question" onclick="toggleQA(this)">
+              <div class="qa-q-icon">Q2</div>
+              <div class="qa-q-text"><span class="qa-level l2">L2</span><span class="qa-depth i">I</span>旅遊體驗（互動率 7.3%）在散點圖中落在「左上象限」（高互動、低收入）。這對定價策略有什麼啟發？</div>
+              <div class="qa-chevron">▼</div>
+            </div>
+            <div class="qa-answer"><div class="qa-a-inner">
+              <div class="qa-a-icon">A</div>
+              <div class="qa-a-text">
+                <div class="ans-block"><span class="ans-head obs">📊 觀察</span>
+                  <span class="fia f">F</span> 旅遊體驗互動率 7.3%（五品類最高），但本月每件收入 $19,000（最低）。<br>
+                  <span class="fia f">F</span> 相比之下，航空互動率 5.1% 但每件 $37,000，保險 2.1% 但每件 $68,000。
+                </div>
+                <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
+                  <span class="fia i">I</span> 高互動代表受眾對此品類高度共鳴，但品牌（體驗類）普遍預算有限——這是市場結構問題，不是創作者本身的問題。<br>
+                  <span class="fia i">I</span> 定價啟發：可用體驗品類的高互動率作為「媒體數據背書」，在談判其他高預算品類（如航空、保險）時展示內容感染力，間接提升溢價空間。<br>
+                  <span class="fia a">A</span> 若要直接提升體驗品類收入，需評估是否有頭部體驗品牌（如特定米其林或豪華旅宿）願意支付高於市場行情的溢價——此 dashboard 未提供品牌個別預算數據。
+                </div>
+                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>「高互動就應該高收入」是錯誤預設。互動率反映<strong>受眾與內容的共鳴程度</strong>，收入反映<strong>品牌端的預算意願與議價結果</strong>，兩者由不同市場力量決定，不能直接畫等號。</div>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- Q3 L2·I -->
+          <div class="qa-item">
+            <div class="qa-question" onclick="toggleQA(this)">
+              <div class="qa-q-icon">Q3</div>
+              <div class="qa-q-text"><span class="qa-level l2">L2</span><span class="qa-depth i">I</span>Top 3 品牌（長榮+安達+晶華）合計佔本月收入 60.4%。從業務風險角度如何評估？需要立即警覺嗎？</div>
+              <div class="qa-chevron">▼</div>
+            </div>
+            <div class="qa-answer"><div class="qa-a-inner">
+              <div class="qa-a-icon">A</div>
+              <div class="qa-a-text">
+                <div class="ans-block"><span class="ans-head obs">📊 觀察</span>
+                  <span class="fia f">F</span> 長榮 $74K（23.3%）、安達 $68K（21.4%）、晶華 $52K（16.4%）→ Top 3 合計 $194K（61.0%）。<br>
+                  <span class="fia f">F</span> Top 1 長榮的集中度（23.3%）低於業界「單客佔比 > 40% = 高危」的通用門檻。
+                </div>
+                <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
+                  <span class="fia i">I</span> 目前尚未觸發高危門檻，但 Top 3 集中 60%+ 意味任何一個品牌季末凍結預算都會造成當月收入可感知的波動。<br>
+                  <span class="fia i">I</span> 航空和保險兩個高單價品類（分別 $74K / $68K）屬於大型企業預算，通常有固定年度框架合約，不像小品牌容易突然斷合——風險程度需結合合約結構判斷。<br>
+                  <span class="fia a">A</span> 若三家均為季節性短約（而非年度合約），則集中風險才值得主動分散。需確認各品牌合作形式（frame contract vs. 單次）才能確定行動優先級。
+                </div>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- Q4 L3·A -->
+          <div class="qa-item">
+            <div class="qa-question" onclick="toggleQA(this)">
+              <div class="qa-q-icon">Q4</div>
+              <div class="qa-q-text"><span class="qa-level l3">L3</span><span class="qa-depth a">A</span>年度合作漏斗顯示「報價→簽約」是最大流失節點（流失 58 件）。你的診斷假說和改善建議為何？</div>
+              <div class="qa-chevron">▼</div>
+            </div>
+            <div class="qa-answer"><div class="qa-a-inner">
+              <div class="qa-a-icon">A</div>
+              <div class="qa-a-text">
+                <div class="ans-block"><span class="ans-head obs">📊 觀察</span>
+                  <span class="fia f">F</span> 147 次報價 → 89 件簽約，轉換率 60.5%，即每 10 份報價有 4 份在此流失。<br>
+                  <span class="fia f">F</span> 前一節點（洽詢→報價）轉換率 64.5%，後段（交件→回款）均 94%+，中段為明顯瓶頸。
+                </div>
+                <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
+                  <span class="fia a">A</span> 診斷假說（需數據驗證）：<br>
+                  ① 報價高於品牌預算範圍 → 改善：在首次洽詢時先了解預算區間再報價，避免無效報價<br>
+                  ② 提案缺乏差異化說服力 → 改善：加入同品類媒體數據、過往案例 ROI、受眾人口統計背書<br>
+                  ③ 響應速度問題 → 改善：設定 24h 報價 SLA，避免品牌同時在接觸多位創作者時被截胡<br>
+                  ④ 接觸品牌質量低（洽詢的是預算嚴重不足的小品牌）→ 改善：強化主動開發 vs 被動等洽詢的比例
+                </div>
+                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>不要只看轉換率就下結論。流失 58 件中「品牌端凍結預算」（外部原因）vs「提案被競爭對手搶走」（可優化原因）的比例差異，決定了改善行動的方向——兩者的解法完全不同。</div>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- Q5 L3·A Training -->
+          <div class="qa-item training">
+            <div class="qa-question" onclick="toggleQA(this)">
+              <div class="qa-q-icon">⭐</div>
+              <div class="qa-q-text"><span class="qa-level l3">L3</span><span class="qa-depth a">A</span>🎯 訓練題：假設你是 Jessica W. 的經紀人。她同時收到兩個邀約：A = 住宿品牌 $52K 代言廣告；B = 體驗品牌 $19K 貼文合作（但預估互動率 8.5%）。以「短期收入 vs 長期品牌槓桿」分析，你會建議接哪個（或都接）？需提出你的分析框架。</div>
+              <div class="qa-chevron">▼</div>
+            </div>
+            <div class="qa-answer"><div class="qa-a-inner">
+              <div class="qa-a-icon">A</div>
+              <div class="qa-a-text">
+                <div class="ans-block"><span class="ans-head obs">📊 觀察</span>
+                  <span class="fia f">F</span> A：住宿代言，$52K，代言廣告形式（通常為長約或多次曝光）。<br>
+                  <span class="fia f">F</span> B：體驗貼文，$19K，預估互動率 8.5%（高於目前組合最高 7.3%）。
+                </div>
+                <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
+                  <span class="fia i">I</span> <strong>A（住宿代言）</strong>：短期收入高（$52K vs $19K），且代言廣告形式可強化品牌定位聲量；缺點是內容自由度受限，頻繁代言可能稀釋真實性。<br>
+                  <span class="fia i">I</span> <strong>B（體驗貼文）</strong>：短期收入低，但 8.5% 互動率可創造高品質媒體數據資產——後續可用於談判航空、保險等高單價品牌時的 pitch deck 佐證。<br>
+                  <span class="fia a">A</span> 分析框架建議：<br>
+                  ① 核心問題：「近 3 個月是否缺乏新的媒體數據補充？」→ 若是，B 的媒體數據刷新價值高<br>
+                  ② 合約條件：A 是否有排他條款（限制接競品）？若有，可能間接損失更多機會<br>
+                  ③ 時間成本：B 的體驗內容通常製作時間長；若近期行程已滿，時間成本要計入「真實報酬率」<br>
+                  ④ <strong>建議：若時間允許，兩個都接</strong>——A 鎖定收入，B 累積互動數據資產，無零和衝突
+                </div>
+                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span><strong>不要用「單次收入金額」作為唯一決策標準。</strong>業配決策是一個跨期資源配置問題：高互動內容可創造未來談判槓桿，低互動高收入內容若損害創作者信任度，長期可能導致受眾流失——反而侵蝕未來的收益基礎。</div>
+                <div class="nav-hint" onclick="goToChart('p4','chart-p4-engagement')">
+                  <span class="nh-body"><span class="nh-label">→ 前往 P4 受眾質量</span><span class="nh-sub">查看各品類互動率基準，評估 8.5% 在整體組合中的相對位置</span></span>
+                  <span class="nh-arrow">›</span>
+                </div>
+              </div>
+            </div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ P3 媒體績效：自然 vs 廣告 ════ -->
+    <div class="page" id="page-p3">
+      <div class="container">
+        <div class="section-label">📡 本月流量效率對比（自然 vs 廣告）</div>
+        <div class="kpi-compare-grid" id="p3-kpis">
+          <!-- Organic Panel -->
+          <div style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border-radius:14px;padding:20px;border:1.5px solid #86EFAC;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#059669;margin-bottom:12px;">🌿 自然流量</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+              <div><div style="font-size:11px;color:#6B7280">曝光數</div><div style="font-size:18px;font-weight:800;color:#064E3B">1,928K</div></div>
+              <div><div style="font-size:11px;color:#6B7280">觸及人數</div><div style="font-size:18px;font-weight:800;color:#064E3B">1,356K</div></div>
+              <div><div style="font-size:11px;color:#6B7280">互動次數</div><div style="font-size:18px;font-weight:800;color:#064E3B">127,800</div></div>
+              <div><div style="font-size:11px;color:#6B7280">個人主頁到訪</div><div style="font-size:18px;font-weight:800;color:#064E3B">38,200</div></div>
+              <div><div style="font-size:11px;color:#6B7280">轉換次數</div><div style="font-size:18px;font-weight:800;color:#064E3B">4,380</div></div>
+              <div><div style="font-size:11px;color:#6B7280">互動率</div><div style="font-size:18px;font-weight:800;color:#064E3B">9.4%</div></div>
+            </div>
+          </div>
+          <!-- Paid Panel -->
+          <div style="background:linear-gradient(135deg,#FFF7ED,#FED7AA);border-radius:14px;padding:20px;border:1.5px solid #FDBA74;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#D97706;margin-bottom:12px;">📢 廣告流量</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+              <div><div style="font-size:11px;color:#6B7280">曝光數</div><div style="font-size:18px;font-weight:800;color:#7C2D12">1,245K</div></div>
+              <div><div style="font-size:11px;color:#6B7280">觸及人數</div><div style="font-size:18px;font-weight:800;color:#7C2D12">823K</div></div>
+              <div><div style="font-size:11px;color:#6B7280">互動次數</div><div style="font-size:18px;font-weight:800;color:#7C2D12">41,200</div></div>
+              <div><div style="font-size:11px;color:#6B7280">個人主頁到訪</div><div style="font-size:18px;font-weight:800;color:#7C2D12">22,100</div></div>
+              <div><div style="font-size:11px;color:#6B7280">轉換次數</div><div style="font-size:18px;font-weight:800;color:#7C2D12">2,180</div></div>
+              <div><div style="font-size:11px;color:#6B7280">廣告費用</div><div style="font-size:18px;font-weight:800;color:#7C2D12">$28,500</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label">📊 月自然曝光趨勢（by 平台）</div>
+        <div class="chart-group">
+          <div class="chart-block">
+            <div class="chart-title">月有機曝光數趨勢（千次，各平台，12 個月）</div>
+            <div class="chart-subtitle">觀察各平台自然觸及的消長；Instagram 下滑 vs TikTok 維穩是核心對比</div>
+            <div class="chart-wrap"><canvas id="chart-p3-impressions" height="230"></canvas></div>
+          </div>
+          <div class="findings-section">
+            <div class="findings-label">📊 Findings</div>
+            <div id="findings-p3-impressions">
+              <div class="finding-item"><span class="fi-tag fi-f">F</span>Instagram 月有機曝光從 2025/07 的 820K 降至 2026/06 的 700K（−14.6%），趨勢持續惡化。</div>
+              <div class="finding-item"><span class="fi-tag fi-f">F</span>TikTok 同期從 480K 成長至 618K（+28.8%），是唯一持續增長的平台。Blog 從 178K 增至 252K（+41.6%），成長最快但基數小。</div>
+              <div class="finding-item"><span class="fi-tag fi-i">I</span>Instagram 與 TikTok 的曝光趨勢形成「剪刀差」——有機流量的重心正在從圖文向短影音遷移，這是社群媒體平台生態演變的結構性訊號。</div>
+              <div class="finding-item"><span class="fi-tag fi-i">I</span>YouTube 月有機曝光小幅下滑（280→248K），FB 也從 145K 降至 110K，顯示這兩個平台在 Jessica W. 的內容組合中有機分發效率趨弱。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:16px">📉 Instagram 有機觸及率衰退趨勢</div>
+        <div class="chart-row c1-1">
+          <div class="chart-group">
+            <div class="chart-block">
+              <div class="chart-title">Instagram 有機觸及率（%，月追蹤，12 個月）</div>
+              <div class="chart-subtitle">= 月有機觸及 / 追蹤人數；持續下降 = 演算法縮減有機分發</div>
+              <div class="chart-wrap"><canvas id="chart-p3-decay" height="220"></canvas></div>
+              <div class="chart-footnote">IG 觸及率從 2025/07 的 52% 降至 2026/06 的 35%；TikTok 同期維持 145–180%</div>
+            </div>
+            <div class="findings-section">
+              <div class="findings-label">📊 Findings</div>
+              <div id="findings-p3-decay">
+                <div class="finding-item"><span class="fi-tag fi-f">F</span>IG 有機觸及率從 52% 降至 35%（−17pp），全年累計衰退 33%；平均每月流失約 1.4pp。</div>
+                <div class="finding-item"><span class="fi-tag fi-f">F</span>TikTok 同期「觸及率」從 145% 增至 180%——超過 100% 代表非追蹤者也大量被推送，演算法分發能力是 IG 的 5 倍。</div>
+                <div class="finding-item"><span class="fi-tag fi-i">I</span>IG 有機觸及持續萎縮是 Meta 業務模式（強推廣告）的系統性結果，非個人帳號問題。除非增加廣告預算或改變內容形式（Reels > Stories），否則衰退趨勢難以逆轉。</div>
+              </div>
+            </div>
+          </div>
+          <div class="chart-group">
+            <div class="chart-block">
+              <div class="chart-title">廣告 CPM by 平台（NT$，2026/06）</div>
+              <div class="chart-subtitle">每千次曝光廣告成本；低 CPM ≠ 高效率，需搭配互動率判讀</div>
+              <div class="chart-wrap"><canvas id="chart-p3-cpm" height="220"></canvas></div>
+            </div>
+            <div class="findings-section">
+              <div class="findings-label">📊 Findings</div>
+              <div id="findings-p3-cpm">
+                <div class="finding-item"><span class="fi-tag fi-f">F</span>CPM 由低到高：TikTok $45 &lt; FB $58 &lt; IG $78 &lt; YouTube $112；YouTube 是最貴的廣告版位。</div>
+                <div class="finding-item"><span class="fi-tag fi-i">I</span>TikTok CPM 最低但有機觸及率最高——廣告效率與自然效率雙優，是目前組合中槓桿最高的平台。</div>
+                <div class="finding-item"><span class="fi-tag fi-i">I</span>YouTube CPM $112 但互動率（P4 數據）4.1% 仍優於業界基準 3.0%，代表高成本但高質量受眾——適合高單價品牌的精準觸及，而非大量曝光型廣告。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:16px">🔻 自然 vs 廣告流量漏斗對比</div>
+        <div id="p3-funnels">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <!-- Organic Funnel -->
+            <div>
+              <div style="font-size:12px;font-weight:700;color:#059669;margin-bottom:10px;">🌿 自然流量漏斗</div>
+              <div class="funnel-stage" style="--fw:100%;--fc:#059669">
+                <div class="funnel-bar"><span class="funnel-label">曝光</span><span class="funnel-count">1,928K</span></div>
+                <div class="funnel-rate">基準</div>
+              </div>
+              <div class="funnel-stage" style="--fw:70.3%;--fc:#16A34A">
+                <div class="funnel-bar"><span class="funnel-label">觸及</span><span class="funnel-count">1,356K</span></div>
+                <div class="funnel-rate">觸及率 70.3%</div>
+              </div>
+              <div class="funnel-stage" style="--fw:9.4%;--fc:#4ADE80;min-width:140px">
+                <div class="funnel-bar"><span class="funnel-label">互動</span><span class="funnel-count">127.8K</span></div>
+                <div class="funnel-rate">互動率 9.4%</div>
+              </div>
+              <div class="funnel-stage" style="--fw:3.2%;--fc:#86EFAC;min-width:140px">
+                <div class="funnel-bar"><span class="funnel-label">主頁到訪</span><span class="funnel-count">38,200</span></div>
+                <div class="funnel-rate">到訪率 2.82%</div>
+              </div>
+              <div class="funnel-stage" style="--fw:0.34%;--fc:#BBF7D0;min-width:140px">
+                <div class="funnel-bar" style="color:#064E3B"><span class="funnel-label">轉換</span><span class="funnel-count" style="color:#064E3B">4,380</span></div>
+                <div class="funnel-rate">轉換率 11.5%（主頁→轉換）</div>
+              </div>
+            </div>
+            <!-- Paid Funnel -->
+            <div>
+              <div style="font-size:12px;font-weight:700;color:#D97706;margin-bottom:10px;">📢 廣告流量漏斗</div>
+              <div class="funnel-stage" style="--fw:100%;--fc:#D97706">
+                <div class="funnel-bar"><span class="funnel-label">曝光</span><span class="funnel-count">1,245K</span></div>
+                <div class="funnel-rate">基準</div>
+              </div>
+              <div class="funnel-stage" style="--fw:66.1%;--fc:#F59E0B">
+                <div class="funnel-bar"><span class="funnel-label">觸及</span><span class="funnel-count">823K</span></div>
+                <div class="funnel-rate">觸及率 66.1%</div>
+              </div>
+              <div class="funnel-stage" style="--fw:5.0%;--fc:#FCD34D;min-width:140px">
+                <div class="funnel-bar" style="color:#7C2D12"><span class="funnel-label">互動</span><span class="funnel-count" style="color:#7C2D12">41.2K</span></div>
+                <div class="funnel-rate">互動率 5.0%（vs 自然 9.4%）</div>
+              </div>
+              <div class="funnel-stage" style="--fw:2.69%;--fc:#FDE68A;min-width:140px">
+                <div class="funnel-bar" style="color:#7C2D12"><span class="funnel-label">主頁到訪</span><span class="funnel-count" style="color:#7C2D12">22,100</span></div>
+                <div class="funnel-rate">到訪率 2.69%</div>
+              </div>
+              <div class="funnel-stage" style="--fw:0.27%;--fc:#FEF3C7;min-width:140px">
+                <div class="funnel-bar" style="color:#7C2D12"><span class="funnel-label">轉換</span><span class="funnel-count" style="color:#7C2D12">2,180</span></div>
+                <div class="funnel-rate">轉換率 9.9%（主頁→轉換）</div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:12px;padding:10px 14px;background:var(--bg-alt);border-radius:8px;font-size:12px;color:var(--text-m);">
+            💡 關鍵對比：自然流量互動率（9.4%）高於廣告（5.0%），但廣告曝光 1,245K × 廣費 $28,500 = CPM NT$22.9。自然流量每次互動成本 ≈ $0（邊際成本），廣告每次互動成本 ≈ $0.69。
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:16px">🧠 問答練習 — 媒體績效分析</div>
+        <div id="p3-qa">
+          <!-- Q1 L1·F -->
+          <div class="qa-item">
+            <div class="qa-question" onclick="toggleQA(this)">
+              <div class="qa-q-icon">Q1</div>
+              <div class="qa-q-text"><span class="qa-level l1">L1</span><span class="qa-depth f">F</span>本月自然流量與廣告流量的互動率分別是多少？哪個更高？每個來源帶來多少轉換？</div>
+              <div class="qa-chevron">▼</div>
+            </div>
+            <div class="qa-answer"><div class="qa-a-inner">
+              <div class="qa-a-icon">A</div>
+              <div class="qa-a-text">
+                <div class="ans-block"><span class="ans-head obs">📊 觀察</span>
+                  <span class="fia f">F</span> 自然流量互動率 <strong>9.4%</strong>（127,800 互動 / 1,356,000 觸及），廣告流量互動率 <strong>5.0%</strong>（41,200 / 823,000）。<br>
+                  <span class="fia f">F</span> 自然流量帶來轉換 <strong>4,380 次</strong>；廣告流量帶來 <strong>2,180 次</strong>。自然流量互動率和轉換均更高。
+                </div>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- Q2 L2·I -->
+          <div class="qa-item">
+            <div class="qa-question" onclick="toggleQA(this)">
+              <div class="qa-q-icon">Q2</div>
+              <div class="qa-q-text"><span class="qa-level l2">L2</span><span class="qa-depth i">I</span>IG 有機觸及率從 52% 跌至 35%，同期廣告 CPM 為 $78。作為創作者的媒體效率顧問，你會建議如何分配 $28,500 廣告預算？</div>
+              <div class="qa-chevron">▼</div>
+            </div>
+            <div class="qa-answer"><div class="qa-a-inner">
+              <div class="qa-a-icon">A</div>
+              <div class="qa-a-text">
+                <div class="ans-block"><span class="ans-head obs">📊 觀察</span>
+                  <span class="fia f">F</span> CPM 排序：TikTok $45 &lt; FB $58 &lt; IG $78 &lt; YouTube $112。<br>
+                  <span class="fia f">F</span> IG 有機觸及萎縮代表同樣內容的自然觸及越來越少，廣告依賴度隱性上升。
+                </div>
+                <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
+                  <span class="fia i">I</span> 若以「每元購得的曝光量」為優先，$28,500 全押 TikTok ($45/K) = 約 633K 額外曝光，比押 IG 多出 270K。<br>
+                  <span class="fia a">A</span> 但若業配品牌指定要在 IG 曝光（合約要求），CPM 的選擇空間受限——此時預算分配由合約義務而非效率最大化決定。
+                </div>
+                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>「CPM 最低 = 最值得投廣告」是常見錯誤。需搭配互動率（質量）和業配合約條件（目標平台）三角驗證，才能做出有根據的預算分配建議。</div>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- Q3 L3·A Training -->
+          <div class="qa-item training">
+            <div class="qa-question" onclick="toggleQA(this)">
+              <div class="qa-q-icon">⭐</div>
+              <div class="qa-q-text"><span class="qa-level l3">L3</span><span class="qa-depth a">A</span>🎯 訓練題：自然流量互動率 9.4%，廣告流量 5.0%。某品牌要求「互動數不低於 50,000 次」作為 KPI。請計算：純靠自然流量能達到嗎？若達不到，需要多少廣告預算補足？</div>
+              <div class="qa-chevron">▼</div>
+            </div>
+            <div class="qa-answer"><div class="qa-a-inner">
+              <div class="qa-a-icon">A</div>
+              <div class="qa-a-text">
+                <div class="ans-block"><span class="ans-head obs">📊 觀察</span>
+                  <span class="fia f">F</span> 本月自然流量互動數：127,800（已超過 50,000 目標，純自然即可達標）。<br>
+                  <span class="fia f">F</span> 但如果品牌指定的是「業配內容貼文」的互動數，而非 Jessica W. 全帳號的互動數——兩者不可混淆。
+                </div>
+                <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
+                  <span class="fia a">A</span> 若目標是「單篇業配貼文互動數 ≥ 50K」，則需釐清：<br>
+                  ① Jessica W. 單篇 IG 貼文平均互動數（需歷史資料，dashboard 未提供）<br>
+                  ② 若單篇預估 20K，缺口 30K，以廣告互動率 5.0% 補足：需觸及 600K 人 → 曝光 600K / 0.701 ≈ 856K 次 → 廣告費 856K × $78/K ≈ NT$66,768。
+                </div>
+                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span><strong>用帳號總互動數評估業配 KPI 是業界常見錯誤。</strong>品牌合作 KPI 應針對「業配貼文本身」的表現，而非整個帳號的總量指標——前者才是有效討論基礎。</div>
+              </div>
+            </div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ P4 受眾質量深度分析 ════ -->
+    <div class="page" id="page-p4">
+      <div class="container">
+        <div class="section-label">🏆 受眾質量雷達：五平台綜合評分</div>
+        <div class="chart-row c2-1">
+          <div class="chart-group">
+            <div class="chart-block">
+              <div class="chart-title">受眾質量雷達圖（5 維度，0–100 標準化）</div>
+              <div class="chart-subtitle">互動率 / 活躍率 / 評論深度 / 分享率 / 存儲率；打破「追蹤越多越好」的單一評估視角</div>
+              <div class="chart-wrap"><canvas id="chart-p4-radar" height="270"></canvas></div>
+            </div>
+            <div class="findings-section">
+              <div class="findings-label">📊 Findings</div>
+              <div id="findings-p4-radar">
+                <div class="finding-item"><span class="fi-tag fi-f">F</span>TikTok 在互動率和活躍率兩個維度均達 100 分（標準化滿分），是整體受眾質量最強的平台。</div>
+                <div class="finding-item"><span class="fi-tag fi-f">F</span>Blog 在評論深度（100）和分享率（55）表現領先，代表其受眾以深度閱讀者為主——有高決策影響力但規模小。</div>
+                <div class="finding-item"><span class="fi-tag fi-i">I</span>YouTube 受眾存儲率 0 分（不適用）但評論深度 86 分，代表訂閱者有高探討意願，適合長期知識型品牌合作（如旅遊設備、行程規劃工具）。</div>
+                <div class="finding-item"><span class="fi-tag fi-i">I</span>Facebook 在所有維度均偏低（最高 54 分），但不代表無價值——其受眾可能是特定區隔的中年高消費旅遊族群，雷達圖無法顯示此維度。</div>
+              </div>
+            </div>
+          </div>
+          <div id="p4-kpis" style="display:flex;flex-direction:column;gap:12px;">
+            <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">⭐ 受眾質量亮點</div>
+            <div style="background:var(--bg-alt);border-radius:10px;padding:14px;border-left:3px solid" class="" style="border-color:var(--accent)">
+              <div style="display:flex;align-items:baseline;gap:8px;border-left:3px solid var(--accent);padding-left:10px;margin-bottom:8px;">
+                <span style="font-size:22px;font-weight:800;color:var(--accent)">8.2%</span>
+                <span style="font-size:12px;color:var(--text-m)">TikTok 互動率</span>
+                <span style="font-size:11px;background:#EDE9FE;color:#7C3AED;padding:2px 7px;border-radius:4px;font-weight:600">業界 6.0%</span>
+              </div>
+              <div style="display:flex;align-items:baseline;gap:8px;border-left:3px solid #059669;padding-left:10px;margin-bottom:8px;">
+                <span style="font-size:22px;font-weight:800;color:#059669">6.8%</span>
+                <span style="font-size:12px;color:var(--text-m)">Blog 互動率</span>
+                <span style="font-size:11px;background:#D1FAE5;color:#065F46;padding:2px 7px;border-radius:4px;font-weight:600">業界 4.0%</span>
+              </div>
+              <div style="display:flex;align-items:baseline;gap:8px;border-left:3px solid #D97706;padding-left:10px;margin-bottom:8px;">
+                <span style="font-size:22px;font-weight:800;color:#D97706">71%</span>
+                <span style="font-size:12px;color:var(--text-m)">TikTok 30日活躍率</span>
+                <span style="font-size:11px;background:#FEF3C7;color:#92400E;padding:2px 7px;border-radius:4px;font-weight:600">五平台最高</span>
+              </div>
+              <div style="display:flex;align-items:baseline;gap:8px;border-left:3px solid #DC2626;padding-left:10px;">
+                <span style="font-size:22px;font-weight:800;color:#DC2626">1.2%</span>
+                <span style="font-size:12px;color:var(--text-m)">Facebook 互動率</span>
+                <span style="font-size:11px;background:#FEE2E2;color:#991B1B;padding:2px 7px;border-radius:4px;font-weight:600">低於業界 1.5%</span>
+              </div>
+            </div>
+            <div style="background:#FFF7ED;border-radius:8px;padding:10px 12px;font-size:11px;color:#7C2D12;border:1px solid #FDBA74;">
+              ⚠ <strong>注意：</strong>互動率、活躍率均基於本月快照，雷達圖僅反映當前時間點，不代表長期趨勢。
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:16px">📊 Engagement Rate vs 業界基準</div>
+        <div class="chart-row c1-1">
+          <div class="chart-group">
+            <div class="chart-block">
+              <div class="chart-title">各平台互動率 vs 同量級業界基準（%）</div>
+              <div class="chart-subtitle">橘色虛線 = 業界中位數（100k–500k 粉絲量級）</div>
+              <div class="chart-wrap"><canvas id="chart-p4-engagement" height="230"></canvas></div>
+            </div>
+            <div class="findings-section">
+              <div class="findings-label">📊 Findings</div>
+              <div id="findings-p4-engagement">
+                <div class="finding-item"><span class="fi-tag fi-f">F</span>TikTok（8.2%）和 Blog（6.8%）均大幅高於業界基準（6.0% / 4.0%），是超越業界均值的兩個優勢平台。</div>
+                <div class="finding-item"><span class="fi-tag fi-f">F</span>IG（3.8%）和 YouTube（4.1%）均超過業界基準（2.5% / 3.0%），表現良好。唯 Facebook（1.2%）低於業界基準（1.5%）。</div>
+                <div class="finding-item"><span class="fi-tag fi-i">I</span>以「業界超額互動率」來看，TikTok 超額 +2.2pp、Blog 超額 +2.8pp——若以此為業配議價論據，Blog 的超額幅度最大，是被低估的資產。</div>
+              </div>
+            </div>
+          </div>
+          <div class="chart-group">
+            <div class="chart-block">
+              <div class="chart-title">追蹤規模 vs 互動率（散點，Size-Engagement Trade-off）</div>
+              <div class="chart-subtitle">x 軸 = 追蹤人數；y 軸 = 互動率；觀察規模與質量的反相關</div>
+              <div class="chart-wrap"><canvas id="chart-p4-scatter" height="230"></canvas></div>
+            </div>
+            <div class="findings-section">
+              <div class="findings-label">📊 Findings</div>
+              <div id="findings-p4-scatter">
+                <div class="finding-item"><span class="fi-tag fi-i">I</span>追蹤數 vs 互動率呈現「反相關」的典型創作者模式：規模最小的 Blog（2.8萬）互動率最高（6.8%），最大的 IG（18.5萬）互動率最低（3.8%）。</div>
+                <div class="finding-item"><span class="fi-tag fi-i">I</span>TikTok 是例外：追蹤數中等（12.7萬）但互動率最高（8.2%），代表其演算法不只推送給既有追蹤者——非追蹤者互動拉高了整體比例。</div>
+                <div class="finding-item"><span class="fi-tag fi-a">A</span>向品牌提案時，可用「加權平均互動率」（各平台互動次數加總 / 各平台觸及加總）取代「單平台互動率」，呈現跨平台真實受眾黏性，避免被個別平台低互動率拉低印象。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:16px">📅 受眾活躍深度：30日 vs 90日</div>
+        <div class="chart-row c1-1">
+          <div class="chart-group">
+            <div class="chart-block">
+              <div class="chart-title">30日 vs 90日活躍率（%，各平台）</div>
+              <div class="chart-subtitle">兩指標差距大 = 短期有互動但缺乏長期黏性</div>
+              <div class="chart-wrap"><canvas id="chart-p4-active" height="220"></canvas></div>
+            </div>
+            <div class="findings-section">
+              <div class="findings-label">📊 Findings</div>
+              <div id="findings-p4-active">
+                <div class="finding-item"><span class="fi-tag fi-f">F</span>TikTok 30日活躍率 71% / 90日 85%，差距僅 14pp，顯示追蹤者具有高持續性參與習慣。</div>
+                <div class="finding-item"><span class="fi-tag fi-f">F</span>Blog 30日活躍率 32% / 90日 48%，差距 16pp，相對偏低但在 email 導流或 SEO 到站的讀者中屬合理範圍。</div>
+                <div class="finding-item"><span class="fi-tag fi-i">I</span>Facebook 30日 38% / 90日 52%，差距 14pp——從「30→90日活躍率差」來看，留存型受眾比例相對穩定，表示雖然新增追蹤少，但老受眾黏性並未快速流失。</div>
+              </div>
+            </div>
+          </div>
+          <div class="chart-group">
+            <div class="chart-block">
+              <div class="chart-title">評論深度指數（0–100，各平台）</div>
+              <div class="chart-subtitle">分數越高 = 受眾留下更長、更有意義的評論；Blog 受眾深度最高</div>
+              <div class="chart-wrap"><canvas id="chart-p4-depth" height="220"></canvas></div>
+            </div>
+            <div class="findings-section">
+              <div class="findings-label">📊 Findings</div>
+              <div id="findings-p4-depth">
+                <div class="finding-item"><span class="fi-tag fi-f">F</span>Blog 評論深度指數 91（最高），YouTube 次之 78，代表這兩個平台的受眾傾向留下長篇實質評論。</div>
+                <div class="finding-item"><span class="fi-tag fi-f">F</span>TikTok 評論深度僅 35，Facebook 29——短影音評論文化以表情符號和短句為主，深度自然低。</div>
+                <div class="finding-item"><span class="fi-tag fi-i">I</span>Blog 的高評論深度代表讀者消費了內容後有高分析意願，這類受眾在旅遊消費決策中（住宿、行程、配備）往往具有高說服力——是口碑傳播的種子族群，商業價值超過其追蹤人數所能代表的。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:16px">🧠 訓練題面板 — 受眾質量 × 品牌業配決策</div>
+        <div id="p4-qa">
+          <!-- Q1 L1·F -->
+          <div class="qa-item">
+            <div class="qa-question" onclick="toggleQA(this)">
+              <div class="qa-q-icon">Q1</div>
+              <div class="qa-q-text"><span class="qa-level l1">L1</span><span class="qa-depth f">F</span>五個平台中，哪個平台的互動率最高？最低？分別與業界基準相比如何？</div>
+              <div class="qa-chevron">▼</div>
+            </div>
+            <div class="qa-answer"><div class="qa-a-inner">
+              <div class="qa-a-icon">A</div>
+              <div class="qa-a-text">
+                <div class="ans-block"><span class="ans-head obs">📊 觀察</span>
+                  <span class="fia f">F</span> 最高：TikTok <strong>8.2%</strong>（業界基準 6.0%，超額 +2.2pp）。<br>
+                  <span class="fia f">F</span> 最低：Facebook <strong>1.2%</strong>（業界基準 1.5%，<strong>低於</strong>基準 −0.3pp）。<br>
+                  <span class="fia f">F</span> 其他三平台（IG 3.8%、YouTube 4.1%、Blog 6.8%）均超過各自業界基準。
+                </div>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- Q2 L2·I -->
+          <div class="qa-item">
+            <div class="qa-question" onclick="toggleQA(this)">
+              <div class="qa-q-icon">Q2</div>
+              <div class="qa-q-text"><span class="qa-level l2">L2</span><span class="qa-depth i">I</span>Blog 評論深度指數 91（最高），但追蹤人數只有 2.8 萬（最少）。從品牌業配的角度，這個平台被「低估」了嗎？</div>
+              <div class="qa-chevron">▼</div>
+            </div>
+            <div class="qa-answer"><div class="qa-a-inner">
+              <div class="qa-a-icon">A</div>
+              <div class="qa-a-text">
+                <div class="ans-block"><span class="ans-head obs">📊 觀察</span>
+                  <span class="fia f">F</span> Blog 追蹤（月訪客）2.8萬，互動率 6.8%（超業界基準），評論深度 91（最高），分享率 3.4%（第三高）。<br>
+                  <span class="fia f">F</span> 但本月 Blog 參與業配的子品類和收入佔比相對較低（P2 數據中未單列）。
+                </div>
+                <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
+                  <span class="fia i">I</span> 評論深度高代表 Blog 讀者是「認真研究旅遊決策」的族群——這類受眾在訂房、訂機票、購買旅遊保險前通常廣泛閱讀評測文，對創作者推薦的轉換率可能遠高於社群平台。<br>
+                  <span class="fia a">A</span> 若 Blog 過去業配的轉換率（點擊→訂購）可量化，其 eCPM（有效每千次轉換成本）可能優於 IG 或 TikTok——但此 dashboard 無 UTM 轉換追蹤數據，目前僅為推測。
+                </div>
+                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>不要只用「追蹤人數」評估平台業配潛力。評論深度高的小規模平台（如 Blog）在說服力和轉換率上可能遠超大規模但淺層互動的平台，低估它是因為數字不夠「大」而非不夠「好」。</div>
+              </div>
+            </div></div>
+          </div>
+
+          <!-- Q3 L3·A Training -->
+          <div class="qa-item training">
+            <div class="qa-question" onclick="toggleQA(this)">
+              <div class="qa-q-icon">⭐</div>
+              <div class="qa-q-text"><span class="qa-level l3">L3</span><span class="qa-depth a">A</span>🎯 訓練題：假設你需要為 Jessica W. 建立一份「媒體資料包（Media Kit）」，以最有說服力的方式向高單價旅遊品牌展示她的受眾質量。你會選擇哪 5 個 KPI 指標？為什麼？</div>
+              <div class="qa-chevron">▼</div>
+            </div>
+            <div class="qa-answer"><div class="qa-a-inner">
+              <div class="qa-a-icon">A</div>
+              <div class="qa-a-text">
+                <div class="ans-block"><span class="ans-head obs">📊 觀察</span>
+                  <span class="fia a">A</span> 選 KPI 的核心原則：「對品牌決策最相關」+ 「Jessica 相對業界基準的超額優勢最大」。
+                </div>
+                <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
+                  <span class="fia a">A</span> 建議 5 個 KPI：<br>
+                  ① <strong>TikTok 互動率 8.2%（業界 6.0% +37%）</strong>——最能說明內容感染力超標<br>
+                  ② <strong>跨平台總觸及 2,179K / 月</strong>——規模感，品牌高層易理解<br>
+                  ③ <strong>Blog 評論深度指數 91</strong>——說明旅遊族群中的高決策影響力受眾存在<br>
+                  ④ <strong>自然流量轉換率 11.5%（主頁→轉換）</strong>——對強調 ROI 的績效型品牌最有說服力<br>
+                  ⑤ <strong>年回頭客率 42%</strong>——說明過往合作品牌認可其業務執行品質，降低新品牌合作風險感
+                </div>
+                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span><strong>Media Kit 中最常見的錯誤：把所有指標都塞進去。</strong>重點是「選對 5 個讓品牌有信心付款的數字」，而非「展示所有數字讓品牌自己判斷」——過多數字反而稀釋重點，甚至暴露弱項。</div>
+                <div class="nav-hint" onclick="goToChart('p2','chart-p2-brands')">
+                  <span class="nh-body"><span class="nh-label">→ 前往 P2 品牌集中度</span><span class="nh-sub">確認過往合作品牌的業績記錄，可作為 Media Kit 案例區素材</span></span>
+                  <span class="nh-arrow">›</span>
+                </div>
+              </div>
+            </div></div>
+          </div>
+        </div>
+
+        <!-- ── 設計選擇揭露 ── -->
+        <div id="design-choices" style="margin-top:32px;padding:24px;background:var(--bg-alt);border-radius:16px;border:1.5px solid var(--border-strong);">
+          <div style="font-size:14px;font-weight:800;color:var(--accent);margin-bottom:16px;">📐 這份 Dashboard 的設計選擇</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;font-size:12px;">
+            <div>
+              <div style="font-weight:700;color:var(--text);margin-bottom:8px;">視覺 Preset — Social Creator（客製化）</div>
+              <div style="color:var(--text-m);line-height:1.7">
+                選色方案以 <code style="background:#E9D5FF;padding:1px 5px;border-radius:3px;">#7C3AED</code> 活力紫為主調（區別於前三個 dashboard 的藍系/深色），搭配 Plus Jakarta Sans 字型家族（圓潤現代感）。淺色背景 <code style="background:#F3F0FF;padding:1px 5px;border-radius:3px;">#FDFCFF</code> 呼應年輕生活風格。平台顏色採用各平台品牌標準色（IG 粉紅、TikTok 青藍等），確保視覺辨識度無歧義。
+              </div>
+            </div>
+            <div>
+              <div style="font-weight:700;color:var(--text);margin-bottom:8px;">資料設計選擇</div>
+              <div style="color:var(--text-m);line-height:1.7">
+                刻意加入「跨象限的資料矛盾」作為教學材料：<br>
+                ① <strong>TikTok 增速放緩 vs 活躍率維穩</strong>（P1 — 逼學員區分量 vs 質）<br>
+                ② <strong>保險互動率最低但收入最高</strong>（P2 — 逼學員質疑互動率萬能論）<br>
+                ③ <strong>Blog 規模最小但評論深度最高</strong>（P4 — 逼學員重估「追蹤人數崇拜」）<br>
+                這些「反直覺的交叉點」是刻意設計的訓練陷阱，不是數據異常。
+              </div>
+            </div>
+            <div>
+              <div style="font-weight:700;color:var(--text);margin-bottom:8px;">教學機制選擇</div>
+              <div style="color:var(--text-m);line-height:1.7">
+                全部 A 題和訓練題均附有 <strong>⚠ 陷阱區塊</strong>，且陷阱設計針對業界真實常見錯誤而非學術謬誤（如「追蹤數暴漲誤判為正訊號」「互動率低就否定高收入品類」「跨平台 CPM 直接比較」等）。F/I/A 標籤強制學員明確標示「我在陳述事實還是推論還是假設」。
+              </div>
+            </div>
+            <div>
+              <div style="font-weight:700;color:var(--text);margin-bottom:8px;">與前份 Dashboard 的差異化</div>
+              <div style="color:var(--text-m);line-height:1.7">
+                相較於前作（餐飲連鎖/電商DTC/健身房），本份差異化重點：<br>
+                ① <strong>多平台並置</strong>：5 平台同框比較（前作均為單平台或渠道分析）<br>
+                ② <strong>個人品牌 B2B 業務邏輯</strong>：加入銷售漏斗分析（洽詢→回款），跳脫B2C框架<br>
+                ③ <strong>質量維度擴充</strong>：P4 新增「評論深度指數」和「存儲率」指標，超越傳統互動率
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:16px;padding:10px 14px;background:white;border-radius:8px;font-size:11px;color:var(--text-m);">
+            📌 <strong>assertConsistency()：</strong>所有跨頁數字均由 <code>const DATA</code> 單一物件衍生，10 項內部一致性檢查在每次頁面載入時自動執行。若 console 出現 ✓ 字樣表示通過，任何 ✗ 均代表數據異常需修復。
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- #content-area -->
+</div><!-- #main-wrapper -->
+
+<script>
+/* ════════════════════════════════════════════════
+   DATA — Single Source of Truth
+   所有數字從此物件衍生，禁止在 HTML 中 hardcode
+════════════════════════════════════════════════ */
+const DATA = {
+  months: ['2025/07','2025/08','2025/09','2025/10','2025/11','2025/12',
+           '2026/01','2026/02','2026/03','2026/04','2026/05','2026/06'],
+
+  anchors: {
+    ig: 185000, tiktok: 127000, youtube: 89500, fb: 61200, blog: 28000,
+    total_followers: 490700,
+    monthly_revenue: 318000,
+    monthly_deals: 10,
+    avg_revenue_per_deal: 31800,
+    repeat_client_rate: 42,
+    annual_deals: 89,
+    annual_revenue: 2842000,
+    organic_reach: 1356000,
+    paid_reach: 823000,
+    total_reach: 2179000,
+    organic_impressions: 1928000,
+    paid_impressions: 1245000,
+    total_impressions: 3173000,
+    ad_spend: 28500
+  },
+
+  p1: {
+    followers: {
+      ig:      [152000,156200,160100,163400,167200,170500,172900,175600,178300,181200,183700,185000],
+      tiktok:  [72000, 79400, 86100, 93800,100200,107500,111800,115600,118900,122700,125300,127000],
+      youtube: [76000, 77800, 79400, 81200, 82600, 83900, 85100, 86200, 87400, 88400, 89000, 89500],
+      fb:      [66000, 65300, 64600, 63800, 63200, 62600, 62200, 61900, 61700, 61500, 61300, 61200],
+      blog:    [21000, 21800, 22300, 22900, 23500, 24200, 24700, 25100, 25700, 26300, 27000, 28000]
+    },
+    active_rate: {
+      ig:      [68,67,66,65,64,64,63,63,63,62,62,62],
+      tiktok:  [70,70,71,71,70,71,72,71,71,71,71,71],
+      youtube: [57,56,56,55,55,55,55,55,55,55,55,55],
+      fb:      [46,45,44,43,42,41,41,40,39,39,38,38],
+      blog:    [36,35,35,34,34,34,33,33,33,32,32,32]
+    }
+  },
+
+  p2: {
+    monthly_total_deals: [5,6,8,10,8,7,5,8,7,8,7,10],
+    monthly_revenue:     [152500,186000,256000,345000,264000,234500,135000,272000,210000,252000,217000,318000],
+    monthly_deals_by_type: {
+      event:       [0,0,1,1,1,0,0,1,1,0,1,1],
+      endorsement: [1,1,1,2,2,1,1,2,1,2,1,2],
+      post:        [3,3,4,5,3,4,3,4,4,4,4,5],
+      video:       [1,2,2,2,2,2,1,1,1,2,1,2]
+    },
+    current: {
+      revenue_by_type: { event:45000, endorsement:98000, post:95000, video:80000 },
+      deals_by_type:   { event:1,     endorsement:2,     post:5,     video:2     },
+      revenue_by_subcat: { accommodation:82000, aviation:74000, accessories:56000, insurance:68000, experience:38000 },
+      deals_by_subcat:   { accommodation:3,     aviation:2,     accessories:2,     insurance:1,     experience:2    },
+      engagement_by_subcat: { accommodation:4.2, aviation:5.1, accessories:6.8, insurance:2.1, experience:7.3 },
+      brand_concentration: {
+        brands: ['長榮航空','安達保險','晶華酒店','Samsonite','承億文旅'],
+        revenues: [74000, 68000, 52000, 38000, 30000],
+        others: 56000
+      }
+    },
+    funnel: {
+      labels: ['洽詢','報價','簽約','交件','回款'],
+      counts: [228, 147, 89, 84, 79]
+    }
+  },
+
+  p3: {
+    monthly_organic_impressions: {
+      ig:      [820,800,785,770,755,740,730,720,715,710,705,700],
+      tiktok:  [480,510,530,545,560,575,585,590,600,608,612,618],
+      youtube: [280,275,272,268,265,262,260,258,255,252,250,248],
+      fb:      [145,140,135,132,128,125,122,120,118,115,112,110],
+      blog:    [178,184,190,196,204,210,216,220,228,236,244,252]
+    },
+    ig_organic_reach_rate: [52,50,48,47,45,44,42,41,39,38,36,35],
+    tiktok_organic_reach_rate: [145,148,152,155,160,165,168,170,174,176,178,180],
+    current: {
+      organic: { impressions:1928000, reach:1356000, engagements:127800, profile_visits:38200, conversions:4380, engagement_rate:9.4 },
+      paid:    { impressions:1245000, reach:823000,  engagements:41200,  profile_visits:22100, conversions:2180, engagement_rate:5.0, spend:28500 },
+      cpm_by_platform: { tiktok:45, fb:58, ig:78, youtube:112 }
+    }
+  },
+
+  p4: {
+    platforms: ['Instagram','TikTok','YouTube','Facebook','Blog'],
+    engagement_rate:      [3.8, 8.2, 4.1, 1.2, 6.8],
+    engagement_benchmark: [2.5, 6.0, 3.0, 1.5, 4.0],
+    active_rate_30d: [62, 71, 55, 38, 32],
+    active_rate_90d: [78, 85, 72, 52, 48],
+    comment_depth_index: [52, 35, 78, 29, 91],
+    share_rate: [1.8, 6.2, 2.1, 0.8, 3.4],
+    radar: {
+      labels: ['互動率','活躍率','評論深度','分享率','存儲率'],
+      ig:      [46, 87, 57, 29, 100],
+      tiktok:  [100,100, 38,100,  90],
+      youtube: [50,  77, 86, 34,   0],
+      fb:      [15,  54, 32, 13,  10],
+      blog:    [83,  45,100, 55,   0]
+    }
+  }
+};
+
+/* ════ assertConsistency — 10 項自檢 ════ */
+function assertConsistency() {
+  const A = DATA.anchors;
+  const sum = arr => arr.reduce((a,b) => a+b, 0);
+  const errors = [];
+
+  // ① 五平台追蹤合計 = total_followers
+  const fSum = A.ig + A.tiktok + A.youtube + A.fb + A.blog;
+  if (fSum !== A.total_followers) errors.push(`Followers ${fSum} ≠ ${A.total_followers}`);
+
+  // ② 本月各類型收入合計 = monthly_revenue
+  const rType = sum(Object.values(DATA.p2.current.revenue_by_type));
+  if (rType !== A.monthly_revenue) errors.push(`Rev by type ${rType} ≠ ${A.monthly_revenue}`);
+
+  // ③ 本月各子品類收入合計 = monthly_revenue
+  const rSub = sum(Object.values(DATA.p2.current.revenue_by_subcat));
+  if (rSub !== A.monthly_revenue) errors.push(`Rev by subcat ${rSub} ≠ ${A.monthly_revenue}`);
+
+  // ④ 本月各類型件數合計 = monthly_deals
+  const dType = sum(Object.values(DATA.p2.current.deals_by_type));
+  if (dType !== A.monthly_deals) errors.push(`Deals by type ${dType} ≠ ${A.monthly_deals}`);
+
+  // ⑤ 本月各子品類件數合計 = monthly_deals
+  const dSub = sum(Object.values(DATA.p2.current.deals_by_subcat));
+  if (dSub !== A.monthly_deals) errors.push(`Deals by subcat ${dSub} ≠ ${A.monthly_deals}`);
+
+  // ⑥ 品牌收入集中度合計 = monthly_revenue
+  const bSum = sum(DATA.p2.current.brand_concentration.revenues) + DATA.p2.current.brand_concentration.others;
+  if (bSum !== A.monthly_revenue) errors.push(`Brand rev ${bSum} ≠ ${A.monthly_revenue}`);
+
+  // ⑦ 12 個月合作總件數 = annual_deals
+  const annDeal = sum(DATA.p2.monthly_total_deals);
+  if (annDeal !== A.annual_deals) errors.push(`Annual deals ${annDeal} ≠ ${A.annual_deals}`);
+
+  // ⑧ 12 個月合作總收入 = annual_revenue
+  const annRev = sum(DATA.p2.monthly_revenue);
+  if (annRev !== A.annual_revenue) errors.push(`Annual rev ${annRev} ≠ ${A.annual_revenue}`);
+
+  // ⑨ 平均每案收入 = monthly_revenue / monthly_deals
+  if (A.avg_revenue_per_deal !== A.monthly_revenue / A.monthly_deals)
+    errors.push(`Avg deal ${A.avg_revenue_per_deal} ≠ ${A.monthly_revenue / A.monthly_deals}`);
+
+  // ⑩ 自然 + 廣告觸及合計 = total_reach
+  if (A.organic_reach + A.paid_reach !== A.total_reach)
+    errors.push(`Reach ${A.organic_reach + A.paid_reach} ≠ ${A.total_reach}`);
+
+  if (errors.length) { console.error('⚠ Consistency errors:', errors); }
+  else { console.log('✓ All data consistency checks passed'); }
+  return errors.length === 0;
+}
+assertConsistency();
+
+/* ════ Utility Functions ════ */
+
+// Platform colors
+const PC = {
+  ig:      (a=1) => `rgba(225,48,108,${a})`,
+  tiktok:  (a=1) => `rgba(0,185,201,${a})`,
+  youtube: (a=1) => `rgba(220,38,38,${a})`,
+  fb:      (a=1) => `rgba(24,119,242,${a})`,
+  blog:    (a=1) => `rgba(22,163,74,${a})`
+};
+
+// Semantic color function
+function c(key, a=1) {
+  const m = {
+    blue:   `rgba(124,58,237,${a})`,
+    teal:   `rgba(5,150,105,${a})`,
+    orange: `rgba(217,119,6,${a})`,
+    purple: `rgba(147,51,234,${a})`,
+    red:    `rgba(220,38,38,${a})`,
+    gray:   `rgba(107,114,128,${a})`
+  };
+  return m[key];
+}
+
+// Shared tooltip style
+const TT = {
+  plugins: {
+    tooltip: {
+      backgroundColor: 'rgba(30,27,75,0.92)',
+      titleColor: '#fff',
+      bodyColor: 'rgba(255,255,255,0.85)',
+      padding: 10,
+      cornerRadius: 8,
+      titleFont: { family: "'Plus Jakarta Sans', sans-serif", weight: '700', size: 12 },
+      bodyFont: { family: "'Plus Jakarta Sans', sans-serif", size: 12 }
+    },
+    datalabels: { display: false }
+  }
+};
+
+// Chart factory
+function mk(id, type, labels, datasets, opts={}) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return null;
+  return new Chart(ctx, {
+    type,
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { top: 18 } },
+      ...TT,
+      ...opts,
+      plugins: { ...TT.plugins, ...(opts.plugins || {}) }
+    }
+  });
+}
+
+// Format helpers
+const fmt = {
+  n:  n => n >= 10000 ? (n/10000).toFixed(1)+'萬' : n.toLocaleString(),
+  pct: n => n.toFixed(1)+'%',
+  nt:  n => 'NT$'+(n/10000).toFixed(1)+'萬'
+};
+
+/* ════ Page switching ════ */
+const initialized = { p1: false, p2: false, p3: false, p4: false };
+
+function switchPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  const btns = { p1:0, p2:1, p3:2, p4:3 };
+  document.querySelectorAll('.nav-btn')[btns[name]].classList.add('active');
+  if (!initialized[name]) {
+    initialized[name] = true;
+    if (name==='p1') drawP1();
+    if (name==='p2') drawP2();
+    if (name==='p3') drawP3();
+    if (name==='p4') drawP4();
+  }
+}
+
+/* ════ Def panel ════ */
+function toggleDef() {
+  const outer = document.getElementById('def-panel-outer');
+  const btn = document.getElementById('defToggleBtn');
+  const open = outer.classList.toggle('open');
+  btn.classList.toggle('open', open);
+  if (!open) {
+    document.getElementById('defSearch').value = '';
+    filterDef('');
+    setTimeout(() => {
+      Object.values(Chart.instances).forEach(ch => ch.resize());
+    }, 320);
+  }
+}
+
+function filterDef(q) {
+  const items = document.querySelectorAll('.def-item');
+  const kw = q.toLowerCase();
+  let visible = 0;
+  items.forEach(item => {
+    const match = item.textContent.toLowerCase().includes(kw);
+    item.style.display = match ? '' : 'none';
+    if (match) visible++;
+  });
+  document.getElementById('defNoResult').style.display = (visible === 0 && q) ? '' : 'none';
+}
+
+/* ════ Q&A toggle ════ */
+function toggleQA(el) {
+  const item = el.closest('.qa-item');
+  item.classList.toggle('open');
+}
+
+function goToChart(page, chartId) {
+  switchPage(page);
+  setTimeout(() => {
+    const el = document.getElementById(chartId);
+    if (el) { el.closest('.chart-group')?.classList.add('flash-target'); el.scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(()=>el.closest('.chart-group')?.classList.remove('flash-target'),2800); }
+  }, 100);
+}
+
+/* ════ Header height sync ════ */
+function syncHeaderHeight() {
+  const h = document.getElementById('top-header')?.offsetHeight || 140;
+  document.documentElement.style.setProperty('--header-h', h+'px');
+}
+
+/* ════ Draw stubs (filled in Layer 2-4) ════ */
+function drawP1() {
+  const M = DATA.months;
+  const p1 = DATA.p1;
+
+  // chart-p1-trend: 5-platform follower trend (multi-line)
+  mk('chart-p1-trend', 'line', M, [
+    { label:'Instagram',  data: p1.followers.ig.map(v=>+(v/1000).toFixed(1)),      borderColor: PC.ig(),      backgroundColor: PC.ig(0.08),      tension:0.35, pointRadius:2, fill:false },
+    { label:'TikTok',     data: p1.followers.tiktok.map(v=>+(v/1000).toFixed(1)),  borderColor: PC.tiktok(),  backgroundColor: PC.tiktok(0.08),  tension:0.35, pointRadius:2, fill:false },
+    { label:'YouTube',    data: p1.followers.youtube.map(v=>+(v/1000).toFixed(1)), borderColor: PC.youtube(), backgroundColor: PC.youtube(0.08), tension:0.35, pointRadius:2, fill:false },
+    { label:'Facebook',   data: p1.followers.fb.map(v=>+(v/1000).toFixed(1)),      borderColor: PC.fb(),      backgroundColor: PC.fb(0.08),      tension:0.35, pointRadius:2, fill:false, borderDash:[5,4] },
+    { label:'Blog',       data: p1.followers.blog.map(v=>+(v/1000).toFixed(1)),    borderColor: PC.blog(),    backgroundColor: PC.blog(0.08),    tension:0.35, pointRadius:2, fill:false }
+  ], {
+    plugins: { legend: { position:'bottom', labels:{ boxWidth:12, padding:16 } } },
+    scales: {
+      x: { ticks:{ maxRotation:30, font:{size:11} }, grid:{ color:'rgba(0,0,0,0.05)' } },
+      y: { ticks:{ callback: v=>`${v}K` }, title:{ display:true, text:'千人', font:{size:11} }, grid:{ color:'rgba(0,0,0,0.06)' } }
+    }
+  });
+
+  // chart-p1-growth: grouped bar, MoM delta (Aug-Jun, 11 months)
+  const growthMonths = M.slice(1);
+  const growthData = plat => p1.followers[plat].slice(1).map((v,i)=>v - p1.followers[plat][i]);
+  mk('chart-p1-growth', 'bar', growthMonths, [
+    { label:'Instagram',  data: growthData('ig'),      backgroundColor: PC.ig(0.7),      borderRadius:3 },
+    { label:'TikTok',     data: growthData('tiktok'),  backgroundColor: PC.tiktok(0.7),  borderRadius:3 },
+    { label:'YouTube',    data: growthData('youtube'), backgroundColor: PC.youtube(0.7), borderRadius:3 },
+    { label:'Facebook',   data: growthData('fb'),      backgroundColor: PC.fb(0.7),      borderRadius:3 },
+    { label:'Blog',       data: growthData('blog'),    backgroundColor: PC.blog(0.7),    borderRadius:3 }
+  ], {
+    plugins: {
+      legend: { position:'bottom', labels:{ boxWidth:12, padding:14 } },
+      annotation: { annotations: {
+        zeroLine: { type:'line', yMin:0, yMax:0, borderColor:'rgba(0,0,0,0.25)', borderWidth:1 }
+      }}
+    },
+    scales: {
+      x: { ticks:{ maxRotation:30, font:{size:11} }, grid:{ display:false } },
+      y: { ticks:{ callback: v=> v>=0 ? `+${v}` : `${v}` }, grid:{ color:'rgba(0,0,0,0.06)' },
+           title:{ display:true, text:'月增人數', font:{size:11} } }
+    }
+  });
+
+  // chart-p1-active: active rate multi-line
+  mk('chart-p1-active', 'line', M, [
+    { label:'Instagram',  data: p1.active_rate.ig,      borderColor: PC.ig(),      tension:0.35, pointRadius:2, fill:false },
+    { label:'TikTok',     data: p1.active_rate.tiktok,  borderColor: PC.tiktok(),  tension:0.35, pointRadius:2, fill:false },
+    { label:'YouTube',    data: p1.active_rate.youtube, borderColor: PC.youtube(), tension:0.35, pointRadius:2, fill:false },
+    { label:'Facebook',   data: p1.active_rate.fb,      borderColor: PC.fb(),      tension:0.35, pointRadius:2, fill:false, borderDash:[5,4] },
+    { label:'Blog',       data: p1.active_rate.blog,    borderColor: PC.blog(),    tension:0.35, pointRadius:2, fill:false }
+  ], {
+    plugins: { legend: { position:'bottom', labels:{ boxWidth:12, padding:16 } } },
+    scales: {
+      x: { ticks:{ maxRotation:30, font:{size:11} }, grid:{ color:'rgba(0,0,0,0.05)' } },
+      y: { min:25, max:80, ticks:{ callback: v=>`${v}%` },
+           title:{ display:true, text:'活躍率 %', font:{size:11} }, grid:{ color:'rgba(0,0,0,0.06)' } }
+    }
+  });
+
+  // chart-p1-dist: horizontal bar, current snapshot
+  const platLabels = ['Instagram','TikTok','YouTube','Facebook','Blog'];
+  const platVals   = [DATA.anchors.ig, DATA.anchors.tiktok, DATA.anchors.youtube, DATA.anchors.fb, DATA.anchors.blog].map(v=>+(v/1000).toFixed(1));
+  const platColors = [PC.ig(0.75), PC.tiktok(0.75), PC.youtube(0.75), PC.fb(0.75), PC.blog(0.75)];
+  mk('chart-p1-dist', 'bar', platLabels, [
+    { label:'追蹤人數 (千)', data: platVals, backgroundColor: platColors, borderRadius:5 }
+  ], {
+    indexAxis: 'y',
+    plugins: {
+      legend: { display: false },
+      datalabels: {
+        anchor:'end', align:'end', color:'#1E1B4B', font:{ size:12, weight:'600' },
+        formatter: v => `${v}K`
+      }
+    },
+    scales: {
+      x: { ticks:{ callback: v=>`${v}K` }, grid:{ color:'rgba(0,0,0,0.06)' } },
+      y: { grid:{ display:false } }
+    },
+    layout: { padding:{ right:20 } }
+  });
+}
+function drawP2() {
+  const M = DATA.months;
+  const p2 = DATA.p2;
+  const cur = p2.current;
+
+  // chart-p2-monthly: stacked bar, deals by type (12 months)
+  mk('chart-p2-monthly', 'bar', M, [
+    { label:'實體活動',  data: p2.monthly_deals_by_type.event,       backgroundColor: c('orange',0.75), borderRadius:2, stack:'s' },
+    { label:'代言廣告',  data: p2.monthly_deals_by_type.endorsement, backgroundColor: c('blue',0.75),   borderRadius:2, stack:'s' },
+    { label:'貼文合作',  data: p2.monthly_deals_by_type.post,        backgroundColor: c('teal',0.75),   borderRadius:2, stack:'s' },
+    { label:'影片拍攝',  data: p2.monthly_deals_by_type.video,       backgroundColor: c('purple',0.75), borderRadius:2, stack:'s' }
+  ], {
+    plugins: { legend: { position:'bottom', labels:{ boxWidth:12, padding:14 } } },
+    scales: {
+      x: { ticks:{ maxRotation:30, font:{size:11} }, grid:{ display:false } },
+      y: { ticks:{ stepSize:2 }, title:{ display:true, text:'件數', font:{size:11} }, grid:{ color:'rgba(0,0,0,0.06)' } }
+    }
+  });
+
+  // chart-p2-donut: current month revenue by type (doughnut)
+  const donutLabels = ['代言廣告','貼文合作','影片拍攝','實體活動'];
+  const donutVals   = [cur.revenue_by_type.endorsement, cur.revenue_by_type.post, cur.revenue_by_type.video, cur.revenue_by_type.event];
+  const donutColors = [c('blue',0.82), c('teal',0.82), c('purple',0.82), c('orange',0.82)];
+  const donutTotal  = donutVals.reduce((a,b)=>a+b,0);
+  const centerPlugin = {
+    id:'centerLabel',
+    afterDraw(chart){
+      const {ctx,chartArea:{top,left,width,height}} = chart;
+      ctx.save();
+      ctx.font = 'bold 15px Plus Jakarta Sans, sans-serif';
+      ctx.fillStyle = '#1E1B4B';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('NT$' + (donutTotal/1000).toFixed(0) + 'K', left+width/2, top+height/2-8);
+      ctx.font = '11px Plus Jakarta Sans, sans-serif';
+      ctx.fillStyle = '#6B7280';
+      ctx.fillText('本月收入', left+width/2, top+height/2+12);
+      ctx.restore();
+    }
+  };
+  if(window._charts && window._charts['chart-p2-donut']) { window._charts['chart-p2-donut'].destroy(); }
+  const donutCtx = document.getElementById('chart-p2-donut');
+  if(donutCtx){
+    const ch = new Chart(donutCtx, {
+      type:'doughnut',
+      data:{ labels:donutLabels, datasets:[{ data:donutVals, backgroundColor:donutColors, borderWidth:2, borderColor:'#fff', hoverOffset:6 }] },
+      options:{
+        cutout:'62%',
+        plugins:{
+          legend:{ position:'bottom', labels:{ boxWidth:12, padding:12, font:{size:11} } },
+          tooltip:{ callbacks:{ label: ctx=>`NT$${ctx.parsed.toLocaleString()} (${(ctx.parsed/donutTotal*100).toFixed(1)}%)` } },
+          datalabels:{ display:false }
+        }
+      },
+      plugins:[centerPlugin]
+    });
+    if(!window._charts) window._charts = {};
+    window._charts['chart-p2-donut'] = ch;
+  }
+
+  // chart-p2-scatter: bubble chart — subcat engagement rate vs revenue per deal
+  const subcats = ['住宿','航空','旅遊配件','保險','體驗'];
+  const engRates  = [cur.engagement_by_subcat.accommodation, cur.engagement_by_subcat.aviation, cur.engagement_by_subcat.accessories, cur.engagement_by_subcat.insurance, cur.engagement_by_subcat.experience];
+  const revenues  = [cur.revenue_by_subcat.accommodation/cur.deals_by_subcat.accommodation,
+                     cur.revenue_by_subcat.aviation/cur.deals_by_subcat.aviation,
+                     cur.revenue_by_subcat.accessories/cur.deals_by_subcat.accessories,
+                     cur.revenue_by_subcat.insurance/cur.deals_by_subcat.insurance,
+                     cur.revenue_by_subcat.experience/cur.deals_by_subcat.experience];
+  const dealCnts  = [cur.deals_by_subcat.accommodation, cur.deals_by_subcat.aviation, cur.deals_by_subcat.accessories, cur.deals_by_subcat.insurance, cur.deals_by_subcat.experience];
+  const scatterColors = [c('blue',0.7), PC.youtube(0.7), c('teal',0.7), c('orange',0.7), c('purple',0.7)];
+  const bubbleData = subcats.map((lbl,i)=>({ label:lbl, data:[{ x:engRates[i], y:revenues[i]/1000, r: dealCnts[i]*8 }], backgroundColor: scatterColors[i] }));
+  if(window._charts && window._charts['chart-p2-scatter']) { window._charts['chart-p2-scatter'].destroy(); }
+  const scCtx = document.getElementById('chart-p2-scatter');
+  if(scCtx){
+    const midX = engRates.reduce((a,b)=>a+b,0)/engRates.length;
+    const midY = revenues.reduce((a,b)=>a+b,0)/revenues.length/1000;
+    const ch2 = new Chart(scCtx, {
+      type:'bubble',
+      data:{ datasets: bubbleData },
+      options:{
+        plugins:{
+          legend:{ position:'bottom', labels:{ boxWidth:10, padding:10, font:{size:11} } },
+          datalabels:{ display:false },
+          annotation:{ annotations:{
+            hLine:{ type:'line', yMin:midY, yMax:midY, borderColor:'rgba(0,0,0,0.2)', borderDash:[4,3], borderWidth:1 },
+            vLine:{ type:'line', xMin:midX, xMax:midX, borderColor:'rgba(0,0,0,0.2)', borderDash:[4,3], borderWidth:1 }
+          }}
+        },
+        scales:{
+          x:{ title:{ display:true, text:'互動率 (%)' }, ticks:{ callback:v=>`${v}%` }, grid:{ color:'rgba(0,0,0,0.06)' } },
+          y:{ title:{ display:true, text:'每件收入 (K NT$)' }, ticks:{ callback:v=>`${v}K` }, grid:{ color:'rgba(0,0,0,0.06)' } }
+        }
+      }
+    });
+    if(!window._charts) window._charts = {};
+    window._charts['chart-p2-scatter'] = ch2;
+  }
+
+  // chart-p2-brands: horizontal bar, brand concentration
+  const bc = cur.brand_concentration;
+  const brandLabels = [...bc.brands, 'Others'];
+  const brandVals   = [...bc.revenues, bc.others].map(v=>+(v/1000).toFixed(1));
+  const brandColors = [c('blue',0.8), c('orange',0.8), c('teal',0.8), c('purple',0.8), PC.youtube(0.8), 'rgba(107,114,128,0.7)'];
+  mk('chart-p2-brands', 'bar', brandLabels, [
+    { label:'收入 (NT$K)', data: brandVals, backgroundColor: brandColors, borderRadius:4 }
+  ], {
+    indexAxis:'y',
+    plugins:{
+      legend:{ display:false },
+      datalabels:{ anchor:'end', align:'end', color:'#1E1B4B', font:{ size:11, weight:'600' }, formatter: v=>`$${v}K` }
+    },
+    scales:{
+      x:{ ticks:{ callback:v=>`$${v}K` }, grid:{ color:'rgba(0,0,0,0.06)' } },
+      y:{ grid:{ display:false } }
+    },
+    layout:{ padding:{ right:16 } }
+  });
+}
+function drawP3() {
+  const M = DATA.months;
+  const p3 = DATA.p3;
+
+  // chart-p3-impressions: multi-line organic impressions by platform (千次)
+  mk('chart-p3-impressions', 'line', M, [
+    { label:'Instagram',  data: p3.monthly_organic_impressions.ig,      borderColor: PC.ig(),      tension:0.35, pointRadius:2, fill:false },
+    { label:'TikTok',     data: p3.monthly_organic_impressions.tiktok,  borderColor: PC.tiktok(),  tension:0.35, pointRadius:2, fill:false },
+    { label:'YouTube',    data: p3.monthly_organic_impressions.youtube, borderColor: PC.youtube(), tension:0.35, pointRadius:2, fill:false },
+    { label:'Facebook',   data: p3.monthly_organic_impressions.fb,      borderColor: PC.fb(),      tension:0.35, pointRadius:2, fill:false, borderDash:[5,4] },
+    { label:'Blog',       data: p3.monthly_organic_impressions.blog,    borderColor: PC.blog(),    tension:0.35, pointRadius:2, fill:false }
+  ], {
+    plugins: { legend: { position:'bottom', labels:{ boxWidth:12, padding:14 } } },
+    scales: {
+      x: { ticks:{ maxRotation:30, font:{size:11} }, grid:{ color:'rgba(0,0,0,0.05)' } },
+      y: { ticks:{ callback:v=>`${v}K` }, title:{ display:true, text:'千次', font:{size:11} }, grid:{ color:'rgba(0,0,0,0.06)' } }
+    }
+  });
+
+  // chart-p3-decay: dual-line IG vs TikTok organic reach rate
+  mk('chart-p3-decay', 'line', M, [
+    { label:'IG 有機觸及率',      data: p3.ig_organic_reach_rate,     borderColor: PC.ig(),     tension:0.35, pointRadius:3, fill:false },
+    { label:'TikTok 有機觸及率',  data: p3.tiktok_organic_reach_rate, borderColor: PC.tiktok(), tension:0.35, pointRadius:3, fill:false, borderDash:[6,3] }
+  ], {
+    plugins: { legend: { position:'bottom', labels:{ boxWidth:12, padding:14 } } },
+    scales: {
+      x: { ticks:{ maxRotation:30, font:{size:11} }, grid:{ color:'rgba(0,0,0,0.05)' } },
+      y: { ticks:{ callback:v=>`${v}%` }, title:{ display:true, text:'觸及率 %', font:{size:11} }, grid:{ color:'rgba(0,0,0,0.06)' } }
+    }
+  });
+
+  // chart-p3-cpm: horizontal bar, CPM by platform
+  const cpmLabels = ['TikTok','Facebook','Instagram','YouTube'];
+  const cpmVals   = [p3.current.cpm_by_platform.tiktok, p3.current.cpm_by_platform.fb, p3.current.cpm_by_platform.ig, p3.current.cpm_by_platform.youtube];
+  const cpmColors = [PC.tiktok(0.75), PC.fb(0.75), PC.ig(0.75), PC.youtube(0.75)];
+  mk('chart-p3-cpm', 'bar', cpmLabels, [
+    { label:'CPM (NT$)', data: cpmVals, backgroundColor: cpmColors, borderRadius:5 }
+  ], {
+    indexAxis:'y',
+    plugins:{
+      legend:{ display:false },
+      datalabels:{ anchor:'end', align:'end', color:'#1E1B4B', font:{ size:12, weight:'700' }, formatter: v=>`$${v}` }
+    },
+    scales:{
+      x:{ ticks:{ callback:v=>`$${v}` }, grid:{ color:'rgba(0,0,0,0.06)' } },
+      y:{ grid:{ display:false } }
+    },
+    layout:{ padding:{ right:16 } }
+  });
+}
+function drawP4() {
+  const p4 = DATA.p4;
+  const platLabels = p4.platforms;
+
+  // chart-p4-radar: 5-platform, 5-dimension radar
+  if(window._charts && window._charts['chart-p4-radar']) window._charts['chart-p4-radar'].destroy();
+  const radarCtx = document.getElementById('chart-p4-radar');
+  if(radarCtx){
+    const ch = new Chart(radarCtx, {
+      type:'radar',
+      data:{
+        labels: p4.radar.labels,
+        datasets:[
+          { label:'Instagram', data:p4.radar.ig,      borderColor:PC.ig(),       backgroundColor:PC.ig(0.08),       pointBackgroundColor:PC.ig(),       borderWidth:2, pointRadius:3 },
+          { label:'TikTok',    data:p4.radar.tiktok,  borderColor:PC.tiktok(),   backgroundColor:PC.tiktok(0.08),   pointBackgroundColor:PC.tiktok(),   borderWidth:2, pointRadius:3 },
+          { label:'YouTube',   data:p4.radar.youtube, borderColor:PC.youtube(),  backgroundColor:PC.youtube(0.06),  pointBackgroundColor:PC.youtube(),  borderWidth:2, pointRadius:3 },
+          { label:'Facebook',  data:p4.radar.fb,      borderColor:PC.fb(),       backgroundColor:PC.fb(0.06),       pointBackgroundColor:PC.fb(),       borderWidth:2, pointRadius:3, borderDash:[4,3] },
+          { label:'Blog',      data:p4.radar.blog,    borderColor:PC.blog(),     backgroundColor:PC.blog(0.06),     pointBackgroundColor:PC.blog(),     borderWidth:2, pointRadius:3 }
+        ]
+      },
+      options:{
+        plugins:{
+          legend:{ position:'bottom', labels:{ boxWidth:12, padding:12, font:{size:11} } },
+          datalabels:{ display:false }
+        },
+        scales:{
+          r:{
+            min:0, max:100, ticks:{ display:false, stepSize:20 },
+            grid:{ color:'rgba(0,0,0,0.1)' },
+            angleLines:{ color:'rgba(0,0,0,0.1)' },
+            pointLabels:{ font:{ size:12, weight:'600' }, color:'#1E1B4B' }
+          }
+        }
+      }
+    });
+    if(!window._charts) window._charts = {};
+    window._charts['chart-p4-radar'] = ch;
+  }
+
+  // chart-p4-engagement: grouped bar + benchmark line annotation
+  mk('chart-p4-engagement', 'bar', platLabels, [
+    { label:'Jessica W. 互動率', data: p4.engagement_rate, backgroundColor:[PC.ig(0.75),PC.tiktok(0.75),PC.youtube(0.75),PC.fb(0.75),PC.blog(0.75)], borderRadius:5 },
+    { label:'業界基準',           data: p4.engagement_benchmark, backgroundColor:'rgba(107,114,128,0.25)', borderRadius:5, borderDash:[4,3] }
+  ], {
+    plugins: { legend:{ position:'bottom', labels:{ boxWidth:12, padding:14 } } },
+    scales:{
+      x: { grid:{ display:false } },
+      y: { ticks:{ callback:v=>`${v}%` }, title:{ display:true, text:'互動率 %', font:{size:11} }, grid:{ color:'rgba(0,0,0,0.06)' } }
+    }
+  });
+
+  // chart-p4-scatter: bubble scatter — followers vs engagement rate
+  const followerVals = [DATA.anchors.ig, DATA.anchors.tiktok, DATA.anchors.youtube, DATA.anchors.fb, DATA.anchors.blog];
+  const scColors = [PC.ig(0.75), PC.tiktok(0.75), PC.youtube(0.75), PC.fb(0.75), PC.blog(0.75)];
+  const scData = platLabels.map((lbl,i)=>({ label:lbl, data:[{ x:followerVals[i]/1000, y:p4.engagement_rate[i], r:10 }], backgroundColor:scColors[i] }));
+  if(window._charts && window._charts['chart-p4-scatter']) window._charts['chart-p4-scatter'].destroy();
+  const scCtx = document.getElementById('chart-p4-scatter');
+  if(scCtx){
+    const ch2 = new Chart(scCtx, {
+      type:'bubble',
+      data:{ datasets: scData },
+      options:{
+        plugins:{
+          legend:{ position:'bottom', labels:{ boxWidth:10, padding:10, font:{size:11} } },
+          datalabels:{ display:false }
+        },
+        scales:{
+          x:{ title:{ display:true, text:'追蹤人數 (K)' }, ticks:{ callback:v=>`${v}K` }, grid:{ color:'rgba(0,0,0,0.06)' } },
+          y:{ title:{ display:true, text:'互動率 (%)' }, ticks:{ callback:v=>`${v}%` }, grid:{ color:'rgba(0,0,0,0.06)' } }
+        }
+      }
+    });
+    if(!window._charts) window._charts = {};
+    window._charts['chart-p4-scatter'] = ch2;
+  }
+
+  // chart-p4-active: grouped bar 30d vs 90d active rate
+  mk('chart-p4-active', 'bar', platLabels, [
+    { label:'30日活躍率', data:p4.active_rate_30d, backgroundColor:[PC.ig(0.75),PC.tiktok(0.75),PC.youtube(0.75),PC.fb(0.75),PC.blog(0.75)], borderRadius:5 },
+    { label:'90日活躍率', data:p4.active_rate_90d, backgroundColor:[PC.ig(0.3), PC.tiktok(0.3), PC.youtube(0.3), PC.fb(0.3), PC.blog(0.3)], borderRadius:5 }
+  ], {
+    plugins: { legend:{ position:'bottom', labels:{ boxWidth:12, padding:14 } } },
+    scales:{
+      x: { grid:{ display:false } },
+      y: { min:0, max:100, ticks:{ callback:v=>`${v}%` }, grid:{ color:'rgba(0,0,0,0.06)' } }
+    }
+  });
+
+  // chart-p4-depth: horizontal bar, comment depth index
+  mk('chart-p4-depth', 'bar', platLabels, [
+    { label:'評論深度指數', data:p4.comment_depth_index, backgroundColor:[PC.ig(0.75),PC.tiktok(0.75),PC.youtube(0.75),PC.fb(0.75),PC.blog(0.75)], borderRadius:5 }
+  ], {
+    indexAxis:'y',
+    plugins:{
+      legend:{ display:false },
+      datalabels:{ anchor:'end', align:'end', color:'#1E1B4B', font:{ size:12, weight:'600' }, formatter:v=>`${v}` }
+    },
+    scales:{
+      x:{ min:0, max:110, grid:{ color:'rgba(0,0,0,0.06)' } },
+      y:{ grid:{ display:false } }
+    },
+    layout:{ padding:{ right:16 } }
+  });
+}
+
+/* ════ Init ════ */
+syncHeaderHeight();
+window.addEventListener('resize', syncHeaderHeight);
+switchPage('p1');
+</script>
+</body>
+</html>
