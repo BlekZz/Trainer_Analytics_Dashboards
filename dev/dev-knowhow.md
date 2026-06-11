@@ -185,19 +185,33 @@ assertConsistency 新增 Check 11，驗證每個門市的推算值與 store_reve
 
 以下三個問題在 Chart.js 4.x 中均**不報錯、只是圖表靜默不顯示**，極難診斷。
 
-### 14-A：`Chart.register(ChartDataLabels)` 必須存在
+### 14-A：`Chart.register(ChartDataLabels)` 必須存在，且順序不可錯
 
-**問題：** Chart.js v4 移除全域 plugin 自動掛載。若未呼叫 `Chart.register(ChartDataLabels)`，所有 `datalabels: { display: true }` 均為死碼——不報錯，數值就是不出現。
+**問題：** `chartjs-plugin-datalabels@2.x` 的 UMD/CDN bundle **不會自動 register**（不同於 chartjs-plugin-annotation 會自動掛載）。若未呼叫 `Chart.register(ChartDataLabels)`，所有 `datalabels: { display: true }` 均為死碼——不報錯，數值就是不出現。
 
-**解法：** 在 script 最末（assertConsistency 之後）立即呼叫：
+**失敗連鎖（本專案 SaaS 儀表板的真實踩坑）：**
+1. 忘記加 `Chart.register(ChartDataLabels)` → plugin 載入但不生效 → 所有 datalabels 靜默消失
+2. 試圖加 `Chart.defaults.plugins.datalabels.display = false` 修補全域預設
+3. 但 plugin 尚未 register → `Chart.defaults.plugins.datalabels` 是 `undefined`
+4. `undefined.display = false` 拋 `TypeError` → **整個 inline script 中斷 → 所有 chart 消失**
+
+**正確寫法（順序不可交換）：**
+
 ```javascript
+// 1. 先 register，才能存取 Chart.defaults.plugins.datalabels
 Chart.register(ChartDataLabels);
-if (typeof window['chartjs-plugin-annotation'] !== 'undefined') {
-  Chart.register(window['chartjs-plugin-annotation']);
-}
+if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
+
+// 2. register 完成後才安全設定全域預設
+Chart.defaults.plugins.datalabels.display = false; // 全域關閉，mk() 按需 opt-in
+
+// 3. 接著才定義 BASE_PLG 等變數
+const BASE_PLG = { ... };
 ```
 
-**注意：** 不要緊跟著加 `Chart.defaults.set('plugins.datalabels', { display: false })`（見 14-B）。
+**診斷技巧：** 開 F12 Console，若看到 `TypeError: Cannot set properties of undefined` 出現在 `datalabels` 相關行，確定是 register 順序問題。若 Console 完全乾淨但 label 不顯示，確定是忘記 register。
+
+**annotation plugin 的不同行為：** `chartjs-plugin-annotation@3.x` UMD bundle **會** 自動 register，但仍建議加 `if (window.ChartAnnotation) Chart.register(window.ChartAnnotation)` 防呆（重複 register 不會報錯）。
 
 ---
 
