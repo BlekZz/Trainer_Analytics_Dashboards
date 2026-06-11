@@ -1129,7 +1129,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
             <div class="chart-block">
               <div class="chart-title">受眾質量雷達圖（5 維度，0–100 標準化）</div>
               <div class="chart-subtitle">互動率 / 活躍率 / 評論深度 / 分享率 / 存儲率；打破「追蹤越多越好」的單一評估視角</div>
-              <div class="chart-wrap" style="height:210px"><canvas id="chart-p4-radar"></canvas></div>
+              <div class="chart-wrap" style="height:280px"><canvas id="chart-p4-radar"></canvas></div>
             </div>
             <div class="findings-section">
               <div class="findings-label">📊 Findings</div>
@@ -1580,7 +1580,11 @@ function mk(id, type, labels, datasets, opts={}) {
       formatter: v => (v == null) ? '' : (Math.abs(v) >= 1000 ? (v/1000).toFixed(1)+'K' : (v > 0 ? '+'+v : String(v)))
     };
   }
-  if (opts.plugins?.datalabels) Object.assign(dl, opts.plugins.datalabels);
+  // When explicit datalabels config is provided, default display to true (developer intent);
+  // explicit display:false can still override (e.g. stacked bars). Order: dl → display:true → explicit.
+  if (opts.plugins?.datalabels) {
+    dl = { ...dl, display: true, ...opts.plugins.datalabels };
+  }
 
   // pointHitRadius for line charts — make hover trigger area larger
   if (type === 'line') {

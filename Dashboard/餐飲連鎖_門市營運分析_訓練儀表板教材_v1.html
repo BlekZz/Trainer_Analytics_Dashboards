@@ -1266,7 +1266,7 @@ function mk(id, type, labels, datasets, opts={}) {
       formatter: v => (v == null) ? '' : (Math.abs(v) >= 1000 ? (v/1000).toFixed(0)+'K' : String(v))
     };
   }
-  if (opts.plugins?.datalabels) Object.assign(autoDl, opts.plugins.datalabels);
+  if (opts.plugins?.datalabels) autoDl = { ...autoDl, display: true, ...opts.plugins.datalabels };
   const def = { legend: { display: false }, tooltip: TT };
   const mergedPlugins = { ...def, ...(opts.plugins || {}), datalabels: autoDl };
   const { plugins: _p, layout: _l, ...restOpts } = opts;
