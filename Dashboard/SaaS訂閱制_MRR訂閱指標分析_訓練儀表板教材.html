@@ -1058,6 +1058,11 @@ function c(key, alpha=1) {
   return m[key]||m.blue;
 }
 
+/* ── Plugin registration (datalabels 2.x does NOT auto-register via UMD) ── */
+Chart.register(ChartDataLabels);
+if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
+Chart.defaults.plugins.datalabels.display = false; // off globally; mk() opts in per-chart
+
 /* ── Chart base config ── */
 const BASE_PLG = {
   tooltip:{backgroundColor:'rgba(15,23,42,0.9)',titleColor:'#F8FAFC',bodyColor:'#CBD5E1',borderColor:'rgba(37,99,235,0.2)',borderWidth:1,padding:10,cornerRadius:8},
