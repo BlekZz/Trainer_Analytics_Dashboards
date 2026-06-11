@@ -46,6 +46,9 @@
 - [ ] **29. 所有用到的 `.hNNN` CSS class 必須有定義** — 容器高度 0 = 圖表完全不可見且不報錯；生成 HTML 前確認 `.h240/.h260/.h280/.h300/.h360/.h420/.h480/.h520` 全部在 `:root` 下方定義
 - [ ] **30. 定義側板 sticky 定位結構正確** — `position:sticky; top:var(--header-h); height:calc(100vh - var(--header-h)); align-self:flex-start` 必須加在 `#def-panel-outer`（flex child）上；`#def-panel-inner` 只設 `height:100%; overflow-y:auto`。若 sticky 加在 `overflow:hidden` 的子元素上會靜默失效，導致面板頂部出現錯誤空白
 - [ ] **31. annotation plugin 用正確全域名稱 register** — CDN UMD 全域是 `window.ChartAnnotation`，**不是** `window['chartjs-plugin-annotation']`；確認 script 頂部為：`if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);`
+- [ ] **32. `mk()` datalabels 合併使用 spread pattern，而非 Object.assign** — 確認 `mk()` 中 explicit datalabels 合併寫法為 `dl = { ...dl, display: true, ...opts.plugins.datalabels }`，而非 `Object.assign(dl, opts.plugins.datalabels)`；水平 bar / 堆疊 bar 帶有 explicit datalabels config 時，截圖確認數值出現在 bar 末端（不需 hover）
+- [ ] **33. 所有 `.findings-section` 預設坍縮** — 開啟 dashboard 後所有 Findings 區塊應顯示摺疊狀態（只見標題列 + 箭頭▼），點擊後展開；確認 `DOMContentLoaded` 有 `document.querySelectorAll('.findings-section').forEach(s => s.classList.add('collapsed'))`
+- [ ] **34. `new Chart()` 直接建立的圖表有 `maintainAspectRatio: false` 且容器有明確 height** — 雷達、氣泡、散點等不走 `mk()` 的圖表，options 必須有 `responsive: true, maintainAspectRatio: false`，容器必須有 `style="height:NNNpx"`；截圖目視確認尺寸合理（雷達圖建議 240–320px，視頁面密度決定）
 
 ---
 

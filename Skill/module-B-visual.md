@@ -202,27 +202,47 @@ if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
 
 ### mk() Chart Factory
 
-所有圖表透過此 factory 創建，確保 plugins 深合併、datalabels 預設關閉：
+所有圖表透過此 factory 創建，確保 auto-datalabels、正確合併邏輯、plugins 深合併：
 
 ```javascript
 function mk(id, type, labels, datasets, opts={}) {
-  const ctx = document.getElementById(id)?.getContext('2d');
-  if (!ctx) return;
-  const def = {
-    legend: { display: false },
-    tooltip: TT,
-    datalabels: { display: false }   // 預設關閉，每張圖需顯示時才在 opts.plugins 覆蓋
-  };
-  const mergedPlugins = opts.plugins ? { ...def, ...opts.plugins } : def;
-  const { plugins: _p, ...restOpts } = opts;
+  const ctx = document.getElementById(id);
+  if (!ctx) return null;
+  const isHorizBar = opts.indexAxis === 'y';
+  const isStacked  = opts.scales?.x?.stacked || opts.scales?.y?.stacked ||
+                     (datasets[0]?.stack);
+
+  // Auto-datalabels: 垂直非堆疊 bar 自動開啟數值顯示，其他圖表預設關閉
+  let dl = { display: false };
+  if (type === 'bar' && !isHorizBar && !isStacked) {
+    dl = {
+      display: true, anchor: 'end', align: 'top', clip: false,
+      color: 'var(--text-b)',
+      font: { size: 10, weight: '600' },
+      padding: { bottom: 2 },
+      formatter: v => (v == null) ? '' : (Math.abs(v) >= 1000 ? (v/1000).toFixed(1)+'K' : String(v))
+    };
+  }
+
+  // 🔴 Merge rule（2026-06 修正）：必須用 spread，禁止 Object.assign
+  // Object.assign 不新增 display 鍵 → explicit config 沒有 display 時，display:false 維持，labels 靜默不顯示
+  // Spread pattern：explicit config 沒有 display → 預設 true；有 display:false → 仍可覆蓋
+  if (opts.plugins?.datalabels) {
+    dl = { ...dl, display: true, ...opts.plugins.datalabels };
+  }
+
+  const mergedPlugins = { ...TT.plugins, ...(opts.plugins || {}), datalabels: dl };
+  const topPad = (type === 'bar' && !isHorizBar && !isStacked) ? 28 : 18;
+
   return new Chart(ctx, {
     type,
     data: { labels, datasets },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      animation: { duration: 480, easing: 'easeOutQuart' },
-      ...restOpts,
+      layout: { padding: { top: topPad, ...(opts.layout?.padding || {}) } },
+      ...TT,
+      ...opts,
       plugins: mergedPlugins
     }
   });
@@ -230,8 +250,10 @@ function mk(id, type, labels, datasets, opts={}) {
 ```
 
 **規則：**
-- `maintainAspectRatio: false` — 高度由 `.chart-block.hXXX` CSS 控制
-- 需顯示 datalabels 時，在 opts.plugins 中覆蓋：`datalabels: { display: true, anchor: 'end', align: 'end', font: { family: "'JetBrains Mono', monospace", size: 10 }, formatter: v => v.toLocaleString() }`
+- `maintainAspectRatio: false` — 高度由容器 `style="height:NNNpx"` 或 `.hNNN` CSS class 控制
+- **垂直非堆疊 bar 自動顯示數值**，無須在 opts.plugins.datalabels 重複設定（除非要自訂 formatter/顏色）
+- **水平 bar / 堆疊 bar** 需在 opts.plugins 提供 `datalabels: { anchor, align, formatter }`；`display` 可省略（預設 true），**要隱藏才顯式寫 `display: false`**
+- `mk()` 外直接寫的 `new Chart()`（雷達、氣泡、散點）必須手動加 `responsive: true, maintainAspectRatio: false`，且容器必須有明確 `height`，否則尺寸由寬度 × aspect ratio 決定
 - 不要在 mk() 外另寫 `new Chart()`，除非需要 custom plugin（如 donut 中央文字）
 
 ### 圖表資料排序規則（🔴 紅線）
@@ -255,6 +277,35 @@ function mk(id, type, labels, datasets, opts={}) {
 - 摺疊時視覺權重低（border-left 3px 淺色、字 13.5px regular）
 - 展開時加粗 + 主色 border + 綠色 chevron
 - 動畫 transform 旋轉 chevron
+
+### Findings 預設坍縮（🔴 紅線）
+
+`.findings-section` 必須在 `DOMContentLoaded` 時加 `collapsed` class，讓學員先觀察圖表、再看分析結論。若沒做此步驟，一打開頁面就暴露所有結論，訓練效果為零。
+
+```javascript
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.findings-section').forEach(s => s.classList.add('collapsed'));
+  document.querySelectorAll('.findings-label').forEach(label => {
+    label.addEventListener('click', () => toggleFindings(label));
+  });
+});
+
+function toggleFindings(el) {
+  el.closest('.findings-section').classList.toggle('collapsed');
+}
+```
+
+CSS（必備）：
+```css
+.findings-label {
+  cursor: pointer; user-select: none;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.findings-label::after { content: '▲'; font-size: 8px; transition: transform 0.22s; }
+.findings-section.collapsed .findings-label { margin-bottom: 0; }
+.findings-section.collapsed .findings-label::after { transform: rotate(180deg); }
+.findings-section.collapsed > *:not(.findings-label) { display: none; }
+```
 
 ### nav-hint 跳頁（D3）
 - 跨頁推論題的 answer 區內第一行放黃色 `nav-hint` 卡片
@@ -390,3 +441,6 @@ KPI 值禁止截斷（🔴 紅線）：
 9. **🚫 `Chart.register(ChartDataLabels)` 缺失** — datalabels 全靜默失效，Chart.js 不報錯；每次生成後必須在瀏覽器 console 確認數值出現
 10. **🚫 `position:sticky` 加在 `overflow:hidden` 子元素上** — sticky 靜默失效，側板位置錯誤；sticky 必須加在 flex child（`#def-panel-outer`）上，見 B.3 規格
 11. **🚫 annotation plugin 用 `window['chartjs-plugin-annotation']` 判斷** — CDN UMD 全域是 `window.ChartAnnotation`；用錯名稱導致 plugin 未 register，所有 annotation 靜默消失
+12. **🚫 `Object.assign(dl, opts.plugins.datalabels)` 合併 datalabels config** — `Object.assign` 不新增原本沒有的 key；若 explicit config 沒有 `display` 欄位，`dl.display:false` 維持不變，所有 horizontal bar / stacked bar 的 labels 靜默不顯示且不報錯。**正確寫法：** `dl = { ...dl, display: true, ...opts.plugins.datalabels }`（spread 讓 explicit config 覆蓋 `display:true`，沒有 `display` 的 explicit config 自動得到 `display:true`；要隱藏才明確寫 `display: false`）
+13. **🚫 `.findings-section` 缺少預設坍縮** — 一進頁面就暴露所有分析結論，訓練效果為零；必須在 `DOMContentLoaded` 呼叫 `s.classList.add('collapsed')`；見 B.5 完整 Pattern
+14. **🚫 `new Chart()` 直接建立的圖表（雷達、氣泡、散點）未設 `maintainAspectRatio: false`** — Chart.js 預設 `maintainAspectRatio: true`，高度由容器寬度 × aspect ratio 計算，容器的 `height` CSS 完全無效，導致圖表過大或尺寸不受控；此類圖表必須在 options 明確加 `responsive: true, maintainAspectRatio: false` 並搭配容器 `style="height:NNNpx"`
