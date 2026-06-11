@@ -115,8 +115,12 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
 .kpi-value{font-size:26px;font-weight:800;color:var(--text);line-height:1;margin-bottom:8px;letter-spacing:-0.5px;}
 .kpi-value .unit{font-size:13px;font-weight:400;color:var(--text-s);}
 .kpi-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;}
-.kpi-delta{font-size:12px;font-weight:700;font-family:monospace;}
-.kpi-delta.up{color:var(--accent2);}.kpi-delta.down{color:var(--danger);}
+.kpi-delta{font-size:12px;font-weight:600;font-family:'Plus Jakarta Sans',sans-serif;line-height:1.4;margin-bottom:4px;}
+.kpi-delta.up,.kpi-delta.positive{color:var(--accent2);}
+.kpi-delta.down,.kpi-delta.negative{color:var(--danger);}
+.kpi-delta.neutral{color:var(--text-s);}
+.kpi-sub{font-size:11px;color:var(--text-m);line-height:1.4;}
+.kpi-unit{font-size:14px;font-weight:400;color:var(--text-s);}
 .kpi-note{font-size:11px;color:var(--text-m);}
 .kpi-platform-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--text-s);}
 
@@ -137,7 +141,18 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
 .chart-wrap canvas{width:100%!important;}
 .chart-footnote{font-size:11.5px;color:var(--text-m);margin-top:10px;padding:7px 10px;background:var(--bg-alt);border-radius:6px;border-left:3px solid var(--border-strong);}
 .findings-section{background:var(--bg-finding);border:1px solid var(--border);border-top:1px dashed var(--border-strong);border-left:4px solid var(--accent);border-radius:0 0 var(--radius) var(--radius);padding:16px 20px;}
-.findings-label{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.findings-label{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:space-between;}
+.findings-label::after{content:'▲';font-size:8px;color:var(--accent);opacity:0.6;transition:transform 0.22s;}
+.findings-section.collapsed .findings-label{margin-bottom:0;}
+.findings-section.collapsed .findings-label::after{transform:rotate(180deg);}
+.findings-section.collapsed > *:not(.findings-label){display:none;}
+/* fi-tag in findings — spacing fix */
+.fi-tag{display:inline-block;font-family:monospace;font-size:9.5px;font-weight:700;padding:0 4px;border-radius:2px;margin-right:5px;vertical-align:middle;position:relative;top:-1px;}
+.fi-tag.fi-f{background:#dbe7ff;color:#1a3a99;}
+.fi-tag.fi-i{background:#fef4d9;color:#8a5d00;}
+.fi-tag.fi-a{background:#fde7e3;color:#a8362a;}
+.finding-item{font-size:13px;color:var(--text-b);line-height:1.68;margin-bottom:7px;}
+.finding-item:last-child{margin-bottom:0;}
 
 /* ── Q&A ── */
 .qa-item{border-left:3px solid var(--q-border);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);border-radius:0 8px 8px 0;margin-bottom:8px;overflow:hidden;background:var(--bg-card);transition:border-color 0.18s;}
@@ -988,19 +1003,19 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                 <div class="funnel-bar"><span class="funnel-label">曝光</span><span class="funnel-count">1,928K</span></div>
                 <div class="funnel-rate">基準</div>
               </div>
-              <div class="funnel-stage" style="--fw:70.3%;--fc:#16A34A">
+              <div class="funnel-stage" style="--fw:98%;--fc:#16A34A">
                 <div class="funnel-bar"><span class="funnel-label">觸及</span><span class="funnel-count">1,356K</span></div>
                 <div class="funnel-rate">觸及率 70.3%</div>
               </div>
-              <div class="funnel-stage" style="--fw:9.4%;--fc:#4ADE80;min-width:140px">
+              <div class="funnel-stage" style="--fw:81%;--fc:#4ADE80;min-width:140px">
                 <div class="funnel-bar"><span class="funnel-label">互動</span><span class="funnel-count">127.8K</span></div>
                 <div class="funnel-rate">互動率 9.4%</div>
               </div>
-              <div class="funnel-stage" style="--fw:3.2%;--fc:#86EFAC;min-width:140px">
+              <div class="funnel-stage" style="--fw:73%;--fc:#86EFAC;min-width:140px">
                 <div class="funnel-bar"><span class="funnel-label">主頁到訪</span><span class="funnel-count">38,200</span></div>
                 <div class="funnel-rate">到訪率 2.82%</div>
               </div>
-              <div class="funnel-stage" style="--fw:0.34%;--fc:#BBF7D0;min-width:140px">
+              <div class="funnel-stage" style="--fw:58%;--fc:#BBF7D0;min-width:140px">
                 <div class="funnel-bar" style="color:#064E3B"><span class="funnel-label">轉換</span><span class="funnel-count" style="color:#064E3B">4,380</span></div>
                 <div class="funnel-rate">轉換率 11.5%（主頁→轉換）</div>
               </div>
@@ -1012,19 +1027,19 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                 <div class="funnel-bar"><span class="funnel-label">曝光</span><span class="funnel-count">1,245K</span></div>
                 <div class="funnel-rate">基準</div>
               </div>
-              <div class="funnel-stage" style="--fw:66.1%;--fc:#F59E0B">
+              <div class="funnel-stage" style="--fw:94%;--fc:#F59E0B">
                 <div class="funnel-bar"><span class="funnel-label">觸及</span><span class="funnel-count">823K</span></div>
                 <div class="funnel-rate">觸及率 66.1%</div>
               </div>
-              <div class="funnel-stage" style="--fw:5.0%;--fc:#FCD34D;min-width:140px">
+              <div class="funnel-stage" style="--fw:73%;--fc:#FCD34D;min-width:140px">
                 <div class="funnel-bar" style="color:#7C2D12"><span class="funnel-label">互動</span><span class="funnel-count" style="color:#7C2D12">41.2K</span></div>
                 <div class="funnel-rate">互動率 5.0%（vs 自然 9.4%）</div>
               </div>
-              <div class="funnel-stage" style="--fw:2.69%;--fc:#FDE68A;min-width:140px">
+              <div class="funnel-stage" style="--fw:69%;--fc:#FDE68A;min-width:140px">
                 <div class="funnel-bar" style="color:#7C2D12"><span class="funnel-label">主頁到訪</span><span class="funnel-count" style="color:#7C2D12">22,100</span></div>
                 <div class="funnel-rate">到訪率 2.69%</div>
               </div>
-              <div class="funnel-stage" style="--fw:0.27%;--fc:#FEF3C7;min-width:140px">
+              <div class="funnel-stage" style="--fw:53%;--fc:#FEF3C7;min-width:140px">
                 <div class="funnel-bar" style="color:#7C2D12"><span class="funnel-label">轉換</span><span class="funnel-count" style="color:#7C2D12">2,180</span></div>
                 <div class="funnel-rate">轉換率 9.9%（主頁→轉換）</div>
               </div>
@@ -1114,7 +1129,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
             <div class="chart-block">
               <div class="chart-title">受眾質量雷達圖（5 維度，0–100 標準化）</div>
               <div class="chart-subtitle">互動率 / 活躍率 / 評論深度 / 分享率 / 存儲率；打破「追蹤越多越好」的單一評估視角</div>
-              <div class="chart-wrap"><canvas id="chart-p4-radar" height="270"></canvas></div>
+              <div class="chart-wrap"><canvas id="chart-p4-radar" height="200"></canvas></div>
             </div>
             <div class="findings-section">
               <div class="findings-label">📊 Findings</div>
@@ -1335,9 +1350,6 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
               </div>
             </div>
           </div>
-          <div style="margin-top:16px;padding:10px 14px;background:white;border-radius:8px;font-size:11px;color:var(--text-m);">
-            📌 <strong>assertConsistency()：</strong>所有跨頁數字均由 <code>const DATA</code> 單一物件衍生，10 項內部一致性檢查在每次頁面載入時自動執行。若 console 出現 ✓ 字樣表示通過，任何 ✗ 均代表數據異常需修復。
-          </div>
         </div>
       </div>
     </div>
@@ -1548,16 +1560,46 @@ const TT = {
 function mk(id, type, labels, datasets, opts={}) {
   const ctx = document.getElementById(id);
   if (!ctx) return null;
+  const isHorizBar = opts.indexAxis === 'y';
+  const isStacked  = opts.scales?.x?.stacked || opts.scales?.y?.stacked ||
+                     (datasets[0] && datasets[0].stack);
+
+  // Default datalabels: bar charts show values; line/others = off
+  let dl = { display: false };
+  if (type === 'bar' && !isHorizBar && !isStacked) {
+    dl = {
+      display: true, anchor: 'end', align: 'top', clip: false,
+      color: '#374151',
+      font: { size: 10, weight: '600', family: "'Plus Jakarta Sans',sans-serif" },
+      padding: { bottom: 2 },
+      formatter: v => (v == null) ? '' : (Math.abs(v) >= 1000 ? (v/1000).toFixed(1)+'K' : (v > 0 ? '+'+v : String(v)))
+    };
+  }
+  if (opts.plugins?.datalabels) Object.assign(dl, opts.plugins.datalabels);
+
+  // pointHitRadius for line charts — make hover trigger area larger
+  if (type === 'line') {
+    datasets = datasets.map(ds => ({
+      pointHitRadius: 18,
+      pointRadius: ds.pointRadius ?? 3,
+      pointHoverRadius: ds.pointHoverRadius ?? 7,
+      ...ds
+    }));
+  }
+
+  const mergedPlugins = { ...TT.plugins, ...(opts.plugins || {}), datalabels: dl };
+  const topPad = (type === 'bar' && !isHorizBar && !isStacked) ? 28 : 18;
+
   return new Chart(ctx, {
     type,
     data: { labels, datasets },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { top: 18 } },
+      layout: { padding: { top: topPad, ...(opts.layout?.padding || {}) } },
       ...TT,
       ...opts,
-      plugins: { ...TT.plugins, ...(opts.plugins || {}) }
+      plugins: mergedPlugins
     }
   });
 }
@@ -1620,6 +1662,16 @@ function toggleQA(el) {
   item.classList.toggle('open');
 }
 
+/* ════ Findings toggle ════ */
+function toggleFindings(el) {
+  el.closest('.findings-section').classList.toggle('collapsed');
+}
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.findings-label').forEach(label => {
+    label.addEventListener('click', () => toggleFindings(label));
+  });
+});
+
 function goToChart(page, chartId) {
   switchPage(page);
   setTimeout(() => {
@@ -1666,6 +1718,7 @@ function drawP1() {
   ], {
     plugins: {
       legend: { position:'bottom', labels:{ boxWidth:12, padding:14 } },
+      datalabels: { display: false },
       annotation: { annotations: {
         zeroLine: { type:'line', yMin:0, yMax:0, borderColor:'rgba(0,0,0,0.25)', borderWidth:1 }
       }}
@@ -1727,10 +1780,10 @@ function drawP2() {
     { label:'貼文合作',  data: p2.monthly_deals_by_type.post,        backgroundColor: c('teal',0.75),   borderRadius:2, stack:'s' },
     { label:'影片拍攝',  data: p2.monthly_deals_by_type.video,       backgroundColor: c('purple',0.75), borderRadius:2, stack:'s' }
   ], {
-    plugins: { legend: { position:'bottom', labels:{ boxWidth:12, padding:14 } } },
+    plugins: { legend: { position:'bottom', labels:{ boxWidth:12, padding:14 } }, datalabels: { display: false } },
     scales: {
-      x: { ticks:{ maxRotation:30, font:{size:11} }, grid:{ display:false } },
-      y: { ticks:{ stepSize:2 }, title:{ display:true, text:'件數', font:{size:11} }, grid:{ color:'rgba(0,0,0,0.06)' } }
+      x: { stacked:true, ticks:{ maxRotation:30, font:{size:11} }, grid:{ display:false } },
+      y: { stacked:true, ticks:{ stepSize:2 }, title:{ display:true, text:'件數', font:{size:11} }, grid:{ color:'rgba(0,0,0,0.06)' } }
     }
   });
 
@@ -1908,6 +1961,7 @@ function drawP4() {
           legend:{ position:'bottom', labels:{ boxWidth:12, padding:12, font:{size:11} } },
           datalabels:{ display:false }
         },
+        elements:{ point:{ hitRadius:20 } },
         scales:{
           r:{
             min:0, max:100, ticks:{ display:false, stepSize:20 },
