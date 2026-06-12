@@ -78,6 +78,7 @@ author: Blake
 - [`module-C-pedagogy.md`](./module-C-pedagogy.md) — 二維難度、F/I/A、陷阱設計
 - [`module-D-diff.md`](./module-D-diff.md) — 視覺/教學/結構三軸差異化
 - [`module-E-checklist.md`](./module-E-checklist.md) — 最終 QA、Playwright 自動驗證
+- [`module-F-agents.md`](./module-F-agents.md) — Agent 工作流整合：角色分工、稽核門檻
 - [`QUICKSTART.md`](./QUICKSTART.md) — 5 種對話情境的標準執行範例
 - [`template.html`](./template.html) — 基準範本（B2C 電商會員 × 交易分析）
 
@@ -163,6 +164,7 @@ author: Blake
 | 選擴充圖表類型（Waterfall 等） | D.10 |
 | 想跟前一份不同（三軸差異化） | D（全篇） |
 | 交付前檢查 | E.1（必檢 18 項） |
+| Agent 工作角色與稽核門 | F（全篇） |
 
 ---
 
