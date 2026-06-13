@@ -420,10 +420,17 @@ document.addEventListener('DOMContentLoaded', () => {
 | Chart.register(ChartDataLabels) | 每份必有且在 assertConsistency 之後 | `grep -n "Chart.register(ChartDataLabels)"` |
 | annotation plugin 名稱 | `window.ChartAnnotation` | `grep -n "ChartAnnotation\|chartjs-plugin-annotation"` |
 | def-panel sticky 位置 | `#def-panel-outer` 有 `position:sticky` | `grep -n "position.*sticky"` |
-| findings-section collapse | CSS 有 `.findings-section.collapsed` | `grep -n "collapsed"` |
-| DOMContentLoaded findings | JS 有 `classList.add('collapsed')` | `grep -n "collapsed"` |
+| findings collapse CSS | `.findings-section.collapsed` 有 3 條規則 | `grep -c "findings-section.collapsed"` |
+| findings collapse JS | `classList.add('collapsed')` + click handler | `grep -n "add.*collapsed\|classList.toggle"` |
+| findings label 文字 | `🔍 分析發現`（不是 📊 Findings 或其他） | `grep -n "分析發現\|📊 Findings"` |
+| findings text-node wrapper | 內容含 text node 的 section 需有 `.findings-content` wrapper | `grep -n "findings-content"` |
+| FIA/badge 無 monospace | `.badge`/`.fia` 不含 `font-family.*monospace\|JetBrains` | `grep -n "\.badge\|\.fia"` |
 | 製作時間 chip | 含「製作時間：」前綴 | `grep -n "製作時間"` |
 | syncHeaderHeight | JS 有 `syncHeaderHeight` | `grep -n "syncHeaderHeight"` |
+
+**判斷 findings-section 是否需要 `.findings-content` wrapper：**
+若 findings-section 內容為 `<strong>` + text / `<br>` + text（非純 `<div>`/`<p>` 包裹），必須加 wrapper。
+快速判斷：`grep -A3 'findings-section' file.html | grep -v 'findings-label\|qa-item\|finding-item\|div class'`
 
 ---
 
@@ -510,3 +517,87 @@ document.querySelectorAll('.findings-section').forEach(s => {
 - 否（全是 `<div>` 或 `<p>`）→ 原有 CSS 已足夠
 
 **稽核記錄（2026-06）：** SaaS、品牌訊息通道、餐飲連鎖 均使用此寫法，已統一補入 wrapper。健身房、電商DTC、網紅個人品牌 使用 div 容器，不受影響。
+
+---
+
+## 22. DOMContentLoaded 重複註冊陷阱
+
+**現象：** 點擊 findings label 沒有反應（toggle 了又 toggle 回去 = 淨效果為零）。
+
+**根因：** 同一個 `<script>` 中有兩段 `document.addEventListener('DOMContentLoaded', ...)` 同時對 `.findings-label` 加了 click handler，兩個 handler 都觸發，一個 toggle on、一個 toggle off，結果不動。
+
+**發生情境：**
+- 舊版 dashboard 已有 `toggleFindings()` + DOMContentLoaded（加 collapsed + click）
+- 補丁 script 不知道原有 handler 的存在，又加了一個完整的 DOMContentLoaded
+
+**正確做法：** 補入新功能時先 grep 確認是否已有 DOMContentLoaded 及 findings handler：
+```bash
+grep -n "DOMContentLoaded\|toggleFindings\|findings.*click" file.html
+```
+若已存在 → 修改原有的，不要新增第二個。
+
+**稽核記錄（2026-06）：** 網紅個人品牌 原有 `toggleFindings()` 機制，補丁誤加第二個 handler，已修正為只保留原有 handler 並補入 `label.textContent` 更新。
+
+---
+
+## 23. FIA / L123 CSS 標準規格（以品牌訊息通道為基準）
+
+新建儀表板的 FIA 和 L123 標籤，直接複製以下 CSS block，再視主題調整 rgba 值。
+
+```css
+/* ─── Badge (L1 / L2 / L3) ─── */
+.badge { display: inline-block; border-radius: 4px; padding: 1px 6px; font-size: 0.67rem; font-weight: 600; }
+.badge.l1 { background: rgba(217,119,6,0.18); color: var(--accent2); border: 1px solid rgba(217,119,6,0.3); }
+.badge.l2 { background: rgba(59,130,246,0.18); color: var(--accent); border: 1px solid rgba(59,130,246,0.3); }
+.badge.l3 { background: rgba(139,92,246,0.18); color: var(--purple); border: 1px solid rgba(139,92,246,0.3); }
+
+/* ─── Answer-block FIA tags（段落開頭標記）─── */
+.tag-f { display: inline-block; background: rgba(217,119,6,0.18); color: var(--accent2); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
+.tag-i { display: inline-block; background: rgba(59,130,246,0.18); color: var(--accent); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
+.tag-a { display: inline-block; background: rgba(245,158,11,0.18); color: var(--warn); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
+
+/* ─── Inline FIA spans（句中標記）─── */
+.fia { display: inline-block; border-radius: 3px; padding: 0 4px; font-size: 0.68rem; font-weight: 700; }
+.fia.f { background: rgba(217,119,6,0.18); color: var(--accent2); }
+.fia.i { background: rgba(59,130,246,0.18); color: var(--accent); }
+.fia.a { background: rgba(245,158,11,0.18); color: var(--warn); }
+
+/* ─── fi-tag（findings-section 段落前綴，維持 monospace）─── */
+.fi-tag { display: inline-block; font-family: monospace; font-size: 9.5px; font-weight: 700; padding: 0 4px; border-radius: 2px; margin-right: 5px; vertical-align: middle; position: relative; top: -1px; }
+.fi-tag.fi-f { background: #dbe7ff; color: #1a3a99; }
+.fi-tag.fi-i { background: #fef4d9; color: #8a5d00; }
+.fi-tag.fi-a { background: #fde7e3; color: #a8362a; }
+```
+
+**規則：**
+- `.badge`、`.tag-f/i/a`、`.fia` — **不加 font-family**（繼承 body 的主字型）
+- `.fi-tag` — **保留 monospace**（設計上刻意使用等寬字型以突顯段落標籤）
+- 顏色背景用 `rgba()`，文字顏色用 `var()` CSS 變數（確保各主題自動適配）
+- 深色主題（如健身房）的 rgba 值可用主題對應的 accent/teal/amber 值替換，但**不可用 hardcoded hex**
+
+**常見錯誤：** 舊版 `.badge` 加了 `font-family:'JetBrains Mono'`、`.fia` 加了 `font-size:9.5px;vertical-align:middle;position:relative;top:-1px` — 這些是舊的 monospace 定位補償，使用標準主字型後不再需要。
+
+---
+
+## 24. Donut chart — 預設顯示百分比 datalabels
+
+**問題：** Donut chart 建立時通常會加 `datalabels:{ display:false }` 避免在所有 chart 上出現 datalabel，但 donut chart 本身需要在扇形中心顯示佔比值。
+
+**正確寫法（僅 donut 的 plugin 區塊）：**
+```javascript
+plugins: {
+  legend:   { position:'bottom', labels:{ boxWidth:12, padding:12, font:{size:11} } },
+  tooltip:  { callbacks:{ label: ctx => `NT$${ctx.parsed.toLocaleString()} (${(ctx.parsed/total*100).toFixed(1)}%)` } },
+  datalabels: {
+    display:   true,
+    color:     '#fff',
+    font:      { size: 11, weight: '600' },
+    formatter: (val) => (val / total * 100).toFixed(1) + '%',
+    anchor:    'center',
+    align:     'center',
+    clip:      false
+  }
+}
+```
+
+**注意：** `mk()` factory 在 `options.plugins.datalabels` 未設定時會套用全域 register 的 datalabels 預設值。Donut chart **不經過 `mk()`**，直接 `new Chart()` 建立，因此需要在 plugins 區塊明確設定 datalabels，不能依賴全域。
