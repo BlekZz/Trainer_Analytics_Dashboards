@@ -1826,16 +1826,21 @@ switchPage('ops');
 
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.findings-section').forEach(s => {
-    if (!s.querySelector('.findings-label')) {
-      const lbl = document.createElement('div');
+    let lbl = s.querySelector('.findings-label');
+    if (!lbl) {
+      lbl = document.createElement('div');
       lbl.className = 'findings-label';
-      lbl.textContent = '🔍 分析發現';
       s.insertBefore(lbl, s.firstChild);
     }
+    lbl.textContent = '🔍 分析發現';
+    if (!s.querySelector('.findings-content')) {
+      const wrap = document.createElement('div');
+      wrap.className = 'findings-content';
+      Array.from(s.childNodes).forEach(n => { if (n !== lbl) wrap.appendChild(n); });
+      s.appendChild(wrap);
+    }
     s.classList.add('collapsed');
-    s.querySelector('.findings-label').addEventListener('click', () => {
-      s.classList.toggle('collapsed');
-    });
+    lbl.addEventListener('click', () => s.classList.toggle('collapsed'));
   });
 });
 </script>
