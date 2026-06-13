@@ -50,9 +50,9 @@ a{color:var(--accent);text-decoration:none}
 
 /* Def panel */
 #main-wrapper{display:flex;align-items:flex-start}
-#def-panel-outer{flex-shrink:0;width:0;overflow:hidden;transition:width .28s cubic-bezier(.4,0,.2,1)}
+#def-panel-outer{flex-shrink:0;width:0;overflow:hidden;transition:width .28s cubic-bezier(.4,0,.2,1);position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));align-self:flex-start}
 #def-panel-outer.open{width:323px}
-#def-panel-inner{width:323px;height:calc((100vh - var(--header-h))*1.2);overflow-y:auto;position:sticky;top:var(--header-h);background:var(--bg-card);border-right:1px solid var(--border);padding:18px 16px}
+#def-panel-inner{width:323px;height:100%;overflow-y:auto;background:var(--bg-card);border-right:1px solid var(--border);padding:18px 16px}
 #def-panel-inner::-webkit-scrollbar{width:4px}
 #def-panel-inner::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.15);border-radius:2px}
 .def-search-wrap{margin-bottom:12px}
@@ -99,6 +99,11 @@ a{color:var(--accent);text-decoration:none}
 /* Findings */
 .findings-section{background:var(--bg-finding);border-radius:10px;padding:12px 16px;margin-top:14px;font-size:.8rem;color:var(--text-muted)}
 .findings-section strong{color:var(--text)}
+.findings-label{cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.findings-label::after{content:'▲';font-size:8px;transition:transform 0.22s;opacity:0.65;}
+.findings-section.collapsed .findings-label{margin-bottom:0;}
+.findings-section.collapsed .findings-label::after{transform:rotate(180deg);}
+.findings-section.collapsed>*:not(.findings-label){display:none;}
 
 /* Q&A */
 .qa-section{margin-top:28px}
@@ -1391,7 +1396,30 @@ function drawFunnel(){
   );
 }
 
-document.addEventListener('DOMContentLoaded',()=>{assertConsistency();switchPage('mrr');});
+function syncHeaderHeight() {
+  const h = document.getElementById('top-header')?.offsetHeight || 138;
+  document.documentElement.style.setProperty('--header-h', h + 'px');
+}
+window.addEventListener('load', syncHeaderHeight);
+window.addEventListener('resize', syncHeaderHeight);
+
+document.addEventListener('DOMContentLoaded', () => {
+  assertConsistency();
+  switchPage('mrr');
+
+  document.querySelectorAll('.findings-section').forEach(s => {
+    if (!s.querySelector('.findings-label')) {
+      const lbl = document.createElement('div');
+      lbl.className = 'findings-label';
+      lbl.textContent = '🔍 分析發現';
+      s.insertBefore(lbl, s.firstChild);
+    }
+    s.classList.add('collapsed');
+    s.querySelector('.findings-label').addEventListener('click', () => {
+      s.classList.toggle('collapsed');
+    });
+  });
+});
 </script>
 </body>
 </html>

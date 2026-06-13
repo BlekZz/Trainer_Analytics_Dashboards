@@ -109,14 +109,12 @@
 
     /* ── Side def panel ── */
     #main-wrapper { display: flex; align-items: flex-start; }
-    #def-panel-outer { flex-shrink: 0; width: 0; overflow: hidden; transition: width 0.28s cubic-bezier(0.4,0,0.2,1); }
+    #def-panel-outer { flex-shrink: 0; width: 0; overflow: hidden; transition: width 0.28s cubic-bezier(0.4,0,0.2,1); position: sticky; top: var(--header-h, 138px); height: calc(100vh - var(--header-h, 138px)); align-self: flex-start; }
     #def-panel-outer.open { width: 323px; }
     #def-panel-inner {
       width: 323px;
-      height: calc((100vh - var(--header-h, 138px)) * 1.2);
+      height: 100%;
       overflow-y: auto;
-      position: sticky;
-      top: var(--header-h, 138px);
       background: var(--bg-card);
       border-right: 1px solid var(--border);
       padding: 18px 16px;
@@ -207,6 +205,11 @@
       border-left: 2px solid rgba(59,130,246,0.3);
     }
     .findings-section strong { color: var(--text); }
+    .findings-label { cursor: pointer; user-select: none; display: flex; align-items: center; justify-content: space-between; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+    .findings-label::after { content: '▲'; font-size: 8px; transition: transform 0.22s; opacity: 0.65; }
+    .findings-section.collapsed .findings-label { margin-bottom: 0; }
+    .findings-section.collapsed .findings-label::after { transform: rotate(180deg); }
+    .findings-section.collapsed > *:not(.findings-label) { display: none; }
 
     /* ── Q&A ── */
     .qa-section { margin-top: 28px; }
@@ -1107,7 +1110,7 @@
 <script>
 // Register plugins globally (required for Chart.js 4)
 Chart.register(ChartDataLabels);
-if (window['chartjs-plugin-annotation']) Chart.register(window['chartjs-plugin-annotation']);
+if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
 
 // ═══════════════════════════════════════════════
 // DATA OBJECT
@@ -1997,6 +2000,19 @@ document.addEventListener('DOMContentLoaded', function() {
   drawPage1();
 
   assertConsistency();
+
+  document.querySelectorAll('.findings-section').forEach(s => {
+    if (!s.querySelector('.findings-label')) {
+      const lbl = document.createElement('div');
+      lbl.className = 'findings-label';
+      lbl.textContent = '🔍 分析發現';
+      s.insertBefore(lbl, s.firstChild);
+    }
+    s.classList.add('collapsed');
+    s.querySelector('.findings-label').addEventListener('click', () => {
+      s.classList.toggle('collapsed');
+    });
+  });
 });
 </script>
 </body></html>

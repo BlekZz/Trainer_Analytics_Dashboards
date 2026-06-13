@@ -94,6 +94,11 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .section-wrap{border-radius:var(--radius);overflow:hidden;margin-bottom:20px}
 .section-wrap .chart-block{border-radius:var(--radius) var(--radius) 0 0;border-bottom:none}
 .section-wrap .findings-section{border-left:4px solid var(--accent)}
+.findings-label{cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.findings-label::after{content:'▲';font-size:8px;transition:transform 0.22s;opacity:0.65;}
+.findings-section.collapsed .findings-label{margin-bottom:0;}
+.findings-section.collapsed .findings-label::after{transform:rotate(180deg);}
+.findings-section.collapsed>*:not(.findings-label){display:none;}
 /* ─── QA ─── */
 .qa-item{border-bottom:1px solid var(--border)}
 .qa-item:last-child{border-bottom:none}
@@ -177,7 +182,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
     <span class="meta-chip demo">⚗️ DEMO 合成資料集</span>
     <span style="flex:1"></span>
     <span class="meta-chip">✏️ 製作者：Blake</span>
-    <span class="meta-chip">🗓️ 20260611</span>
+    <span class="meta-chip">🗓️ 製作時間：20260611</span>
   </div>
   <div class="header-row-2">
     <button class="def-toggle-btn" id="defToggle" onclick="toggleDef()">
@@ -1119,6 +1124,21 @@ function drawRetention(){
 // ─── Init Page 1 ───
 setTimeout(()=>drawMember(),60);
 initialized['member']=true;
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.findings-section').forEach(s => {
+    if (!s.querySelector('.findings-label')) {
+      const lbl = document.createElement('div');
+      lbl.className = 'findings-label';
+      lbl.textContent = '🔍 分析發現';
+      s.insertBefore(lbl, s.firstChild);
+    }
+    s.classList.add('collapsed');
+    s.querySelector('.findings-label').addEventListener('click', () => {
+      s.classList.toggle('collapsed');
+    });
+  });
+});
 </script>
 </body>
 </html>

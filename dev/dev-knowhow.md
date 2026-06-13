@@ -274,3 +274,187 @@ if (!initialized[name]) {
 - 需要 SKU 層級 → 必須同時在儀表板中顯示 SKU 明細圖
 
 **驗算方法：** 每個 KPI 數值，在寫完儀表板後，自己嘗試從圖表資料手動推算一次，確認能算出來。算不出來的數字就是層級錯誤或缺少定義。
+
+---
+
+## 15. annotation plugin 全域變數名稱陷阱
+
+**問題：** `chartjs-plugin-annotation@3.x` UMD CDN bundle 的全域變數是 `window.ChartAnnotation`，**不是** `window['chartjs-plugin-annotation']`。
+
+使用錯誤名稱時：
+```javascript
+// ❌ 錯誤：key 不存在，if 永遠 false，plugin 靜默未 register
+if (typeof window['chartjs-plugin-annotation'] !== 'undefined') {
+  Chart.register(window['chartjs-plugin-annotation']);
+}
+// ❌ 同樣錯誤（短寫也用了錯誤 key）
+if (window['chartjs-plugin-annotation']) Chart.register(window['chartjs-plugin-annotation']);
+```
+
+後果：`if(...)` 評估為 false → plugin 未 register → 所有 annotation（基準線、標籤、虛線）靜默消失，Console 完全乾淨，無任何錯誤提示。
+
+**正確寫法（唯一標準）：**
+```javascript
+// ✅ 正確：CDN UMD 全域就是 window.ChartAnnotation
+if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
+```
+
+**稽核記錄（2026-06）：** 本批次中 餐飲連鎖_v1、電商DTC_v3、品牌訊息通道 三份儀表板使用了錯誤名稱，統一修正為 `window.ChartAnnotation`。
+
+---
+
+## 16. def-panel sticky 定位必須在 `#def-panel-outer`（flex child），不可在 `#def-panel-inner`
+
+**問題：** `#def-panel-outer` 有 `overflow: hidden`（用於 width 過渡動畫），任何具有 `overflow: hidden` 的祖先都會讓子元素的 `position: sticky` **靜默失效**——子元素降級為 static，面板位置錯誤（通常在錯誤位置出現）。
+
+**錯誤寫法（sticky 在 inner → 被 outer overflow:hidden 阻斷）：**
+```css
+#def-panel-outer { flex-shrink: 0; width: 0; overflow: hidden; transition: width ...; }
+#def-panel-inner {
+  width: 323px;
+  height: calc((100vh - var(--header-h)) * 1.2);
+  overflow-y: auto;
+  position: sticky;      /* ← 靜默失效，因 outer 有 overflow:hidden */
+  top: var(--header-h);
+}
+```
+
+**正確寫法（sticky 在 outer → flex child 本身不受 overflow:hidden 影響）：**
+```css
+#def-panel-outer {
+  flex-shrink: 0; width: 0; overflow: hidden; transition: width ...;
+  position: sticky;              /* ← sticky 在 flex child 上，正確 */
+  top: var(--header-h, 138px);
+  height: calc(100vh - var(--header-h, 138px));
+  align-self: flex-start;        /* ← 必要：防 flex stretch 破壞 sticky */
+}
+#def-panel-outer.open { width: 323px; }
+#def-panel-inner {
+  width: 323px;
+  height: 100%;                  /* ← 繼承 outer 高度 */
+  overflow-y: auto;              /* ← 面板內部自行捲動 */
+}
+```
+
+**稽核記錄（2026-06）：** 餐飲連鎖_v1、電商DTC_v3、SaaS、品牌訊息通道 四份儀表板使用錯誤寫法，統一修正。網紅個人品牌、健身房為正確實作。
+
+---
+
+## 17. findings-section 必須預設坍縮——缺少此設計 = 訓練效果為零
+
+**問題：** 若 `.findings-section` 預設展開，學員一打開頁面就看到所有分析結論和 QA 答案，完全失去「先看圖、自己推論、再驗證」的訓練流程。這是教學設計的根本錯誤。
+
+**強制實作三件組（缺一不可）：**
+
+### (A) HTML — findings-section 內第一個子元素必須是 .findings-label
+```html
+<div class="findings-section">
+  <div class="findings-label">🔍 分析發現</div>
+  <!-- 其他內容... -->
+</div>
+```
+若批次建立多個 findings-section，可改用 JS 動態插入（見下方 C）。
+
+### (B) CSS — 加在所有 findings-section 樣式之後
+```css
+.findings-label {
+  cursor: pointer; user-select: none;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 10px;
+}
+.findings-label::after { content: '▲'; font-size: 8px; transition: transform 0.22s; opacity: 0.65; }
+.findings-section.collapsed .findings-label { margin-bottom: 0; }
+.findings-section.collapsed .findings-label::after { transform: rotate(180deg); }
+.findings-section.collapsed > *:not(.findings-label) { display: none; }
+```
+
+### (C) JS — DOMContentLoaded 自動坍縮 + 動態補 label
+```javascript
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.findings-section').forEach(s => {
+    // 若 HTML 中尚未手動加入 .findings-label，動態插入
+    if (!s.querySelector('.findings-label')) {
+      const lbl = document.createElement('div');
+      lbl.className = 'findings-label';
+      lbl.textContent = '🔍 分析發現';
+      s.insertBefore(lbl, s.firstChild);
+    }
+    s.classList.add('collapsed');
+    s.querySelector('.findings-label').addEventListener('click', () => {
+      s.classList.toggle('collapsed');
+    });
+  });
+});
+```
+
+**稽核記錄（2026-06）：** 本批次 6 份儀表板中，只有「網紅個人品牌」實作此功能。餐飲連鎖_v1、電商DTC_v3、SaaS、健身房、品牌訊息通道 均缺少，統一補入。電商DTC 特殊情況：HTML 內已有 `.findings-label` 元素，只需補 CSS collapsed 規則 + DOMContentLoaded handler。
+
+---
+
+## 18. 製作時間 chip 格式標準
+
+**標準格式（必須包含「製作時間：」中文前綴）：**
+```html
+<span class="meta-chip">🗓️ 製作時間：20260613</span>
+```
+
+**錯誤格式（缺前綴，僅有日期）：**
+```html
+<!-- ❌ 不標準 -->
+<span class="meta-chip">🗓️ 20260611</span>
+```
+
+**規則：** 每次對該儀表板有任何修改，必須同步更新製作時間為當天日期（YYYYMMDD 格式）。格式統一確保所有檔案頭部信息一致、可掃描確認版本。
+
+**稽核記錄（2026-06）：** 健身房_會員全週期分析 缺少前綴，已修正。
+
+---
+
+## 19. 跨儀表板一致性稽核檢查清單（Cross-Dashboard Audit Checklist）
+
+當需要對多份儀表板進行批次稽核時，依下列清單逐項 grep 確認：
+
+| 項目 | 正確模式 | grep 指令 |
+|------|---------|---------|
+| Chart.register(ChartDataLabels) | 每份必有且在 assertConsistency 之後 | `grep -n "Chart.register(ChartDataLabels)"` |
+| annotation plugin 名稱 | `window.ChartAnnotation` | `grep -n "ChartAnnotation\|chartjs-plugin-annotation"` |
+| def-panel sticky 位置 | `#def-panel-outer` 有 `position:sticky` | `grep -n "position.*sticky"` |
+| findings-section collapse | CSS 有 `.findings-section.collapsed` | `grep -n "collapsed"` |
+| DOMContentLoaded findings | JS 有 `classList.add('collapsed')` | `grep -n "collapsed"` |
+| 製作時間 chip | 含「製作時間：」前綴 | `grep -n "製作時間"` |
+| syncHeaderHeight | JS 有 `syncHeaderHeight` | `grep -n "syncHeaderHeight"` |
+
+---
+
+## 20. `syncHeaderHeight()` — 動態 header 高度同步
+
+**問題：** sticky 元素（def-panel-outer、nav-tabs 等）使用 `top: var(--header-h)` 定位，若 `--header-h` 是硬編碼靜態值，在不同螢幕寬度或字型縮放下 header 實際高度會偏移，造成 sticky 元素位置不準確。
+
+**解法：** 在 JS 動態讀取 `#top-header` 的 `offsetHeight` 並更新 CSS 變數，並在 `load` 和 `resize` 時重新計算：
+
+```javascript
+function syncHeaderHeight() {
+  const h = document.getElementById('top-header').offsetHeight;
+  document.documentElement.style.setProperty('--header-h', h + 'px');
+}
+window.addEventListener('load', syncHeaderHeight);
+window.addEventListener('resize', syncHeaderHeight);
+```
+
+**位置：** 放在主 `<script>` 區塊的最末、`</script>` 之前。不可放在 `DOMContentLoaded` 內（load 事件比 DOMContentLoaded 晚，字型載入後才能得到正確高度）。
+
+**CSS 端配合：**
+```css
+:root { --header-h: 138px; }   /* 初始預估值，JS 載入後覆蓋 */
+
+#def-panel-outer {
+  position: sticky;
+  top: var(--header-h, 138px);
+  height: calc(100vh - var(--header-h, 138px));
+}
+```
+
+**稽核記錄（2026-06）：** SaaS 儀表板缺少此函數，統一補入。其餘 5 份均已具備。
+
+**黃金標準版（2026-06 當前）：** `網紅個人品牌_旅遊生活風格創作者_訓練儀表板教材.html` 是唯一通過全部項目的版本，新功能應以此為參考。
