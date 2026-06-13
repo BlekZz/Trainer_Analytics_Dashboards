@@ -458,3 +458,55 @@ window.addEventListener('resize', syncHeaderHeight);
 **稽核記錄（2026-06）：** SaaS 儀表板缺少此函數，統一補入。其餘 5 份均已具備。
 
 **黃金標準版（2026-06 當前）：** `網紅個人品牌_旅遊生活風格創作者_訓練儀表板教材.html` 是唯一通過全部項目的版本，新功能應以此為參考。
+
+---
+
+## 21. findings-section collapse — text node 靜默失效陷阱
+
+**現象：** `collapsed` class 確實被加上（label 箭頭翻轉），但坍縮後 findings 內容仍然可見。
+
+**根因：** findings-section 內容若為 `<strong>文字：</strong>後接 raw text`（無 `<div>`/`<p>` 包裹），則：
+```css
+.findings-section.collapsed > *:not(.findings-label) { display: none; }
+```
+只隱藏 **element children**（`<strong>`、`<br>` 等），**raw text node 不是 element，永遠不受影響**，仍然可見。
+
+**受影響的寫法（常見）：**
+```html
+<div class="findings-section">
+  <strong>觀察：</strong>推播通道觸達 110,000 筆，...
+  <br>
+  <strong>推論：</strong>對話型通道效率更高...
+</div>
+```
+
+**修法：在 DOMContentLoaded JS 中建立 `.findings-content` wrapper，把所有非 label 節點（含 text node）一起包進去：**
+
+```javascript
+document.querySelectorAll('.findings-section').forEach(s => {
+  let lbl = s.querySelector('.findings-label');
+  if (!lbl) {
+    lbl = document.createElement('div');
+    lbl.className = 'findings-label';
+    s.insertBefore(lbl, s.firstChild);
+  }
+  lbl.textContent = '🔍 分析發現';
+  if (!s.querySelector('.findings-content')) {
+    const wrap = document.createElement('div');
+    wrap.className = 'findings-content';
+    // Array.from() 先做靜態快照，避免 live NodeList 在 appendChild 時位移
+    Array.from(s.childNodes).forEach(n => { if (n !== lbl) wrap.appendChild(n); });
+    s.appendChild(wrap);
+  }
+  s.classList.add('collapsed');
+  lbl.addEventListener('click', () => s.classList.toggle('collapsed'));
+});
+```
+
+原有 CSS `> *:not(.findings-label)` 不需改動：`.findings-content` 是 element child，會被正確隱藏。
+
+**判斷標準：** findings-section 的直接子節點是否包含 text node 或 inline element（`<strong>`、`<br>`、`<span>`）？
+- 是 → 需要 wrapper
+- 否（全是 `<div>` 或 `<p>`）→ 原有 CSS 已足夠
+
+**稽核記錄（2026-06）：** SaaS、品牌訊息通道、餐飲連鎖 均使用此寫法，已統一補入 wrapper。健身房、電商DTC、網紅個人品牌 使用 div 容器，不受影響。
