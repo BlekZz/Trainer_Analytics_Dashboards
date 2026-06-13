@@ -118,11 +118,11 @@ a{color:var(--accent);text-decoration:none}
 .answer.show{display:block}
 .answer-block{margin-bottom:6px}
 .answer-block p{margin-top:4px}
-.tag-f{display:inline-block;background:rgba(5,150,105,0.12);color:#047857;border-radius:4px;padding:0 5px;font-size:.7rem;font-weight:700;margin-right:3px}
+.tag-f{display:inline-block;background:rgba(5,150,105,0.12);color:var(--accent2);border-radius:4px;padding:0 5px;font-size:.7rem;font-weight:700;margin-right:3px}
 .tag-i{display:inline-block;background:rgba(37,99,235,0.1);color:var(--accent);border-radius:4px;padding:0 5px;font-size:.7rem;font-weight:700;margin-right:3px}
 .tag-a{display:inline-block;background:rgba(217,119,6,0.12);color:var(--warn);border-radius:4px;padding:0 5px;font-size:.7rem;font-weight:700;margin-right:3px}
 .fia{display:inline-block;border-radius:3px;padding:0 4px;font-size:.68rem;font-weight:700}
-.fia.f{background:rgba(5,150,105,0.12);color:#047857}
+.fia.f{background:rgba(5,150,105,0.12);color:var(--accent2)}
 .fia.i{background:rgba(37,99,235,0.1);color:var(--accent)}
 .fia.a{background:rgba(217,119,6,0.12);color:var(--warn)}
 .trap-block{background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.2);border-radius:8px;padding:10px 14px;margin-top:10px;font-size:.79rem;color:#B91C1C;display:flex;gap:8px;align-items:flex-start}
@@ -1408,16 +1408,22 @@ document.addEventListener('DOMContentLoaded', () => {
   switchPage('mrr');
 
   document.querySelectorAll('.findings-section').forEach(s => {
-    if (!s.querySelector('.findings-label')) {
-      const lbl = document.createElement('div');
+    let lbl = s.querySelector('.findings-label');
+    if (!lbl) {
+      lbl = document.createElement('div');
       lbl.className = 'findings-label';
-      lbl.textContent = '🔍 分析發現';
       s.insertBefore(lbl, s.firstChild);
     }
+    lbl.textContent = '🔍 分析發現';
+    // Wrap all non-label nodes (incl. text nodes) so display:none hides everything
+    if (!s.querySelector('.findings-content')) {
+      const wrap = document.createElement('div');
+      wrap.className = 'findings-content';
+      Array.from(s.childNodes).forEach(n => { if (n !== lbl) wrap.appendChild(n); });
+      s.appendChild(wrap);
+    }
     s.classList.add('collapsed');
-    s.querySelector('.findings-label').addEventListener('click', () => {
-      s.classList.toggle('collapsed');
-    });
+    lbl.addEventListener('click', () => s.classList.toggle('collapsed'));
   });
 });
 </script>

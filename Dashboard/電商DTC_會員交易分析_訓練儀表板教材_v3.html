@@ -77,10 +77,10 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
 .legend-vdivider { width:1px; height:14px; background:var(--border-strong); flex-shrink:0; margin:0 12px; }
 .legend-right { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 .legend-right > span { display:flex; align-items:center; gap:5px; }
-.badge { display:inline-block; border-radius:3px; padding:1px 5px; font-size:0.67rem; font-weight:600; font-family:'JetBrains Mono',monospace; }
-.badge.l1 { background:#e3f2fd; color:#1565c0; border:1px solid #b3d4f5; }
-.badge.l2 { background:#fff4e0; color:#a36a08; border:1px solid #f0d080; }
-.badge.l3 { background:#fde7e3; color:#a8362a; border:1px solid #f5b9b0; }
+.badge { display:inline-block; border-radius:4px; padding:1px 6px; font-size:0.67rem; font-weight:600; }
+.badge.l1 { background:rgba(5,150,105,0.15); color:var(--accent2); border:1px solid rgba(5,150,105,0.3); }
+.badge.l2 { background:rgba(37,99,235,0.12); color:var(--accent); border:1px solid rgba(37,99,235,0.25); }
+.badge.l3 { background:rgba(124,58,237,0.12); color:var(--purple); border:1px solid rgba(124,58,237,0.25); }
 
 /* ── Side def panel ── */
 #main-wrapper { display:flex; align-items:flex-start; }
@@ -159,10 +159,10 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
 .qa-q-icon{flex-shrink:0;width:24px;height:24px;border-radius:6px;background:var(--q-bg);border:1px solid var(--q-border);color:var(--accent);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;margin-top:1px;}
 .qa-q-text{flex:1;font-size:13.5px;font-weight:500;color:var(--text-h);line-height:1.55;}
 .qa-item.open .qa-q-text{font-weight:600;}
-.qa-level{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:6px;letter-spacing:0.4px;vertical-align:middle;position:relative;top:-1px;}
-.qa-level.l1{background:#e3f2fd;color:#1565c0;}
-.qa-level.l2{background:#fff4e0;color:#a36a08;}
-.qa-level.l3{background:#fde7e3;color:#a8362a;}
+.qa-level{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:4px;margin-right:4px;letter-spacing:0.4px;vertical-align:middle;position:relative;top:-1px;}
+.qa-level.l1{background:rgba(5,150,105,0.15);color:var(--accent2);border:1px solid rgba(5,150,105,0.3);}
+.qa-level.l2{background:rgba(37,99,235,0.12);color:var(--accent);border:1px solid rgba(37,99,235,0.25);}
+.qa-level.l3{background:rgba(124,58,237,0.12);color:var(--purple);border:1px solid rgba(124,58,237,0.25);}
 .qa-chevron{flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text-s);transition:transform 0.22s,background 0.15s;margin-top:3px;}
 .qa-item.open .qa-chevron{transform:rotate(180deg);background:var(--a-border);color:var(--success);}
 .qa-answer{display:none;border-top:1px solid var(--border);background:var(--a-bg);}
@@ -181,10 +181,10 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
 .ans-head.act{background:#d0f0e2;color:#0e6f4f;}
 
 /* F/I/A 標註 */
-.fia{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;padding:0 4px;border-radius:2px;margin:0 1px;vertical-align:middle;position:relative;top:-1px;}
-.fia.f{background:#dbe7ff;color:#1a3a99;}
-.fia.i{background:#fef4d9;color:#8a5d00;}
-.fia.a{background:#fde7e3;color:#a8362a;}
+.fia{display:inline-block;font-size:0.68rem;font-weight:700;padding:0 4px;border-radius:3px;margin:0 2px;}
+.fia.f{background:rgba(5,150,105,0.15);color:var(--accent2);}
+.fia.i{background:rgba(37,99,235,0.12);color:var(--accent);}
+.fia.a{background:rgba(215,119,6,0.15);color:var(--warn);}
 
 /* 證據碼（圖名引用）*/
 .ev{display:inline;background:rgba(45,91,227,0.09);border-radius:4px;padding:1px 5px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--accent);font-weight:500;}
@@ -1601,14 +1601,15 @@ document.addEventListener('DOMContentLoaded', () => {
   draw('member');
 
   document.querySelectorAll('.findings-section').forEach(s => {
-    if (!s.querySelector('.findings-label')) {
-      const lbl = document.createElement('div');
+    let lbl = s.querySelector('.findings-label');
+    if (!lbl) {
+      lbl = document.createElement('div');
       lbl.className = 'findings-label';
-      lbl.textContent = '🔍 分析發現';
       s.insertBefore(lbl, s.firstChild);
     }
+    lbl.textContent = '🔍 分析發現';
     s.classList.add('collapsed');
-    s.querySelector('.findings-label').addEventListener('click', () => {
+    lbl.addEventListener('click', () => {
       s.classList.toggle('collapsed');
     });
   });
