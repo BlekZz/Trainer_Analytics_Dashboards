@@ -8,8 +8,9 @@
 
 | 檔案 | 產業 | 分析主題 | 頁數 | 題數 |
 |---|---|---|---|---|
-| `餐飲連鎖_門市營運分析_訓練儀表板教材_v1.html` | 餐飲連鎖 | 門市業績 × 顧客行為 × 跨維度分析 | 3 | 17+4 |
-| `電商DTC_會員交易分析_訓練儀表板教材_v3.html` | 電商 DTC | 會員結構 × 交易模式 × 交叉分析 | 3 | 18+ |
+| `餐飲連鎖_門市營運分析_訓練儀表板教材.html` | 餐飲連鎖 | 門市業績 × 顧客行為 × 跨維度分析 | 3 | 17+4 |
+| `電商DTC_會員交易分析_訓練儀表板教材.html` | 電商 DTC | 會員結構 × 交易模式 × 交叉分析 | 3 | 18+ |
+| `零售便利商店_商品庫存補貨分析_訓練儀表板教材.html` | 零售便利商店 | ABC 分類 × 庫存健康 × 毛利結構 × 補貨策略 | 4 | 19+8 |
 
 > 所有數據均為合成資料，僅供訓練用途。
 
@@ -25,7 +26,7 @@
 │   ├── module-A-data.md      ← 數據設計規範
 │   ├── module-B-visual.md    ← 視覺與互動規範
 │   ├── module-C-pedagogy.md  ← 教學設計規範
-│   ├── module-D-diff.md      ← 版本差異紀錄
+│   ├── module-D-diff.md      ← 視覺/教學/結構三軸差異化策略
 │   └── module-E-checklist.md ← 上線前 QA 清單
 └── dev/                ← 開發筆記（非交付物）
     ├── dev-knowhow.md  ← 技術踩坑記錄
@@ -48,8 +49,10 @@
 2. 填入 `DATA` 物件中的所有數值
 3. 在瀏覽器開啟，確認 console 印出 `✓ All data consistency checks passed`
 4. 補充 `assertConsistency()` 中的跨欄驗算規則
-5. 撰寫 KPI 卡、圖表 findings、QA 題組
-6. 對照 `Skill/module-E-checklist.md` 完成上線前 QA
+5. 從 `Skill/module-D-diff.md` D.9 選一個 Visual Preset（P1–P7），不可與前一份相同
+6. 撰寫 KPI 卡、圖表 findings、QA 題組
+7. **Phase 4.5 Design QA**：依 `Skill/module-E-checklist.md` E.9 跑完 18 項視覺驗收，全部通過才繼續
+8. 對照 `Skill/module-E-checklist.md` E.1 完成 44 項上線前完整 QA
 
 ---
 
