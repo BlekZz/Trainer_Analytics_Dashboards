@@ -103,6 +103,20 @@ author: Blake
 
 ### Phase 3 — HTML 建構（依模組 B）
 
+> **🛑 Phase 3 ENTRY CHECKPOINT — 動任何 Write/Edit 工具之前，必須先輸出以下聲明**
+>
+> 用文字向使用者聲明（不需等待回覆，聲明後立即執行）：
+> ```
+> 【Phase 3 分層建構計畫】
+> Layer 1：骨架 + DATA + assertConsistency（Write tool，新建檔案）
+> Layer 2：P1 所有圖表 + QA（Edit append）
+> Layer 3：P2 所有圖表 + QA（Edit append）
+> Layer 4：P3 + 收尾面板（Edit append）
+> 每層完成後確認渲染正常再進下一層。現在開始 Layer 1。
+> ```
+>
+> ⛔ 禁止省略此聲明直接進入 HTML 建構。強制輸出聲明的目的是讓模型在動工具前明確 commit 分層策略，防止靜默一次輸出整份 HTML。
+
 > **🔴 大型建構強制採用「分層分批次」策略**
 >
 > 完整 dashboard HTML 約 1,200–2,000 行，單次輸出極易觸碰 32,000 token 輸出上限，導致連線中斷、檔案不完整寫入，且 agent 不報錯只是靜默截斷。

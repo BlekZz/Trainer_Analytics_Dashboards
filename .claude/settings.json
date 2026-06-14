@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const f=JSON.parse(process.env.CLAUDE_TOOL_INPUT||'{}').file_path||''; if(f.includes('Dashboard') && f.endsWith('.html')){console.log('\\n🔴 LAYER GATE — Dashboard HTML write detected.\\nPhase 3 REQUIRES 4-layer strategy. Before writing, confirm:\\n  1. Is this Layer 1 (Write tool, skeleton only)?\\n  2. Or layers 2-4 (Edit append only)?\\nDo NOT output the full HTML in one Write call.\\nSee SKILL.md Phase 3 for layer breakdown.\\n');}\"",
+            "timeout": 5000
+          }
+        ]
+      }
+    ]
+  }
+}

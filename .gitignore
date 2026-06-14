@@ -1,5 +1,5 @@
-# Claude Code local settings
-.claude/
+# Claude Code local settings (device-specific overrides only)
+.claude/settings.local.json
 
 # Temp files
 Claude Temp Files/
