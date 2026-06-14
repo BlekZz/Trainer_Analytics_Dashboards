@@ -33,7 +33,7 @@
 - [ ] **16. 訓練題區塊存在於 P3 末（或差異化指定位置）** — 紫色 panel
 - [ ] **17. 📐 設計選擇揭露區塊存在** — 8 項或差異化指定的數量
 - [ ] **18. 指標定義面板可開合且填齊** — 所有 KPI 都有口徑說明
-- [ ] **19. 所有縮寫/專有名詞已在 def-panel 定義** — 搜尋全文大寫縮寫（YoY、pp、LTV、ROI、KPI、AOV 等），逐一確認 def-panel 有對應條目；無定義者不得出現在正文
+- [ ] **19. 所有縮寫/專有名詞已在 def-panel 定義** — 用 `grep -oE '[A-Z]{2,5}'` 掃全文大寫序列，逐一確認 def-panel 有對應條目；無定義者不得出現在正文（YoY、pp、LTV、ROI、KPI、AOV 等均需覆蓋）
 - [ ] **20. 所有分析依據只引用儀表板呈現的數據** — F/I tag 中的每個數字需有圖表出處；引用未呈現數據者必須改為 [A] tag 並說明來源假設
 - [ ] **21. F/I/A 標籤系統在可見位置有說明** — legend strip 或 def-panel 必須有 F/I/A 三色標籤的含義說明，不可只在摺疊答案內使用
 - [ ] **22. `Chart.register(ChartDataLabels)` 為 script 啟動第一呼叫** — 缺少此行，所有 `datalabels: { display: true }` 為死碼（Chart.js 不報錯，只是靜默不渲染）；在 console 確認數值出現才算通過
@@ -49,6 +49,25 @@
 - [ ] **32. `mk()` datalabels 合併使用 spread pattern，而非 Object.assign** — 確認 `mk()` 中 explicit datalabels 合併寫法為 `dl = { ...dl, display: true, ...opts.plugins.datalabels }`，而非 `Object.assign(dl, opts.plugins.datalabels)`；水平 bar / 堆疊 bar 帶有 explicit datalabels config 時，截圖確認數值出現在 bar 末端（不需 hover）
 - [ ] **33. 所有 `.findings-section` 預設坍縮** — 開啟 dashboard 後所有 Findings 區塊應顯示摺疊狀態（只見標題列 + 箭頭▼），點擊後展開；確認 `DOMContentLoaded` 有 `document.querySelectorAll('.findings-section').forEach(s => s.classList.add('collapsed'))`
 - [ ] **34. `new Chart()` 直接建立的圖表有 `maintainAspectRatio: false` 且容器有明確 height** — 雷達、氣泡、散點等不走 `mk()` 的圖表，options 必須有 `responsive: true, maintainAspectRatio: false`，容器必須有 `style="height:NNNpx"`；截圖目視確認尺寸合理（雷達圖建議 240–320px，視頁面密度決定）
+
+### 資料可信度（5 項）
+
+- [ ] **35. 每個 KPI 滿足「可驗算性三選一」** — (1) 直接公式推算（AOV = 總收入 ÷ 總訂單）；(2) 分佈閉合（回購率 = ≤30天人數 ÷ 總顧客）；(3) DATA.anchors 中有配對原始值（`high_freq_revenue_wan: 8135` 使 58.3% × 13,954 可驗算）。不滿足任一條的 KPI 不得出現在 KPI card 上。
+- [ ] **36. `assertConsistency` 使用 `errors` 陣列（非 `errs`）** — 陣列名稱統一為 `errors`，grep 驗證腳本依此名稱比對；確認最終 `if (errors.length === 0) console.log('✓ All data consistency checks passed')` 格式一致
+- [ ] **37. 指標計算層級與圖表呈現層級一致** — 只呈現品類資料的儀表板不可放 SKU 層級 KPI（如用品類資料計算 HHI 而非 SKU）；每個 KPI 手動用圖表可見資料反推一次，算得出才合法
+- [ ] **38. 逆直覺設計點三處同步（若有）** — 任何刻意反常識的數據設計（如 VIP AOV < 常客 AOV），必須同時在：(1) DATA 數值本身、(2) 對應 QA 的 `trap-block`、(3) 設計選擇揭露面板 三處均呈現；缺少任一處學員會以為是 bug
+- [ ] **39. 刻意缺失維度兩處說明（若有）** — 任何刻意不展示的維度（如未拆外送 vs 自取），必須在：(1) 訓練題引導學員自行察覺、(2) 設計選擇揭露說明理由；不可靜默缺失
+
+### 視覺一致性（3 項）
+
+- [ ] **40. 深色主題 Chart.js 顏色已適配（深色主題才需檢查）** — `grid.color: 'rgba(255,255,255,0.05)'`、`ticks.color: 'rgba(255,255,255,0.4)'`、datalabels `color: '#e6edf3'`；確認淺色文字在深色背景下可讀
+- [ ] **41. FIA/L123 CSS 標準規格** — `.badge`、`.tag-f/i/a`、`.fia` **不含 `font-family`**（繼承 body 主字型）；`.fi-tag` **保留 `font-family: monospace`**；確認無殘留舊式 `JetBrains Mono` 設定在這些 class 上（grep `.badge` 區塊確認）
+- [ ] **42. findings-section text node wrapper（內容含 inline element 才需檢查）** — 若 findings-section 直接子節點有 `<strong>`、`<br>` 或裸 text node（非全由 `<div>`/`<p>` 包裹），CSS `display:none` 只隱藏 element child、不隱藏 text node；必須用 JS 建立 `.findings-content` wrapper 包住所有非 label 節點；坍縮後目視確認內容完全隱藏
+
+### 散點圖完整性（2 項，只有含散點圖時才需檢查）
+
+- [ ] **43. 散點圖象限分割線來自資料均值 + 封閉三角成立** — x/y 分割線使用實際資料均值（如 total_revenue / store_count / 12），非任意整數；若 x 軸由業務公式反推（如月均來客 = 年收入 ÷ AOV ÷ 12），assertConsistency 有 Check 驗算反推值誤差 < 1%
+- [ ] **44. 散點圖四象限都有代表點** — 資料設計確保四個象限各有 ≥1 個點；若某象限在商業邏輯上自然空缺（如精品型低客流高客單），在設計選擇揭露說明，否則學員會以為是資料設計錯誤
 
 ---
 
@@ -338,7 +357,7 @@ print("✓ All 9 data assertions passed")
 
 ---
 
-## E.9 Design QA 清單（Phase 4.5 專用）
+## E.9 Design QA 清單（Phase 4.5 專用，18 項）
 
 > 在 Phase 4.5 執行，瀏覽器開啟後目視 + 原始碼逐項確認。
 > **全部 ✅ 才能進 Phase 5。有任何 ❌ 必須修復後重跑。**
@@ -372,6 +391,13 @@ print("✓ All 9 data assertions passed")
 - [ ] **DQ-13. 非首頁圖表正確渲染** — 依序點擊 P2、P3、P4 tab，確認每頁圖表在切換後 ≤ 200ms 完整渲染（非空白 canvas）；`switchPage` 必須包含 `setTimeout(60ms)` 才能保證 DOM layout 完成後再 draw
 - [ ] **DQ-14. 首頁 DOMContentLoaded 圖表正確渲染** — 開啟頁面不做任何點擊，P1 圖表應已完整渲染；確認 `DOMContentLoaded` 有 `setTimeout(() => draw_p1(), 60)` 而非同步呼叫
 
+### 版本標記 & 程式結構（4 項）
+
+- [ ] **DQ-15. `syncHeaderHeight` 函數存在且位置正確** — 主 `<script>` 末（`</script>` 之前）有 `syncHeaderHeight` 函數，且綁定在 `window.addEventListener('load', ...)` 和 `window.addEventListener('resize', ...)`；**不可放在 `DOMContentLoaded` 內**（load 事件在字型載入後才觸發，DOMContentLoaded 會得到錯誤高度）
+- [ ] **DQ-16. 製作時間 chip 格式正確** — header 中的 chip 格式為 `🗓️ 製作時間：YYYYMMDD`（含中文前綴、無空格、8 位日期）；每次修改後日期同步更新為當日；grep `製作時間` 確認格式
+- [ ] **DQ-17. 只有一個 `DOMContentLoaded` handler** — grep `DOMContentLoaded` 確認全文只有一個 handler；若有多個，findings label 會因重複 click 綁定而 toggle 互相抵消（點了沒反應）；合併為單一 handler 或確認各自不重複操作同一元素
+- [ ] **DQ-18. findings-section collapse 真正生效** — 目視確認 findings 區塊在頁面載入後預設坍縮（只見標題 + 箭頭）；若含 `<strong>`/`<br>`/raw text node 的 findings-section 坍縮後仍有內容可見，需加 `.findings-content` wrapper（entry 21）
+
 ---
 
 ### Design QA 輸出格式
@@ -397,8 +423,12 @@ Phase 4.5 結束後，輸出以下格式的報告（不需等使用者確認，�
 | DQ-12 | pointHoverRadius≥10 | ✅ | 12 |
 | DQ-13 | 非首頁渲染正確 | ✅ | P2/P3/P4 均正常 |
 | DQ-14 | 首頁 DOMContentLoaded | ✅ | setTimeout(60) 確認 |
+| DQ-15 | syncHeaderHeight 位置正確 | ✅ | window.load/resize 綁定 |
+| DQ-16 | 製作時間 chip 格式 | ✅ | 🗓️ 製作時間：20260614 |
+| DQ-17 | DOMContentLoaded 不重複 | ✅ | grep 確認只有 1 個 |
+| DQ-18 | findings collapse 真正生效 | ✅ | 目視確認坍縮 |
 
-**通過 14/14 → ✅ 可進 Phase 5**
+**通過 18/18 → ✅ 可進 Phase 5**
 ```
 
 若有 ❌ 項目，明確列出：

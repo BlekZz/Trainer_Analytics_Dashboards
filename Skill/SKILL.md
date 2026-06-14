@@ -187,8 +187,8 @@ author: Blake
 > 4. 有任何 ❌ → 修復後重跑清單，直到全部 ✅
 
 17. 切換每一個分頁（P1 → P2 → P3 → P4），目視確認所有圖表渲染正確（非空白）
-18. 跑完 E.9 Design QA 14 項清單
-19. 輸出 Design QA 結果摘要表格，並明確聲明「通過 N/14，可（或不可）進 Phase 5」
+18. 跑完 E.9 Design QA 18 項清單
+19. 輸出 Design QA 結果摘要表格，並明確聲明「通過 N/18，可（或不可）進 Phase 5」
 
 ### Phase 5 — 驗收（依模組 E）
 20. Playwright 自動測試（如環境支援）
@@ -221,7 +221,7 @@ author: Blake
 | 選視覺 Preset（色票 + 字型） | D.9 |
 | 選擴充圖表類型（Waterfall 等） | D.10 |
 | 想跟前一份不同（三軸差異化） | D（全篇） |
-| Design QA（Phase 4.5） | E.9（14 項視覺驗收） |
+| Design QA（Phase 4.5） | E.9（18 項視覺驗收） |
 | 交付前完整檢查 | E.1（34 項 hard-check） |
 | Agent 工作角色與稽核門 | F（全篇） |
 
