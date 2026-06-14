@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>零售便利商店_商品庫存補貨分析_訓練儀表板</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600&family=JetBrains+Mono:wght@400;700&display=swap">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ── P6 電商活力型 Preset ── */
+    :root {
+      --bg: #ECFDF5; --bg-card: #FFFFFF; --bg-finding: #E8F8F1;
+      --accent: #059669; --accent2: #10B981; --warn: #D97706; --danger: #DC2626; --purple: #7C3AED;
+      --text: #064E3B; --text-muted: #64748B; --border: rgba(0,0,0,0.07);
+      --radius: 14px;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'Nunito Sans', sans-serif; font-size: 15px; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+
+    /* ── Header ── */
+    :root { --header-h: 138px; }
+    .site-header {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(236,253,245,0.97); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-row-1 {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 13px 24px 10px;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    .header-title {
+      font-family: 'Rubik', sans-serif; font-size: 1.08rem; font-weight: 600;
+      color: var(--text); letter-spacing: -0.01em; white-space: nowrap;
+    }
+    .meta-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      border-radius: 20px; padding: 2px 10px; font-size: 0.69rem;
+      background: rgba(0,0,0,0.04); color: var(--text-muted);
+      border: 1px solid rgba(0,0,0,0.08); white-space: nowrap;
+    }
+    .meta-chip.demo {
+      background: rgba(212,135,10,0.12); color: var(--warn);
+      border-color: rgba(212,135,10,0.3); font-weight: 600;
+    }
+    .header-row-2 {
+      display: flex; align-items: center;
+      padding: 0 24px;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    .def-toggle-btn {
+      display: flex; align-items: center; gap: 7px;
+      background: rgba(5,150,105,0.08);
+      border: 1px solid rgba(5,150,105,0.25); border-radius: 7px;
+      padding: 7px 13px; margin: 7px 16px 7px 0;
+      color: var(--accent); font-family: 'Nunito Sans', sans-serif;
+      font-size: 0.79rem; font-weight: 600; cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      flex-shrink: 0; user-select: none; white-space: nowrap;
+    }
+    .def-toggle-btn:hover { background: rgba(5,150,105,0.15); }
+    .def-toggle-btn.open { background: rgba(5,150,105,0.18); border-color: rgba(5,150,105,0.45); }
+    .def-toggle-icon { font-size: 0.95rem; }
+    .def-toggle-arrow { font-size: 0.85rem; line-height: 1; display: inline-block; transition: transform 0.25s ease; opacity: 0.65; }
+    .def-toggle-btn.open .def-toggle-arrow { transform: rotate(90deg); }
+
+    .nav-tabs { display: flex; gap: 3px; }
+    .nav-tab {
+      padding: 9px 20px; border-radius: 7px 7px 0 0;
+      cursor: pointer; font-size: 0.84rem; font-weight: 500;
+      color: var(--text-muted); border: 1px solid transparent;
+      border-bottom: none; transition: all 0.2s; background: transparent;
+      margin-bottom: -1px; white-space: nowrap;
+    }
+    .nav-tab:hover { color: var(--text); background: rgba(0,0,0,0.03); }
+    .nav-tab.active {
+      color: var(--accent); background: var(--bg);
+      border-color: var(--border); border-bottom-color: var(--bg);
+    }
+    .header-legend {
+      display: flex; align-items: center; gap: 0; flex-wrap: wrap;
+      padding: 7px 24px; font-size: 0.71rem; color: var(--text-muted);
+    }
+    .legend-colors { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .legend-colors > span { display: flex; align-items: center; gap: 5px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .legend-vdivider { width: 1px; height: 15px; background: rgba(0,0,0,0.12); flex-shrink: 0; margin: 0 14px; }
+    .legend-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .legend-right > span { display: flex; align-items: center; gap: 5px; }
+    .badge { display: inline-block; border-radius: 4px; padding: 1px 6px; font-size: 0.67rem; font-weight: 600; }
+    .badge.l1 { background: rgba(16,185,129,0.15); color: var(--accent2); border: 1px solid rgba(16,185,129,0.3); }
+    .badge.l2 { background: rgba(5,150,105,0.12); color: var(--accent); border: 1px solid rgba(5,150,105,0.3); }
+    .badge.l3 { background: rgba(124,58,237,0.12); color: var(--purple); border: 1px solid rgba(124,58,237,0.3); }
+
+    /* ── Def panel ── */
+    #main-wrapper { display: flex; align-items: flex-start; }
+    #def-panel-outer { flex-shrink: 0; width: 0; overflow: hidden; transition: width 0.28s cubic-bezier(0.4,0,0.2,1); }
+    #def-panel-outer.open { width: 323px; }
+    #def-panel-inner {
+      width: 323px;
+      height: calc((100vh - var(--header-h, 138px)) * 1.2);
+      overflow-y: auto; position: sticky; top: var(--header-h, 138px);
+      background: var(--bg-card); border-right: 1px solid var(--border); padding: 18px 16px;
+    }
+    #def-panel-inner::-webkit-scrollbar { width: 4px; }
+    #def-panel-inner::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 2px; }
+    .def-search-wrap { margin-bottom: 12px; }
+    .def-search-wrap input {
+      width: 100%; background: rgba(0,0,0,0.03);
+      border: 1px solid rgba(0,0,0,0.1); border-radius: 7px;
+      padding: 7px 11px; color: var(--text);
+      font-family: 'Nunito Sans', sans-serif; font-size: 0.78rem;
+      outline: none; transition: border-color 0.2s;
+    }
+    .def-search-wrap input::placeholder { color: var(--text-muted); }
+    .def-search-wrap input:focus { border-color: rgba(5,150,105,0.45); background: rgba(5,150,105,0.04); }
+    .def-no-result { font-size: 0.76rem; color: var(--text-muted); padding: 10px 4px; text-align: center; display: none; }
+    #def-panel-inner h3 {
+      font-size: 0.72rem; color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase; letter-spacing: 0.09em;
+      margin-bottom: 14px; padding-bottom: 9px;
+      border-bottom: 1px solid var(--border);
+    }
+    .def-item { background: var(--bg-finding); border-radius: 8px; padding: 11px 13px; margin-bottom: 8px; }
+    .def-item:last-child { margin-bottom: 0; }
+    .def-item h4 { font-size: 0.75rem; color: var(--accent); margin-bottom: 4px; font-family: 'JetBrains Mono', monospace; }
+    .def-item p { font-size: 0.74rem; color: var(--text-muted); line-height: 1.55; }
+
+    #content-area { flex: 1; min-width: 0; }
+
+    /* ── Pages ── */
+    .page { display: none; padding: 24px; max-width: 1400px; margin: 0 auto; }
+    .page.active { display: block; }
+
+    /* ── Section heading ── */
+    .section-title {
+      font-family: 'Rubik', sans-serif; font-size: 1.05rem; font-weight: 600;
+      color: var(--text); margin: 28px 0 16px; padding-left: 12px;
+      border-left: 3px solid var(--accent);
+    }
+    .section-title:first-child { margin-top: 4px; }
+
+    /* ── KPI cards ── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 14px; margin-bottom: 28px; }
+    .kpi-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 18px 20px; position: relative; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .kpi-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--kpi-color, var(--accent));
+    }
+    .kpi-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; }
+    .kpi-value { font-family: 'JetBrains Mono', monospace; font-size: clamp(1.05rem, 2.4vw, 1.55rem); font-weight: 600; color: var(--text); line-height: 1.2; word-break: break-word; }
+    .kpi-sub { font-size: 0.72rem; margin-top: 5px; }
+    .kpi-up { color: var(--accent2); }
+    .kpi-down { color: var(--danger); }
+    .kpi-neutral { color: var(--text-muted); }
+
+    /* ── Chart grid ── */
+    .chart-grid { display: grid; gap: 18px; margin-bottom: 24px; }
+    .chart-grid-2 { grid-template-columns: 1fr 1fr; }
+    .chart-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .chart-grid-wide { grid-template-columns: 2fr 1fr; }
+    @media(max-width:900px) { .chart-grid-2, .chart-grid-3, .chart-grid-wide { grid-template-columns: 1fr; } }
+
+    /* ── Chart card ── */
+    .chart-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 20px; min-width: 0; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .chart-card-title { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); margin-bottom: 14px; letter-spacing: 0.04em; text-transform: uppercase; }
+    .chart-block { position: relative; }
+    .chart-block canvas { display: block; }
+    .h240 { height: 240px; } .h260 { height: 260px; } .h300 { height: 300px; }
+    .h360 { height: 360px; } .h420 { height: 420px; } .h480 { height: 480px; }
+    .h520 { height: 520px; }
+
+    /* ── Findings ── */
+    .findings-section {
+      background: var(--bg-finding); border-radius: 10px;
+      padding: 12px 16px; margin-top: 14px; font-size: 0.8rem; color: var(--text-muted);
+    }
+    .findings-section strong { color: var(--text); }
+    .findings-section > .findings-toggle-btn {
+      display: flex; align-items: center; gap: 6px;
+      cursor: pointer; user-select: none; font-weight: 600;
+      font-size: 0.8rem; color: var(--text);
+    }
+    .findings-body { margin-top: 6px; }
+    .findings-section.collapsed .findings-body { display: none; }
+    .findings-arrow { font-size: 0.75rem; transition: transform 0.2s; opacity: 0.55; }
+    .findings-section:not(.collapsed) .findings-arrow { transform: rotate(90deg); }
+
+    /* ── Q&A ── */
+    .qa-section { margin-top: 28px; }
+    .qa-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .question {
+      padding: 14px 18px; cursor: pointer; display: flex; align-items: flex-start; gap: 10px;
+      transition: background 0.15s; user-select: none;
+    }
+    .question:hover { background: rgba(5,150,105,0.04); }
+    .question-text { flex: 1; font-weight: 600; font-size: 0.88rem; }
+    .question-arrow { color: var(--text-muted); font-size: 0.8rem; margin-top: 2px; transition: transform 0.2s; flex-shrink: 0; }
+    .qa-item.open .question-arrow { transform: rotate(90deg); }
+    .answer { display: none; padding: 0 18px 18px; font-size: 0.84rem; line-height: 1.7; }
+    .answer.show { display: block; }
+
+    .tag-f { display: inline-block; background: rgba(16,185,129,0.15); color: var(--accent2); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
+    .tag-i { display: inline-block; background: rgba(5,150,105,0.12); color: var(--accent); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
+    .tag-a { display: inline-block; background: rgba(212,135,10,0.15); color: var(--warn); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
+    .fia { display: inline-block; border-radius: 3px; padding: 0 4px; font-size: 0.68rem; font-weight: 700; }
+    .fia.f { background: rgba(16,185,129,0.15); color: var(--accent2); }
+    .fia.i { background: rgba(5,150,105,0.12); color: var(--accent); }
+    .fia.a { background: rgba(212,135,10,0.15); color: var(--warn); }
+
+    .trap-block {
+      background: rgba(220,38,38,0.07); border: 1px solid rgba(220,38,38,0.25);
+      border-radius: 8px; padding: 10px 14px; margin-top: 10px;
+      font-size: 0.8rem; color: #b91c1c; display: flex; gap: 8px; align-items: flex-start;
+    }
+    .trap-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .nav-hint {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(212,135,10,0.08); border: 1px solid rgba(212,135,10,0.25);
+      border-radius: 8px; padding: 8px 14px; margin-top: 10px;
+      font-size: 0.78rem; color: var(--warn); cursor: pointer; transition: background 0.2s;
+    }
+    .nav-hint:hover { background: rgba(212,135,10,0.15); }
+    .answer-block { margin-bottom: 6px; }
+    .answer-block p { margin-top: 4px; }
+
+    /* ── Design choices ── */
+    .design-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    @media(max-width:700px) { .design-grid { grid-template-columns: 1fr; } }
+    .design-item { background: var(--bg-finding); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .design-item h4 { font-size: 0.8rem; color: var(--accent); margin-bottom: 4px; font-family: 'Rubik', sans-serif; }
+    .design-item p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+
+    /* ── Training block ── */
+    .training-block {
+      background: rgba(124,58,237,0.05); border: 1px solid rgba(124,58,237,0.2);
+      border-radius: var(--radius); padding: 20px; margin-top: 28px;
+    }
+    .training-title { font-family: 'Rubik', sans-serif; font-size: 0.95rem; font-weight: 600; color: var(--purple); margin-bottom: 14px; }
+
+    /* ── Heatmap table ── */
+    .heatmap-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    .heatmap-table th { background: var(--bg-finding); padding: 8px 10px; text-align: center; color: var(--text-muted); font-weight: 600; border: 1px solid var(--border); }
+    .heatmap-table td { padding: 7px 10px; text-align: center; border: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; }
+
+    /* ── Misc ── */
+    .section-divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+    .page-footer { padding: 32px 24px; text-align: center; font-size: 0.75rem; color: var(--text-muted); }
+    @keyframes chartFlash {
+      0%,100% { box-shadow: 0 1px 4px rgba(0,0,0,0.06); border-color: var(--border); }
+      50% { box-shadow: 0 0 0 3px rgba(5,150,105,0.5), 0 0 20px rgba(5,150,105,0.2); border-color: rgba(5,150,105,0.7); }
+    }
+    .chart-flash { animation: chartFlash 0.55s ease-in-out 4; }
+    .chart-ref-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(5,150,105,0.06); border: 1px solid rgba(5,150,105,0.25);
+      border-radius: 6px; padding: 5px 12px; margin-top: 8px;
+      font-size: 0.76rem; color: var(--accent); cursor: pointer;
+      font-family: 'Nunito Sans', sans-serif; transition: background 0.2s;
+    }
+    .chart-ref-btn:hover { background: rgba(5,150,105,0.12); }
+    @media(max-width:600px) {
+      .header-row-1 { padding: 10px 12px 8px; }
+      .header-row-2 { padding: 0 12px; overflow-x: auto; }
+      .header-legend { padding: 5px 12px; row-gap: 4px; }
+      .header-legend .legend-vdivider { display: none; }
+      .legend-colors { gap: 8px; }
+      .page { padding: 16px; }
+    }
+    @media(max-width:480px) { .kpi-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<header class="site-header" id="top-header">
+  <div class="header-row-1">
+    <span class="header-title">零售_便利商店｜商品庫存補貨分析_訓練儀表板</span>
+    <span class="meta-chip">📅 資料期間：2024/01/01 – 2024/12/31</span>
+    <span class="meta-chip">📊 52門市 × 2,847 SKU × 6品類</span>
+    <span class="meta-chip demo">⚗️ DEMO 合成資料集</span>
+    <span style="flex:1"></span>
+    <span class="meta-chip">✏️ 製作者：Blake</span>
+    <span class="meta-chip">🗓️ 製作時間：20260614</span>
+  </div>
+  <div class="header-row-2">
+    <button class="def-toggle-btn" id="defToggleBtn" onclick="toggleDef()">
+      <span class="def-toggle-icon">📖</span>
+      <span>指標定義</span>
+      <span class="def-toggle-arrow">›</span>
+    </button>
+    <div class="nav-tabs">
+      <div class="nav-tab active" id="tab-p1" onclick="switchPage('p1')">① SKU銷售 &amp; ABC</div>
+      <div class="nav-tab" id="tab-p2" onclick="switchPage('p2')">② 庫存健康</div>
+      <div class="nav-tab" id="tab-p3" onclick="switchPage('p3')">③ 毛利 &amp; GMROI</div>
+      <div class="nav-tab" id="tab-p4" onclick="switchPage('p4')">④ 補貨決策</div>
+    </div>
+  </div>
+  <div class="header-legend">
+    <div class="legend-colors">
+      <span><span class="dot" style="background:var(--accent)"></span>事實數據</span>
+      <span><span class="dot" style="background:var(--accent2)"></span>正向指標</span>
+      <span><span class="dot" style="background:var(--warn)"></span>注意/推論</span>
+      <span><span class="dot" style="background:var(--danger)"></span>警示/缺貨</span>
+      <span><span class="dot" style="background:var(--purple)"></span>行為/決策</span>
+    </div>
+    <span class="legend-vdivider"></span>
+    <div class="legend-right">
+      <span><span class="badge l1">L1</span> 單圖事實</span>
+      <span><span class="badge l2">L2</span> 同頁交叉</span>
+      <span><span class="badge l3">L3</span> 跨頁推論</span>
+      <span class="legend-vdivider"></span>
+      <span><span class="tag-f">F</span> 事實</span>
+      <span><span class="tag-i">I</span> 推論</span>
+      <span><span class="tag-a">A</span> 假設</span>
+    </div>
+  </div>
+</header>
+
+<div id="main-wrapper">
+  <div id="def-panel-outer">
+    <div id="def-panel-inner">
+      <h3>📖 指標定義</h3>
+      <div class="def-search-wrap">
+        <input type="text" id="defSearch" placeholder="🔍 搜尋指標關鍵字…" autocomplete="off" oninput="filterDef(this.value)">
+      </div>
+      <div class="def-no-result" id="defNoResult">沒有符合的指標</div>
+    </div>
+  </div>
+
+  <div id="content-area">
+
+<!-- P1 shell -->
+<div id="page-p1" class="page active">
+  <p class="section-title">① SKU 銷售總覽 &amp; ABC 分類分析</p>
+
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--kpi-color:var(--accent)">
+      <div class="kpi-label">年度總營收</div>
+      <div class="kpi-value">6,847<span style="font-size:0.58em;font-weight:400"> 萬NT$</span></div>
+      <div class="kpi-sub kpi-neutral">52 門市 × 2,847 活躍 SKU</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--accent2)">
+      <div class="kpi-label">整體毛利率</div>
+      <div class="kpi-value">34.5%</div>
+      <div class="kpi-sub kpi-up">↑ 冷藏飲料品類最高 44.3%</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--danger)">
+      <div class="kpi-label">年均缺貨率</div>
+      <div class="kpi-value">8.3%</div>
+      <div class="kpi-sub kpi-down">↑ 旺季（7–8月、12月）峰值更高</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--warn)">
+      <div class="kpi-label">庫存周轉率</div>
+      <div class="kpi-value">5.02<span style="font-size:0.55em;font-weight:400"> 次/年</span></div>
+      <div class="kpi-sub kpi-neutral">GMROI 2.65 · 呆滯庫存 12.4%</div>
+    </div>
+  </div>
+
+  <div class="chart-grid chart-grid-2">
+    <div class="chart-card" id="cc-abc">
+      <div class="chart-card-title">ABC 分類分析 — SKU 數 vs 收入貢獻</div>
+      <div class="chart-block h300"><canvas id="ch-abc"></canvas></div>
+      <div class="findings-section collapsed">
+        <div class="findings-toggle-btn" onclick="this.closest('.findings-section').classList.toggle('collapsed')">
+          <span class="findings-arrow">›</span><span>重點發現</span>
+        </div>
+        <div class="findings-body">
+          <p><strong>A 類 427 SKU（佔 15%）貢獻 78.2% 收入</strong>，是補貨優先保障的核心目標。<br>
+          C 類 1,708 SKU 佔 60%，但僅貢獻 5.4%——管理成本與效益需權衡。</p>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card" id="cc-pareto">
+      <div class="chart-card-title">帕累托累積曲線 — SKU 集中度</div>
+      <div class="chart-block h300"><canvas id="ch-pareto"></canvas></div>
+      <div class="findings-section collapsed">
+        <div class="findings-toggle-btn" onclick="this.closest('.findings-section').classList.toggle('collapsed')">
+          <span class="findings-arrow">›</span><span>重點發現</span>
+        </div>
+        <div class="findings-body">
+          <p>前 <strong>16% SKU</strong> 已累積 78.9% 收入，接近 80/20 法則閾值。<br>
+          曲線斜率在前段極陡，顯示高度集中——C 類長尾是庫存效率提升的主要空間。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-grid chart-grid-wide">
+    <div class="chart-card" id="cc-monthly">
+      <div class="chart-card-title">月度營收趨勢 &amp; 毛利率雙軸</div>
+      <div class="chart-block h300"><canvas id="ch-monthly"></canvas></div>
+      <div class="findings-section collapsed">
+        <div class="findings-toggle-btn" onclick="this.closest('.findings-section').classList.toggle('collapsed')">
+          <span class="findings-arrow">›</span><span>重點發現</span>
+        </div>
+        <div class="findings-body">
+          <p>旺季（2月、7月、12月）營收顯著拉高，但 <strong>毛利率反向走低（12月最低 32.6%）</strong>，反映旺季促銷讓利。<br>
+          3–4月離峰期毛利率反而最高（35.4–35.5%），是平時結構性盈利能力的體現。</p>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card" id="cc-cat-donut">
+      <div class="chart-card-title">六大品類收入占比</div>
+      <div class="chart-block h300"><canvas id="ch-cat-donut"></canvas></div>
+      <div class="findings-section collapsed">
+        <div class="findings-toggle-btn" onclick="this.closest('.findings-section').classList.toggle('collapsed')">
+          <span class="findings-arrow">›</span><span>重點發現</span>
+        </div>
+        <div class="findings-body">
+          <p><strong>食品飲料（32.4%）</strong>為最大品類，加上日用品、生鮮熟食合計 67.4%。<br>
+          文具雜貨佔比最低（7.2%），但毛利率 36.7% 高於食品飲料（31.2%）。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qa-section">
+    <p class="section-title">① 練習題</p>
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1</span>
+        <span class="question-text">從帕累托曲線讀出：前幾 % 的 SKU 貢獻了整體約 80% 的收入？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 帕累托曲線顯示，前 <span class="fia f">16% SKU</span>（即 427 個 A 類 SKU）已累積貢獻 <strong>78.9%</strong> 的收入，非常接近 80/20 法則的理論值。</p>
+        </div>
+        <div class="trap-block"><span class="trap-icon">⚠️</span><span>常見錯誤：回答「前 20% SKU」。實際曲線在 16% 處已達 78.9%，集中度高於標準 80/20 情境，進一步強調 A 類保障的重要性。</span></div>
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1</span>
+        <span class="question-text">A 類 SKU 共有幾個？按建議每天補貨，全年會產生多少次補貨訂單？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> A 類 SKU 共 <span class="fia f">427 個</span>，建議補貨頻率為每天（freq_days = 1）。<br>全年補貨訂單數 = 427 × 365 = <strong>155,855 次</strong>。</p>
+        </div>
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1</span>
+        <span class="question-text">C 類 SKU 佔總 SKU 的 60%，但只貢獻 5.4% 的收入。這對庫存管理提出了什麼挑戰？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-i">I:</span> C 類 SKU 銷售頻率低，但每個 SKU 仍需採購、入庫、陳列、補貨等管理動作，消耗大量運營資源。當 C 類 SKU 中有相當比例是<span class="fia i">低動銷或零動銷品項</span>時，資源消耗遠超其收入貢獻。</p>
+          <p style="margin-top:8px"><span class="tag-a">A:</span> 若 C 類 SKU 中有 30% 是真正呆滯品（可結合庫存週齡 &gt;60天資料判斷），考慮淘汰以釋放貨架空間給高毛利品項。</p>
+        </div>
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2</span>
+        <span class="question-text">12月旺季營收最高（760萬），但毛利率卻是全年最低（32.6%）。從月度趨勢圖分析，可能的原因是什麼？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-i">I:</span> 旺季促銷（折扣、買一送一）使實際售價降低，壓縮毛利率。此外，旺季時食品飲料、生鮮熟食等<span class="fia i">本就低毛利品類銷量比重上升</span>，整體品類混搭效果也會拉低加總毛利率。</p>
+        </div>
+        <div class="trap-block"><span class="trap-icon">⚠️</span><span>不要只說「賣得多所以毛利率低」——銷量增加本身不影響毛利率。是促銷讓利與品類結構改變才是原因。</span></div>
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2</span>
+        <span class="question-text">食品飲料是最大收入品類（32.4%），但毛利率僅 31.2%，是六類倒數第二低。是否應該減少食品飲料的庫存投入？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-a">A:</span> 不一定。毛利率低不等於不值得投資——食品飲料的<span class="fia a">絕對毛利金額 692 萬</span>仍是六品類最高，且帶客流引流效果難以量化。</p>
+          <p style="margin-top:8px"><span class="tag-i">I:</span> 更好的策略是優化品類內的 SKU 組合，提升高毛利產品比重，而非直接削減總庫存。</p>
+        </div>
+        <div class="nav-hint" onclick="goToChart('p3','cc-cat-gm')">
+          📊 前往 ③ 毛利 &amp; GMROI 查看各品類毛利絕對金額 →
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- P2 shell -->
+<div id="page-p2" class="page">
+  <p class="section-title">② 庫存健康分析</p>
+
+  <div class="chart-grid chart-grid-2">
+    <div class="chart-card" id="cc-turnover">
+      <div class="chart-card-title">品類庫存周轉率（次/年）</div>
+      <div class="chart-block h300"><canvas id="ch-turnover"></canvas></div>
+      <div class="findings-section collapsed">
+        <div class="findings-toggle-btn" onclick="this.closest('.findings-section').classList.toggle('collapsed')">
+          <span class="findings-arrow">›</span><span>重點發現</span>
+        </div>
+        <div class="findings-body">
+          <p><strong>生鮮熟食周轉率最高（22.74次/年）</strong>，新鮮度壓力驅動快速補貨。冷藏飲料最低（4.29次），冷鏈資本積壓風險最高。</p>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card" id="cc-stockout-cat">
+      <div class="chart-card-title">品類缺貨率（%）</div>
+      <div class="chart-block h300"><canvas id="ch-stockout-cat"></canvas></div>
+      <div class="findings-section collapsed">
+        <div class="findings-toggle-btn" onclick="this.closest('.findings-section').classList.toggle('collapsed')">
+          <span class="findings-arrow">›</span><span>重點發現</span>
+        </div>
+        <div class="findings-body">
+          <p><strong>生鮮熟食（12.6%）與冷藏飲料（11.3%）均超過整體均值 8.3%。</strong><br>高缺貨恰對應高周轉——補貨響應速度仍是供應鏈瓶頸。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-grid chart-grid-2">
+    <div class="chart-card" id="cc-stockout-monthly">
+      <div class="chart-card-title">月度缺貨事件數趨勢</div>
+      <div class="chart-block h280"><canvas id="ch-stockout-monthly"></canvas></div>
+      <div class="findings-section collapsed">
+        <div class="findings-toggle-btn" onclick="this.closest('.findings-section').classList.toggle('collapsed')">
+          <span class="findings-arrow">›</span><span>重點發現</span>
+        </div>
+        <div class="findings-body">
+          <p>缺貨事件在 <strong>7–8月與12月旺季飆升</strong>（7月 315次、12月 338次），與月度銷售曲線高度吻合。旺季備貨不足是核心痛點。</p>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card" id="cc-inv-age">
+      <div class="chart-card-title">品類庫存週齡分布（SKU數）</div>
+      <div class="chart-block h280"><canvas id="ch-inv-age"></canvas></div>
+      <div class="findings-section collapsed">
+        <div class="findings-toggle-btn" onclick="this.closest('.findings-section').classList.toggle('collapsed')">
+          <span class="findings-arrow">›</span><span>重點發現</span>
+        </div>
+        <div class="findings-body">
+          <p>各品類均有 <strong>&gt;60天呆滯 SKU（整體 12.4%）</strong>。食品飲料呆滯 SKU 數最多（114個），需優先盤點清理。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qa-section">
+    <p class="section-title">② 練習題</p>
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1</span>
+        <span class="question-text">哪個品類庫存周轉率最高？哪個最低？差距有多大（倍數）？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> <span class="fia f">生鮮熟食最高（22.74次/年）</span>，<span class="fia f">冷藏飲料最低（4.29次/年）</span>，差距約 <strong>5.3 倍</strong>（18.45次）。</p>
+        </div>
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1</span>
+        <span class="question-text">全年庫存呆滯率（&gt;60天）是多少？折合為多少個 SKU？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 呆滯率 <span class="fia f">12.4%</span>，2,847 × 12.4% ≈ <strong>353 個 SKU</strong> 週齡超過 60 天。</p>
+        </div>
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1</span>
+        <span class="question-text">生鮮熟食同時有最高周轉率（22.74）和最高缺貨率（12.6%）。這個組合代表什麼問題？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-i">I:</span> 高周轉 + 高缺貨代表<span class="fia i">補貨速度跟不上銷售消耗速度</span>。庫存快速清空，但補貨前置時間（lead time）不夠短，導致貨架空窗期。這不是「庫存太多」的問題，而是「補貨響應速度」問題。</p>
+        </div>
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2</span>
+        <span class="question-text">7月缺貨事件（315次）比4月（186次）多出 70%，但 ① 頁月度營收增幅只有約 40%。這兩組數字放在一起說明什麼？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-i">I:</span> 旺季銷售增速 40%，缺貨事件增速 70%——說明<span class="fia i">旺季備貨準備度嚴重不足</span>，out-of-stock 損失規模可能超過旺季額外收入。</p>
+        </div>
+        <div class="nav-hint" onclick="goToChart('p1','cc-monthly')">
+          📊 前往 ① SKU銷售 查看月度營收趨勢對照 →
+        </div>
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3</span>
+        <span class="question-text">冷藏飲料有最高毛利率（44.3%）、最低周轉率（4.29次）且缺貨率偏高（11.3%）。如果你是採購主管，你會提出什麼改善策略？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-a">A:</span> 典型「<span class="fia a">高潛力但資本效率低</span>」品類。建議策略：</p>
+          <p style="margin-top:6px">① 品類內 ABC 分析：集中補貨高動銷 SKU，淘汰低動銷品項釋放冷鏈資本。<br>
+          ② 縮短補貨前置時間：提升補貨頻率，降低安全庫存需求。<br>
+          ③ 目標：在不增加總庫存的前提下，將周轉率從 4.29 提升至接近全場均值 5.02。</p>
+        </div>
+        <div class="nav-hint" onclick="goToChart('p3','cc-gmroi')">
+          📊 前往 ③ 毛利&amp;GMROI 查看冷藏飲料的 GMROI 位置 →
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- P3 shell -->
+<div id="page-p3" class="page">
+  <p class="section-title">③ 毛利分析 &amp; GMROI</p>
+
+  <div class="chart-grid chart-grid-2">
+    <div class="chart-card" id="cc-cat-gm">
+      <div class="chart-card-title">品類毛利率 &amp; 毛利金額雙軸</div>
+      <div class="chart-block h300"><canvas id="ch-cat-gm"></canvas></div>
+      <div class="findings-section collapsed">
+        <div class="findings-toggle-btn" onclick="this.closest('.findings-section').classList.toggle('collapsed')">
+          <span class="findings-arrow">›</span><span>重點發現</span>
+        </div>
+        <div class="findings-body">
+          <p>毛利率最高的冷藏飲料（44.3%）絕對毛利金額（382萬）排第二，高於生鮮熟食（252萬）。<strong>毛利率 ≠ 毛利金額</strong>——需同時關注兩個維度。</p>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card" id="cc-gmroi">
+      <div class="chart-card-title">GMROI × 銷售佔比 — 品類效益矩陣</div>
+      <div class="chart-block h300"><canvas id="ch-gmroi"></canvas></div>
+      <div class="findings-section collapsed">
+        <div class="findings-toggle-btn" onclick="this.closest('.findings-section').classList.toggle('collapsed')">
+          <span class="findings-arrow">›</span><span>重點發現</span>
+        </div>
+        <div class="findings-body">
+          <p><strong>生鮮熟食 GMROI 最高（6.63）</strong>，每投入1元庫存創造6.63元毛利，資本效率最佳。文具雜貨 GMROI 最低（2.74），且銷售佔比也低。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-grid chart-grid-2">
+    <div class="chart-card" id="cc-monthly-gp">
+      <div class="chart-card-title">月度毛利金額 &amp; 毛利率趨勢</div>
+      <div class="chart-block h280"><canvas id="ch-monthly-gp"></canvas></div>
+      <div class="findings-section collapsed">
+        <div class="findings-toggle-btn" onclick="this.closest('.findings-section').classList.toggle('collapsed')">
+          <span class="findings-arrow">›</span><span>重點發現</span>
+        </div>
+        <div class="findings-body">
+          <p>12月毛利金額最高（248萬），但毛利率最低（32.6%）——旺季是量大利薄。<strong>2月、12月旺季毛利金額貢獻最大</strong>，保障這兩個月備貨稼動率至關重要。</p>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card" id="cc-waterfall">
+      <div class="chart-card-title">品類收入結構 — 毛利 vs 成本拆解</div>
+      <div class="chart-block h280"><canvas id="ch-waterfall"></canvas></div>
+      <div class="findings-section collapsed">
+        <div class="findings-toggle-btn" onclick="this.closest('.findings-section').classList.toggle('collapsed')">
+          <span class="findings-arrow">›</span><span>重點發現</span>
+        </div>
+        <div class="findings-body">
+          <p>食品飲料雖毛利率低，<strong>絕對毛利金額（692萬）遠高於其他品類</strong>。生鮮熟食毛利率 22.6% 但成本佔比最高，需重點控管進貨成本。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-card" style="margin-bottom:24px" id="cc-gm-heatmap">
+    <div class="chart-card-title">門市型態 × 品類毛利率（%）熱力圖</div>
+    <div id="gm-heatmap-wrap" style="overflow-x:auto;margin-top:4px"></div>
+    <div class="findings-section collapsed" style="margin-top:14px">
+      <div class="findings-toggle-btn" onclick="this.closest('.findings-section').classList.toggle('collapsed')">
+        <span class="findings-arrow">›</span><span>重點發現</span>
+      </div>
+      <div class="findings-body">
+        <p><strong>郊區門市各品類毛利率普遍低於北部都市</strong>，差距 1–3 個百分點。冷藏飲料在各門市類型均維持最高毛利率（42.8%–45.6%），是毛利貢獻最穩定的品類。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="qa-section">
+    <p class="section-title">③ 練習題</p>
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1</span>
+        <span class="question-text">哪個品類的 GMROI 最高？這代表什麼意義？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> <span class="fia f">生鮮熟食 GMROI 最高（6.63）</span>，意味著每投入 1 元庫存平均創造 6.63 元毛利。GMROI 衡量的是庫存資本的<strong>毛利回報效率</strong>，不是銷售規模。</p>
+        </div>
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1</span>
+        <span class="question-text">從品類收入結構圖，哪個品類的「毛利金額」最高？哪個品類的「毛利率」最高？這兩個答案一樣嗎？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 毛利金額最高：<span class="fia f">食品飲料（692萬）</span>；毛利率最高：<span class="fia f">冷藏飲料（44.3%）</span>。兩個答案不同。</p>
+        </div>
+        <div class="trap-block"><span class="trap-icon">⚠️</span><span>毛利率高不等於毛利金額大。冷藏飲料雖然率高，但體量（863萬收入）小於食品飲料（2,218萬），所以絕對金額（382萬）不如食品飲料（692萬）。</span></div>
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1</span>
+        <span class="question-text">菸酒品類的 GMROI（3.20）和毛利率（19.8%）在六品類中都偏低，但缺貨率最低（4.2%）。這說明了什麼？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-i">I:</span> 菸酒是<span class="fia i">低利薄利但穩定的品類</span>——銷售節奏規律（缺貨率低），但投資回報效率不高。這類品類的策略重點是「維持穩定供應、控管庫存量」，而非追求毛利提升。</p>
+        </div>
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2</span>
+        <span class="question-text">生鮮熟食有最高 GMROI（6.63），但 ② 頁顯示其缺貨率也最高（12.6%）。兩者並存代表什麼策略機會？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-i">I:</span> 高 GMROI + 高缺貨 = <span class="fia i">未被滿足的高效益需求</span>。每次缺貨都是真實的毛利損失（且這些損失發生在效率最高的品類）。如果能把生鮮熟食缺貨率從 12.6% 降到接近均值 8.3%，對整體 GMROI 的提升效果最大。</p>
+        </div>
+        <div class="nav-hint" onclick="goToChart('p2','cc-stockout-cat')">
+          📊 前往 ② 庫存健康 查看品類缺貨率對照 →
+        </div>
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2</span>
+        <span class="question-text">從門市型態熱力圖，郊區門市的生鮮熟食毛利率（21.2%）明顯低於北部都市（23.4%）。你認為合理的原因是什麼？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-a">A:</span> 可能原因：① 郊區銷售量較低，<span class="fia a">生鮮損耗率</span>相對較高（賣不完就報廢）；② 郊區供應鏈配送頻率較低，鮮度較差影響售價；③ 郊區競爭業者少，但消費者對生鮮的價格敏感度也可能不同。</p>
+        </div>
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3</span>
+        <span class="question-text">整合 ①②③ 頁資料，如果要在不新增總庫存預算的前提下提升全門市 GMROI，你會優先調整哪個品類的庫存配置？理由是什麼？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-a">A:</span> 優先調整<span class="fia a">冷藏飲料</span>（最高毛利率 44.3%，但 GMROI 僅 3.41、周轉率最低 4.29）：</p>
+          <p style="margin-top:6px">策略邏輯：削減冷藏飲料中的 C 類 SKU 庫存，把釋放出的庫存預算轉移到生鮮熟食（GMROI 6.63，需求強勁但缺貨高）或食品飲料 A 類 SKU（佔收入最大）。這樣在不增加總預算的前提下，整體 GMROI 應顯著提升。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- P4 shell -->
+<div id="page-p4" class="page">
+  <p class="section-title">④ 補貨決策矩陣</p>
+
+  <div class="chart-grid chart-grid-2">
+    <div class="chart-card" id="cc-restock">
+      <div class="chart-card-title">補貨優先矩陣 — 缺貨率 × 毛利率</div>
+      <div class="chart-block h360"><canvas id="ch-restock"></canvas></div>
+      <div class="findings-section collapsed">
+        <div class="findings-toggle-btn" onclick="this.closest('.findings-section').classList.toggle('collapsed')">
+          <span class="findings-arrow">›</span><span>重點發現</span>
+        </div>
+        <div class="findings-body">
+          <p>右上象限（高缺貨 × 高毛利）為最優先補貨目標：<strong>冷藏飲料</strong>落在此區，每次缺貨的機會成本最高。<strong>生鮮熟食</strong>缺貨率雖高但毛利率偏低，需加快補貨頻率而非加大庫存量。</p>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card" id="cc-stockout-heatmap">
+      <div class="chart-card-title">門市型態 × 品類缺貨率（%）熱力圖</div>
+      <div id="stockout-heatmap-wrap" style="overflow-x:auto;margin-top:8px"></div>
+      <div class="findings-section collapsed" style="margin-top:14px">
+        <div class="findings-toggle-btn" onclick="this.closest('.findings-section').classList.toggle('collapsed')">
+          <span class="findings-arrow">›</span><span>重點發現</span>
+        </div>
+        <div class="findings-body">
+          <p><strong>交通樞紐門市</strong>各品類缺貨率最高，生鮮熟食達 18.4%。郊區補貨頻率也偏低，冷藏飲料缺貨達 13.6%。北部都市門市整體表現最佳。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-card" style="margin-bottom:24px" id="cc-abc-restock">
+    <div class="chart-card-title">ABC 補貨頻率建議 — 年度補貨訂單量</div>
+    <div class="chart-block h240"><canvas id="ch-abc-restock"></canvas></div>
+    <div class="findings-section collapsed">
+      <div class="findings-toggle-btn" onclick="this.closest('.findings-section').classList.toggle('collapsed')">
+        <span class="findings-arrow">›</span><span>重點發現</span>
+      </div>
+      <div class="findings-body">
+        <p>A類每天補貨產生 <strong>155,855 次年度訂單</strong>，是採購作業量的大頭。B類（86,627次）與C類（89,060次）訂單量相近，但 C 類 SKU 數是 B 類的 2.4 倍——每個 C 類 SKU 的個別訂單頻率僅約 52次/年。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="training-block">
+    <div class="training-title">🎓 L3 決策應用訓練</div>
+    <div class="qa-item" style="margin-bottom:10px">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3</span>
+        <span class="question-text">如何利用 ABC 分析設計「差異化安全庫存策略」，讓 A 類缺貨率控制在 3% 以內而不浪費預算在 C 類？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-a">A:</span> 差異化安全庫存設計：</p>
+          <p style="margin-top:6px">
+          <strong>A 類</strong>：高安全庫存係數（1.5–2.0 倍平均日銷量 × lead time），每天補貨，目標缺貨率 ≤ 3%。<br>
+          <strong>B 類</strong>：中等安全庫存係數（1.0–1.5 倍），每 3 天補貨，目標 ≤ 6%。<br>
+          <strong>C 類</strong>：最低安全庫存（0.5 倍），每 7 天補貨，接受較高缺貨率，重點管控呆滯庫存。
+          </p>
+          <p style="margin-top:6px">這樣可以把安全庫存預算集中在 A 類，而不是平均分配給三類 SKU。</p>
+        </div>
+      </div>
+    </div>
+    <div class="qa-item" style="margin-bottom:10px">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3</span>
+        <span class="question-text">根據此儀表板，如何制定 12 月旺季的備貨計劃？需要考慮哪些變數？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-a">A:</span> 旺季備貨框架：</p>
+          <p style="margin-top:6px">
+          ① <strong>需求預測</strong>：12月營收是全年最高（760萬），約為平均月（570萬）的 1.33倍——對應上調所有 A 類 SKU 訂貨量 33%。<br>
+          ② <strong>品類優先序</strong>：依補貨優先矩陣——冷藏飲料（高毛利高缺貨）、生鮮熟食（高缺貨）最先確保供應。<br>
+          ③ <strong>門市差異</strong>：交通樞紐和郊區缺貨率本就偏高，旺季前提前 2–3 天加密補貨頻率。<br>
+          ④ <strong>毛利保護</strong>：旺季促銷會壓低毛利率（歷史最低 32.6%）——備貨增量應集中在高毛利品類（冷藏飲料 44.3%），避免在低毛利品類（生鮮 22.6%）過度備貨。
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="qa-item" style="margin-bottom:10px">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3</span>
+        <span class="question-text">補貨優先矩陣中，文具雜貨落在「低缺貨 × 高毛利」象限。你會如何利用這個品類特性優化整體毛利？</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-a">A:</span> 「低缺貨 × 高毛利」代表這個品類<span class="fia a">供應穩定但體量不大</span>（7.2% 收入佔比）。優化方向：</p>
+          <p style="margin-top:6px">
+          ① 考慮「擴大 SKU 深度」：在維持低缺貨的前提下，引入更多文具雜貨 SKU 提升品類覆蓋面，挑戰更高的收入佔比。<br>
+          ② 「交叉促銷」：文具雜貨放在食品飲料結帳區旁，利用衝動購買提升連帶率。<br>
+          ③ 這個品類不需要補貨資源的優先關注——維持現狀的同時，把節省的補貨精力放在右上象限品類。
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3</span>
+        <span class="question-text">假設你有額外 50萬NT$ 的庫存預算，結合本儀表板所有頁面的資訊，你會如何分配給各品類？請說明邏輯。</span>
+        <span class="question-arrow">›</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-a">A:</span> 分配邏輯（以 GMROI 為核心）：</p>
+          <p style="margin-top:6px">
+          <strong>生鮮熟食 +20萬（40%）</strong>：GMROI 最高（6.63），缺貨率最高（12.6%），每 1 元庫存投入預期產生 6.63 元毛利回報。這是預算效益最高的選擇。<br>
+          <strong>冷藏飲料 +20萬（40%）</strong>：毛利率最高（44.3%）且缺貨率偏高（11.3%），補足旺季備貨缺口。<br>
+          <strong>食品飲料 A 類 SKU +10萬（20%）</strong>：佔收入最大（32.4%），確保 A 類 SKU 在旺季絕不缺貨，避免最高頻客流品類斷貨。
+          </p>
+          <p style="margin-top:6px">不分配給菸酒（低GMROI 3.20）、文具雜貨（缺貨率已低）、日用品（GMROI 5.35 但缺貨率不急迫）。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+  <p class="section-title">儀表板設計說明</p>
+  <div class="design-grid">
+    <div class="design-item">
+      <h4>① ABC 分類 vs 簡單收入排序</h4>
+      <p>ABC 分類將 SKU 分組（而非個別排序），使補貨策略可操作化——每組對應一個固定補貨頻率，比「前 N 名 SKU」更易於落地執行。</p>
+    </div>
+    <div class="design-item">
+      <h4>② 帕累托曲線 25 個數據點</h4>
+      <p>每 4% 一個資料點，共 25 點，能清楚顯示曲線斜率的折點（A類區集中陡降，B/C類區趨於平緩），比 10 點更精確識別 80% 門檻的確切位置。</p>
+    </div>
+    <div class="design-item">
+      <h4>③ 月度趨勢雙軸（量 + 率同框）</h4>
+      <p>營收（萬元絕對量）與毛利率（%）同時展示，讓學員能直覺地觀察「量增但率降」的旺季讓利現象，比分開兩張圖更能揭示隱藏關係。</p>
+    </div>
+    <div class="design-item">
+      <h4>④ 庫存週齡用堆疊 bar 而非 pie</h4>
+      <p>堆疊橫向比較能同時看「品類間的差異」和「品類內的週齡結構」，pie 圖只能展示單一品類的內部比例，資訊密度低一倍。</p>
+    </div>
+    <div class="design-item">
+      <h4>⑤ 補貨優先矩陣用 scatter 而非表格</h4>
+      <p>Scatter 圖能直觀呈現「象限分組」，品類相對位置一眼可辨——右上高缺 × 高毛是補貨優先，左下低缺 × 低毛可降頻，空間位置即策略信號。</p>
+    </div>
+    <div class="design-item">
+      <h4>⑥ GMROI 散點 × 銷售佔比的軸選擇</h4>
+      <p>X 軸選銷售佔比（而非毛利率）是為了同時呈現「效益效率（GMROI）」與「規模貢獻」的二維矩陣，高銷佔比 + 高 GMROI = 最具整體價值的品類。</p>
+    </div>
+    <div class="design-item">
+      <h4>⑦ 兩張熱力圖（毛利率 vs 缺貨率）</h4>
+      <p>門市型態 × 品類的雙熱力圖讓學員理解「同一品類在不同門市的表現差異」——這是從品類管理進階到門市差異化補貨策略的關鍵視角。</p>
+    </div>
+    <div class="design-item">
+      <h4>⑧ 全部 Findings 預設收合</h4>
+      <p>Findings 收合設計讓學員先思考、再比對，避免直接看到答案而失去練習效果。點擊展開才看到重點發現，符合「先問後答」的訓練設計原則。</p>
+    </div>
+  </div>
+  <div class="page-footer">零售_便利商店 商品庫存補貨分析 訓練儀表板 · 2024 合成資料集 · 製作者：Blake</div>
+</div>
+
+  </div><!-- content-area -->
+</div><!-- main-wrapper -->
+
+<script>
+// ══════════════════════════════════════════
+// DATA — Single Source of Truth
+// ══════════════════════════════════════════
+const DATA = {
+  anchors: {
+    total_stores: 52, active_skus: 2847, total_units_sold: 4823162,
+    total_revenue_wan: 6847, total_cogs_wan: 4483, gross_profit_wan: 2364,
+    overall_gm_pct: 34.5, avg_inventory_wan: 892, inventory_turnover: 5.02,
+    gmroi: 2.65, stockout_rate_pct: 8.3, dead_stock_pct: 12.4,
+    abc_a_sku_count: 427, abc_b_sku_count: 712, abc_c_sku_count: 1708,
+    abc_a_revenue_pct: 78.2, abc_b_revenue_pct: 16.4, abc_c_revenue_pct: 5.4,
+    year: 2024
+  },
+  cats: ["食品飲料","日用品","生鮮熟食","菸酒","冷藏飲料","文具雜貨"],
+  cat_rev_pct:  [32.4, 18.7, 16.3, 12.8, 12.6,  7.2],
+  cat_rev_wan:  [2218, 1280, 1116,  876,  863,  494],
+  cat_gm_pct:   [31.2, 38.4, 22.6, 19.8, 44.3, 36.7],
+  cat_cogs_wan: [1526,  788,  864,  703,  481,  313],
+  cat_gp_wan:   [ 692,  492,  252,  173,  382,  181],
+  cat_inv_wan:  [ 148,   92,   38,   54,  112,   66],
+  cat_turnover: [10.31, 8.57, 22.74, 13.02, 4.29, 4.74],
+  cat_gmroi:    [ 4.68, 5.35,  6.63,  3.20, 3.41, 2.74],
+  cat_stockout: [  7.8,  5.4,  12.6,   4.2, 11.3,  3.8],
+  monthly_revenue: [499,718,474,456,505,535,638,620,535,523,584,760],
+  monthly_units:   [351505,505773,333895,321215,355732,376865,449420,436740,376865,368412,411381,535359],
+  monthly_cat_rev: {
+    "食品飲料": [162,233,154,148,164,173,207,201,173,169,189,246],
+    "日用品":   [ 93,134, 89, 85, 94,100,119,116,100, 98,109,142],
+    "生鮮熟食": [ 81,117, 77, 74, 82, 87,104,101, 87, 85, 95,124],
+    "菸酒":     [ 64, 92, 61, 58, 65, 68, 82, 79, 68, 67, 75, 97],
+    "冷藏飲料": [ 63, 90, 60, 57, 64, 67, 80, 78, 67, 66, 74, 96],
+    "文具雜貨": [ 36, 52, 33, 34, 36, 40, 46, 45, 40, 38, 42, 55]
+  },
+  monthly_stockout_events: [203,210,196,186,210,215,315,305,219,210,229,338],
+  monthly_gm_pct:  [35.3,34.8,35.4,35.5,35.0,35.0,33.9,34.0,34.8,35.0,34.2,32.6],
+  monthly_gp_wan:  [176,250,168,162,177,187,216,211,186,183,200,248],
+  inv_age: { "0_14": 1534, "15_30": 614, "31_60": 346, "gt60": 353 },
+  cat_inv_age: {
+    "食品飲料": [497,199,112,114], "日用品":   [287,115, 64, 66],
+    "生鮮熟食": [250,100, 56, 58], "菸酒":     [196, 78, 45, 45],
+    "冷藏飲料": [193, 77, 44, 45], "文具雜貨": [111, 44, 25, 25]
+  },
+  pareto_sku_pct: [4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100],
+  pareto_rev_pct: [20.9,41.7,62.6,78.9,81.5,84.1,86.7,89.4,92.0,94.6,95.0,95.3,95.7,96.0,96.4,96.8,97.1,97.5,97.8,98.2,98.6,98.9,99.3,99.6,100.0],
+  store_types: ["北部都市","南部都市","郊區","交通樞紐"],
+  heatmap_stockout: [
+    [6.2,4.1,10.8,3.2, 9.4,2.9],
+    [7.4,5.2,11.3,4.6,10.8,3.5],
+    [8.9,6.8,14.2,5.1,13.6,4.7],
+    [10.3,7.2,18.4,4.8,16.2,5.2]
+  ],
+  gm_heatmap: [
+    [32.1,39.2,23.4,20.8,45.6,37.8],
+    [31.4,38.7,22.8,19.4,44.1,36.2],
+    [29.8,37.1,21.2,18.6,42.8,35.4],
+    [30.6,38.0,22.0,19.1,43.7,36.0]
+  ],
+  restock_freq: {
+    A: { label:"A類(427 SKU)", freq_days:1,  annual_orders:155855 },
+    B: { label:"B類(712 SKU)", freq_days:3,  annual_orders:86627  },
+    C: { label:"C類(1708 SKU)",freq_days:7,  annual_orders:89060  }
+  },
+  waterfall: {
+    cats: ["食品飲料","日用品","生鮮熟食","菸酒","冷藏飲料","文具雜貨"],
+    rev:  [2218,1280,1116, 876, 863, 494],
+    cogs: [-1526,-788,-864,-703,-481,-313],
+    gp:   [ 692, 492, 252, 173, 382, 181]
+  }
+};
+
+// ══════════════════════════════════════════
+// assertConsistency — run on load
+// ══════════════════════════════════════════
+function assertConsistency() {
+  const A = DATA.anchors;
+  const eq = (a,b,label,tol=0.5) => {
+    if (Math.abs(a-b) > tol) console.error(`✗ ${label}: got ${a}, expected ${b}`);
+    else console.log(`✓ ${label}`);
+  };
+  // 1. ABC counts sum to active_skus
+  eq(A.abc_a_sku_count+A.abc_b_sku_count+A.abc_c_sku_count, A.active_skus, 'ABC SKU count');
+  // 2. ABC revenue pct sum to 100
+  eq(A.abc_a_revenue_pct+A.abc_b_revenue_pct+A.abc_c_revenue_pct, 100, 'ABC rev pct sum', 0.1);
+  // 3. gross_profit = revenue - cogs
+  eq(A.gross_profit_wan, A.total_revenue_wan-A.total_cogs_wan, 'gross_profit');
+  // 4. overall_gm_pct
+  eq(+(A.gross_profit_wan/A.total_revenue_wan*100).toFixed(1), A.overall_gm_pct, 'gm_pct', 0.1);
+  // 5. cat_rev_wan sum
+  eq(DATA.cat_rev_wan.reduce((a,b)=>a+b,0), A.total_revenue_wan, 'cat_rev sum');
+  // 6. monthly_revenue sum
+  eq(DATA.monthly_revenue.reduce((a,b)=>a+b,0), A.total_revenue_wan, 'monthly_rev sum');
+  // 7. monthly_gp_wan sum
+  eq(DATA.monthly_gp_wan.reduce((a,b)=>a+b,0), A.gross_profit_wan, 'monthly_gp sum');
+  // 8. monthly_cat_rev each month sum matches monthly_revenue
+  const months = [0,1,2,3,4,5,6,7,8,9,10,11];
+  months.forEach(m => {
+    const s = DATA.cats.reduce((acc,cat)=>acc+DATA.monthly_cat_rev[cat][m],0);
+    eq(s, DATA.monthly_revenue[m], `monthly_cat_rev month${m+1}`);
+  });
+  // 9. inv_age sum = active_skus
+  const ia = DATA.inv_age;
+  eq(ia['0_14']+ia['15_30']+ia['31_60']+ia['gt60'], A.active_skus, 'inv_age sum');
+  // 10. dead_stock_pct
+  eq(+(ia.gt60/A.active_skus*100).toFixed(1), A.dead_stock_pct, 'dead_stock_pct', 0.1);
+  // 11. waterfall gp check
+  DATA.waterfall.gp.forEach((gp,i)=>{
+    eq(gp, DATA.waterfall.rev[i]+DATA.waterfall.cogs[i], `waterfall gp[${i}]`);
+  });
+  // 12. inventory_turnover approx
+  const it = +(A.total_cogs_wan/A.avg_inventory_wan).toFixed(2);
+  eq(it, A.inventory_turnover, 'inventory_turnover', 0.01);
+  console.log('─── assertConsistency complete ───');
+}
+
+// ══════════════════════════════════════════
+// Utility Functions
+// ══════════════════════════════════════════
+const MONTHS = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+
+function c(key, alpha=1) {
+  const map = {
+    green:  `rgba(5,150,105,${alpha})`,
+    teal:   `rgba(16,185,129,${alpha})`,
+    orange: `rgba(217,119,6,${alpha})`,
+    red:    `rgba(220,38,38,${alpha})`,
+    purple: `rgba(124,58,237,${alpha})`,
+    gray:   `rgba(100,116,139,${alpha})`
+  };
+  return map[key] || `rgba(5,150,105,${alpha})`;
+}
+
+const TT = {
+  plugins: {
+    tooltip: {
+      backgroundColor: 'rgba(255,255,255,0.97)',
+      titleColor: '#064E3B', bodyColor: '#374151',
+      borderColor: 'rgba(0,0,0,0.1)', borderWidth: 1,
+      padding: 10, cornerRadius: 8
+    }
+  }
+};
+
+function mk(id, type, labels, datasets, opts={}) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  return new Chart(ctx, {
+    type,
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: 480, easing: 'easeOutQuart' },
+      plugins: {
+        ...TT.plugins,
+        legend: { labels: { color: '#374151', font: { family: "'Nunito Sans'" } } },
+        datalabels: { display: false }
+      },
+      scales: type === 'pie' || type === 'doughnut' ? {} : {
+        x: { ticks: { color: '#64748B', font: { family: "'Nunito Sans'", size: 11 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+        y: { ticks: { color: '#64748B', font: { family: "'Nunito Sans'", size: 11 } }, grid: { color: 'rgba(0,0,0,0.05)' } }
+      },
+      ...opts
+    }
+  });
+}
+
+const initialized = {};
+function switchPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  const pg = document.getElementById('page-'+name);
+  if (pg) pg.classList.add('active');
+  const tb = document.getElementById('tab-'+name);
+  if (tb) tb.classList.add('active');
+  if (!initialized[name]) {
+    initialized[name] = true;
+    const fn = window['draw_'+name];
+    if (fn) fn();
+  }
+}
+
+function goToChart(page, cardId) {
+  switchPage(page);
+  setTimeout(() => {
+    const el = document.getElementById(cardId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('chart-flash');
+      setTimeout(() => el.classList.remove('chart-flash'), 3000);
+    }
+  }, 120);
+}
+
+function toggleDef() {
+  const outer = document.getElementById('def-panel-outer');
+  const btn   = document.getElementById('defToggleBtn');
+  outer.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+
+function toggleQA(el) {
+  const item = el.closest('.qa-item');
+  const answer = item.querySelector('.answer');
+  item.classList.toggle('open');
+  answer.classList.toggle('show');
+}
+
+function filterDef(q) {
+  const items = document.querySelectorAll('.def-item');
+  const kw = q.trim().toLowerCase();
+  let found = 0;
+  items.forEach(item => {
+    const match = !kw || item.textContent.toLowerCase().includes(kw);
+    item.style.display = match ? '' : 'none';
+    if (match) found++;
+  });
+  document.getElementById('defNoResult').style.display = found === 0 ? 'block' : 'none';
+}
+
+// ══════════════════════════════════════════
+// P1 — SKU銷售 & ABC 分類
+// ══════════════════════════════════════════
+function draw_p1() {
+  const A = DATA.anchors;
+
+  // ① ABC 雙軸 bar + line
+  new Chart(document.getElementById('ch-abc'), {
+    type: 'bar',
+    data: {
+      labels: ['A類\n(每天補貨)', 'B類\n(每3天補貨)', 'C類\n(每7天補貨)'],
+      datasets: [
+        {
+          label: 'SKU 數',
+          data: [A.abc_a_sku_count, A.abc_b_sku_count, A.abc_c_sku_count],
+          backgroundColor: [c('green',0.82), c('teal',0.72), c('gray',0.5)],
+          yAxisID: 'y', order: 2
+        },
+        {
+          type: 'line',
+          label: '收入貢獻%',
+          data: [A.abc_a_revenue_pct, A.abc_b_revenue_pct, A.abc_c_revenue_pct],
+          borderColor: c('orange'), backgroundColor: 'transparent',
+          pointBackgroundColor: c('orange'), pointRadius: 7, pointHoverRadius: 9,
+          borderWidth: 2.5, tension: 0,
+          yAxisID: 'y2', order: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: 480, easing: 'easeOutQuart' },
+      plugins: {
+        tooltip: {
+          backgroundColor: 'rgba(255,255,255,0.97)',
+          titleColor: '#064E3B', bodyColor: '#374151',
+          borderColor: 'rgba(0,0,0,0.1)', borderWidth: 1, padding: 10, cornerRadius: 8
+        },
+        legend: { labels: { color: '#374151', font: { family: "'Nunito Sans'" } } },
+        datalabels: {
+          display: (ctx) => ctx.datasetIndex === 0,
+          color: '#fff', font: { weight: 700, size: 11, family: "'JetBrains Mono'" },
+          formatter: (v) => v.toLocaleString()
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#64748B', font: { family: "'Nunito Sans'", size: 11 } }, grid: { color: 'rgba(0,0,0,0.04)' } },
+        y: {
+          position: 'left',
+          ticks: { color: '#64748B', font: { family: "'Nunito Sans'", size: 11 } },
+          grid: { color: 'rgba(0,0,0,0.04)' },
+          title: { display: true, text: 'SKU 數', color: '#64748B', font: { size: 11 } }
+        },
+        y2: {
+          position: 'right', min: 0, max: 100,
+          ticks: { color: c('orange'), font: { family: "'Nunito Sans'", size: 11 }, callback: v => v + '%' },
+          grid: { drawOnChartArea: false },
+          title: { display: true, text: '收入貢獻%', color: c('orange'), font: { size: 11 } }
+        }
+      }
+    }
+  });
+
+  // ② 帕累托累積曲線
+  new Chart(document.getElementById('ch-pareto'), {
+    type: 'line',
+    data: {
+      labels: DATA.pareto_sku_pct.map(v => v + '%'),
+      datasets: [{
+        label: '累積收入佔比',
+        data: DATA.pareto_rev_pct,
+        borderColor: c('green'), backgroundColor: c('green', 0.12),
+        fill: true, tension: 0.35, pointRadius: 0, pointHoverRadius: 5, borderWidth: 2.5
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: 480 },
+      plugins: {
+        tooltip: {
+          backgroundColor: 'rgba(255,255,255,0.97)',
+          titleColor: '#064E3B', bodyColor: '#374151',
+          borderColor: 'rgba(0,0,0,0.1)', borderWidth: 1, padding: 10, cornerRadius: 8,
+          callbacks: {
+            label: (ctx) => ` 累積收入 ${ctx.parsed.y}%`,
+            title: (items) => `SKU 前 ${items[0].label} 累積`
+          }
+        },
+        legend: { labels: { color: '#374151', font: { family: "'Nunito Sans'" } } },
+        datalabels: { display: false },
+        annotation: {
+          annotations: {
+            hLine80: {
+              type: 'line', yMin: 80, yMax: 80,
+              borderColor: c('red', 0.55), borderWidth: 1.5, borderDash: [5, 3],
+              label: {
+                display: true, content: '80% 收入', position: 'end',
+                backgroundColor: c('red', 0.65), color: '#fff',
+                font: { size: 10 }, padding: { x: 6, y: 3 }
+              }
+            },
+            vLine16: {
+              type: 'line', xMin: '16%', xMax: '16%',
+              borderColor: c('orange', 0.55), borderWidth: 1.5, borderDash: [4, 3],
+              label: {
+                display: true, content: '16% SKU → 78.9%', position: 'start',
+                backgroundColor: c('orange', 0.72), color: '#fff',
+                font: { size: 10 }, padding: { x: 6, y: 3 }
+              }
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#64748B', font: { family: "'Nunito Sans'", size: 10 }, maxTicksLimit: 8 },
+          grid: { color: 'rgba(0,0,0,0.04)' },
+          title: { display: true, text: 'SKU 累積佔比', color: '#64748B', font: { size: 11 } }
+        },
+        y: {
+          min: 0, max: 100,
+          ticks: { color: '#64748B', font: { family: "'Nunito Sans'", size: 11 }, callback: v => v + '%' },
+          grid: { color: 'rgba(0,0,0,0.04)' },
+          title: { display: true, text: '累積收入佔比', color: '#64748B', font: { size: 11 } }
+        }
+      }
+    }
+  });
+
+  // ③ 月度營收 + 毛利率雙軸
+  new Chart(document.getElementById('ch-monthly'), {
+    type: 'bar',
+    data: {
+      labels: MONTHS,
+      datasets: [
+        {
+          type: 'bar',
+          label: '月度營收(萬NT$)',
+          data: DATA.monthly_revenue,
+          backgroundColor: DATA.monthly_revenue.map((v, i) =>
+            [1, 6, 7, 11].includes(i) ? c('green', 0.85) : c('green', 0.5)
+          ),
+          yAxisID: 'y', order: 2
+        },
+        {
+          type: 'line',
+          label: '毛利率%',
+          data: DATA.monthly_gm_pct,
+          borderColor: c('orange'), backgroundColor: 'transparent',
+          pointBackgroundColor: c('orange'), pointRadius: 4, pointHoverRadius: 6,
+          borderWidth: 2, tension: 0.35,
+          yAxisID: 'y2', order: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: 480 },
+      plugins: {
+        tooltip: {
+          backgroundColor: 'rgba(255,255,255,0.97)',
+          titleColor: '#064E3B', bodyColor: '#374151',
+          borderColor: 'rgba(0,0,0,0.1)', borderWidth: 1, padding: 10, cornerRadius: 8
+        },
+        legend: { labels: { color: '#374151', font: { family: "'Nunito Sans'" } } },
+        datalabels: { display: false }
+      },
+      scales: {
+        x: { ticks: { color: '#64748B', font: { family: "'Nunito Sans'", size: 11 } }, grid: { color: 'rgba(0,0,0,0.04)' } },
+        y: {
+          position: 'left',
+          ticks: { color: '#64748B', font: { family: "'Nunito Sans'", size: 11 }, callback: v => v + '萬' },
+          grid: { color: 'rgba(0,0,0,0.04)' },
+          title: { display: true, text: '月度營收(萬NT$)', color: '#64748B', font: { size: 11 } }
+        },
+        y2: {
+          position: 'right', min: 30, max: 38,
+          ticks: { color: c('orange'), font: { family: "'Nunito Sans'", size: 11 }, callback: v => v + '%' },
+          grid: { drawOnChartArea: false },
+          title: { display: true, text: '毛利率%', color: c('orange'), font: { size: 11 } }
+        }
+      }
+    }
+  });
+
+  // ④ 品類收入占比 donut
+  new Chart(document.getElementById('ch-cat-donut'), {
+    type: 'doughnut',
+    data: {
+      labels: DATA.cats,
+      datasets: [{
+        data: DATA.cat_rev_pct,
+        backgroundColor: [
+          c('green',0.85), c('teal',0.8), c('orange',0.75),
+          c('purple',0.72), c('red',0.65), c('gray',0.6)
+        ],
+        borderColor: '#ECFDF5', borderWidth: 3
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '60%',
+      animation: { duration: 480 },
+      plugins: {
+        tooltip: {
+          backgroundColor: 'rgba(255,255,255,0.97)',
+          titleColor: '#064E3B', bodyColor: '#374151',
+          borderColor: 'rgba(0,0,0,0.1)', borderWidth: 1, padding: 10, cornerRadius: 8,
+          callbacks: { label: (ctx) => ` ${ctx.label}: ${ctx.parsed}%` }
+        },
+        legend: {
+          position: 'right',
+          labels: { color: '#374151', font: { family: "'Nunito Sans'", size: 11 }, padding: 10, boxWidth: 12 }
+        },
+        datalabels: {
+          display: (ctx) => ctx.parsed > 8,
+          formatter: (v) => v + '%', color: '#fff',
+          font: { weight: 700, size: 11 }
+        }
+      }
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// P2 — 庫存健康
+// ══════════════════════════════════════════
+function draw_p2() {
+  const TTP = { tooltip:{ backgroundColor:'rgba(255,255,255,0.97)', titleColor:'#064E3B', bodyColor:'#374151', borderColor:'rgba(0,0,0,0.1)', borderWidth:1, padding:10, cornerRadius:8 } };
+  const xG = { color:'rgba(0,0,0,0.04)' };
+
+  // ① 品類周轉率 horizontal bar
+  new Chart(document.getElementById('ch-turnover'), {
+    type:'bar',
+    data:{ labels:DATA.cats, datasets:[{ label:'周轉率(次/年)', data:DATA.cat_turnover, backgroundColor:DATA.cat_turnover.map(v=>v>=15?c('green',0.85):v>=8?c('teal',0.75):c('orange',0.7)), borderRadius:4 }] },
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:{duration:480}, indexAxis:'y',
+      plugins:{ ...TTP, legend:{display:false}, datalabels:{ display:true, anchor:'end', align:'end', color:'#374151', font:{size:11,family:"'JetBrains Mono'"}, formatter:v=>v.toFixed(2) } },
+      scales:{ x:{min:0, ticks:{color:'#64748B',font:{family:"'Nunito Sans'",size:11}}, grid:{...xG}, title:{display:true,text:'周轉率(次/年)',color:'#64748B',font:{size:11}}}, y:{ticks:{color:'#374151',font:{family:"'Nunito Sans'",size:12}},grid:{display:false}} }
+    }
+  });
+
+  // ② 品類缺貨率 horizontal bar + annotation
+  new Chart(document.getElementById('ch-stockout-cat'), {
+    type:'bar',
+    data:{ labels:DATA.cats, datasets:[{ label:'缺貨率%', data:DATA.cat_stockout, backgroundColor:DATA.cat_stockout.map(v=>v>=10?c('red',0.75):v>=8?c('orange',0.7):c('teal',0.65)), borderRadius:4 }] },
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:{duration:480}, indexAxis:'y',
+      plugins:{
+        ...TTP, legend:{display:false},
+        annotation:{ annotations:{ avgLine:{ type:'line', xMin:8.3, xMax:8.3, borderColor:c('gray',0.5), borderWidth:1.5, borderDash:[4,3], label:{display:true,content:'均值 8.3%',position:'end',backgroundColor:c('gray',0.6),color:'#fff',font:{size:10},padding:{x:5,y:2}} } } },
+        datalabels:{ display:true, anchor:'end', align:'end', color:'#374151', font:{size:11,family:"'JetBrains Mono'"}, formatter:v=>v+'%' }
+      },
+      scales:{ x:{min:0,max:16, ticks:{color:'#64748B',font:{family:"'Nunito Sans'",size:11},callback:v=>v+'%'}, grid:{...xG}}, y:{ticks:{color:'#374151',font:{family:"'Nunito Sans'",size:12}},grid:{display:false}} }
+    }
+  });
+
+  // ③ 月度缺貨事件趨勢
+  new Chart(document.getElementById('ch-stockout-monthly'), {
+    type:'line',
+    data:{ labels:MONTHS, datasets:[{ label:'缺貨事件數', data:DATA.monthly_stockout_events, borderColor:c('red'), backgroundColor:c('red',0.1), fill:true, tension:0.35, pointRadius:4, pointHoverRadius:7, borderWidth:2.5 }] },
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:{duration:480},
+      plugins:{
+        ...TTP, legend:{labels:{color:'#374151',font:{family:"'Nunito Sans'"}}},
+        annotation:{ annotations:{ peak:{ type:'line', xMin:'12月', xMax:'12月', borderColor:c('red',0.4), borderWidth:1.5, borderDash:[4,3], label:{display:true,content:'12月 338次',position:'start',backgroundColor:c('red',0.65),color:'#fff',font:{size:10},padding:{x:5,y:2}} } } },
+        datalabels:{display:false}
+      },
+      scales:{ x:{ticks:{color:'#64748B',font:{family:"'Nunito Sans'",size:11}},grid:{...xG}}, y:{ticks:{color:'#64748B',font:{family:"'Nunito Sans'",size:11}},grid:{...xG},title:{display:true,text:'缺貨事件數',color:'#64748B',font:{size:11}}} }
+    }
+  });
+
+  // ④ 庫存週齡分布 stacked bar
+  const ageLbls=['0–14天','15–30天','31–60天','>60天(呆滯)'];
+  const ageClrs=[c('green',0.75),c('teal',0.65),c('orange',0.65),c('red',0.7)];
+  new Chart(document.getElementById('ch-inv-age'), {
+    type:'bar',
+    data:{ labels:DATA.cats, datasets:ageLbls.map((lbl,j)=>({ label:lbl, data:DATA.cats.map(cat=>DATA.cat_inv_age[cat][j]), backgroundColor:ageClrs[j], stack:'inv' })) },
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:{duration:480},
+      plugins:{ ...TTP, legend:{labels:{color:'#374151',font:{family:"'Nunito Sans'",size:11}}}, datalabels:{display:false} },
+      scales:{ x:{stacked:true,ticks:{color:'#64748B',font:{family:"'Nunito Sans'",size:11}},grid:{...xG}}, y:{stacked:true,ticks:{color:'#64748B',font:{family:"'Nunito Sans'",size:11}},grid:{...xG},title:{display:true,text:'SKU 數',color:'#64748B',font:{size:11}}} }
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// P3 — 毛利 & GMROI
+// ══════════════════════════════════════════
+function draw_p3() {
+  const TTP = { tooltip:{ backgroundColor:'rgba(255,255,255,0.97)', titleColor:'#064E3B', bodyColor:'#374151', borderColor:'rgba(0,0,0,0.1)', borderWidth:1, padding:10, cornerRadius:8 } };
+  const xG = { color:'rgba(0,0,0,0.04)' };
+  const catClrs = [c('green',0.85),c('teal',0.8),c('orange',0.75),c('purple',0.72),c('red',0.65),c('gray',0.65)];
+
+  // ① 品類毛利率 + 毛利金額雙軸
+  new Chart(document.getElementById('ch-cat-gm'), {
+    type:'bar',
+    data:{ labels:DATA.cats, datasets:[
+      { type:'bar', label:'毛利金額(萬NT$)', data:DATA.cat_gp_wan, backgroundColor:c('green',0.7), yAxisID:'y', order:2 },
+      { type:'line', label:'毛利率%', data:DATA.cat_gm_pct, borderColor:c('orange'), backgroundColor:'transparent', pointBackgroundColor:c('orange'), pointRadius:6, pointHoverRadius:8, borderWidth:2.5, tension:0, yAxisID:'y2', order:1 }
+    ] },
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:{duration:480},
+      plugins:{ ...TTP, legend:{labels:{color:'#374151',font:{family:"'Nunito Sans'"}}}, datalabels:{display:false} },
+      scales:{
+        x:{ticks:{color:'#64748B',font:{family:"'Nunito Sans'",size:11}},grid:{...xG}},
+        y:{position:'left',ticks:{color:'#64748B',font:{family:"'Nunito Sans'",size:11},callback:v=>v+'萬'},grid:{...xG},title:{display:true,text:'毛利金額(萬)',color:'#64748B',font:{size:11}}},
+        y2:{position:'right',min:15,max:50,ticks:{color:c('orange'),font:{family:"'Nunito Sans'",size:11},callback:v=>v+'%'},grid:{drawOnChartArea:false},title:{display:true,text:'毛利率%',color:c('orange'),font:{size:11}}}
+      }
+    }
+  });
+
+  // ② GMROI × 銷售佔比 scatter
+  new Chart(document.getElementById('ch-gmroi'), {
+    type:'scatter',
+    data:{ datasets:DATA.cats.map((cat,i)=>({ label:cat, data:[{x:DATA.cat_rev_pct[i],y:DATA.cat_gmroi[i]}], backgroundColor:catClrs[i], pointRadius:12, pointHoverRadius:15 })) },
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:{duration:480},
+      plugins:{
+        tooltip:{ ...TTP.tooltip, callbacks:{ label:(ctx)=>`${ctx.dataset.label}  收入佔比: ${ctx.parsed.x}%  GMROI: ${ctx.parsed.y}` } },
+        legend:{labels:{color:'#374151',font:{family:"'Nunito Sans'",size:11}}},
+        datalabels:{ display:true, formatter:(_,ctx)=>ctx.dataset.label, color:'#064E3B', font:{size:10,weight:600,family:"'Nunito Sans'"}, anchor:'end', align:'top', offset:4 }
+      },
+      scales:{
+        x:{min:0,max:40,ticks:{color:'#64748B',font:{family:"'Nunito Sans'",size:11},callback:v=>v+'%'},grid:{...xG},title:{display:true,text:'收入佔比%',color:'#64748B',font:{size:11}}},
+        y:{min:2,max:8,ticks:{color:'#64748B',font:{family:"'Nunito Sans'",size:11}},grid:{...xG},title:{display:true,text:'GMROI',color:'#64748B',font:{size:11}}}
+      }
+    }
+  });
+
+  // ③ 月度毛利金額 + 毛利率雙軸
+  new Chart(document.getElementById('ch-monthly-gp'), {
+    type:'bar',
+    data:{ labels:MONTHS, datasets:[
+      { type:'bar', label:'毛利金額(萬NT$)', data:DATA.monthly_gp_wan, backgroundColor:DATA.monthly_gp_wan.map((_,i)=>[1,6,7,11].includes(i)?c('teal',0.8):c('teal',0.5)), yAxisID:'y', order:2 },
+      { type:'line', label:'毛利率%', data:DATA.monthly_gm_pct, borderColor:c('orange'), backgroundColor:'transparent', pointBackgroundColor:c('orange'), pointRadius:4, borderWidth:2, tension:0.35, yAxisID:'y2', order:1 }
+    ] },
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:{duration:480},
+      plugins:{ ...TTP, legend:{labels:{color:'#374151',font:{family:"'Nunito Sans'"}}}, datalabels:{display:false} },
+      scales:{
+        x:{ticks:{color:'#64748B',font:{family:"'Nunito Sans'",size:11}},grid:{...xG}},
+        y:{position:'left',ticks:{color:'#64748B',font:{family:"'Nunito Sans'",size:11},callback:v=>v+'萬'},grid:{...xG}},
+        y2:{position:'right',min:30,max:38,ticks:{color:c('orange'),font:{family:"'Nunito Sans'",size:11},callback:v=>v+'%'},grid:{drawOnChartArea:false}}
+      }
+    }
+  });
+
+  // ④ 品類收入結構 stacked bar (COGS + GP)
+  new Chart(document.getElementById('ch-waterfall'), {
+    type:'bar',
+    data:{ labels:DATA.cats, datasets:[
+      { label:'銷貨成本(萬NT$)', data:DATA.cat_cogs_wan, backgroundColor:c('gray',0.42), stack:'s' },
+      { label:'毛利(萬NT$)', data:DATA.cat_gp_wan, backgroundColor:c('green',0.78), stack:'s' }
+    ] },
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:{duration:480},
+      plugins:{
+        ...TTP, legend:{labels:{color:'#374151',font:{family:"'Nunito Sans'",size:11}}},
+        datalabels:{ display:(ctx)=>ctx.datasetIndex===1, formatter:(v,ctx)=>{ const rev=DATA.cat_rev_wan[ctx.dataIndex]; return (v/rev*100).toFixed(0)+'%'; }, color:'#fff', font:{weight:700,size:11,family:"'JetBrains Mono'"}, anchor:'center', align:'center' }
+      },
+      scales:{
+        x:{stacked:true,ticks:{color:'#64748B',font:{family:"'Nunito Sans'",size:11}},grid:{...xG}},
+        y:{stacked:true,ticks:{color:'#64748B',font:{family:"'Nunito Sans'",size:11},callback:v=>v+'萬'},grid:{...xG},title:{display:true,text:'金額(萬NT$)',color:'#64748B',font:{size:11}}}
+      }
+    }
+  });
+
+  // ⑤ 門市型態 × 品類毛利率 heatmap table
+  const wrap=document.getElementById('gm-heatmap-wrap');
+  const minV=18.6, maxV=45.6;
+  const toA=v=>0.12+0.68*((v-minV)/(maxV-minV));
+  let t='<table class="heatmap-table"><thead><tr><th style="text-align:left">門市型態</th>';
+  DATA.cats.forEach(cat=>{ t+=`<th>${cat}</th>`; });
+  t+='</tr></thead><tbody>';
+  DATA.store_types.forEach((st,r)=>{
+    t+=`<tr><th style="text-align:left;background:var(--bg-finding)">${st}</th>`;
+    DATA.gm_heatmap[r].forEach(v=>{
+      const a=toA(v);
+      t+=`<td style="background:rgba(5,150,105,${a.toFixed(2)});color:${a>0.5?'#fff':'#064E3B'};font-weight:600">${v}%</td>`;
+    });
+    t+='</tr>';
+  });
+  t+='</tbody></table>';
+  wrap.innerHTML=t;
+}
+
+// ══════════════════════════════════════════
+// P4 — 補貨決策
+// ══════════════════════════════════════════
+function draw_p4() {
+  const TTP = { tooltip:{ backgroundColor:'rgba(255,255,255,0.97)', titleColor:'#064E3B', bodyColor:'#374151', borderColor:'rgba(0,0,0,0.1)', borderWidth:1, padding:10, cornerRadius:8 } };
+  const xG = { color:'rgba(0,0,0,0.04)' };
+  const catClrs = [c('green',0.85),c('teal',0.8),c('orange',0.75),c('purple',0.72),c('red',0.65),c('gray',0.65)];
+
+  // ① 補貨優先矩陣 scatter
+  const avgSO = DATA.anchors.stockout_rate_pct;
+  const avgGM = DATA.anchors.overall_gm_pct;
+  new Chart(document.getElementById('ch-restock'), {
+    type:'scatter',
+    data:{ datasets:DATA.cats.map((cat,i)=>({ label:cat, data:[{x:DATA.cat_stockout[i],y:DATA.cat_gm_pct[i]}], backgroundColor:catClrs[i], pointRadius:13, pointHoverRadius:16 })) },
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:{duration:480},
+      plugins:{
+        tooltip:{ ...TTP.tooltip, callbacks:{ label:(ctx)=>`${ctx.dataset.label}  缺貨率: ${ctx.parsed.x}%  毛利率: ${ctx.parsed.y}%` } },
+        legend:{labels:{color:'#374151',font:{family:"'Nunito Sans'",size:11}}},
+        datalabels:{ display:true, formatter:(_,ctx)=>ctx.dataset.label, color:'#064E3B', font:{size:10,weight:600,family:"'Nunito Sans'"}, anchor:'end', align:'top', offset:4 },
+        annotation:{
+          annotations:{
+            vAvg:{ type:'line', xMin:avgSO, xMax:avgSO, borderColor:c('gray',0.4), borderWidth:1.5, borderDash:[4,3], label:{display:true,content:'均值缺貨 8.3%',position:'end',backgroundColor:c('gray',0.55),color:'#fff',font:{size:10},padding:{x:5,y:2}} },
+            hAvg:{ type:'line', yMin:avgGM, yMax:avgGM, borderColor:c('gray',0.4), borderWidth:1.5, borderDash:[4,3], label:{display:true,content:'均值毛利 34.5%',position:'end',backgroundColor:c('gray',0.55),color:'#fff',font:{size:10},padding:{x:5,y:2}} }
+          }
+        }
+      },
+      scales:{
+        x:{min:2,max:15,ticks:{color:'#64748B',font:{family:"'Nunito Sans'",size:11},callback:v=>v+'%'},grid:{...xG},title:{display:true,text:'缺貨率% →（越右越緊急補貨）',color:'#64748B',font:{size:11}}},
+        y:{min:15,max:50,ticks:{color:'#64748B',font:{family:"'Nunito Sans'",size:11},callback:v=>v+'%'},grid:{...xG},title:{display:true,text:'毛利率% →（越高越值得優先）',color:'#64748B',font:{size:11}}}
+      }
+    }
+  });
+
+  // ② 門市型態 × 品類缺貨率 heatmap
+  const soWrap=document.getElementById('stockout-heatmap-wrap');
+  const soMin=3.2, soMax=18.4;
+  const soA=v=>0.1+0.7*((v-soMin)/(soMax-soMin));
+  let t='<table class="heatmap-table"><thead><tr><th style="text-align:left">門市型態</th>';
+  DATA.cats.forEach(cat=>{ t+=`<th>${cat}</th>`; });
+  t+='</tr></thead><tbody>';
+  DATA.store_types.forEach((st,r)=>{
+    t+=`<tr><th style="text-align:left;background:var(--bg-finding)">${st}</th>`;
+    DATA.heatmap_stockout[r].forEach(v=>{
+      const a=soA(v);
+      t+=`<td style="background:rgba(220,38,38,${a.toFixed(2)});color:${a>0.45?'#fff':'#7f1d1d'};font-weight:600">${v}%</td>`;
+    });
+    t+='</tr>';
+  });
+  t+='</tbody></table>';
+  soWrap.innerHTML=t;
+
+  // ③ ABC 補貨頻率年度訂單量 bar
+  const rf=DATA.restock_freq;
+  const abcLbls=[rf.A.label, rf.B.label, rf.C.label];
+  const orders=[rf.A.annual_orders, rf.B.annual_orders, rf.C.annual_orders];
+  const freqs=[rf.A.freq_days, rf.B.freq_days, rf.C.freq_days];
+  new Chart(document.getElementById('ch-abc-restock'), {
+    type:'bar',
+    data:{ labels:abcLbls, datasets:[{ label:'年度補貨訂單數', data:orders, backgroundColor:[c('green',0.82),c('teal',0.72),c('gray',0.55)], borderRadius:6 }] },
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:{duration:480}, indexAxis:'y',
+      plugins:{
+        ...TTP, legend:{display:false},
+        datalabels:{ display:true, anchor:'end', align:'end', color:'#374151', font:{size:11,family:"'JetBrains Mono'"}, formatter:(v,ctx)=>{ const d=freqs[ctx.dataIndex]; return `${v.toLocaleString()} 次 (每${d}天補)`; } }
+      },
+      scales:{
+        x:{min:0, ticks:{color:'#64748B',font:{family:"'Nunito Sans'",size:11},callback:v=>(v/1000).toFixed(0)+'k'},grid:{...xG},title:{display:true,text:'年度補貨訂單數',color:'#64748B',font:{size:11}}},
+        y:{ticks:{color:'#374151',font:{family:"'Nunito Sans'",size:12}},grid:{display:false}}
+      }
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// Init
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  assertConsistency();
+
+  // Inject def panel items
+  const defInner = document.querySelector('#def-panel-inner');
+  const defs = [
+    ['ABC 分類法', '依收入貢獻將 SKU 分為 A（高頻，前 15% SKU → 78.2% 收入）、B（中頻）、C（低頻）三類，以差異化補貨策略管理。'],
+    ['庫存周轉率', '= 年度銷貨成本 ÷ 平均庫存金額。數值越高代表庫存循環越快，越低表示資金積壓越嚴重。'],
+    ['GMROI', '= 毛利金額 ÷ 平均庫存金額。每投入 1 元庫存創造多少元毛利，是衡量庫存資本效益的核心指標。'],
+    ['缺貨率', '= 缺貨事件數 ÷ 總 SKU × 月數。反映貨架空窗比例，過高代表補貨頻率或安全庫存不足。'],
+    ['帕累托法則', '（80/20 法則）少數 SKU 貢獻多數收入。本資料集前 16% SKU 貢獻 78.9% 收入，略優於理論值。'],
+    ['安全庫存', '在正常補貨前置時間（lead time）之外額外備置的緩衝庫存量，用於吸收需求波動和供應延遲的風險。'],
+    ['呆滯庫存', '庫存週齡超過 60 天且未有動銷的 SKU。本資料集呆滯率 12.4%（353 個 SKU），佔用流動資金需優先清理。'],
+    ['補貨前置時間', '（Lead Time）從發出補貨訂單到商品上架的總時間。Lead Time 越短，安全庫存需求越低，缺貨風險越小。']
+  ];
+  defs.forEach(([term, def]) => {
+    const d = document.createElement('div');
+    d.className = 'def-item';
+    d.dataset.term = term;
+    d.innerHTML = `<h4>${term}</h4><p>${def}</p>`;
+    defInner.appendChild(d);
+  });
+
+  initialized['p1'] = true;
+  if (window.draw_p1) draw_p1();
+});
+</script>
+</body>
+</html>
