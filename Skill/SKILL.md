@@ -130,6 +130,36 @@ author: Blake
 > | **Layer 3 — P2 圖表+QA** | P2 所有 canvas 元素 + KPI HTML + `drawBehavior()` 完整實作 + P2 所有 QA items | P2 分頁開啟後所有圖表渲染 |
 > | **Layer 4 — P3 + 收尾** | P3 所有 canvas 元素 + KPI HTML + `drawRetention()` + P3 QA + 訓練題面板 + 設計選擇面板 + 定義面板 `<dl>` 內容 | P3 渲染，面板可開合，assertConsistency 再跑一次 |
 >
+> **🔴 Layer 1 必填樣板（`<script>` 區塊最頂端，任何 Chart 實例化之前）：**
+>
+> ```javascript
+> // ── Plugin registration ────────────────────────────────────────────
+> Chart.register(ChartDataLabels);
+> if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
+> Chart.defaults.plugins.datalabels.display = false; // opt-in per chart
+> ```
+>
+> 以及 `switchPage` 必須用 `setTimeout(60ms)` 包住所有 draw 呼叫：
+>
+> ```javascript
+> function switchPage(name) {
+>   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+>   document.getElementById('page-' + name).classList.add('active');
+>   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+>   document.querySelector(`[onclick*="'${name}'"]`).classList.add('active');
+>   if (!initialized[name]) {
+>     initialized[name] = true;
+>     setTimeout(() => { const fn = window['draw_' + name]; if (fn) fn(); }, 60);
+>   }
+> }
+> ```
+>
+> **原因（entry 14-A/14-B/14-C in dev-knowhow）：**
+> - ChartDataLabels CDN UMD 不自動 register；漏掉 → 所有 datalabels 靜默失效
+> - `Chart.defaults.set('plugins.datalabels',...)` 在 v4 會拋錯；改用直接屬性賦值
+> - switchPage 同步呼叫時 canvas size = 0×0，圖表空白；setTimeout 60ms 讓 DOM 完成顯示
+> - annotation plugin global 是 `window.ChartAnnotation`，不是 `window['chartjs-plugin-annotation']`
+>
 > **執行規則：**
 > - 每層用 **Write tool**（Layer 1）或 **Edit tool 追加**（Layer 2–4）寫入檔案，不要在 agent prompt 裡一次輸出整份 HTML
 > - 若有 agent 協助，**每個 agent 只負責一層**，由主 Claude 把關資料數字正確性後再觸發下一層

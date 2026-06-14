@@ -1180,7 +1180,8 @@ assertConsistency();
 // CHART UTILITIES
 // ══════════════════════════════════════════════════
 Chart.register(ChartDataLabels);
-if (window['chartjs-plugin-annotation']) Chart.register(window['chartjs-plugin-annotation']);
+if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
+Chart.defaults.plugins.datalabels.display = false; // global off; each chart opts in explicitly
 
 Chart.defaults.color = '#8b949e';
 Chart.defaults.borderColor = 'rgba(255,255,255,0.07)';
@@ -1693,9 +1694,11 @@ function switchPage(name) {
 
   if (!initialized[name]) {
     initialized[name] = true;
-    if (name === 'ops') drawOps();
-    if (name === 'cust') drawCust();
-    if (name === 'deep') drawDeep();
+    setTimeout(() => {
+      if (name === 'ops') drawOps();
+      if (name === 'cust') drawCust();
+      if (name === 'deep') drawDeep();
+    }, 60);
   }
 }
 
