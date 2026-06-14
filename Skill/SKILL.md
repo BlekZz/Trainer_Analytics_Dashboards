@@ -176,10 +176,24 @@ author: Blake
 15. 從差異化套件（D.3）再抽 2–3 個教學軸 / 結構軸元素
 16. 套用差異化標記，避免跟既有範本長太像
 
+### Phase 4.5 — Design QA（視覺品質驗收）
+
+> **🔴 ENTRY CHECKPOINT — 進 Phase 5 前必須完成此 Design QA，全部通過才可繼續**
+>
+> 執行順序（不需使用者確認，完成後輸出結果）：
+> 1. 在瀏覽器打開 HTML，依序切換所有分頁
+> 2. 依 **E.9 Design QA 清單** 逐項勾選（見 module-E-checklist.md）
+> 3. 輸出 Design QA 報告（格式見 E.9）
+> 4. 有任何 ❌ → 修復後重跑清單，直到全部 ✅
+
+17. 切換每一個分頁（P1 → P2 → P3 → P4），目視確認所有圖表渲染正確（非空白）
+18. 跑完 E.9 Design QA 14 項清單
+19. 輸出 Design QA 結果摘要表格，並明確聲明「通過 N/14，可（或不可）進 Phase 5」
+
 ### Phase 5 — 驗收（依模組 E）
-16. Playwright 自動測試（如環境支援）
-17. 跑 9 項 hard-check
-18. 交付前產出 changelog：跟範本相比差異化了哪些
+20. Playwright 自動測試（如環境支援）
+21. 跑 E.1 完整 hard-check 清單（34 項）
+22. 交付前產出 changelog：跟範本相比差異化了哪些
 
 ---
 
@@ -207,7 +221,8 @@ author: Blake
 | 選視覺 Preset（色票 + 字型） | D.9 |
 | 選擴充圖表類型（Waterfall 等） | D.10 |
 | 想跟前一份不同（三軸差異化） | D（全篇） |
-| 交付前檢查 | E.1（必檢 18 項） |
+| Design QA（Phase 4.5） | E.9（14 項視覺驗收） |
+| 交付前完整檢查 | E.1（34 項 hard-check） |
 | Agent 工作角色與稽核門 | F（全篇） |
 
 ---

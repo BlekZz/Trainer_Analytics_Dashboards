@@ -18,7 +18,7 @@
 ### 視覺層 (4 項)
 - [ ] **6. 色彩語意 protocol 遵守** — 無 protocol 外的顏色出沒
 - [ ] **7. 字型規範遵守** — 標題 Lora / 正文 Outfit / 數字 JBM
-- [ ] **8. 所有 datalabels 不被切** — 用 layout.padding + suggestedMax 雙保險
+- [ ] **8. 所有 datalabels 不被切** — `layout.padding` + **強制 `max = Math.ceil(maxVal × 1.2)`**（禁用 suggestedMax；stacked bar 取各 category 加總最大值 × 1.2）
 - [ ] **9. 無 legend 顯示 "undefined"** — 單 dataset 圖必須 legend.display: false
 
 ### 教學層 (5 項)
@@ -334,6 +334,77 @@ print("✓ All 9 data assertions passed")
 
 ### ⚠️ 發現問題（若有）
 - [問題描述 + 建議修法]
+```
+
+---
+
+## E.9 Design QA 清單（Phase 4.5 專用）
+
+> 在 Phase 4.5 執行，瀏覽器開啟後目視 + 原始碼逐項確認。
+> **全部 ✅ 才能進 Phase 5。有任何 ❌ 必須修復後重跑。**
+
+### 軸域設定（4 項）
+
+- [ ] **DQ-1. Bar / horizontal bar：軸 max 已設定** — 所有帶 `datalabels { anchor:'end' }` 的圖，對應值軸有明確 `max`，公式為 `Math.ceil(Math.max(...data) * 1.2)`（或取整到合適單位）；確認最高 bar 標籤完整可見，不被截
+- [ ] **DQ-2. Stacked bar：動態加總 max** — Y 軸 `max` 由所有 category 加總最大值 × 1.2 動態計算，非硬編；公式：`Math.ceil(Math.max(...labels.map((_,i) => datasets.reduce((s,ds)=>s+ds.data[i],0))) * 1.2 / rounding) * rounding`
+- [ ] **DQ-3. 折線圖 Y 軸 max（如有 datalabels）** — 若折線圖啟用 datalabels，同樣設 `max = Math.ceil(Math.max(...data) * 1.2)`；若無 datalabels 則 auto-scale 可接受
+- [ ] **DQ-4. 值域比例差距檢查** — 找出同一圖表最大值 / 最小非零值比率；若 > 10x，確認已用雙 Y-axis 處理，且最小值組有足夠可見高度（bar ≥ 3% 可見 ≈ 目視可辨識）
+
+### Donut / Pie 規範（4 項）
+
+- [ ] **DQ-5. `rotation: -90` 已設定** — 最大切片從 12 點鐘順時針開始；打開頁面後直觀確認最大佔比切片在上方
+- [ ] **DQ-6. 資料陣列降序排列** — DATA 中對應 donut 的資料已依值從大到小排列（或生成時確認排序）
+- [ ] **DQ-7. 全項目 datalabels 顯示** — `display: true`（無條件閾值過濾），所有切片（包括最小）都有外部標籤顯示「品項名稱 + 佔比%」；目視確認標籤無重疊或被圖框截斷
+- [ ] **DQ-8. `layout.padding ≥ 32`** — 確認 options 中有 `layout: { padding: 32 }`（或等效值）預留外部 datalabels 空間；legend 應設 `display: false`（已由 datalabels 提供品項資訊）
+
+### Stacked Bar 規範（2 項）
+
+- [ ] **DQ-9. 頂端加總 label** — 最後一個 dataset 的 datalabels 顯示該 category 所有 segment 的加總值，`anchor:'end', align:'end'`；目視確認每個 stacked bar 頂端有總量數字
+- [ ] **DQ-10. Tooltip 顯示各段佔比** — tooltip callback 輸出格式為 ` {label}: {raw} ({pct}%)`；hover 任一 segment 確認顯示百分比
+
+### 互動體驗（2 項）
+
+- [ ] **DQ-11. 折線 / 面積圖 hover 觸發範圍** — `interaction: { mode: 'index', intersect: false }` 已設定；測試：在曲線上任意 X 位置（不需精準對到 point）移動游標，tooltip 應即時出現
+- [ ] **DQ-12. `pointHoverRadius ≥ 10`** — 折線圖 dataset 的 `pointHoverRadius` 設定 ≥ 10（預設 4 太小）；確認 hover 時 point 視覺放大明顯
+
+### 跨頁渲染（2 項）
+
+- [ ] **DQ-13. 非首頁圖表正確渲染** — 依序點擊 P2、P3、P4 tab，確認每頁圖表在切換後 ≤ 200ms 完整渲染（非空白 canvas）；`switchPage` 必須包含 `setTimeout(60ms)` 才能保證 DOM layout 完成後再 draw
+- [ ] **DQ-14. 首頁 DOMContentLoaded 圖表正確渲染** — 開啟頁面不做任何點擊，P1 圖表應已完整渲染；確認 `DOMContentLoaded` 有 `setTimeout(() => draw_p1(), 60)` 而非同步呼叫
+
+---
+
+### Design QA 輸出格式
+
+Phase 4.5 結束後，輸出以下格式的報告（不需等使用者確認，直接輸出後告知結果）：
+
+```markdown
+## Design QA 結果（Phase 4.5）
+
+| # | 項目 | 狀態 | 備註 |
+|---|---|---|---|
+| DQ-1 | Bar 軸 max（20% headroom） | ✅ | ch-abc-restock: xMaxOrders=190k |
+| DQ-2 | Stacked bar 動態 max | ✅ | ageMax=1150 |
+| DQ-3 | 折線圖 Y 軸 max | ✅/N/A | 無 datalabels，auto-scale 可接受 |
+| DQ-4 | 值域比例 <10x | ✅ | 最大比率 5.3x（ch-turnover） |
+| DQ-5 | Donut rotation:-90 | ✅ | |
+| DQ-6 | Donut 降序排列 | ✅ | |
+| DQ-7 | Donut 全項目 datalabels | ✅ | |
+| DQ-8 | Donut layout.padding≥32 | ✅ | |
+| DQ-9 | Stacked bar 頂端加總 | ✅ | ch-inv-age |
+| DQ-10 | Stacked bar tooltip 佔比 | ✅ | |
+| DQ-11 | 折線圖 hover mode:index | ✅ | ch-stockout-monthly |
+| DQ-12 | pointHoverRadius≥10 | ✅ | 12 |
+| DQ-13 | 非首頁渲染正確 | ✅ | P2/P3/P4 均正常 |
+| DQ-14 | 首頁 DOMContentLoaded | ✅ | setTimeout(60) 確認 |
+
+**通過 14/14 → ✅ 可進 Phase 5**
+```
+
+若有 ❌ 項目，明確列出：
+```
+❌ DQ-7 Donut 全項目 datalabels — 最小切片（7.2%）datalabels 被截斷
+   → 修復：調整 layout.padding 至 40 或字型縮至 size:9
 ```
 
 ---
