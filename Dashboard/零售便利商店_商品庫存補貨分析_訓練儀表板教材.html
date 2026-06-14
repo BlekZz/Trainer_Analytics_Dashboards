@@ -946,6 +946,11 @@
 </div><!-- main-wrapper -->
 
 <script>
+// Plugin registration — must precede any Chart creation
+Chart.register(ChartDataLabels);
+if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
+Chart.defaults.plugins.datalabels.display = false; // 全域關閉；各圖表按需 opt-in
+
 // ══════════════════════════════════════════
 // DATA — Single Source of Truth
 // ══════════════════════════════════════════
@@ -1121,8 +1126,7 @@ function switchPage(name) {
   if (tb) tb.classList.add('active');
   if (!initialized[name]) {
     initialized[name] = true;
-    const fn = window['draw_'+name];
-    if (fn) fn();
+    setTimeout(() => { const fn = window['draw_'+name]; if (fn) fn(); }, 60);
   }
 }
 
@@ -1652,7 +1656,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   initialized['p1'] = true;
-  if (window.draw_p1) draw_p1();
+  setTimeout(() => { if (window.draw_p1) draw_p1(); }, 60);
 });
 </script>
 </body>
