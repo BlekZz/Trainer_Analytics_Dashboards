@@ -50,6 +50,27 @@
 
 1. **堆疊 bar 上疊「總量折線」**（D8）— 當你用堆疊呈現組成時，加紅色虛線表示總量趨勢，避免「組成清楚但總量模糊」的問題。
 
+   **🔴 堆疊 bar 必備：bar 頂端顯示加總值 + tooltip 顯示各段佔比**
+
+   ```javascript
+   // datalabels: 只在最後一個 dataset 顯示總量
+   datalabels: {
+     display: (ctx) => ctx.datasetIndex === ctx.chart.data.datasets.length - 1,
+     formatter: (v, ctx) => {
+       const tot = ctx.chart.data.datasets.reduce((s, ds) => s + ds.data[ctx.dataIndex], 0);
+       return tot + ' 單位';  // 換成實際單位
+     },
+     anchor: 'end', align: 'end', color: '#374151',
+     font: { size: 11, weight: 600 }
+   }
+
+   // tooltip: 顯示原始值 + 佔比
+   tooltip: { callbacks: { label: (ctx) => {
+     const tot = ctx.chart.data.datasets.reduce((s, ds) => s + ds.data[ctx.dataIndex], 0);
+     return ` ${ctx.dataset.label}: ${ctx.raw} (${(ctx.raw/tot*100).toFixed(1)}%)`;
+   }}}
+   ```
+
 2. **donut 中央放總量數字**（custom plugin）— 不要浪費中央那塊空間，用 `afterDraw` plugin 寫上總量與標籤。
 
 3. **annotation 標策略點**（用 chartjs-plugin-annotation）—
@@ -57,7 +78,22 @@
    - 24h 圖標 20 點高峰位置
    - cohort 矩陣標關鍵時間節點
 
-4. **datalabels 必須避開邊界** — 用 `layout.padding` + `scales.y.suggestedMax`（最大值的 1.1-1.2 倍）雙保險，否則最高的 bar 標籤會被切。
+4. **datalabels 必須避開邊界** — 用 `layout.padding` + **強制設 `max`**（最大值 × 1.2，取整）雙保險，否則最高的 bar 標籤會被切。不用 `suggestedMax`（auto-scale 依然可能緊貼資料）。
+
+   ```javascript
+   // 一般 bar / line：
+   max: Math.ceil(Math.max(...data) * 1.2)
+
+   // stacked bar：取各 category 加總的最大值
+   const stackMax = Math.ceil(Math.max(...labels.map((_,i) =>
+     datasets.reduce((s, ds) => s + ds.data[i], 0)
+   )) * 1.2 / 50) * 50;
+
+   // horizontal bar（indexAxis:'y'，x 為值軸）：
+   x: { min: 0, max: Math.ceil(Math.max(...data) * 1.2 / rounding) * rounding }
+   ```
+
+   同時注意**值域比例差距**：若最大值 / 最小值 > 10x，最小值 bar/line 在視覺上幾乎消失無法辨識。此時應用雙 Y-axis 或對最小值組加 annotation 說明，避免誤導比較。
 
 ---
 
@@ -259,7 +295,21 @@ function mk(id, type, labels, datasets, opts={}) {
 ### 圖表資料排序規則（🔴 紅線）
 
 1. **Bar / Column chart** — 資料依「顯示值」**降序排列**（最大值在左/上）。若有語意固定順序（月份時間軸）則例外。
-2. **Donut / Pie chart** — 切片依「值」**降序排列**（最大切片從 12 點鐘位置順時針開始）。
+2. **Donut / Pie chart** — 切片依「值」**降序排列**（最大切片從 12 點鐘位置順時針開始）。實作必須：
+   - `rotation: -90`（從 12 點鐘開始，Chart.js 4 預設從 3 點鐘）
+   - 資料陣列先依值降序排列
+   - `datalabels` 必須 `display: true`，同時顯示**項目名稱 + 佔比值**（不能只靠 legend）：
+     ```javascript
+     datalabels: {
+       display: true,
+       anchor: 'end', align: 'end', offset: 6,
+       formatter: (v, ctx) => ctx.chart.data.labels[ctx.dataIndex] + '\n' + v + '%',
+       color: '#374151', textAlign: 'center',
+       font: { weight: 600, size: 10 }
+     }
+     ```
+   - `layout: { padding: 32 }` 預留空間給外部 datalabels
+   - 當外部 datalabels 已顯示 label+value，**legend 可設 `display: false`** 避免重複
 3. **多圖共享標籤陣列** — 以最核心指標降序排定後，所有圖使用相同順序，確保視覺一致。
 4. **值域差距 >10x** — 禁用對數刻度；改用**雙 Y-axis**，右軸加 `grid: { drawOnChartArea: false }`。
 
@@ -271,6 +321,16 @@ function mk(id, type, labels, datasets, opts={}) {
 - 三頁 nav tab，active 狀態用主色 + 加粗 + 白底
 - Switching 時 trigger flash animation 標示目標圖表（`flash-target` class）
 - 第一次切換頁面才初始化該頁圖表（lazy init），減少首屏負擔
+
+### Tooltip / Hover 觸發範圍（🔴 紅線）
+
+折線圖 / 面積圖必須加 `interaction` 讓 tooltip 觸發範圍覆蓋整個 X 欄而不只是 point 上方，否則學員需要精準懸停才能看到資料：
+
+```javascript
+interaction: { mode: 'index', intersect: false }
+```
+
+同時設 `pointHoverRadius: 10`（預設 4 太小）。散點圖 / bar 改用 `mode: 'nearest', intersect: false`。
 
 ### QA Toggle
 - 預設摺疊，點 question 展開 answer
