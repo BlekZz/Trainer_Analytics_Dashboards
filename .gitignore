@@ -7,6 +7,9 @@ Claude Temp Files/
 # Playwright MCP browser session cache
 .playwright-mcp/
 
+# 履歷素材（個人素材，不入 repo）
+履歷素材/
+
 # OS
 .DS_Store
 Thumbs.db
