@@ -154,7 +154,7 @@ author: Blake
 > }
 > ```
 >
-> **原因（entry 14-A/14-B/14-C in dev-knowhow）：**
+> **原因（entry 14-A/14-B/14-C in tech-notes）：**
 > - ChartDataLabels CDN UMD 不自動 register；漏掉 → 所有 datalabels 靜默失效
 > - `Chart.defaults.set('plugins.datalabels',...)` 在 v4 會拋錯；改用直接屬性賦值
 > - switchPage 同步呼叫時 canvas size = 0×0，圖表空白；setTimeout 60ms 讓 DOM 完成顯示

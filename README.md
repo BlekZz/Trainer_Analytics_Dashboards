@@ -29,7 +29,7 @@
 │   ├── module-D-diff.md      ← 視覺/教學/結構三軸差異化策略
 │   └── module-E-checklist.md ← 上線前 QA 清單
 └── dev/                ← 開發筆記（非交付物）
-    ├── dev-knowhow.md  ← 技術踩坑記錄
+    ├── tech-notes.md  ← 技術踩坑記錄
     └── TODO.md         ← 待辦事項
 ```
 

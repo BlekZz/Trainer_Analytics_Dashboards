@@ -1,5 +1,7 @@
 # 分析訓練儀表板 — 開發 Knowhow
 
+> Global technotes pointers: `~/.claude/technotes/windows.md`、`~/.claude/technotes/git.md`（SSOT 在池，本檔不複製池內容）
+
 開發過程中累積的非顯而易見技巧與決策。
 
 ---

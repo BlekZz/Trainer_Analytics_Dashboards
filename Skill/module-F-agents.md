@@ -49,7 +49,7 @@ Phase 5 ────────────────────────
                失敗 → [Minimal Change Engineer] 點修，不重跑 Phase 3
 
 交付後 ──────────────────────────────────────────────────────
-  [Technical Writer] → 更新 dev/dev-knowhow.md（新踩坑 or 確認模式）
+  [Technical Writer] → 更新 dev/tech-notes.md（新踩坑 or 確認模式）
 ```
 
 ---
@@ -67,7 +67,7 @@ Phase 5 ────────────────────────
 | redesign-existing-projects | `redesign-skill.md` | 視覺設計師：Preset 套用、跨儀表板差異化 | Phase 4 強制 | 否 |
 | Evidence Collector | `testing-evidence-collector.md` | QA 驗收員：截圖 + 9 項 hard-check | Phase 5 強制 | 否 |
 | Minimal Change Engineer | `engineering-minimal-change-engineer.md` | 點修工：gate 失敗時針對性修復 | Gate 3/5 失敗時 | ✓ |
-| Technical Writer | `engineering-technical-writer.md` | 知識整合：dev-knowhow.md 更新 | 交付後 | ✓ |
+| Technical Writer | `engineering-technical-writer.md` | 知識整合：tech-notes.md 更新 | 交付後 | ✓ |
 
 ---
 

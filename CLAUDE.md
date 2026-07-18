@@ -22,7 +22,7 @@ A collection of single-file analytics training dashboards for industry-specific 
 │   ├── module-D-diff.md
 │   └── module-E-checklist.md
 ├── dev/                ← 開發文件（非交付物）
-│   ├── dev-knowhow.md  ← 技術踩坑記錄
+│   ├── tech-notes.md  ← 技術踩坑記錄
 │   └── TODO.md         ← 待辦事項
 └── CLAUDE.md
 ```
@@ -137,7 +137,7 @@ Only the agents listed below are active for this project; 派工時直接讀 `Ag
 | Code Reviewer | `engineering-code-reviewer.md` | bench_agency-agents | assertConsistency 邏輯、資料一致性交叉驗算 |
 | Analytics Reporter | `support-analytics-reporter.md` | bench_agency-agents | KPI 設計、資料維度規劃、圖表選型建議 |
 | Corporate Training Designer | `corporate-training-designer.md` | bench_agency-agents | F/I/A 問題設計、難度矩陣、陷阱題設計 |
-| Technical Writer | `engineering-technical-writer.md` | bench_agency-agents | dev-knowhow.md、CLAUDE.md、Skill 模組維護 |
+| Technical Writer | `engineering-technical-writer.md` | bench_agency-agents | tech-notes.md、CLAUDE.md、Skill 模組維護 |
 | full-output-enforcement | `output-skill.md` | bench_taste-skill | 1500+ 行 HTML 生成防截斷，單檔交付必備 |
 | redesign-existing-projects | `redesign-skill.md` | bench_taste-skill | Visual Preset（P1–P7）套用、跨儀表板視覺差異化 |
 | Rapid Prototyper | `engineering-rapid-prototyper.md` | bench_agency-agents | Phase 1 規格確認後快速搭起骨架 HTML |
@@ -155,6 +155,6 @@ Wrap-up（session 收尾 / 知識整合）時，project-local insight 依此表�
 | 洞見類型 | 歸檔目標檔案 |
 |----------|--------------|
 | Schema / 事實類知識 | `dev/Reference_<subject>.md` |
-| 已解 bug 的 fix pattern | 相關 Reference/schema 檔（或 `dev/dev-knowhow.md` 對應條目）；並在 debug log 對應條目打 ✅ |
-| 零散技術筆記、跨 session 除錯脈絡 | `dev/dev-knowhow.md`（本專案既有慣例，等同 tech-notes 角色） |
+| 已解 bug 的 fix pattern | 相關 Reference/schema 檔（或 `dev/tech-notes.md` 對應條目）；並在 debug log 對應條目打 ✅ |
+| 零散技術筆記、跨 session 除錯脈絡 | `dev/tech-notes.md`（原 dev-knowhow.md，2026-07-19 依 OS 規範改名） |
 | 架構決策（含取捨理由） | `dev/decisions/ADR-NNN-<kebab-name>.md` |
