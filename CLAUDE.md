@@ -146,3 +146,15 @@ Only the agents listed below are active for this project; 派工時直接讀 `Ag
 ## Inactive
 All agents not listed above are suppressed for this session.
 If you need an unlisted agent, explicitly name it in your message（客製需求可用 `/init-agent` 從 coldbench 加裝）.
+
+---
+
+## 知識歸檔路由表
+Wrap-up（session 收尾 / 知識整合）時，project-local insight 依此表歸檔：
+
+| 洞見類型 | 歸檔目標檔案 |
+|----------|--------------|
+| Schema / 事實類知識 | `dev/Reference_<subject>.md` |
+| 已解 bug 的 fix pattern | 相關 Reference/schema 檔（或 `dev/dev-knowhow.md` 對應條目）；並在 debug log 對應條目打 ✅ |
+| 零散技術筆記、跨 session 除錯脈絡 | `dev/dev-knowhow.md`（本專案既有慣例，等同 tech-notes 角色） |
+| 架構決策（含取捨理由） | `dev/decisions/ADR-NNN-<kebab-name>.md` |
