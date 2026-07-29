@@ -1,6 +1,6 @@
 # 分析訓練儀表板 — 開發 Knowhow
 
-> Global technotes pointers: `~/.claude/technotes/windows.md`、`~/.claude/technotes/git.md`（SSOT 在池，本檔不複製池內容）
+> Global technotes pointers: `~/.claude/technotes/windows.md`、`~/.claude/technotes/git.md`、`~/.claude/technotes/claude-code.md`（單檔 HTML 按結構層拆 subagent call）（SSOT 在池，本檔不複製池內容）
 
 開發過程中累積的非顯而易見技巧與決策。
 
@@ -18,6 +18,8 @@
 每個 part 各自完整輸出，再由主 agent 用 Write tool 組合寫入。使用 `full-output-enforcement` agent type 可進一步防止各 part 內部截斷。
 
 **注意：** Part 3 的 JS 不能依賴 Part 1/2 的 HTML 元素存在才能宣告變數，所有 `document.getElementById()` 只在 draw function 被呼叫時才執行，lazy init 天然防止這個問題。
+
+〔已上行 → technotes/claude-code.md，2026-07-21〕
 
 ---
 
