@@ -1,4 +1,6 @@
-- updated: 2026-07-19 (claude)
+# 專案主線 [BLOCKED: 待 Blake 指示下一步方向]
+- updated: 2026-09-28 (claude)
+- base: 16c50b5
 - 停點: Skill/+Agent/ 已凍結為 project-based 自持工具鏈（切斷 stale global sync）；dev-knowhow.md 改名 tech-notes.md，os-conform 升版至 2026-07-19.4 全過。
 - 下一步: 待定 — 無明顯下一步紀錄，需向 Blake 確認後續方向。
 - 切入: Skill/SKILL.md, dev/tech-notes.md, CLAUDE.md

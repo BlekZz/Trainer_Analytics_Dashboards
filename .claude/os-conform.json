@@ -1,1 +1,1 @@
-{ "last_conformed": "2026-07-19.4", "checked_at": "2026-07-19" }
+{ "last_conformed": "2026-08-31.1", "checked_at": "2026-09-28", "held_diffs": ["C-20: registry.json 缺 domains_relevant 欄，建議值 [\"web-frontend\"]（依 CLAUDE.md 技術棧：single-file HTML/CSS/Chart.js dashboard，無後端）——待主線統一補寫 ~/.claude/technotes/registry.json，不由本專案側 agent 寫入"] }
