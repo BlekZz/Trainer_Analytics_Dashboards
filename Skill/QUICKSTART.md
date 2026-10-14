@@ -78,7 +78,7 @@ OK，但啟用條件熱圖改成漏斗階段轉換率柱狀圖（熱圖在這個
 ✓ Phase 2: 生成 DATA.json，跑完 9 條 assertion → 全部通過
 ✓ Phase 3: HTML 建構完成，14 張圖全部繪製
 ✓ Phase 4: 差異化套件套用（中性灰主色 / hard-line / 4 頁漏斗 / 批判型分佈）
-✓ Phase 5: Playwright 自動驗證 → 18 項全綠
+✓ Phase 5: audit-dashboards.mjs exit 0 → E.1 44 項全綠
 
 交付物：
 1. saas-funnel-dashboard.html (約 110KB)
@@ -102,7 +102,7 @@ OK，但啟用條件熱圖改成漏斗階段轉換率柱狀圖（熱圖在這個
 ```markdown
 ## 需要更多資訊才能生成
 
-範本基準是 B2C 電商會員 × 交易分析。換產業時請告訴我：
+範本骨架取自餐飲連鎖版面（DATA 已清空），既有 7 份成品見 Dashboard/。換產業時請告訴我：
 
 1. 產業情境（必要）
    例：SaaS / 餐飲連鎖 / 線上教育 / 訂閱媒體 / 健身房 / 二手平台

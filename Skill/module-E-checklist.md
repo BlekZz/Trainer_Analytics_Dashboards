@@ -4,7 +4,7 @@
 
 ---
 
-## E.1 18 項 hard-check 清單
+## E.1 44 項 hard-check 清單
 
 依序檢查，**全綠才能交付**：
 
@@ -17,7 +17,7 @@
 
 ### 視覺層 (4 項)
 - [ ] **6. 色彩語意 protocol 遵守** — 無 protocol 外的顏色出沒
-- [ ] **7. 字型規範遵守** — 標題 Lora / 正文 Outfit / 數字 JBM
+- [ ] **7. 字型規範遵守** — 依所選 D.9 preset 的字型配對（標題／正文／數字三種角色齊備），Google Fonts import 與 CSS `font-family` 一致；P2 baseline 為 Lora / Outfit / JetBrains Mono
 - [ ] **8. 所有 datalabels 不被切** — `layout.padding` + **強制 `max = Math.ceil(maxVal × 1.2)`**（禁用 suggestedMax；stacked bar 取各 category 加總最大值 × 1.2）
 - [ ] **9. 無 legend 顯示 "undefined"** — 單 dataset 圖必須 legend.display: false
 
@@ -28,7 +28,7 @@
 - [ ] **13. 陷阱區塊在 A 題 + 訓練題都存在** — 不可省略
 - [ ] **14. nav-hint 跨頁推論題都有** — L3 系列必設
 
-### 結構層 (4 項)
+### 結構層 (20 項)
 - [ ] **15. 三段式答案結構符合 F/I/A 規範** — F 題只到觀察、I 題到推論、A 題完整四段
 - [ ] **16. 訓練題區塊存在於 P3 末（或差異化指定位置）** — 紫色 panel
 - [ ] **17. 📐 設計選擇揭露區塊存在** — 8 項或差異化指定的數量
@@ -71,98 +71,28 @@
 
 ---
 
-## E.2 Playwright 自動驗證腳本
+## E.2 自動驗證腳本（`dev/script/audit-dashboards.mjs`）
 
-如環境支援 Playwright，跑此腳本：
+可執行腳本已落地於專案 `dev/script/audit-dashboards.mjs`（零依賴，Node 22+；經 CDP 驅動本機 Chromium／Chrome／Edge，找不到時設 `CHROME_PATH`）：
 
-```python
-from playwright.sync_api import sync_playwright
-import os
-
-def verify_dashboard(html_path):
-    abs_path = os.path.abspath(html_path)
-    file_url = f"file://{abs_path}"
-
-    with sync_playwright() as p:
-        browser = p.chromium.launch()
-        page = browser.new_page(viewport={"width": 1400, "height": 900})
-
-        errors = []
-        consistency_passed = [False]
-
-        def on_console(msg):
-            if 'All data consistency checks passed' in msg.text:
-                consistency_passed[0] = True
-            if msg.type == 'error' and '403' not in msg.text:
-                errors.append(f"[{msg.type}] {msg.text}")
-
-        page.on("console", on_console)
-        page.on("pageerror", lambda err: errors.append(f"[pageerror] {err}"))
-
-        page.goto(file_url)
-        page.wait_for_timeout(2500)
-
-        # 檢查 1: 資料一致性
-        assert consistency_passed[0], "❌ assertConsistency 未通過"
-        print("✓ Data consistency passed")
-
-        # 檢查 2: 無 JS error
-        assert len(errors) == 0, f"❌ JS errors: {errors}"
-        print("✓ No JS errors")
-
-        # 檢查 3: 各頁所有 canvas 都渲染
-        for tab_idx, tab_name in enumerate(['member', 'transaction', 'cross'], start=1):
-            page.click(f"button.nav-btn:nth-of-type({tab_idx})")
-            page.wait_for_timeout(1500)
-            canvases = page.evaluate("""() =>
-              Array.from(document.querySelectorAll('canvas'))
-                .filter(c => c.offsetParent !== null)
-                .map(c => {
-                  const ctx = c.getContext('2d');
-                  const img = ctx.getImageData(0,0,c.width,c.height);
-                  let nonZero = 0;
-                  for(let i=3; i<img.data.length; i+=4) if(img.data[i]>0) nonZero++;
-                  return {id: c.id, pixels: nonZero};
-                })
-            """)
-            for c in canvases:
-                assert c['pixels'] > 100, f"❌ Canvas {c['id']} empty"
-            print(f"✓ {tab_name}: {len(canvases)} canvases rendered")
-
-        # 檢查 4: QA toggle 功能
-        page.click("button.nav-btn:nth-of-type(1)")
-        page.wait_for_timeout(500)
-        page.locator(".qa-question").first.click()
-        page.wait_for_timeout(300)
-        is_open = page.evaluate("""() =>
-          document.querySelector('.qa-item').classList.contains('open')""")
-        assert is_open, "❌ QA toggle 失敗"
-        print("✓ QA toggle works")
-
-        # 檢查 5: 必備 UI 元素存在
-        required_elements = [
-            '.color-legend',           # 色彩語意條
-            '.qa-level',               # L 難度標籤
-            '.fia',                    # F/I/A 標註
-            '.ev',                     # 證據碼
-            '.trap-block',             # 陷阱區塊
-            '.nav-hint',               # 跨頁提示
-            '.chart-ref-btn',          # 圖表索引按鈕
-            '#defPanel',               # 定義面板
-            '.training-panel',         # 訓練題區塊
-            '.meta-panel',             # 設計選擇揭露
-        ]
-        for sel in required_elements:
-            count = page.evaluate(f"document.querySelectorAll('{sel}').length")
-            assert count > 0, f"❌ 缺少元素: {sel}"
-        print("✓ All required elements present")
-
-        browser.close()
-        print("\n🎉 All checks passed.")
-
-# 使用
-verify_dashboard("/path/to/generated/dashboard.html")
+```bash
+node dev/script/audit-dashboards.mjs                       # 檢查 Dashboard/*.html
+node dev/script/audit-dashboards.mjs Dashboard/新檔.html    # 只檢查指定檔
 ```
+
+| 等級 | 檢查 | 對應 |
+|---|---|---|
+| FAIL | `assertConsistency()` 存在，且無 ✗／`console.error`／throw | E.1 #2、紅線 #1 |
+| FAIL | 載入期間無 uncaught exception | — |
+| FAIL | `ChartDataLabels` 已 register | E.1 #22 |
+| FAIL | 依序 `switchPage` 每個分頁後，每個 canvas 都有 Chart 實例且尺寸非 0 | E.1 #28 #29、DQ-13 |
+| FAIL | `.qa-item`、`.trap-block`、F/I/A 標註、設計選擇／設計說明區塊存在 | 紅線 #2 #3 #4 |
+| WARN | `Chart.defaults.plugins.datalabels.display !== false` | SKILL Layer 1 樣板 |
+| WARN | `<title>` 與檔名不一致 | 檔名規範 |
+| WARN | 缺 `.ev`／`.nav-hint`／`.chart-ref-btn` | E.1 #12 #14 #23 |
+
+Exit code：`0` 全部無 FAIL／`1` 有 FAIL／`2` 環境錯誤。**交付條件 = exit 0**；WARN 逐條判斷是否為刻意差異化。
+腳本不覆蓋的項目（QA toggle 互動、視覺品質、教學內容正確性）仍依 E.1 其餘條目與 E.9 人工／AI 目視檢查。
 
 ---
 
@@ -247,7 +177,7 @@ print("✓ All 9 data assertions passed")
 1. dashboard.html          # 完整可獨立打開的 HTML 檔
 2. DATA.json               # 資料 single source
 3. CHANGELOG.md            # 差異化記錄（vs 範本）
-4. verification-report.txt # E.1 18 項自檢結果
+4. verification-report.txt # E.1 44 項自檢結果
 5. screenshots/            # 三頁完整截圖（可選）
    ├── p1.png
    ├── p2.png
@@ -287,6 +217,24 @@ print("✓ All 9 data assertions passed")
 - 如要修改數字，請改 DATA 物件而非 HTML 文案，否則會破壞內部一致性
 - 設計選擇揭露區塊本身就是教學內容，建議引導學員閱讀並質疑
 ```
+
+---
+
+## E.7 後續迭代記錄
+
+每生成一份新 dashboard，更新此 skill 旁的 `ARCHIVE.md` 記錄：
+
+```markdown
+## Dashboard #N | 2026-05-XX
+- 產業：[XXX]
+- 訓練主題：[YYY]
+- 錨點：[ZZZ]
+- 差異化亮點：[簡述三軸差異]
+- 陷阱主題：[列出此份特有陷阱]
+- 使用反饋：[實習生反應、什麼題目卡住、什麼陷阱奏效]
+```
+
+這份 archive 可以反饋到下一份生成，避免重複差異化模式、累積有效陷阱主題庫。
 
 ---
 
@@ -436,21 +384,3 @@ Phase 4.5 結束後，輸出以下格式的報告（不需等使用者確認，�
 ❌ DQ-7 Donut 全項目 datalabels — 最小切片（7.2%）datalabels 被截斷
    → 修復：調整 layout.padding 至 40 或字型縮至 size:9
 ```
-
----
-
-## E.7 後續迭代記錄
-
-每生成一份新 dashboard，更新此 skill 旁的 `ARCHIVE.md` 記錄：
-
-```markdown
-## Dashboard #N | 2026-05-XX
-- 產業：[XXX]
-- 訓練主題：[YYY]
-- 錨點：[ZZZ]
-- 差異化亮點：[簡述三軸差異]
-- 陷阱主題：[列出此份特有陷阱]
-- 使用反饋：[實習生反應、什麼題目卡住、什麼陷阱奏效]
-```
-
-這份 archive 可以反饋到下一份生成，避免重複差異化模式、累積有效陷阱主題庫。

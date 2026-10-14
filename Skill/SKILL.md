@@ -80,7 +80,7 @@ author: Blake
 - [`module-E-checklist.md`](./module-E-checklist.md) — 最終 QA、Playwright 自動驗證
 - [`module-F-agents.md`](./module-F-agents.md) — Agent 工作流整合：角色分工、稽核門檻
 - [`QUICKSTART.md`](./QUICKSTART.md) — 5 種對話情境的標準執行範例
-- [`template.html`](./template.html) — 基準範本（B2C 電商會員 × 交易分析）
+- [`template.html`](./template.html) — 無數據骨架（取自餐飲連鎖版面，DATA 已清空為 `0`／`{品類A}` 佔位）
 
 ---
 
@@ -191,8 +191,8 @@ author: Blake
 19. 輸出 Design QA 結果摘要表格，並明確聲明「通過 N/18，可（或不可）進 Phase 5」
 
 ### Phase 5 — 驗收（依模組 E）
-20. Playwright 自動測試（如環境支援）
-21. 跑 E.1 完整 hard-check 清單（34 項）
+20. 跑 `node dev/script/audit-dashboards.mjs Dashboard/<新檔>.html`，**exit 0 才繼續**（E.2）
+21. 跑 E.1 完整 hard-check 清單（44 項）
 22. 交付前產出 changelog：跟範本相比差異化了哪些
 
 ---
@@ -222,7 +222,8 @@ author: Blake
 | 選擴充圖表類型（Waterfall 等） | D.10 |
 | 想跟前一份不同（三軸差異化） | D（全篇） |
 | Design QA（Phase 4.5） | E.9（18 項視覺驗收） |
-| 交付前完整檢查 | E.1（34 項 hard-check） |
+| 自動驗收（assert／渲染／紅線元素） | E.2（`dev/script/audit-dashboards.mjs`） |
+| 交付前完整檢查 | E.1（44 項 hard-check） |
 | Agent 工作角色與稽核門 | F（全篇） |
 
 ---
