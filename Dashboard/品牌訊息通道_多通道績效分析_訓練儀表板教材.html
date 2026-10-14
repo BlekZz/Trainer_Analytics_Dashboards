@@ -303,6 +303,13 @@
     }
     .chart-ref-btn:hover { background: rgba(59,130,246,0.14); }
 
+    /* ── Evidence code (.ev) ── */
+    .ev {
+      font-family: var(--font-mono); font-size: 0.82em; color: var(--accent);
+      background: rgba(59,130,246,0.10); border: 1px solid rgba(59,130,246,0.28);
+      border-radius: 4px; padding: 0 5px; white-space: nowrap;
+    }
+
     /* ── Responsive: narrow header ── */
     @media(max-width:600px) {
       .header-row-1 { padding: 10px 12px 8px; }
@@ -501,7 +508,7 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> <strong>LINE 通道</strong>帶來最多新會員，共 <strong>1,287 位</strong>（占總新會員 3,218 位的 40.0%）。圖表來源：新會員來源分佈 Donut 圖。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">新會員來源分佈</span>，<strong>LINE 通道</strong>帶來最多新會員，共 <strong>1,287 位</strong>（占總新會員 3,218 位的 40.0%）。圖表來源：新會員來源分佈 Donut 圖。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-1','card-c1-src-donut')">📍 查看：新會員來源分佈</button>
       </div>
@@ -570,7 +577,7 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> 總轉換 <strong>1,850 筆</strong>，推播貢獻 888 筆（<strong>48.0%</strong>），對話型貢獻 962 筆（<strong>52.0%</strong>）。兩大類通道貢獻各占約一半。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">推播 vs 對話型 通道轉換貢獻</span>，總轉換 <strong>1,850 筆</strong>，推播貢獻 888 筆（<strong>48.0%</strong>），對話型貢獻 962 筆（<strong>52.0%</strong>）。兩大類通道貢獻各占約一半。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-1','card-c1-push-conv-bar')">📍 查看：推播 vs 對話型轉換貢獻</button>
       </div>
@@ -649,7 +656,7 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> CTR = 點擊連結人數 ÷ <strong>觸達數</strong>（送達收件匣的推播量）。2025Q4 LINE CTR = 8,640 ÷ 72,000 = <strong>12%</strong>。注意：此處分母是觸達數，非開封數。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">開封率 vs CTR 對比</span>，CTR = 點擊連結人數 ÷ <strong>觸達數</strong>（送達收件匣的推播量）。2025Q4 LINE CTR = 8,640 ÷ 72,000 = <strong>12%</strong>。注意：此處分母是觸達數，非開封數。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-2','card-c2-rates')">📍 查看：開封率 vs CTR 對比</button>
       </div>
@@ -699,7 +706,7 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> 推播新會員合計 <strong>1,802 位</strong>。LINE：1,287 位（<strong>71.4%</strong>）；Email：515 位（<strong>28.6%</strong>）。LINE 是推播通道中帶來新會員的主要來源。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">新會員來源分佈（各通道絕對量）</span>，推播新會員合計 <strong>1,802 位</strong>。LINE：1,287 位（<strong>71.4%</strong>）；Email：515 位（<strong>28.6%</strong>）。LINE 是推播通道中帶來新會員的主要來源。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-4','card-c4-src-bar')">📍 查看：新會員來源分佈（P4）</button>
       </div>
@@ -798,7 +805,7 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> FCR（First Contact Resolution）= 首次對話即成功解決問題的比例。<strong>官網客服 FCR 最高，為 71%</strong>（即 71% 的對話在一輪對話內完成，無需升級或回訪）。WhatsApp 68%，Meta 54%。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">FCR 首次解決率對比</span>，FCR（First Contact Resolution）= 首次對話即成功解決問題的比例。<strong>官網客服 FCR 最高，為 71%</strong>（即 71% 的對話在一輪對話內完成，無需升級或回訪）。WhatsApp 68%，Meta 54%。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-3','card-c3-fcr')">📍 查看：FCR 首次解決率對比</button>
       </div>
@@ -848,7 +855,7 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> WhatsApp：252÷4,200 = <strong>6.0%</strong>；Meta：476÷6,800 = <strong>7.0%</strong>（最高）；官網客服：234÷8,500 = <strong>2.75%</strong>。Meta 雖然 FCR 最低、升級率最高，但轉換率反而最高——這反映對話型升級流程可能帶來更高轉換。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">對話型通道轉換率</span>，WhatsApp：252÷4,200 = <strong>6.0%</strong>；Meta：476÷6,800 = <strong>7.0%</strong>（最高）；官網客服：234÷8,500 = <strong>2.75%</strong>。Meta 雖然 FCR 最低、升級率最高，但轉換率反而最高——這反映對話型升級流程可能帶來更高轉換。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-3','card-c3-cvr')">📍 查看：對話型通道轉換率</button>
       </div>
@@ -947,7 +954,7 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> <strong>LINE 貢獻最多新會員</strong>，共 <strong>1,287 位</strong>，占全通道新會員總量 3,218 的 <strong>40.0%</strong>。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">新會員來源分佈（各通道絕對量）</span>，<strong>LINE 貢獻最多新會員</strong>，共 <strong>1,287 位</strong>，占全通道新會員總量 3,218 的 <strong>40.0%</strong>。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-4','card-c4-src-bar')">📍 查看：新會員來源分佈（各通道絕對量）</button>
       </div>
@@ -1016,7 +1023,7 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> 推播通道：<strong>1,802 位（56.0%）</strong>；對話型通道：<strong>1,416 位（44.0%）</strong>。推播通道貢獻略多，但對話型通道也佔有相當比重，顯示兩類通道在新會員取得上各有其角色。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">推播 vs 對話型新會員貢獻</span>，推播通道：<strong>1,802 位（56.0%）</strong>；對話型通道：<strong>1,416 位（44.0%）</strong>。推播通道貢獻略多，但對話型通道也佔有相當比重，顯示兩類通道在新會員取得上各有其角色。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-4','card-c4-push-conv')">📍 查看：推播 vs 對話型新會員貢獻</button>
       </div>

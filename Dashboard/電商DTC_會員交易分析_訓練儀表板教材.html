@@ -188,6 +188,11 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
 
 /* 證據碼（圖名引用）*/
 .ev{display:inline;background:rgba(45,91,227,0.09);border-radius:4px;padding:1px 5px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--accent);font-weight:500;}
+/* ─── chart-ref-btn ─── */
+@keyframes chartFlash{0%,100%{box-shadow:none;border-color:var(--border)}50%{box-shadow:0 0 0 3px rgba(45,91,227,0.5);border-color:rgba(45,91,227,0.7)}}
+.chart-flash{animation:chartFlash .55s ease-in-out 4}
+.chart-ref-btn{display:inline-flex;align-items:center;gap:5px;background:rgba(45,91,227,0.07);border:1px solid rgba(45,91,227,0.25);border-radius:6px;padding:5px 12px;margin-top:8px;font-size:0.76rem;color:var(--accent);cursor:pointer;font-family:'Outfit',sans-serif;transition:background .2s}
+.chart-ref-btn:hover{background:rgba(45,91,227,0.14)}
 
 /* TRAINING */
 .qa-item.training{border-left-color:#d4c5f9;}
@@ -364,7 +369,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
 
   <div class="section-label">每月新增 vs 流失趨勢</div>
   <div class="chart-group" id="group-cMemberTrend">
-    <div class="chart-block">
+    <div class="chart-block" id="card-cMemberTrend">
       <div class="chart-title">每月新增 vs 流失會員對比</div>
       <div class="chart-subtitle">觀察新增與流失的動態平衡，識別特定月份的異常信號</div>
       <div class="chart-wrap"><canvas id="cMemberTrend" height="220"></canvas></div>
@@ -388,6 +393,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
           <div class="ans-block">
             <span class="ans-head act">🎯 行動</span>需要 (1) 取得「獲客時間 × 流失時間」交叉表驗證假設；(2) 設計促銷後的留存活動（如獨家會員週、首次回購折扣）；(3) 持續監控 H2 流失曲線是否在隔年同期重現。
           </div>
+          <button class="chart-ref-btn" onclick="goToChart('member','card-cMemberTrend')">📍 查看：每月新增 vs 流失圖</button>
         </div></div></div>
       </div>
 
@@ -410,6 +416,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
           <div class="trap-block">
             <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤推論：</strong>實習生看到 KPI 與圖表的小差距會慌張改數字。但<strong>合理的口徑差異是業界常態</strong>，重點不在「消滅差距」，而在「能解釋差距」並把口徑寫清楚。
           </div>
+          <button class="chart-ref-btn" onclick="goToChart('member','card-cMemberTrend')">📍 查看：每月新增 vs 流失圖</button>
         </div></div></div>
       </div>
 
@@ -420,7 +427,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
   <div class="chart-row c1-1">
 
     <div class="chart-group" id="group-cMemberTier">
-      <div class="chart-block">
+      <div class="chart-block" id="card-cMemberTier">
         <div class="chart-title">會員等級結構</div>
         <div class="chart-subtitle">四個等級的人數比例分佈</div>
         <div class="chart-wrap"><canvas id="cMemberTier" height="240"></canvas></div>
@@ -448,13 +455,14 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
             <div class="trap-block">
               <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤：</strong>用「人均消費 × 流失人數」直接相乘得出衝擊金額，會忽略「等級內部消費差異」（同樣 Gold 等級內部，最高消費 vs 最低可能差 5 倍）。資深分析師會明確區分「人均」與「個體」並標註 A（Assumption）。
             </div>
-          </div></div></div>
+            <button class="chart-ref-btn" onclick="goToChart('member','card-cMemberTier')">📍 查看：等級結構圓餅圖</button>
+        </div></div></div>
         </div>
       </div>
     </div>
 
     <div class="chart-group" id="group-cMemberSource">
-      <div class="chart-block">
+      <div class="chart-block" id="card-cMemberSource">
         <div class="chart-title">會員來源渠道分佈</div>
         <div class="chart-subtitle">各獲客渠道貢獻的新會員佔比</div>
         <div class="chart-wrap"><canvas id="cMemberSource" height="240"></canvas></div>
@@ -478,7 +486,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
             <div class="ans-block">
               <span class="ans-head act">🎯 行動</span><strong>獲客量 ≠ 獲客質量</strong>。評估渠道效益的完整公式：「LTV ÷ CAC」。本 Dashboard 缺少 CAC 資料，但即使只看 LTV 也能修正「社群最好」這個錯誤直覺。建議下一步補上各渠道的 CAC 數字。
             </div>
-          </div></div></div>
+            <button class="chart-ref-btn" onclick="goToChart('member','card-cMemberSource')">📍 查看：來源渠道分佈圖</button>
+        </div></div></div>
         </div>
       </div>
     </div>
@@ -487,7 +496,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
 
   <div class="section-label">會員年齡分佈</div>
   <div class="chart-group" id="group-cMemberAge">
-    <div class="chart-block">
+    <div class="chart-block" id="card-cMemberAge">
       <div class="chart-title">會員年齡層佔比</div>
       <div class="chart-subtitle">不同年齡層在總會員中的分佈比例（2024 全年）</div>
       <div class="chart-wrap"><canvas id="cMemberAge" height="190"></canvas></div>
@@ -513,6 +522,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
           <div class="ans-block">
             <span class="ans-head act">🎯 行動</span>能說的：「年齡分佈集中是已知風險，且我們缺乏年齡 × 來源、年齡 × LTV 的交叉資料，建議下一步補上這兩個維度，才能評估『年輕族群是否同時是低 LTV 族群』」——把「需要的資料」明確化，比給一個自圓其說的答案更有價值。
           </div>
+          <button class="chart-ref-btn" onclick="goToChart('member','card-cMemberAge')">📍 查看：年齡分佈圖</button>
         </div></div></div>
       </div>
     </div>
@@ -551,7 +561,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
 
   <div class="section-label">月度營收趨勢</div>
   <div class="chart-group" id="group-cRevTrend">
-    <div class="chart-block">
+    <div class="chart-block" id="card-cRevTrend">
       <div class="chart-title">月度交易額趨勢（品類拆分堆疊 + 總額折線）</div>
       <div class="chart-subtitle">各品類每月交易金額堆疊，並疊加總額折線觀察整體趨勢</div>
       <div class="chart-wrap"><canvas id="cRevTrend" height="240"></canvas></div>
@@ -575,6 +585,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
           <div class="ans-block">
             <span class="ans-head act">🎯 行動</span>需思考淡季解方：(1) 在 Q1–Q2 推升美妝（16%）與食品（11.9%）等高頻品類的貢獻；(2) 設計「跨品類組合促銷」分散風險；(3) 監控 3C 在非節慶月的基本盤是否健康。
           </div>
+          <button class="chart-ref-btn" onclick="goToChart('transaction','card-cRevTrend')">📍 查看：月度營收堆疊圖</button>
         </div></div></div>
       </div>
 
@@ -594,6 +605,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
           <div class="ans-block">
             <span class="ans-head act">🎯 行動</span>提示供應鏈/選品節奏的管理問題：建議與採購部門檢視「秋裝上架時間 vs 銷售啟動時間」是否錯位 4-6 週。
           </div>
+          <button class="chart-ref-btn" onclick="goToChart('transaction','card-cRevTrend')">📍 查看：月度營收堆疊圖</button>
         </div></div></div>
       </div>
 
@@ -604,7 +616,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
   <div class="chart-row c1-1">
 
     <div class="chart-group" id="group-cCatPie">
-      <div class="chart-block">
+      <div class="chart-block" id="card-cCatPie">
         <div class="chart-title">品類全年營收佔比</div>
         <div class="chart-subtitle">五大品類的年度貢獻比重（2024 全年）</div>
         <div class="chart-wrap"><canvas id="cCatPie" height="250"></canvas></div>
@@ -630,13 +642,14 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
             <div class="trap-block">
               <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤推論：</strong>看到「3C 佔最高」就直覺認為「太集中」要分散。但 40% 在多品類零售算<strong>中度集中</strong>不算高，需先設定「健康集中度的標準」（例如業界平均最大品類佔比 35-50%）再判斷，不能僅看單一數字。
             </div>
-          </div></div></div>
+            <button class="chart-ref-btn" onclick="goToChart('transaction','card-cCatPie')">📍 查看：品類佔比圓餅圖</button>
+        </div></div></div>
         </div>
       </div>
     </div>
 
     <div class="chart-group" id="group-cOrderDist">
-      <div class="chart-block">
+      <div class="chart-block" id="card-cOrderDist">
         <div class="chart-title">訂單金額區間分佈</div>
         <div class="chart-subtitle">各金額區間的訂單筆數，紅色虛線為 NT$500 免運門檻</div>
         <div class="chart-wrap"><canvas id="cOrderDist" height="250"></canvas></div>
@@ -659,7 +672,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
             <div class="ans-block">
               <span class="ans-head act">🎯 行動</span>設計「差額提示」與「湊單推薦」功能：在結帳頁顯示「再買 NT$X 即可免運」+ 相關商品快速加購。<span class="fia a">A</span> 假設這類提示能讓其中 30% 的用戶跨越門檻（業界平均），且跨門檻後客單價平均提升 NT$120，則年度可增加營收 ≈ 7,500 × 30% × 120 = <strong>~NT$27 萬/年</strong>。實際效益需 A/B test 驗證。
             </div>
-          </div></div></div>
+            <button class="chart-ref-btn" onclick="goToChart('transaction','card-cOrderDist')">📍 查看：訂單金額分佈圖</button>
+        </div></div></div>
         </div>
       </div>
     </div>
@@ -670,7 +684,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
   <div class="chart-row c1-1">
 
     <div class="chart-group" id="group-cOrderHour">
-      <div class="chart-block">
+      <div class="chart-block" id="card-cOrderHour">
         <div class="chart-title">尖峰促銷日 24h 下單分佈</div>
         <div class="chart-subtitle">以 Q4 大檔期（雙 11/雙 12）典型日為例，呈現一日各小時下單量</div>
         <div class="chart-wrap"><canvas id="cOrderHour" height="220"></canvas></div>
@@ -694,13 +708,14 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
             <div class="ans-block">
               <span class="ans-head act">🎯 行動</span>推播通知、限時促銷、新品上架應優先排在 <strong>晚間 19:00–21:00</strong> 發送，而非常見的午間推播。EDM 與 LINE 訊息同理。<span class="fia a">A</span> 此推論基於「下單時點 ≈ 推播打開時點」的假設，實際應檢視推播打開率的時段分佈做驗證。
             </div>
-          </div></div></div>
+            <button class="chart-ref-btn" onclick="goToChart('transaction','card-cOrderHour')">📍 查看：時段下單量折線圖</button>
+        </div></div></div>
         </div>
       </div>
     </div>
 
     <div class="chart-group" id="group-cPayMethod">
-      <div class="chart-block">
+      <div class="chart-block" id="card-cPayMethod">
         <div class="chart-title">付款方式佔比年度演變</div>
         <div class="chart-subtitle">Line Pay、Apple Pay、信用卡、其他四類的月度佔比（合計 = 100%）</div>
         <div class="chart-wrap"><canvas id="cPayMethod" height="220"></canvas></div>
@@ -723,7 +738,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
             <div class="ans-block">
               <span class="ans-head act">🎯 行動</span>促銷設計三層調整：<strong>(1)</strong> 主力優惠移至 Line Pay / Apple Pay 綁定（覆蓋 54% 用戶）；<strong>(2)</strong> 信用卡優惠縮減但不取消（仍有 28% 用戶）；<strong>(3)</strong> 為「其他付款方式」的 ~20% 用戶設計獨立通路（例如貨到付款專屬折扣），不要讓他們因促銷錯位而流失。
             </div>
-          </div></div></div>
+            <button class="chart-ref-btn" onclick="goToChart('transaction','card-cPayMethod')">📍 查看：付款方式趨勢圖</button>
+        </div></div></div>
         </div>
       </div>
     </div>
@@ -765,7 +781,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
   <div class="chart-row c1-1">
 
     <div class="chart-group" id="group-cTierSpend">
-      <div class="chart-block">
+      <div class="chart-block" id="card-cTierSpend">
         <div class="chart-title">各會員等級年均消費比較</div>
         <div class="chart-subtitle">年均總消費 vs 平均客單價（按等級分組）</div>
         <div class="chart-wrap"><canvas id="cTierSpend" height="250"></canvas></div>
@@ -788,13 +804,14 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
             <div class="ans-block">
               <span class="ans-head act">🎯 行動</span>對整體營收貢獻而言：<strong>「讓用戶更常買」比「讓用戶每次買更貴」更重要</strong>。策略應優先設計增加回購頻次的機制——訂閱制、積分兌換週期、定期回購提醒——而非只靠推高客單價商品。
             </div>
-          </div></div></div>
+            <button class="chart-ref-btn" onclick="goToChart('cross','card-cTierSpend')">📍 查看：等級消費比較圖</button>
+        </div></div></div>
         </div>
       </div>
     </div>
 
     <div class="chart-group" id="group-cFreqDist">
-      <div class="chart-block">
+      <div class="chart-block" id="card-cFreqDist">
         <div class="chart-title">用戶全年消費頻次分佈</div>
         <div class="chart-subtitle">基於 15,348 名有購買者（2024 全年）</div>
         <div class="chart-wrap"><canvas id="cFreqDist" height="250"></canvas></div>
@@ -826,7 +843,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
             <div class="trap-block">
               <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤：</strong>把「未首購」與「只買1次」混為一池，用同一套策略對待。前者需要的是「品牌信任建立」，後者需要的是「再購誘因」，搞錯就會在最大的池子上浪費資源。
             </div>
-          </div></div></div>
+            <button class="chart-ref-btn" onclick="goToChart('cross','card-cFreqDist')">📍 查看：頻次分佈圖</button>
+        </div></div></div>
         </div>
       </div>
     </div>
@@ -837,7 +855,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
   <div class="chart-row c1-1">
 
     <div class="chart-group" id="group-cChannelLTV">
-      <div class="chart-block">
+      <div class="chart-block" id="card-cChannelLTV">
         <div class="chart-title">各渠道首年 LTV 比較</div>
         <div class="chart-subtitle">不同獲客來源的用戶，首年消費金額差異</div>
         <div class="chart-wrap"><canvas id="cChannelLTV" height="230"></canvas></div>
@@ -864,13 +882,14 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
             <div class="trap-block">
               <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤：</strong>只看 LTV 不看 CAC（獲客成本）。本 Dashboard 缺少 CAC 資料——官網 SEO 雖然「邊際成本低」但「初始投入大」（內容團隊、技術建置），完整的渠道評估必須包含 LTV/CAC 比值才有說服力。
             </div>
-          </div></div></div>
+            <button class="chart-ref-btn" onclick="goToChart('cross','card-cChannelLTV')">📍 查看：渠道 LTV 條形圖</button>
+        </div></div></div>
         </div>
       </div>
     </div>
 
     <div class="chart-group" id="group-cRepurchase">
-      <div class="chart-block">
+      <div class="chart-block" id="card-cRepurchase">
         <div class="chart-title">首購到再購的間隔天數分佈</div>
         <div class="chart-subtitle">二次購買發生在首購後多少天內？基於 11,747 名有再購者</div>
         <div class="chart-wrap"><canvas id="cRepurchase" height="230"></canvas></div>
@@ -893,7 +912,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
             <div class="ans-block">
               <span class="ans-head act">🎯 行動</span>設計三個自動觸發節點：<br>① <strong>第 5 天</strong>——推送首購品類的相關推薦（趁興趣最熱，覆蓋 ≤7 天高峰）；<br>② <strong>第 14 天</strong>——推送限時 95 折（8–14 天區間尾端，製造緊迫感）；<br>③ <strong>第 25 天</strong>——推送「一個月過去了，補貨/搭配建議」喚回訊息（覆蓋 15–30 天最高峰）。<br>三個節點成本極低但可覆蓋 60.6% 的潛在再購群體。
             </div>
-          </div></div></div>
+            <button class="chart-ref-btn" onclick="goToChart('cross','card-cRepurchase')">📍 查看：再購間隔分佈圖</button>
+        </div></div></div>
         </div>
       </div>
     </div>
@@ -935,7 +955,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
         <div class="trap-block">
           <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤：</strong>只看「人數最多」選 Bronze 或只看「人均最高」選 Platinum。資深思維是<strong>人數 × 單人損失 × 替代難度</strong>的綜合判斷。
         </div>
-      </div></div></div>
+        <button class="chart-ref-btn" onclick="goToChart('member','card-cMemberTier')">📍 查看：等級結構圓餅圖</button>
+        </div></div></div>
     </div>
 
     <div class="qa-item training">
@@ -962,7 +983,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
         <div class="trap-block">
           <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤：</strong>看到「LTV 低」就直覺要停掉社群投放。但社群的真實價值可能在「品牌曝光擴散」與「上層漏斗導流」，停掉會影響後續其他渠道的效率。<strong>渠道評估必須看「整個漏斗」</strong>不是單一渠道指標。
         </div>
-      </div></div></div>
+        <button class="chart-ref-btn" onclick="goToChart('cross','card-cChannelLTV')">📍 查看：渠道 LTV 條形圖</button>
+        </div></div></div>
     </div>
 
     <div class="qa-item training">
@@ -987,7 +1009,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
         <div class="trap-block">
           <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤：</strong>把「集中度」單純視為負面詞。實際上適度集中是「商業效率」的體現，過度分散反而代表「沒有真正忠誠的客戶」。<strong>關鍵是「集中風險是否可控」</strong>——有沒有早期預警、有沒有替補資源、流失多少才會傷骨。
         </div>
-      </div></div></div>
+        <button class="chart-ref-btn" onclick="goToChart('cross','card-cFreqDist')">📍 查看：頻次分佈圖</button>
+        </div></div></div>
     </div>
 
     <div class="qa-item training">
@@ -1012,7 +1035,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
         <div class="ans-block">
           <strong>⑤（加分）退會原因標籤：</strong>知道流失率 18.3% 但不知道為什麼。沒有原因分類，所有留存策略都是猜測。
         </div>
-      </div></div></div>
+        <button class="chart-ref-btn" onclick="goToChart('member','card-cMemberTrend')">📍 查看：每月新增 vs 流失圖</button>
+        </div></div></div>
     </div>
 
   </div>
@@ -1242,6 +1266,18 @@ function scrollToTarget(targetId){
   void el.offsetWidth;
   el.classList.add('flash-target');
   setTimeout(()=>el.classList.remove('flash-target'),2600);
+}
+
+function goToChart(page,cardId){
+  switchPage(page);
+  setTimeout(()=>{
+    const card=document.getElementById(cardId);
+    if(!card)return;
+    card.scrollIntoView({behavior:'smooth',block:'center'});
+    card.classList.remove('chart-flash');void card.offsetWidth;
+    card.classList.add('chart-flash');
+    setTimeout(()=>card.classList.remove('chart-flash'),2400);
+  },200);
 }
 
 function toggleQA(el){ el.parentElement.classList.toggle('open'); }
