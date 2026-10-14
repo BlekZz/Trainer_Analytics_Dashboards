@@ -259,6 +259,7 @@
     /* ── Misc ── */
     .section-divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
     .page-footer { padding: 32px 24px; text-align: center; font-size: 0.75rem; color: var(--text-muted); }
+    .ev { display: inline; background: rgba(5,150,105,0.1); border-radius: 4px; padding: 1px 5px; font-family: 'JetBrains Mono', monospace; font-size: 0.71rem; color: var(--accent); font-weight: 500; }
     @keyframes chartFlash {
       0%,100% { box-shadow: 0 1px 4px rgba(0,0,0,0.06); border-color: var(--border); }
       50% { box-shadow: 0 0 0 3px rgba(5,150,105,0.5), 0 0 20px rgba(5,150,105,0.2); border-color: rgba(5,150,105,0.7); }
@@ -437,8 +438,9 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> 帕累托曲線顯示，前 <span class="fia f">16% SKU</span>（即 427 個 A 類 SKU）已累積貢獻 <strong>78.9%</strong> 的收入，非常接近 80/20 法則的理論值。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">帕累托累積曲線</span>看，前 <span class="fia f">16% SKU</span>（即 427 個 A 類 SKU）已累積貢獻 <strong>78.9%</strong> 的收入，非常接近 80/20 法則的理論值。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p1','cc-pareto')">📍 查看：帕累托累積曲線</button>
         <div class="trap-block"><span class="trap-icon">⚠️</span><span>常見錯誤：回答「前 20% SKU」。實際曲線在 16% 處已達 78.9%，集中度高於標準 80/20 情境，進一步強調 A 類保障的重要性。</span></div>
       </div>
     </div>
@@ -450,8 +452,9 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> A 類 SKU 共 <span class="fia f">427 個</span>，建議補貨頻率為每天（freq_days = 1）。<br>全年補貨訂單數 = 427 × 365 = <strong>155,855 次</strong>。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">ABC 分類分析</span>，A 類 SKU 共 <span class="fia f">427 個</span>，建議補貨頻率為每天（freq_days = 1）。<br>全年補貨訂單數 = 427 × 365 = <strong>155,855 次</strong>。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p1','cc-abc')">📍 查看：ABC 分類分析</button>
       </div>
     </div>
     <div class="qa-item">
@@ -465,6 +468,7 @@
           <p><span class="tag-i">I:</span> C 類 SKU 銷售頻率低，但每個 SKU 仍需採購、入庫、陳列、補貨等管理動作，消耗大量運營資源。當 C 類 SKU 中有相當比例是<span class="fia i">低動銷或零動銷品項</span>時，資源消耗遠超其收入貢獻。</p>
           <p style="margin-top:8px"><span class="tag-a">A:</span> 若 C 類 SKU 中有 30% 是真正呆滯品（可結合庫存週齡 &gt;60天資料判斷），考慮淘汰以釋放貨架空間給高毛利品項。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p1','cc-abc')">📍 查看：ABC 分類分析</button>
       </div>
     </div>
     <div class="qa-item">
@@ -475,8 +479,9 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-i">I:</span> 旺季促銷（折扣、買一送一）使實際售價降低，壓縮毛利率。此外，旺季時食品飲料、生鮮熟食等<span class="fia i">本就低毛利品類銷量比重上升</span>，整體品類混搭效果也會拉低加總毛利率。</p>
+          <p><span class="tag-i">I:</span> 從<span class="ev">月度營收趨勢 &amp; 毛利率雙軸</span>看，旺季促銷（折扣、買一送一）使實際售價降低，壓縮毛利率。此外，旺季時食品飲料、生鮮熟食等<span class="fia i">本就低毛利品類銷量比重上升</span>，整體品類混搭效果也會拉低加總毛利率。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p1','cc-monthly')">📍 查看：月度營收趨勢 &amp; 毛利率雙軸</button>
         <div class="trap-block"><span class="trap-icon">⚠️</span><span>不要只說「賣得多所以毛利率低」——銷量增加本身不影響毛利率。是促銷讓利與品類結構改變才是原因。</span></div>
       </div>
     </div>
@@ -488,9 +493,10 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-a">A:</span> 不一定。毛利率低不等於不值得投資——食品飲料的<span class="fia a">絕對毛利金額 692 萬</span>仍是六品類最高，且帶客流引流效果難以量化。</p>
+          <p><span class="tag-a">A:</span> 不一定。毛利率低不等於不值得投資——從<span class="ev">品類毛利率 &amp; 毛利金額雙軸</span>看，食品飲料的<span class="fia a">絕對毛利金額 692 萬</span>仍是六品類最高，且帶客流引流效果難以量化。</p>
           <p style="margin-top:8px"><span class="tag-i">I:</span> 更好的策略是優化品類內的 SKU 組合，提升高毛利產品比重，而非直接削減總庫存。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p3','cc-cat-gm')">📍 查看：品類毛利率 &amp; 毛利金額</button>
         <div class="nav-hint" onclick="goToChart('p3','cc-cat-gm')">
           📊 前往 ③ 毛利 &amp; GMROI 查看各品類毛利絕對金額 →
         </div>
@@ -567,8 +573,9 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> <span class="fia f">生鮮熟食最高（22.74次/年）</span>，<span class="fia f">冷藏飲料最低（4.29次/年）</span>，差距約 <strong>5.3 倍</strong>（18.45次）。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">品類庫存周轉率</span>，<span class="fia f">生鮮熟食最高（22.74次/年）</span>，<span class="fia f">冷藏飲料最低（4.29次/年）</span>，差距約 <strong>5.3 倍</strong>（18.45次）。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p2','cc-turnover')">📍 查看：品類庫存周轉率</button>
       </div>
     </div>
     <div class="qa-item">
@@ -579,8 +586,9 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> 呆滯率 <span class="fia f">12.4%</span>，2,847 × 12.4% ≈ <strong>353 個 SKU</strong> 週齡超過 60 天。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">品類庫存週齡分布</span>，呆滯率 <span class="fia f">12.4%</span>，2,847 × 12.4% ≈ <strong>353 個 SKU</strong> 週齡超過 60 天。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p2','cc-inv-age')">📍 查看：品類庫存週齡分布</button>
       </div>
     </div>
     <div class="qa-item">
@@ -591,8 +599,10 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-i">I:</span> 高周轉 + 高缺貨代表<span class="fia i">補貨速度跟不上銷售消耗速度</span>。庫存快速清空，但補貨前置時間（lead time）不夠短，導致貨架空窗期。這不是「庫存太多」的問題，而是「補貨響應速度」問題。</p>
+          <p><span class="tag-i">I:</span> 從<span class="ev">品類庫存周轉率</span>與<span class="ev">品類缺貨率（%）</span>看，高周轉 + 高缺貨代表<span class="fia i">補貨速度跟不上銷售消耗速度</span>。庫存快速清空，但補貨前置時間（lead time）不夠短，導致貨架空窗期。這不是「庫存太多」的問題，而是「補貨響應速度」問題。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p2','cc-stockout-cat')">📍 查看：品類缺貨率</button>
+        <button class="chart-ref-btn" onclick="goToChart('p2','cc-turnover')">📍 查看：品類庫存周轉率</button>
       </div>
     </div>
     <div class="qa-item">
@@ -603,8 +613,9 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-i">I:</span> 旺季銷售增速 40%，缺貨事件增速 70%——說明<span class="fia i">旺季備貨準備度嚴重不足</span>，out-of-stock 損失規模可能超過旺季額外收入。</p>
+          <p><span class="tag-i">I:</span> 從<span class="ev">月度缺貨事件數趨勢</span>與<span class="ev">月度營收趨勢 &amp; 毛利率雙軸</span>對照，旺季銷售增速 40%，缺貨事件增速 70%——說明<span class="fia i">旺季備貨準備度嚴重不足</span>，out-of-stock 損失規模可能超過旺季額外收入。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p2','cc-stockout-monthly')">📍 查看：月度缺貨事件數趨勢</button>
         <div class="nav-hint" onclick="goToChart('p1','cc-monthly')">
           📊 前往 ① SKU銷售 查看月度營收趨勢對照 →
         </div>
@@ -621,8 +632,9 @@
           <p><span class="tag-a">A:</span> 典型「<span class="fia a">高潛力但資本效率低</span>」品類。建議策略：</p>
           <p style="margin-top:6px">① 品類內 ABC 分析：集中補貨高動銷 SKU，淘汰低動銷品項釋放冷鏈資本。<br>
           ② 縮短補貨前置時間：提升補貨頻率，降低安全庫存需求。<br>
-          ③ 目標：在不增加總庫存的前提下，將周轉率從 4.29 提升至接近全場均值 5.03。</p>
+          ③ 目標：在不增加總庫存的前提下，將<span class="ev">品類庫存周轉率</span>從 4.29 提升至接近全場均值 5.03。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p2','cc-turnover')">📍 查看：品類庫存周轉率</button>
         <div class="nav-hint" onclick="goToChart('p3','cc-gmroi')">
           📊 前往 ③ 毛利&amp;GMROI 查看冷藏飲料的 GMROI 位置 →
         </div>
@@ -712,8 +724,9 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> <span class="fia f">生鮮熟食 GMROI 最高（6.63）</span>，意味著每投入 1 元庫存平均創造 6.63 元毛利。GMROI 衡量的是庫存資本的<strong>毛利回報效率</strong>，不是銷售規模。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">GMROI 品類效益矩陣</span>，<span class="fia f">生鮮熟食 GMROI 最高（6.63）</span>，意味著每投入 1 元庫存平均創造 6.63 元毛利。GMROI 衡量的是庫存資本的<strong>毛利回報效率</strong>，不是銷售規模。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p3','cc-gmroi')">📍 查看：GMROI 品類效益矩陣</button>
       </div>
     </div>
     <div class="qa-item">
@@ -724,8 +737,10 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> 毛利金額最高：<span class="fia f">食品飲料（692萬）</span>；毛利率最高：<span class="fia f">冷藏飲料（44.3%）</span>。兩個答案不同。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">品類收入結構（毛利 vs 成本拆解）</span>，毛利金額最高：<span class="fia f">食品飲料（692萬）</span>；毛利率最高：<span class="fia f">冷藏飲料（44.3%）</span>。兩個答案不同。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p3','cc-waterfall')">📍 查看：品類收入結構</button>
+        <button class="chart-ref-btn" onclick="goToChart('p3','cc-cat-gm')">📍 查看：品類毛利率 &amp; 毛利金額</button>
         <div class="trap-block"><span class="trap-icon">⚠️</span><span>毛利率高不等於毛利金額大。冷藏飲料雖然率高，但體量（863萬收入）小於食品飲料（2,218萬），所以絕對金額（382萬）不如食品飲料（692萬）。</span></div>
       </div>
     </div>
@@ -737,8 +752,9 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-i">I:</span> 菸酒是<span class="fia i">低利薄利但穩定的品類</span>——銷售節奏規律（缺貨率低），但投資回報效率不高。這類品類的策略重點是「維持穩定供應、控管庫存量」，而非追求毛利提升。</p>
+          <p><span class="tag-i">I:</span> 從<span class="ev">GMROI 品類效益矩陣</span>看，菸酒是<span class="fia i">低利薄利但穩定的品類</span>——銷售節奏規律（缺貨率低），但投資回報效率不高。這類品類的策略重點是「維持穩定供應、控管庫存量」，而非追求毛利提升。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p3','cc-gmroi')">📍 查看：GMROI 品類效益矩陣</button>
       </div>
     </div>
     <div class="qa-item">
@@ -749,8 +765,9 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-i">I:</span> 高 GMROI + 高缺貨 = <span class="fia i">未被滿足的高效益需求</span>。每次缺貨都是真實的毛利損失（且這些損失發生在效率最高的品類）。如果能把生鮮熟食缺貨率從 12.6% 降到接近均值 8.3%，對整體 GMROI 的提升效果最大。</p>
+          <p><span class="tag-i">I:</span> 從<span class="ev">GMROI 品類效益矩陣</span>與<span class="ev">品類缺貨率（%）</span>看，高 GMROI + 高缺貨 = <span class="fia i">未被滿足的高效益需求</span>。每次缺貨都是真實的毛利損失（且這些損失發生在效率最高的品類）。如果能把生鮮熟食缺貨率從 12.6% 降到接近均值 8.3%，對整體 GMROI 的提升效果最大。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p3','cc-gmroi')">📍 查看：GMROI 品類效益矩陣</button>
         <div class="nav-hint" onclick="goToChart('p2','cc-stockout-cat')">
           📊 前往 ② 庫存健康 查看品類缺貨率對照 →
         </div>
@@ -764,8 +781,9 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-a">A:</span> 可能原因：① 郊區銷售量較低，<span class="fia a">生鮮損耗率</span>相對較高（賣不完就報廢）；② 郊區供應鏈配送頻率較低，鮮度較差影響售價；③ 郊區競爭業者少，但消費者對生鮮的價格敏感度也可能不同。</p>
+          <p><span class="tag-a">A:</span> 從<span class="ev">門市型態 × 品類毛利率熱力圖</span>看，可能原因：① 郊區銷售量較低，<span class="fia a">生鮮損耗率</span>相對較高（賣不完就報廢）；② 郊區供應鏈配送頻率較低，鮮度較差影響售價；③ 郊區競爭業者少，但消費者對生鮮的價格敏感度也可能不同。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p3','cc-gm-heatmap')">📍 查看：門市型態 × 品類毛利率熱力圖</button>
       </div>
     </div>
     <div class="qa-item">
@@ -776,9 +794,11 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-a">A:</span> 優先調整<span class="fia a">冷藏飲料</span>（最高毛利率 44.3%，但 GMROI 僅 3.41、周轉率最低 4.29）：</p>
+          <p><span class="tag-a">A:</span> 優先調整<span class="fia a">冷藏飲料</span>（從<span class="ev">品類毛利率 &amp; 毛利金額雙軸</span>看最高毛利率 44.3%，但 GMROI 僅 3.41、周轉率最低 4.29）：</p>
           <p style="margin-top:6px">策略邏輯：削減冷藏飲料中的 C 類 SKU 庫存，把釋放出的庫存預算轉移到生鮮熟食（GMROI 6.63，需求強勁但缺貨高）或食品飲料 A 類 SKU（佔收入最大）。這樣在不增加總預算的前提下，整體 GMROI 應顯著提升。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p3','cc-gmroi')">📍 查看：GMROI 品類效益矩陣</button>
+        <button class="chart-ref-btn" onclick="goToChart('p3','cc-cat-gm')">📍 查看：品類毛利率 &amp; 毛利金額</button>
       </div>
     </div>
   </div>
@@ -846,6 +866,7 @@
           </p>
           <p style="margin-top:6px">這樣可以把安全庫存預算集中在 A 類，而不是平均分配給三類 SKU。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p4','cc-abc-restock')">📍 查看：ABC 補貨頻率建議</button>
       </div>
     </div>
     <div class="qa-item" style="margin-bottom:10px">
@@ -858,12 +879,14 @@
         <div class="answer-block">
           <p><span class="tag-a">A:</span> 旺季備貨框架：</p>
           <p style="margin-top:6px">
-          ① <strong>需求預測</strong>：12月營收是全年最高（760萬），約為平均月（570萬）的 1.33倍——對應上調所有 A 類 SKU 訂貨量 33%。<br>
+          ① <strong>需求預測</strong>：從<span class="ev">月度營收趨勢 &amp; 毛利率雙軸</span>看，12月營收是全年最高（760萬），約為平均月（570萬）的 1.33倍——對應上調所有 A 類 SKU 訂貨量 33%。<br>
           ② <strong>品類優先序</strong>：依補貨優先矩陣——冷藏飲料（高毛利高缺貨）、生鮮熟食（高缺貨）最先確保供應。<br>
           ③ <strong>門市差異</strong>：交通樞紐和郊區缺貨率本就偏高，旺季前提前 2–3 天加密補貨頻率。<br>
           ④ <strong>毛利保護</strong>：旺季促銷會壓低毛利率（歷史最低 32.6%）——備貨增量應集中在高毛利品類（冷藏飲料 44.3%），避免在低毛利品類（生鮮 22.6%）過度備貨。
           </p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p1','cc-monthly')">📍 查看：月度營收趨勢</button>
+        <button class="chart-ref-btn" onclick="goToChart('p4','cc-restock')">📍 查看：補貨優先矩陣</button>
       </div>
     </div>
     <div class="qa-item" style="margin-bottom:10px">
@@ -874,13 +897,14 @@
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-a">A:</span> 「低缺貨 × 高毛利」代表這個品類<span class="fia a">供應穩定但體量不大</span>（7.2% 收入佔比）。優化方向：</p>
+          <p><span class="tag-a">A:</span> 從<span class="ev">補貨優先矩陣</span>看，「低缺貨 × 高毛利」代表這個品類<span class="fia a">供應穩定但體量不大</span>（7.2% 收入佔比）。優化方向：</p>
           <p style="margin-top:6px">
           ① 考慮「擴大 SKU 深度」：在維持低缺貨的前提下，引入更多文具雜貨 SKU 提升品類覆蓋面，挑戰更高的收入佔比。<br>
           ② 「交叉促銷」：文具雜貨放在食品飲料結帳區旁，利用衝動購買提升連帶率。<br>
           ③ 這個品類不需要補貨資源的優先關注——維持現狀的同時，把節省的補貨精力放在右上象限品類。
           </p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p4','cc-restock')">📍 查看：補貨優先矩陣</button>
       </div>
     </div>
     <div class="qa-item">
@@ -893,12 +917,14 @@
         <div class="answer-block">
           <p><span class="tag-a">A:</span> 分配邏輯（以 GMROI 為核心）：</p>
           <p style="margin-top:6px">
-          <strong>生鮮熟食 +20萬（40%）</strong>：GMROI 最高（6.63），缺貨率最高（12.6%），每 1 元庫存投入預期產生 6.63 元毛利回報。這是預算效益最高的選擇。<br>
+          <strong>生鮮熟食 +20萬（40%）</strong>：從<span class="ev">GMROI 品類效益矩陣</span>與<span class="ev">品類缺貨率（%）</span>看，GMROI 最高（6.63），缺貨率最高（12.6%），每 1 元庫存投入預期產生 6.63 元毛利回報。這是預算效益最高的選擇。<br>
           <strong>冷藏飲料 +20萬（40%）</strong>：毛利率最高（44.3%）且缺貨率偏高（11.3%），補足旺季備貨缺口。<br>
           <strong>食品飲料 A 類 SKU +10萬（20%）</strong>：佔收入最大（32.4%），確保 A 類 SKU 在旺季絕不缺貨，避免最高頻客流品類斷貨。
           </p>
           <p style="margin-top:6px">不分配給菸酒（低GMROI 3.20）、文具雜貨（缺貨率已低）、日用品（GMROI 5.35 但缺貨率不急迫）。</p>
         </div>
+        <button class="chart-ref-btn" onclick="goToChart('p3','cc-gmroi')">📍 查看：GMROI 品類效益矩陣</button>
+        <button class="chart-ref-btn" onclick="goToChart('p4','cc-restock')">📍 查看：補貨優先矩陣</button>
       </div>
     </div>
   </div>
