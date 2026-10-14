@@ -332,7 +332,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 ```css
 :root {
   --bg: #ECFEFF; --bg-card: #FFFFFF; --bg-finding: #E0F9FB;
-  --accent: #0891B2; --accent2: #059669; --warn: #D97706; --danger: #DC2626; --purple: #7C3AED;
+  --accent: #0369A1; --accent2: #059669; --warn: #D97706; --danger: #DC2626; --purple: #7C3AED;
   --text: #164E63; --text-muted: #64748B; --border: rgba(0,0,0,0.07);
   --radius: 16px;
 }
@@ -344,6 +344,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 ```
 - **調性：** 清晰、低刺激、符合 WCAG AA
 - **反模式：** 不可用高飽和紅色（用橘代替警示）/ 不可用暗色背景
+- **配色驗證（B.9-1，2026-10-14）：** 原 accent #0891B2 與 accent2 #059669 正常視力 ΔE 11.8（硬傷），改 #0369A1 後 ΔE 18.5；orange↔accent2 色盲 ΔE 7.9（WARN），對應系列需保留數字標籤
 
 ---
 
