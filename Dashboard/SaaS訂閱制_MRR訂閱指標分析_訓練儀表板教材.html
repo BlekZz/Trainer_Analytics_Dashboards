@@ -131,6 +131,7 @@ a{color:var(--accent);text-decoration:none}
 .nav-hint:hover{background:rgba(217,119,6,0.14)}
 .chart-ref-btn{display:inline-flex;align-items:center;gap:5px;background:rgba(37,99,235,0.06);border:1px solid rgba(37,99,235,0.2);border-radius:6px;padding:5px 12px;margin-top:8px;font-size:.76rem;color:var(--accent);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:background .2s}
 .chart-ref-btn:hover{background:rgba(37,99,235,0.12)}
+.ev{display:inline;background:rgba(37,99,235,0.08);color:var(--accent);border-bottom:1px dashed rgba(37,99,235,0.5);border-radius:3px;padding:0 4px;font-weight:600;font-size:.95em}
 
 /* Training block */
 .training-block{background:rgba(124,58,237,0.05);border:1px solid rgba(124,58,237,0.2);border-radius:var(--radius);padding:20px;margin-top:28px}
@@ -314,7 +315,8 @@ a{color:var(--accent);text-decoration:none}
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F</span> 從瀑布圖可直接讀取：<span class="fia f">F</span> Churned MRR 為 <strong>−NT$178,800</strong>，是12月唯一數值超過 New MRR（+NT$125,000）與 Expansion MRR（+NT$68,000）合計（+NT$193,000）之後仍使 MRR 淨減少的主因。<span class="fia f">F</span> 期末 MRR 比期初減少 NT$37,800（−0.8%）。</p>
+          <p><span class="tag-f">F</span> 從<span class="ev">MRR Waterfall</span>可直接讀取：<span class="fia f">F</span> Churned MRR 為 <strong>−NT$178,800</strong>，是12月唯一數值超過 New MRR（+NT$125,000）與 Expansion MRR（+NT$68,000）合計（+NT$193,000）之後仍使 MRR 淨減少的主因。<span class="fia f">F</span> 期末 MRR 比期初減少 NT$37,800（−0.8%）。</p>
+          <button class="chart-ref-btn" onclick="goToChart('mrr','card-waterfall')">📍 查看：MRR Waterfall</button>
         </div>
         <div class="trap-block"><span class="trap-icon">⚠️</span>注意：不要把「MRR 下滑」歸因於 Contraction（−NT$52,000），Contraction 雖然是負向元素，但 Churned 的衝擊幅度是 Contraction 的 3.4 倍。單看「有幾個元素是負的」不等於「哪個元素影響最大」。</div>
       </div>
@@ -328,8 +330,9 @@ a{color:var(--accent);text-decoration:none}
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F</span> 從月度拆解圖：<span class="fia f">F</span> 7月 New MRR = NT$108,000，為全年最低；同月 Churned MRR 達 NT$154,000，為 Jan–Nov 最高，雙重打擊導致當月 MRR 淨減少 NT$32,000。</p>
+          <p><span class="tag-f">F</span> 從<span class="ev">各月 MRR 四元素</span>：<span class="fia f">F</span> 7月 New MRR = NT$108,000，為全年最低；同月 Churned MRR 達 NT$154,000，為 Jan–Nov 最高，雙重打擊導致當月 MRR 淨減少 NT$32,000。</p>
           <p><span class="tag-i">I</span> 推論成因：<span class="fia i">I</span> B2B SaaS 的7月通常是決策凍結期（企業 IT 預算上半年已用盡，下半年預算未開放），新簽約速度放慢；<span class="fia i">I</span> 同時部分客戶在合約到期後選擇夏季暫停，加劇流失。</p>
+          <button class="chart-ref-btn" onclick="goToChart('mrr','card-mrr-decomp')">📍 查看：各月 MRR 四元素</button>
         </div>
         <div class="nav-hint" onclick="goToChart('churn','card-churn-trend')">→ 對照 P2「流失與留存」查看7月 Customer Churn Rate（2.9%，全年次高）</div>
       </div>
@@ -343,8 +346,9 @@ a{color:var(--accent);text-decoration:none}
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F</span> 從「Expansion vs Churned」圖：<span class="fia f">F</span> 全年12個月中，每月 Churned MRR 均大於 Expansion MRR，最大缺口在12月（Churned NT$178,800 vs Expansion NT$68,000，差距 NT$110,800）。</p>
+          <p><span class="tag-f">F</span> 從<span class="ev">Expansion vs Churned MRR</span>圖：<span class="fia f">F</span> 全年12個月中，每月 Churned MRR 均大於 Expansion MRR，最大缺口在12月（Churned NT$178,800 vs Expansion NT$68,000，差距 NT$110,800）。</p>
           <p><span class="tag-i">I</span> 長期影響：<span class="fia i">I</span> 這意味公司必須持續依賴 New MRR（新客）來填補流失缺口——一旦新客獲取放緩（如7月），MRR 即出現負成長。健康的「Land & Expand」模型應使 Expansion > Churned，達到 NRR > 100% 且不依賴新客。<span class="fia i">I</span> 應追蹤 NRR（本儀表板為 104.2%，含 New MRR 貢獻後才勉強達標）。</p>
+          <button class="chart-ref-btn" onclick="goToChart('mrr','card-exp-churn')">📍 查看：Expansion vs Churned MRR</button>
         </div>
         <div class="trap-block"><span class="trap-icon">⚠️</span>NRR 104.2% 看起來健康，但若拆除 New MRR 貢獻，純粹從既有客戶角度（Expansion−Contraction−Churn），净额是負的。這份 104.2% 的 NRR 依賴新客補貼，屬於「弱 Land & Expand」。</div>
       </div>
@@ -361,6 +365,7 @@ a{color:var(--accent);text-decoration:none}
           <p><span class="tag-f">F</span> <span class="fia f">F</span> NRR = 104.2%；全年 Expansion 合計約 NT$896K，Churned 合計約 NT$1,574K（含12月異常值）。</p>
           <p><span class="tag-i">I</span> <span class="fia i">I</span> 最快提升 NRR 的路徑有兩條：（A）降低 Churned MRR（減少流失）；（B）提升 Expansion MRR（促進升級）。從數字看，Churned 是 Expansion 的 1.76 倍，即使 Expansion 翻倍也無法填補 Churned 缺口。</p>
           <p><span class="tag-a">A</span> <span class="fia a">A</span> 假設：降低 Churned 20%（約 NT$26K/月）比提升 Expansion 30%（約 NT$22K/月）更有效，且前者通常透過客戶成功（CS）介入即可實現，ROI 更高。但此假設需驗證：流失客戶的 CS 接觸紀錄、健康分趨勢、以及 CSM 人力成本。</p>
+          <button class="chart-ref-btn" onclick="goToChart('mrr','card-exp-churn')">📍 查看：Expansion vs Churned MRR</button>
         </div>
         <div class="trap-block"><span class="trap-icon">⚠️</span>陷阱：不要直接跳到「擴大 Expansion」而忽略 Churned。在沒有看過 Cohort 留存數據之前，無法判斷哪批客戶最值得投入 CS 資源。建議先看 P2 Cohort 矩陣再做決策。</div>
         <div class="nav-hint" onclick="goToChart('churn','card-cohort')">→ 先看 P2 Cohort 留存矩陣，再決定優先客群</div>
@@ -375,7 +380,8 @@ a{color:var(--accent);text-decoration:none}
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F</span> 從月度拆解圖加總：<span class="fia f">F</span> 全年 New MRR 合計 = NT$1,758,000；<span class="fia f">F</span> 全年 Churned MRR 合計 = NT$1,573,800（含12月 NT$178,800）。<span class="fia f">F</span> New MRR 超過 Churned NT$184,200，差距約 10.5%——勉強覆蓋，但安全邊際薄。</p>
+          <p><span class="tag-f">F</span> 從<span class="ev">各月 MRR 四元素</span>加總：<span class="fia f">F</span> 全年 New MRR 合計 = NT$1,758,000；<span class="fia f">F</span> 全年 Churned MRR 合計 = NT$1,573,800（含12月 NT$178,800）。<span class="fia f">F</span> New MRR 超過 Churned NT$184,200，差距約 10.5%——勉強覆蓋，但安全邊際薄。</p>
+          <button class="chart-ref-btn" onclick="goToChart('mrr','card-mrr-decomp')">📍 查看：各月 MRR 四元素</button>
         </div>
         <div class="trap-block"><span class="trap-icon">⚠️</span>這只算了新客 vs 流失的直接抵銷。真正健康的成長還需要 Expansion > Contraction。實際上全年 Contraction 合計 NT$428,000 也需計入，New MRR 尚不足以全部補足所有負向元素。</div>
       </div>
@@ -389,9 +395,10 @@ a{color:var(--accent);text-decoration:none}
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F</span> <span class="fia f">F</span> 11月前 Churned MRR 平均（Jan–Nov）= (134+126+123+127+130+134+154+123+126+120+118)÷11 = 1,395,000÷11 ≈ NT$126,818。12月實際 = NT$178,800，超出平均 NT$51,982。</p>
+          <p><span class="tag-f">F</span> 從<span class="ev">各月 MRR 四元素</span>，<span class="fia f">F</span> 11月前 Churned MRR 平均（Jan–Nov）= (134+126+123+127+130+134+154+123+126+120+118)÷11 = 1,395,000÷11 ≈ NT$126,818。12月實際 = NT$178,800，超出平均 NT$51,982。</p>
           <p><span class="tag-i">I</span> <span class="fia i">I</span> 若12月 Churned = NT$126,818：期末 MRR = 4,885,000 + 125,000 + 68,000 − 52,000 − 126,818 = NT$4,899,182；ARR = 4,899,182 × 12 = NT$58,790,184，比現況高 NT$623,784。</p>
           <p><span class="tag-a">A</span> <span class="fia a">A</span> 假設：「回到平均」意味著12月異常 Churned 是偶發性（年末合約集中到期），而非結構性問題。若是結構性，這個估算就高估了正常狀態下的 ARR。需要看 P2 流失原因與 Cohort 資料才能判斷。</p>
+          <button class="chart-ref-btn" onclick="goToChart('mrr','card-mrr-decomp')">📍 查看：各月 MRR 四元素</button>
         </div>
         <div class="nav-hint" onclick="goToChart('churn','card-churn-reason')">→ P2「流失原因分佈」可提供判斷是否為結構性問題的線索</div>
       </div>
@@ -472,7 +479,8 @@ a{color:var(--accent);text-decoration:none}
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F</span> 從雙線圖直接讀取：<span class="fia f">F</span> Customer Churn Rate 最高月 = <strong>7月（2.9%）</strong>；<span class="fia f">F</span> Revenue Churn Rate 最高月 = <strong>12月（3.66%）</strong>。兩者最高月不同——這是一個重要的分析起點，不要假設兩條線的峰值一致。</p>
+          <p><span class="tag-f">F</span> 從<span class="ev">月度 Churn Rate 雙線比較</span>直接讀取：<span class="fia f">F</span> Customer Churn Rate 最高月 = <strong>7月（2.9%）</strong>；<span class="fia f">F</span> Revenue Churn Rate 最高月 = <strong>12月（3.66%）</strong>。兩者最高月不同——這是一個重要的分析起點，不要假設兩條線的峰值一致。</p>
+          <button class="chart-ref-btn" onclick="goToChart('churn','card-churn-trend')">📍 查看：月度 Churn Rate 雙線比較</button>
         </div>
         <div class="trap-block"><span class="trap-icon">⚠️</span>常見錯誤：把「流失客戶最多的月份」等同於「流失收入最多的月份」。7月雖然客戶流失率最高，但流失的多是 Starter 小客戶；12月流失的含較多大額合約，Revenue Churn 更高。</div>
       </div>
@@ -486,8 +494,9 @@ a{color:var(--accent);text-decoration:none}
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F</span> <span class="fia f">F</span> 12月差距 = 3.66% − 2.8% = 0.86pp，為全年各月最大分叉。</p>
+          <p><span class="tag-f">F</span> 從<span class="ev">月度 Churn Rate 雙線比較</span>，<span class="fia f">F</span> 12月差距 = 3.66% − 2.8% = 0.86pp，為全年各月最大分叉。</p>
           <p><span class="tag-i">I</span> <span class="fia i">I</span> Revenue Churn > Customer Churn 意味著本月流失的客戶「平均 ARPU 高於在庫客戶平均」。直覺解讀：12月年末合約到期，流失的是較高方案（Pro/Enterprise）客戶，而非 Starter。<span class="fia i">I</span> 這也解釋了為什麼 Dec MRR 的月環比下滑（−0.8%）比 Customer Churn 暗示的幅度更大。</p>
+          <button class="chart-ref-btn" onclick="goToChart('churn','card-churn-trend')">📍 查看：月度 Churn Rate 雙線比較</button>
         </div>
         <div class="nav-hint" onclick="goToChart('ltv','card-plan-dist')">→ P3「方案分佈」可確認12月 Enterprise 佔比是否有異動</div>
       </div>
@@ -501,8 +510,9 @@ a{color:var(--accent);text-decoration:none}
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F</span> 從 Cohort 矩陣讀取：<span class="fia f">F</span> Jan Cohort 第3月 = <strong>75%</strong>；<span class="fia f">F</span> Jul Cohort 第3月 = <strong>77%</strong>。差距為 2pp（Jul 反而較高？）</p>
+          <p><span class="tag-f">F</span> 從 <span class="ev">Cohort 留存率矩陣</span> 讀取：<span class="fia f">F</span> Jan Cohort 第3月 = <strong>75%</strong>；<span class="fia f">F</span> Jul Cohort 第3月 = <strong>77%</strong>。差距為 2pp（Jul 反而較高？）</p>
           <p><span class="tag-i">I</span> <span class="fia i">I</span> 仔細看：Jul Cohort 第1月留存（86%）低於 Jan（86% 相同），但第3月反超。推論：Jul 的「留下來的客戶」更黏，第1月的快速流失篩掉了低黏性用戶，留存的人反而更穩定。這是「早期強淘汰 → 後期強留存」的典型模式，業界稱為 survivor bias in cohort。</p>
+          <button class="chart-ref-btn" onclick="goToChart('churn','card-cohort')">📍 查看：Cohort 留存率矩陣</button>
         </div>
         <div class="trap-block"><span class="trap-icon">⚠️</span>陷阱：看 Cohort 時不要只比較單一時間點。Jul 第1月留存最差，但後期反彈，代表需要看完整曲線形狀，而非單一月份數字。同時，Jul 第3月後資料仍少，結論仍需時間驗證。</div>
       </div>
@@ -516,9 +526,10 @@ a{color:var(--accent);text-decoration:none}
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F</span> <span class="fia f">F</span> 競品流失 31.2%、功能缺口 18.5%，兩者合計 49.7%，幾乎佔流失原因的一半。</p>
+          <p><span class="tag-f">F</span> 從<span class="ev">流失原因分佈</span>，<span class="fia f">F</span> 競品流失 31.2%、功能缺口 18.5%，兩者合計 49.7%，幾乎佔流失原因的一半。</p>
           <p><span class="tag-i">I</span> <span class="fia i">I</span> 「切換至競品」是結果而非成因——客戶流向競品可能是因功能缺口或定價問題。「功能不符需求」是可直接對應的 Product 行動項目。</p>
           <p><span class="tag-a">A</span> <span class="fia a">A</span> 建議：優先調查「切換至競品」群體中，他們提到的競品是哪些（Notion、Asana、Linear？），以及他們在離開前是否曾提出功能 request。假設：若多數競品切換客戶曾提出相同 3 個功能需求，則功能缺口是竟品流失的根本成因，應合併處理。</p>
+          <button class="chart-ref-btn" onclick="goToChart('churn','card-churn-reason')">📍 查看：流失原因分佈</button>
         </div>
         <div class="trap-block"><span class="trap-icon">⚠️</span>流失原因資料通常來自問卷或 CS 訪談，本身有選擇性偏誤：願意回答的客戶不代表全部流失客戶，且客戶可能給「禮貌性答案」而非真實原因。單憑這張圖做決策風險較高。</div>
       </div>
@@ -534,6 +545,7 @@ a{color:var(--accent);text-decoration:none}
         <div class="answer-block">
           <p><span class="tag-f">F</span> <span class="fia f">F</span> Starter 客戶 842 人，月流失約 29 人（842×3.4%）；Enterprise 客戶 278 人，月流失約 2 人（278×0.6%）。</p>
           <p><span class="tag-i">I</span> <span class="fia i">I</span> 按客戶數量看，Starter 流失最多；按 MRR 衝擊看，1 個 Enterprise 流失（NT$5,712）≈ 4.8 個 Starter 流失（NT$1,188×4.8）。<span class="fia i">I</span> CS 策略差異應為：Enterprise 用高接觸（High-touch，指定 CSM）；Starter 用低接觸自動化（in-app 提醒、流失預警觸發）；資源投入比例應按 MRR 衝擊而非客戶數量決定。</p>
+          <button class="chart-ref-btn" onclick="goToChart('churn','card-plan-churn')">📍 查看：各方案月度 Churn Rate</button>
         </div>
       </div>
     </div>
@@ -549,6 +561,7 @@ a{color:var(--accent);text-decoration:none}
           <p><span class="tag-f">F</span> <span class="fia f">F</span> 提升 NRR 5.8pp（從 104.2% 至 110%），以當前 Start MRR 約 NT$4.5M 計，每月需額外改善約 NT$261,000（4,500,000 × 5.8%÷12）的 Expansion−Contraction−Churn 淨值。</p>
           <p><span class="tag-i">I</span> <span class="fia i">I</span> 三條路徑：（A）減少 Churned 約 NT$174K/月（26,000×6.7 次月均流失）；（B）增加 Expansion NT$174K/月（每月多升級 ~58 個 Pro→Ent）；（C）混合策略。路徑 A 通常比路徑 B 更快見效（CS 介入 vs 產品功能擴充）。</p>
           <p><span class="tag-a">A</span> <span class="fia a">A</span> 假設：Cohort 顯示第3月後留存穩定，因此 CS 介入應聚焦在第1-2月的高風險期，搭配早期功能採用（見 P4 Feature Adoption 數據）。但需假設 CS 資源可擴充，且成本低於增量 MRR。</p>
+          <button class="chart-ref-btn" onclick="goToChart('churn','card-cohort')">📍 查看：Cohort 留存率矩陣</button>
         </div>
         <div class="nav-hint" onclick="goToChart('funnel','card-feature-adopt')">→ P4「功能採用率對比」可幫助設計 CS 早期介入的觸發點</div>
       </div>
@@ -628,6 +641,7 @@ a{color:var(--accent);text-decoration:none}
       <div class="answer">
         <div class="answer-block">
           <p><span class="tag-f">F</span> <span class="fia f">F</span> LTV:CAC = 3.9×，處於行業健康基準（3–5×）內；Payback = 11.1 個月，低於 12 個月警戒線。從數字看，兩個指標均在合格範圍。</p>
+          <button class="chart-ref-btn" onclick="goToChart('ltv','card-ltv-cac')">📍 查看：各渠道 LTV:CAC</button>
         </div>
         <div class="trap-block"><span class="trap-icon">⚠️</span>LTV 是「估算值」，基於簡化公式 ARPU÷Churn，未扣除服務成本（COGS）。若加入 CS 成本、技術支援成本，實際 LTV 可能下降 20–30%，LTV:CAC 可能降至 2.7–3.1×，接近警戒線。單看公式結果不等於業務真的健康。</div>
       </div>
@@ -641,8 +655,9 @@ a{color:var(--accent);text-decoration:none}
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F</span> <span class="fia f">F</span> 口碑推薦：CAC NT$13,200，LTV:CAC 8.5×，試用量 614；付費廣告：CAC NT$48,200，LTV:CAC 1.8×，試用量 1,152。量相差 1.88 倍，但效率相差 4.7 倍。</p>
+          <p><span class="tag-f">F</span> 從<span class="ev">各渠道 LTV:CAC 比值</span>，<span class="fia f">F</span> 口碑推薦：CAC NT$13,200，LTV:CAC 8.5×，試用量 614；付費廣告：CAC NT$48,200，LTV:CAC 1.8×，試用量 1,152。量相差 1.88 倍，但效率相差 4.7 倍。</p>
           <p><span class="tag-i">I</span> <span class="fia i">I</span> 口碑推薦規模受限的原因通常是自然增長（無法直接購買），但可透過正式推薦計畫（Referral Program）、客戶成功故事、案例研究來放大。<span class="fia i">I</span> 付費廣告高量低效，可能需要重新設計廣告目標受眾或著陸頁，或將部分預算轉移至 SEO（自然搜尋已是第二高效渠道）。</p>
+          <button class="chart-ref-btn" onclick="goToChart('ltv','card-ltv-cac')">📍 查看：各渠道 LTV:CAC</button>
         </div>
       </div>
     </div>
@@ -655,8 +670,9 @@ a{color:var(--accent);text-decoration:none}
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F</span> <span class="fia f">F</span> Starter 佔比 −9.3pp，Enterprise +8.1pp，Professional 小幅調整。若客戶總數不變，Enterprise mix 提升直接推升 ARPU（Enterprise ARPU NT$5,712 vs Starter NT$1,188）。</p>
+          <p><span class="tag-f">F</span> 從<span class="ev">月度方案佔比</span>，<span class="fia f">F</span> Starter 佔比 −9.3pp，Enterprise +8.1pp，Professional 小幅調整。若客戶總數不變，Enterprise mix 提升直接推升 ARPU（Enterprise ARPU NT$5,712 vs Starter NT$1,188）。</p>
           <p><span class="tag-i">I</span> <span class="fia i">I</span> 正向影響：ARPU 上升 → MRR 成長速度可能超過客戶數成長速度（正向 Expansion 效應）；Enterprise 流失率 0.6% 遠低於 Starter 3.4% → 整體加權 Churn Rate 有下降趨勢，NRR 應改善。<span class="fia i">I</span> 但需警惕：Enterprise 客戶 LTV 高，一旦流失（如12月批次到期）對 Revenue Churn 的衝擊遠大於 Starter。</span>
+          <button class="chart-ref-btn" onclick="goToChart('ltv','card-plan-dist')">📍 查看：月度方案佔比</button>
         </div>
         <div class="nav-hint" onclick="goToChart('churn','card-churn-trend')">→ 回到 P2 看12月 Revenue Churn 異常（Enterprise 流失的典型表現）</div>
       </div>
@@ -670,9 +686,10 @@ a{color:var(--accent);text-decoration:none}
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F</span> <span class="fia f">F</span> Q3 降級 68，Q2 僅 52，QoQ +30.8%；同期 Q3 升級 118，升降比 1.74×（vs Q4 的 4.43×）。Q3 整體淨流向惡化。</p>
+          <p><span class="tag-f">F</span> 從<span class="ev">方案升降級流動量</span>，<span class="fia f">F</span> Q3 降級 68，Q2 僅 52，QoQ +30.8%；同期 Q3 升級 118，升降比 1.74×（vs Q4 的 4.43×）。Q3 整體淨流向惡化。</p>
           <p><span class="tag-i">I</span> <span class="fia i">I</span> 降級通常在合約到期前 30–60 天決定，Q3 降級暗示這些客戶在 Q2 末已有降級意向。</p>
           <p><span class="tag-a">A</span> <span class="fia a">A</span> 建議：建立「降級預警儀表板」，在客戶合約到期前 60 天主動介入。觸發信號可包含：功能使用率下降、登入頻率降低、未啟用付費功能。假設 CS 提前介入可將降級率降低 30%（業界參考），Q3 降級將從 68 降至 48，等效 Contraction MRR 減少約 NT$12,000。</p>
+          <button class="chart-ref-btn" onclick="goToChart('ltv','card-migration')">📍 查看：方案升降級流動量</button>
         </div>
         <div class="nav-hint" onclick="goToChart('funnel','card-feature-adopt')">→ P4「功能採用率對比」可作為 CS 預警信號設計的參考</div>
       </div>
@@ -686,7 +703,8 @@ a{color:var(--accent);text-decoration:none}
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F</span> 直接讀圖：<span class="fia f">F</span> CAC 最高 = 活動/Webinar（NT$51,200）；<span class="fia f">F</span> LTV:CAC 最低 = 付費廣告（1.8×）。兩個問題的答案<strong>不是同一個渠道</strong>。活動/Webinar 的 LTV:CAC = 2.2×，高於付費廣告 1.8×，儘管它的 CAC 更高（NT$51,200 vs NT$48,200），說明活動吸引的客戶 LTV 也相對較高。</p>
+          <p><span class="tag-f">F</span> 從<span class="ev">各渠道 CAC 與試用量</span>直接讀圖：<span class="fia f">F</span> CAC 最高 = 活動/Webinar（NT$51,200）；<span class="fia f">F</span> LTV:CAC 最低 = 付費廣告（1.8×）。兩個問題的答案<strong>不是同一個渠道</strong>。活動/Webinar 的 LTV:CAC = 2.2×，高於付費廣告 1.8×，儘管它的 CAC 更高（NT$51,200 vs NT$48,200），說明活動吸引的客戶 LTV 也相對較高。</p>
+          <button class="chart-ref-btn" onclick="goToChart('ltv','card-cac-channel')">📍 查看：各渠道 CAC 與試用量</button>
         </div>
         <div class="trap-block"><span class="trap-icon">⚠️</span>「最貴的渠道」≠「最差的渠道」。評估渠道效率應用 LTV:CAC，而非單看 CAC 絕對值。一個 NT$100K CAC 的渠道，如果帶來的客戶 LTV 是 NT$600K，比 NT$10K CAC 帶來 NT$20K LTV 的渠道更划算。</div>
       </div>
@@ -703,6 +721,7 @@ a{color:var(--accent);text-decoration:none}
           <p><span class="tag-f">F</span> <span class="fia f">F</span> P1：Churned MRR 全年合計 NT$1,574K，New MRR 合計 NT$1,758K，新客僅勉強蓋住流失。P2：客戶每月流失率 2.3%，Enterprise 僅 0.6%。P3：Payback 11.1 個月，LTV:CAC 3.9×，付費廣告效率最差（1.8×）。</p>
           <p><span class="tag-i">I</span> <span class="fia i">I</span> 每留住一個現有客戶節省的成本 = CAC（NT$28,600）+ 重新獲客的機會成本。CS 成本通常遠低於 CAC，故留客 ROI 理論上更高。</p>
           <p><span class="tag-a">A</span> <span class="fia a">A</span> 建議：將 30% 現有行銷預算從付費廣告移至 CS 擴充（特別針對第1–2月的 Cohort 高流失期），同時保留自然搜尋 SEO 投入（最高效可規模化渠道）。假設：CS 介入能降低 Starter 流失率從 3.4% 至 2.5%，每月挽留約 8 個 Starter 客戶（842×0.9%），折合 NT$9,500/月 MRR，年效益 NT$114K，遠高於 CS 人力增量成本。</p>
+          <button class="chart-ref-btn" onclick="goToChart('ltv','card-ltv-cac')">📍 查看：各渠道 LTV:CAC</button>
         </div>
       </div>
     </div>
@@ -775,7 +794,8 @@ a{color:var(--accent);text-decoration:none}
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F</span> 直接從漏斗數字計算：<span class="fia f">F</span> 絕對流失最多 = 訪客→試用申請，流失 <strong>44,160 人</strong>（48,000−3,840）；<span class="fia f">F</span> 轉換率最低 = 同一步驟，僅 <strong>8.0%</strong>（3,840÷48,000）。兩個問題答案指向同一步驟。</p>
+          <p><span class="tag-f">F</span> 從<span class="ev">訪客→試用→轉換→留存 漏斗</span>的數字計算：<span class="fia f">F</span> 絕對流失最多 = 訪客→試用申請，流失 <strong>44,160 人</strong>（48,000−3,840）；<span class="fia f">F</span> 轉換率最低 = 同一步驟，僅 <strong>8.0%</strong>（3,840÷48,000）。兩個問題答案指向同一步驟。</p>
+          <button class="chart-ref-btn" onclick="goToChart('funnel','card-funnel')">📍 查看：轉換漏斗</button>
         </div>
         <div class="trap-block"><span class="trap-icon">⚠️</span>「流失最多」（絕對數量）與「轉換率最低」（比例）通常指向漏斗的頂端。但不代表頂端一定是「優先改善」的地方——若產品客群本就是精準小眾，訪客少 + 轉換率低可能是正常的（如 Enterprise 專注型 PLG）。</div>
       </div>
@@ -789,9 +809,10 @@ a{color:var(--accent);text-decoration:none}
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F</span> <span class="fia f">F</span> 活動/Webinar：126 試用 × 1.6% = 約 2 人付費；CAC（P3）NT$51,200，LTV:CAC 僅 2.2×。直觀上這是最差渠道之一。</p>
+          <p><span class="tag-f">F</span> 從<span class="ev">各渠道試用轉換率</span>，<span class="fia f">F</span> 活動/Webinar：126 試用 × 1.6% = 約 2 人付費；CAC（P3）NT$51,200，LTV:CAC 僅 2.2×。直觀上這是最差渠道之一。</p>
           <p><span class="tag-i">I</span> <span class="fia i">I</span> 但在決定砍掉之前，需考慮：① 活動的潛在「品牌聲量」效益是否無法從轉換率衡量；② 這 126 個試用申請的平均方案是否是 Enterprise（雖然轉換慢，但 LTV 高）；③ 轉換率 1.6% 是否因為後續追蹤流程不足而非客戶無意願。</p>
           <p><span class="tag-a">A</span> <span class="fia a">A</span> 建議：先改進活動後 14 天的 Trial Nurture Sequence（自動化 email drip），而非直接砍渠道。假設可將轉換率從 1.6% 提升至 8%（接近自然搜尋的一半），則活動每年可增加 8 個付費客戶，額外 MRR 約 NT$20,000+。</p>
+          <button class="chart-ref-btn" onclick="goToChart('funnel','card-channel-conv')">📍 查看：各渠道試用轉換率</button>
         </div>
       </div>
     </div>
@@ -804,9 +825,10 @@ a{color:var(--accent);text-decoration:none}
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F</span> <span class="fia f">F</span> 「邀請團隊」差距 = 72% − 31% = 41pp，為所有功能中最大。「整合設定」次之（36pp）。</p>
+          <p><span class="tag-f">F</span> 從<span class="ev">試用期功能採用率</span>，<span class="fia f">F</span> 「邀請團隊」差距 = 72% − 31% = 41pp，為所有功能中最大。「整合設定」次之（36pp）。</p>
           <p><span class="tag-i">I</span> <span class="fia i">I</span> 這兩個功能都是「多人協作觸發點」——使用者邀請他人後，離開成本（轉換成本）大幅提升（轉換為付費才能繼續協作），這是典型的「Network Lock-in」效應。未完成這些行為的 Trial 用戶，更可能是單人試用、沒有協作需求。</p>
           <p><span class="tag-a">A</span> <span class="fia a">A</span> 策略設計：在 Trial Day 3 觸發 in-app 提醒「邀請第一位隊友可解鎖協作功能」；Day 5 觸發 email「整合您的工具（Slack/Google）節省 3 小時」。將這兩個行為設為 Trial 健康分的主要指標，低於門檻者優先 CS 電話介入。</p>
+          <button class="chart-ref-btn" onclick="goToChart('funnel','card-feature-adopt')">📍 查看：試用期功能採用率</button>
         </div>
         <div class="trap-block"><span class="trap-icon">⚠️</span>相關性 ≠ 因果性。「使用邀請功能的人更容易轉換」，可能只是因為本來就有購買意願的人才會認真使用所有功能。推動所有 Trial 用戶「硬用」邀請功能不一定能提升轉換率，需要 A/B 測試驗證因果。</div>
       </div>
@@ -821,6 +843,7 @@ a{color:var(--accent);text-decoration:none}
       <div class="answer">
         <div class="answer-block">
           <p><span class="tag-f">F</span> <span class="fia f">F</span> 活躍試用 = 2,304；非活躍試用 = 3,840 − 2,304 = <strong>1,536 人</strong>，佔試用申請的 <strong>40%</strong>。這 1,536 人申請了試用但從未認真使用（可能完成了註冊但沒有進行有意義的操作），是漏斗的隱性浪費。</p>
+          <button class="chart-ref-btn" onclick="goToChart('funnel','card-funnel')">📍 查看：轉換漏斗</button>
         </div>
         <div class="trap-block"><span class="trap-icon">⚠️</span>這 40% 的非活躍試用者並非全部無效：其中可能有「看了一眼、還在評估期」的潛在客戶。沒有進一步的 email 開信率、再訪率、決策時間線資料，無法判斷他們是「死的 lead」還是「還在決策週期中的 lead」。</div>
       </div>
@@ -834,9 +857,10 @@ a{color:var(--accent);text-decoration:none}
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F</span> <span class="fia f">F</span> 從天數分佈圖：0–7 天 285 人，22–30 天 273 人，兩組數量相近（差 12 人），但本儀表板未提供各組的 30 天留存率拆分。</p>
+          <p><span class="tag-f">F</span> <span class="fia f">F</span> 從<span class="ev">試用轉換天數分佈</span>：0–7 天 285 人，22–30 天 273 人，兩組數量相近（差 12 人），但本儀表板未提供各組的 30 天留存率拆分。</p>
           <p><span class="tag-i">I</span> <span class="fia i">I</span> 業界常見模式：快速轉換（0–7 天）可能是 Warm lead（已有明確需求、從競品轉來），留存率通常較高；慢轉換（22–30 天）可能是在 Trial 末期「避免失去 access」而付費，動機相對弱，留存風險較高。</p>
           <p><span class="tag-a">A</span> <span class="fia a">A</span> 假設：快速轉換者 30 天留存率 ≥ 85%，慢轉換者 ≤ 73%（低於平均 79.8%）。若此假設成立，應設計「早期轉換激勵」（Trial Day 5–7 提供首月折扣）來前移轉換時間，同時對 Day 25+ 仍未轉換者標記為「高流失風險付費客戶」，加強 CS 跟進。</p>
+          <button class="chart-ref-btn" onclick="goToChart('funnel','card-days-convert')">📍 查看：試用轉換天數分佈</button>
         </div>
       </div>
     </div>
@@ -852,6 +876,7 @@ a{color:var(--accent);text-decoration:none}
           <p><span class="tag-f">F</span> 關鍵事實串接：<span class="fia f">F</span> P1：Churned MRR 每月均超過 Expansion，NRR 僅 104.2%。P2：月均 Customer Churn 2.3%，Jan Cohort 第1月流失 14%。P3：LTV:CAC 3.9×，付費廣告效率最差。P4：40% 試用者從未活躍使用，「邀請團隊」是最強轉換預測信號。</p>
           <p><span class="tag-i">I</span> <span class="fia i">I</span> 邏輯鏈：① 40% 的 Trial 非活躍者無法到達「邀請團隊」這個關鍵行為；② 未完成關鍵行為的 Trial 用戶轉換率低；③ 即使轉換，沒有產品黏性的客戶在第1–2月更容易流失（Cohort 數據）；④ 這些流失直接增加了 Churned MRR，壓低 NRR。</p>
           <p><span class="tag-a">A</span> <span class="fia a">A</span> 優先項目：「Trial Activation Optimization」——在 Trial Day 1–3 設計強制性 onboarding flow，引導用戶完成「邀請第一位隊友」和「設定第一個整合」。假設：將 Trial 活躍率從 60% 提升至 75%，且活躍用戶轉換率維持在 63.7%，全年額外轉換 = (3,840×15%)×63.7% = 367 人 × ARPU NT$2,584 = 年增 MRR NT$948,000，效益遠超任何廣告投入增量。</p>
+          <button class="chart-ref-btn" onclick="goToChart('funnel','card-feature-adopt')">📍 查看：試用期功能採用率</button>
         </div>
         <div class="trap-block"><span class="trap-icon">⚠️</span>上述邏輯鏈有多個假設未被驗證：Activation 提升是否等比例提升轉換率、新用戶特徵是否與當前 Trial 相同。在投入資源前，應先用 A/B 測試在 100–200 個 Trial 用戶上驗證因果關係，再決定全量推出。</div>
       </div>
@@ -873,6 +898,7 @@ a{color:var(--accent);text-decoration:none}
           <p><span class="tag-i">I</span> 這是一道「溝通設計 + 分析思維」的綜合題，沒有唯一正確答案。評估你的選擇是否包含以下思考維度：<br>① 目標受眾：CEO 需要宏觀判斷，不需要細節操作。<br>② 信息密度：一張圖是否能傳遞最多的業務信號？<br>③ 行動性：這張圖是否能讓 CEO 立即判斷需要作什麼決策？</p>
           <p><span class="tag-a">A</span> 常見高分答案：<br>選 MRR Waterfall（P1）—— 展示業務的「水龍頭模型」，New+Expansion 是流入，Churn+Contraction 是流出，一眼看出12月在漏水。<br>選 NRR 趨勢（若有多期）—— NRR 是 SaaS 單一最重要指標，但本儀表板只有一個時間點，無法看趨勢，選擇需附加說明。</p>
           <p><span class="tag-a">A</span> 常見低分答案：選漏斗圖（太細節）、選 Cohort 矩陣（CEO 可能無法快速解讀）。</p>
+          <button class="chart-ref-btn" onclick="goToChart('mrr','card-waterfall')">📍 查看：MRR Waterfall</button>
         </div>
         <div class="trap-block"><span class="trap-icon">⚠️</span>最常見的陷阱：選「最複雜的圖」以顯示分析能力。優秀的分析師懂得「簡化呈現」，而非「炫耀數據量」。</div>
       </div>
@@ -887,6 +913,7 @@ a{color:var(--accent);text-decoration:none}
       <div class="answer">
         <div class="answer-block">
           <p><span class="tag-i">I</span> 這道題訓練的是「知道自己不知道什麼」的後設認知能力。以下為參考答案，不限於此：<br>① <strong>流失原因的「真相」</strong>：本儀表板的流失原因來自問卷/CS 紀錄，存在選擇性偏誤和社交期望偏誤。缺口：需要客戶離開前的產品使用日誌（功能下降趨勢）作為交叉驗證。<br>② <strong>Cohort 改善是否因為 Onboarding 優化</strong>：Sept/Oct Cohort 第1月留存率提升到 90%，但我們不知道這是因為產品改善、客戶特性改變（渠道組合變化），還是季節效應。缺口：需要同期的渠道別 Cohort 拆分。<br>③ <strong>NRR 104.2% 的可信度</strong>：NRR 的精確計算需要追蹤「相同 Cohort 的 MRR 變化」，但本儀表板的 NRR 是引用值，無法從現有月度數據精確復原。缺口：需要 Cohort MRR 追蹤表。</p>
+          <button class="chart-ref-btn" onclick="goToChart('churn','card-churn-reason')">📍 查看：流失原因分佈</button>
         </div>
       </div>
     </div>
@@ -901,6 +928,7 @@ a{color:var(--accent);text-decoration:none}
         <div class="answer-block">
           <p><span class="tag-i">I</span> 這是一道「商業模式設計」題。評分重點：<br>① 能否辨識「合約集中到期」的系統性風險（而非個月的偶發事件）。<br>② 提出的解決方案是否具可執行性。<br>③ 是否考慮到解決方案本身的代價（如分散合約可能增加 CS 管理複雜度）。</p>
           <p><span class="tag-a">A</span> 參考解法：① 推行「錯峰合約到期」政策，新簽客戶根據當月業務負荷分配到期月份；② 對12月到期合約在11月提前介入（CS Check-in）；③ 提供「多年合約優惠」以鼓勵 2–3 年合約，減少年度集中流失風險。</p>
+          <button class="chart-ref-btn" onclick="goToChart('churn','card-churn-trend')">📍 查看：月度 Churn Rate 雙線比較</button>
         </div>
       </div>
     </div>
