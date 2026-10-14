@@ -1110,6 +1110,7 @@
 <script>
 // Register plugins globally (required for Chart.js 4)
 Chart.register(ChartDataLabels);
+Chart.defaults.plugins.datalabels.display = false; // opt-in per chart
 if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
 
 // ═══════════════════════════════════════════════

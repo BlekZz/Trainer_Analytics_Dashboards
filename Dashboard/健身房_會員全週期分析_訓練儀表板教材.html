@@ -750,6 +750,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 <script>
 // ─── MUST BE FIRST ───
 Chart.register(ChartDataLabels);
+Chart.defaults.plugins.datalabels.display = false; // opt-in per chart
 if(window.ChartAnnotation) Chart.register(window.ChartAnnotation);
 
 // ─── DATA ───

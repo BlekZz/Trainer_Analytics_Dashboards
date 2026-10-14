@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>餐飲連鎖 門市營運分析 訓練儀表板 2024</title>
+  <title>餐飲連鎖_門市營運分析_訓練儀表板教材</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
@@ -1223,6 +1223,7 @@ assertConsistency();
 // PLUGIN REGISTRATION
 // ══════════════════════════════════════════════════
 Chart.register(ChartDataLabels);
+Chart.defaults.plugins.datalabels.display = false; // opt-in per chart
 if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
 // ══════════════════════════════════════════════════
 // CHART UTILITIES

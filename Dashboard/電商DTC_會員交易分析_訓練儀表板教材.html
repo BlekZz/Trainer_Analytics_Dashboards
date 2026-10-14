@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>會員 × 交易 分析訓練 Dashboard v2</title>
+<title>電商DTC_會員交易分析_訓練儀表板教材</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -1195,6 +1195,7 @@ assertConsistency();
 // CHART DEFAULTS & THEME
 // ════════════════════════════════════════════════════════════════
 Chart.register(ChartDataLabels);
+Chart.defaults.plugins.datalabels.display = false; // opt-in per chart
 if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
 Chart.defaults.color = '#6b6b80';
 Chart.defaults.font.family = 'Outfit';
@@ -1277,10 +1278,10 @@ function drawMember(){
   mk('cMemberTrend','bar', DATA.member_flow.months, [
     {label:'新增', data: DATA.member_flow.new,
      backgroundColor:c('blue',0.72), borderRadius:4,
-     datalabels:{anchor:'end',align:'end',color:'#2d5be3',font:{size:9,weight:'600',family:'JetBrains Mono'},formatter:v=>v}},
+     datalabels:{display:true,anchor:'end',align:'end',color:'#2d5be3',font:{size:9,weight:'600',family:'JetBrains Mono'},formatter:v=>v}},
     {label:'流失', data: DATA.member_flow.loss,
      backgroundColor:c('red',0.65), borderRadius:4,
-     datalabels:{anchor:'end',align:'end',color:'#d43a2f',font:{size:9,weight:'600',family:'JetBrains Mono'},formatter:v=>v}}
+     datalabels:{display:true,anchor:'end',align:'end',color:'#d43a2f',font:{size:9,weight:'600',family:'JetBrains Mono'},formatter:v=>v}}
   ], {plugins:{legend:{display:true,position:'top',labels:{color:'#6b6b80',boxWidth:12,padding:16,font:{size:12}}},tooltip:TT},
       scales:{x:{grid:{display:false},ticks:{color:'#9898a8'}},y:{grid:{color:GRID},ticks:{color:'#9898a8'}}}});
 
@@ -1330,7 +1331,7 @@ function drawMember(){
        scales:{x:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v+'%'},suggestedMax:36},
                y:{grid:{display:false},ticks:{color:'#3a3a4a',font:{size:13}}}},
        plugins:{tooltip:{...TT, callbacks:{label:ctx2=>` ${ctx2.parsed.x}%`}},
-                datalabels:{anchor:'end',align:'end',color:'#3a3a4a',font:{family:'JetBrains Mono',size:11,weight:'600'},formatter:v=>v+'%',padding:{left:4}}}});
+                datalabels:{display:true,anchor:'end',align:'end',color:'#3a3a4a',font:{family:'JetBrains Mono',size:11,weight:'600'},formatter:v=>v+'%',padding:{left:4}}}});
 
   // 年齡分佈
   mk('cMemberAge','bar', DATA.age.labels, [{
@@ -1341,7 +1342,7 @@ function drawMember(){
        scales:{x:{grid:{display:false},ticks:{color:'#9898a8'}},
                y:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v+'%'},suggestedMax:50}},
        plugins:{tooltip:{...TT, callbacks:{label:ctx2=>` 佔比 ${ctx2.parsed.y}%`}},
-                datalabels:{anchor:'end',align:'end',color:'#2d5be3',font:{family:'JetBrains Mono',size:11,weight:'600'},formatter:v=>v+'%',padding:{bottom:2}}}});
+                datalabels:{display:true,anchor:'end',align:'end',color:'#2d5be3',font:{family:'JetBrains Mono',size:11,weight:'600'},formatter:v=>v+'%',padding:{bottom:2}}}});
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -1368,7 +1369,7 @@ function drawTx(){
      yAxisID:'y', datalabels:{display:false}}
   ], {plugins:{legend:{display:true,position:'top',labels:{color:'#6b6b80',boxWidth:10,font:{size:11},padding:14}},
                tooltip:TT,
-               datalabels:{anchor:'center',align:'center',color:'rgba(255,255,255,0.92)',font:{family:'JetBrains Mono',size:9,weight:'600'},formatter:(v,ctx)=>{
+               datalabels:{display:true,anchor:'center',align:'center',color:'rgba(255,255,255,0.92)',font:{family:'JetBrains Mono',size:9,weight:'600'},formatter:(v,ctx)=>{
                  // 折線資料集不顯示 datalabel
                  if(ctx.dataset.type==='line') return '';
                  return v>=40 ? v : '';
@@ -1434,7 +1435,7 @@ function drawTx(){
       options:{responsive:true,
         plugins:{legend:{display:false},
                  tooltip:{...TT, callbacks:{label:ctx2=>` ${ctx2.parsed.y.toLocaleString()} 筆`}},
-                 datalabels:{anchor:'end',align:'end',color:'#3a3a4a',font:{family:'JetBrains Mono',size:9,weight:'600'},formatter:v=>v>=1000?(v/1000).toFixed(1)+'K':v,padding:{bottom:2}},
+                 datalabels:{display:true,anchor:'end',align:'end',color:'#3a3a4a',font:{family:'JetBrains Mono',size:9,weight:'600'},formatter:v=>v>=1000?(v/1000).toFixed(1)+'K':v,padding:{bottom:2}},
                  ...(ann ? {annotation: ann} : {})},
         scales:{x:{grid:{display:false},ticks:{color:'#9898a8',font:{size:11}}},
                 y:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v>=1000?v/1000+'K':v}}}}});
@@ -1477,7 +1478,7 @@ function drawTx(){
                        borderWidth:2.5}]},
       options:{responsive:true,
         plugins:{legend:{display:false}, tooltip:{...TT, mode:'index', intersect:false},
-                 datalabels:{color:'#7c4dff',font:{family:'JetBrains Mono',size:9,weight:'700'},
+                 datalabels:{display:true,color:'#7c4dff',font:{family:'JetBrains Mono',size:9,weight:'700'},
                              formatter:(v,ctx)=>{const d=ctx.chart.data.datasets[0].data;const max=Math.max(...d);return v===max?v+'筆':'';},
                              anchor:'top',align:'top',padding:{bottom:2}},
                  ...(ann ? {annotation: ann} : {})},
@@ -1497,7 +1498,7 @@ function drawTx(){
      borderColor:c('gray',0.6), backgroundColor:'transparent', fill:false, tension:0.3, borderWidth:1.8, pointRadius:3, borderDash:[2,3]}
   ], {plugins:{legend:{display:true,position:'top',labels:{color:'#6b6b80',boxWidth:12,font:{size:11},padding:14}},
                tooltip:TT,
-               datalabels:{font:{family:'JetBrains Mono',size:9,weight:'600'},
+               datalabels:{display:true,font:{family:'JetBrains Mono',size:9,weight:'600'},
                            formatter:(v,ctx)=>{const i=ctx.dataIndex,len=ctx.dataset.data.length;return(i===0||i===len-1)?v+'%':'';},
                            anchor:'top',align:'top',padding:{bottom:1},
                            color:(ctx)=>{const colors=['#2aab85','#2d5be3','#d43a2f','#646e87'];return colors[ctx.datasetIndex]||'#3a3a4a';}}},
@@ -1518,7 +1519,7 @@ function drawCross(){
   ], {layout:{padding:{top:24,right:8}},
       plugins:{legend:{display:true,position:'top',labels:{color:'#6b6b80',boxWidth:10,font:{size:11},padding:14}},
                tooltip:TT,
-               datalabels:{anchor:'end',align:'end',color:'#3a3a4a',font:{family:'JetBrains Mono',size:9,weight:'600'},
+               datalabels:{display:true,anchor:'end',align:'end',color:'#3a3a4a',font:{family:'JetBrains Mono',size:9,weight:'600'},
                            formatter:v=>'NT$'+(v>=1000?(v/1000).toFixed(1)+'K':v),padding:{bottom:2}}},
       scales:{x:{grid:{display:false},ticks:{color:'#3a3a4a'}},
               y:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>'NT$'+v.toLocaleString()},suggestedMax:20000}}});
@@ -1532,7 +1533,7 @@ function drawCross(){
        scales:{x:{grid:{display:false},ticks:{color:'#9898a8'}},
                y:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v>=1000?(v/1000).toFixed(1)+'K':v},suggestedMax:4200}},
        plugins:{tooltip:{...TT, callbacks:{label:ctx2=>` ${ctx2.parsed.y.toLocaleString()} 人 (${(ctx2.parsed.y/DATA.anchors.buyers*100).toFixed(1)}%)`}},
-                datalabels:{anchor:'end',align:'end',color:'#3a3a4a',font:{family:'JetBrains Mono',size:9,weight:'600'},
+                datalabels:{display:true,anchor:'end',align:'end',color:'#3a3a4a',font:{family:'JetBrains Mono',size:9,weight:'600'},
                             formatter:v=>v.toLocaleString()+'人',padding:{bottom:2}}}});
 
   // 渠道 LTV 橫條
@@ -1545,7 +1546,7 @@ function drawCross(){
        scales:{x:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>'NT$'+v},suggestedMax:2100},
                y:{grid:{display:false},ticks:{color:'#3a3a4a',font:{size:13}}}},
        plugins:{tooltip:{...TT, callbacks:{label:ctx2=>` 首年LTV: NT$${ctx2.parsed.x.toLocaleString()}`}},
-                datalabels:{anchor:'end',align:'end',color:'#3a3a4a',font:{family:'JetBrains Mono',size:11,weight:'700'},
+                datalabels:{display:true,anchor:'end',align:'end',color:'#3a3a4a',font:{family:'JetBrains Mono',size:11,weight:'700'},
                             formatter:v=>'NT$'+v.toLocaleString(),padding:{left:6}}}});
 
   // 再購間隔
@@ -1557,7 +1558,7 @@ function drawCross(){
        scales:{x:{grid:{display:false},ticks:{color:'#9898a8'}},
                y:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v.toLocaleString()},suggestedMax:3300}},
        plugins:{tooltip:{...TT, callbacks:{label:ctx2=>` ${ctx2.parsed.y.toLocaleString()} 人`}},
-                datalabels:{anchor:'end',align:'end',color:'#7c4dff',font:{family:'JetBrains Mono',size:10,weight:'700'},
+                datalabels:{display:true,anchor:'end',align:'end',color:'#7c4dff',font:{family:'JetBrains Mono',size:10,weight:'700'},
                             formatter:v=>v.toLocaleString()+'人',padding:{bottom:2}}}});
 }
 
