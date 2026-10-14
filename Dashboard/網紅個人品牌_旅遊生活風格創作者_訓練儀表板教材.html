@@ -193,6 +193,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
 .trap-block{background:var(--trap-bg);border:1px solid var(--trap-border);border-left:3px solid var(--danger);border-radius:6px;padding:10px 13px;margin:10px 0;font-size:12.5px;color:#7a3c1a;line-height:1.6;}
 .trap-block strong{color:var(--danger);font-weight:700;}
 .trap-label{display:inline-block;font-family:monospace;font-size:10px;font-weight:700;background:var(--danger);color:#fff;padding:1px 6px;border-radius:3px;margin-right:6px;letter-spacing:0.4px;}
+.trap-tag{display:inline-block;flex-shrink:0;align-self:flex-start;white-space:nowrap;font-size:0.7rem;font-weight:600;padding:1px 6px;border-radius:4px;margin-left:6px;background:rgba(220,38,38,0.1);color:var(--danger);opacity:0.85}
 .qa-item.training{border-left-color:#DDD6FE;}
 .qa-item.training.open{border-left-color:var(--purple);}
 .qa-item.training .qa-question:hover{background:#F5F3FF;}
@@ -554,7 +555,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia i">I</span> 成長放緩但活躍率維穩，推測追蹤者組成已從「被動接觸」轉向「主動選擇」的核心受眾——這是比追蹤數更有業配價值的訊號。<br>
                   <span class="fia a">A</span> 若要驗證，需對比近期新增追蹤者 vs 舊有追蹤者的互動率差異，此 dashboard 未提供此維度。
                 </div>
-                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span><strong>增速放緩 ≠ 平台走弱。</strong>若活躍率同步維持甚至提升，增速放緩可能是受眾「自我篩選」的健康訊號，而非需要緊急介入的警報。</div>
+                <div class="trap-block" data-trap-stage="read" data-trap="過度推論"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜過度推論</span><strong>增速放緩 ≠ 平台走弱。</strong>若活躍率同步維持甚至提升，增速放緩可能是受眾「自我篩選」的健康訊號，而非需要緊急介入的警報。</div>
               </div>
             </div></div>
           </div>
@@ -579,7 +580,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia i">I</span> 留下來的受眾可能是早期深度粉絲或特定社群成員，其互動黏性相對穩定。<br>
                   <span class="fia a">A</span> 若此受眾偏熟齡旅遊族群（假設），對飯店、保險等高單價合作仍有對特定品牌的轉介紹價值——但需人口統計數據佐證。
                 </div>
-                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>不要因 FB 追蹤下滑就立即放棄此平台。剩餘受眾的組成與消費能力，可能對特定旅遊品牌合作仍具價值，決策應建立在受眾數據而非單純追蹤數變化。</div>
+                <div class="trap-block" data-trap-stage="read" data-trap="基線缺失"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜基線缺失</span>不要因 FB 追蹤下滑就立即放棄此平台。剩餘受眾的組成與消費能力，可能對特定旅遊品牌合作仍具價值，決策應建立在受眾數據而非單純追蹤數變化。</div>
               </div>
             </div></div>
           </div>
@@ -607,7 +608,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                 <div class="ans-block"><span class="ans-head act">🎯 行動</span>
                   (1) 優先擴充 Blog email 訂閱（自控管道，不依賴演算法）；(2) 強化 YouTube 長影片積累作為 TikTok 的高信任度替代備援；(3) 每季檢視平台集中度，設定 IG < 40% 的管控目標。
                 </div>
-                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>「跨平台分散」不代表品牌合作議價能力等值。IG 18.5 萬追蹤 vs Blog 2.8 萬月訪客在報價談判中的槓桿差距很大，分散的前提是各平台受眾質量達到特定門檻（參考 P4 受眾質量分析）。</div>
+                <div class="trap-block" data-trap-stage="curate" data-trap="口徑定義不一致"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">整理｜口徑定義不一致</span>「跨平台分散」不代表品牌合作議價能力等值。IG 18.5 萬追蹤 vs Blog 2.8 萬月訪客在報價談判中的槓桿差距很大，分散的前提是各平台受眾質量達到特定門檻（參考 P4 受眾質量分析）。</div>
               </div>
             </div></div>
           </div>
@@ -635,7 +636,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                 <div class="ans-block"><span class="ans-head act">🎯 行動</span>
                   向品牌報價時，應以「絕對互動人數」（而非互動率 %）作為核心指標；同時建議監控追蹤者的興趣分類標籤比例，確保 niche 純度未被稀釋。
                 </div>
-                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span><strong>追蹤數暴漲是視覺上最顯眼的正面 KPI，卻可能是業配能力的實質負訊號。</strong>這是「虛榮指標」陷阱的教科書案例——若只看追蹤數，你以為狀況變好了；計算絕對活躍人數才發現能觸及的有效受眾反而減少了。</div>
+                <div class="trap-block" data-trap-stage="wrangle" data-trap="量級錯置"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">加工｜量級錯置</span><strong>追蹤數暴漲是視覺上最顯眼的正面 KPI，卻可能是業配能力的實質負訊號。</strong>這是「虛榮指標」陷阱的教科書案例——若只看追蹤數，你以為狀況變好了；計算絕對活躍人數才發現能觸及的有效受眾反而減少了。</div>
                 <div class="nav-hint" onclick="goToChart('p4','chart-p4-engagement')">
                   <span class="nh-body"><span class="nh-label">→ 前往 P4 受眾質量</span><span class="nh-sub">查看各平台互動率 vs 業界基準，了解「有效受眾」的計算方法</span></span>
                   <span class="nh-arrow">›</span>
@@ -832,7 +833,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia i">I</span> 定價啟發：可用體驗品類的高互動率作為「媒體數據背書」，在談判其他高預算品類（如航空、保險）時展示內容感染力，間接提升溢價空間。<br>
                   <span class="fia a">A</span> 若要直接提升體驗品類收入，需評估是否有頭部體驗品牌（如特定米其林或豪華旅宿）願意支付高於市場行情的溢價——此 dashboard 未提供品牌個別預算數據。
                 </div>
-                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>「高互動就應該高收入」是錯誤預設。互動率反映<strong>受眾與內容的共鳴程度</strong>，收入反映<strong>品牌端的預算意願與議價結果</strong>，兩者由不同市場力量決定，不能直接畫等號。</div>
+                <div class="trap-block" data-trap-stage="read" data-trap="相關≠因果"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜相關≠因果</span>「高互動就應該高收入」是錯誤預設。互動率反映<strong>受眾與內容的共鳴程度</strong>，收入反映<strong>品牌端的預算意願與議價結果</strong>，兩者由不同市場力量決定，不能直接畫等號。</div>
               </div>
             </div></div>
           </div>
@@ -883,7 +884,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   ③ 響應速度問題 → 改善：設定 24h 報價 SLA，避免品牌同時在接觸多位創作者時被截胡<br>
                   ④ 接觸品牌質量低（洽詢的是預算嚴重不足的小品牌）→ 改善：強化主動開發 vs 被動等洽詢的比例
                 </div>
-                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>不要只看轉換率就下結論。流失 58 件中「品牌端凍結預算」（外部原因）vs「提案被競爭對手搶走」（可優化原因）的比例差異，決定了改善行動的方向——兩者的解法完全不同。</div>
+                <div class="trap-block" data-trap-stage="read" data-trap="過度推論"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜過度推論</span>不要只看轉換率就下結論。流失 58 件中「品牌端凍結預算」（外部原因）vs「提案被競爭對手搶走」（可優化原因）的比例差異，決定了改善行動的方向——兩者的解法完全不同。</div>
               </div>
             </div></div>
           </div>
@@ -912,7 +913,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   ③ 時間成本：B 的體驗內容通常製作時間長；若近期行程已滿，時間成本要計入「真實報酬率」<br>
                   ④ <strong>建議：若時間允許，兩個都接</strong>——A 鎖定收入，B 累積互動數據資產，無零和衝突
                 </div>
-                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span><strong>不要用「單次收入金額」作為唯一決策標準。</strong>業配決策是一個跨期資源配置問題：高互動內容可創造未來談判槓桿，低互動高收入內容若損害創作者信任度，長期可能導致受眾流失——反而侵蝕未來的收益基礎。</div>
+                <div class="trap-block" data-trap-stage="read" data-trap="單指標決策"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜單指標決策</span><strong>不要用「單次收入金額」作為唯一決策標準。</strong>業配決策是一個跨期資源配置問題：高互動內容可創造未來談判槓桿，低互動高收入內容若損害創作者信任度，長期可能導致受眾流失——反而侵蝕未來的收益基礎。</div>
                 <div class="nav-hint" onclick="goToChart('p4','chart-p4-engagement')">
                   <span class="nh-body"><span class="nh-label">→ 前往 P4 受眾質量</span><span class="nh-sub">查看各品類互動率基準，評估 8.5% 在整體組合中的相對位置</span></span>
                   <span class="nh-arrow">›</span>
@@ -1105,7 +1106,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia i">I</span> 若以「每元購得的曝光量」為優先，$28,500 全押 TikTok ($45/K) = 約 633K 額外曝光，比押 IG 多出 270K。<br>
                   <span class="fia a">A</span> 但若業配品牌指定要在 IG 曝光（合約要求），CPM 的選擇空間受限——此時預算分配由合約義務而非效率最大化決定。
                 </div>
-                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>「CPM 最低 = 最值得投廣告」是常見錯誤。需搭配互動率（質量）和業配合約條件（目標平台）三角驗證，才能做出有根據的預算分配建議。</div>
+                <div class="trap-block" data-trap-stage="read" data-trap="單指標決策"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜單指標決策</span>「CPM 最低 = 最值得投廣告」是常見錯誤。需搭配互動率（質量）和業配合約條件（目標平台）三角驗證，才能做出有根據的預算分配建議。</div>
               </div>
             </div></div>
           </div>
@@ -1130,7 +1131,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   ① Jessica W. 單篇 IG 貼文平均互動數（需歷史資料，dashboard 未提供）<br>
                   ② 若單篇預估 20K，缺口 30K，以廣告互動率 5.0% 補足：需觸及 600K 人 → 曝光 600K / 0.701 ≈ 856K 次 → 廣告費 856K × $78/K ≈ NT$66,768。
                 </div>
-                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span><strong>用帳號總互動數評估業配 KPI 是業界常見錯誤。</strong>品牌合作 KPI 應針對「業配貼文本身」的表現，而非整個帳號的總量指標——前者才是有效討論基礎。</div>
+                <div class="trap-block" data-trap-stage="curate" data-trap="口徑定義不一致"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">整理｜口徑定義不一致</span><strong>用帳號總互動數評估業配 KPI 是業界常見錯誤。</strong>品牌合作 KPI 應針對「業配貼文本身」的表現，而非整個帳號的總量指標——前者才是有效討論基礎。</div>
               </div>
             </div></div>
           </div>
@@ -1298,7 +1299,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia i">I</span> 評論深度高代表 Blog 讀者是「認真研究旅遊決策」的族群——這類受眾在訂房、訂機票、購買旅遊保險前通常廣泛閱讀評測文，對創作者推薦的轉換率可能遠高於社群平台。<br>
                   <span class="fia a">A</span> 若 Blog 過去業配的轉換率（點擊→訂購）可量化，其 eCPM（有效每千次轉換成本）可能優於 IG 或 TikTok——但此 dashboard 無 UTM 轉換追蹤數據，目前僅為推測。
                 </div>
-                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>不要只用「追蹤人數」評估平台業配潛力。評論深度高的小規模平台（如 Blog）在說服力和轉換率上可能遠超大規模但淺層互動的平台，低估它是因為數字不夠「大」而非不夠「好」。</div>
+                <div class="trap-block" data-trap-stage="read" data-trap="錨定效應"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜錨定效應</span>不要只用「追蹤人數」評估平台業配潛力。評論深度高的小規模平台（如 Blog）在說服力和轉換率上可能遠超大規模但淺層互動的平台，低估它是因為數字不夠「大」而非不夠「好」。</div>
               </div>
             </div></div>
           </div>
@@ -1325,7 +1326,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   ④ <strong>自然流量轉換率 11.5%（主頁→轉換）</strong>——對強調 ROI 的績效型品牌最有說服力<br>
                   ⑤ <strong>年回頭客率 42%</strong>——說明過往合作品牌認可其業務執行品質，降低新品牌合作風險感
                 </div>
-                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span><strong>Media Kit 中最常見的錯誤：把所有指標都塞進去。</strong>重點是「選對 5 個讓品牌有信心付款的數字」，而非「展示所有數字讓品牌自己判斷」——過多數字反而稀釋重點，甚至暴露弱項。</div>
+                <div class="trap-block" data-trap-stage="visualize" data-trap="資訊過載"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">呈現｜資訊過載</span><strong>Media Kit 中最常見的錯誤：把所有指標都塞進去。</strong>重點是「選對 5 個讓品牌有信心付款的數字」，而非「展示所有數字讓品牌自己判斷」——過多數字反而稀釋重點，甚至暴露弱項。</div>
                 <div class="nav-hint" onclick="goToChart('p2','chart-p2-brands')">
                   <span class="nh-body"><span class="nh-label">→ 前往 P2 品牌集中度</span><span class="nh-sub">確認過往合作品牌的業績記錄，可作為 Media Kit 案例區素材</span></span>
                   <span class="nh-arrow">›</span>

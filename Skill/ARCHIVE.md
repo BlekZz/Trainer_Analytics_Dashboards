@@ -74,7 +74,7 @@
 - 產業：零售便利商店
 - 訓練主題：商品庫存補貨分析（ABC 帕累托、毛利率、庫存週齡、缺貨與補貨優先矩陣）
 - 錨點：`total_stores: 52`、`active_skus: 2847`、`overall_gm_pct: 34.5`、`inventory_turnover: 5.03`、`stockout_rate_pct: 8.3`、`abc_a_revenue_pct: 78.2`
-- 視覺 Preset：P6 電商活力型——bg #ECFDF5／accent #059669／accent2 #10B981／字型 Rubik+Nunito Sans（另用 JetBrains Mono）均吻合
+- 視覺 Preset：P6 電商活力型——bg #ECFDF5／accent #059669／accent2 #10B981（2026-10-14 因與 accent 撞色改為 #0284C7，見 B.9-1）／字型 Rubik+Nunito Sans（另用 JetBrains Mono）均吻合
 - 頁數／QA 數：4 頁／20 題
 - 差異化亮點：ABC 分組使補貨策略可操作化（帕累托 25 點可看折點）；營收+毛利率雙軸同框揭示旺季讓利；補貨優先矩陣用 scatter 呈現象限；門市型態×品類雙熱力圖；Findings 預設收合（先問後答）。
 - 陷阱主題：帕累托「前 20% SKU」錯答（16% 已達 78.9%）／銷量增不等於毛利率降／毛利率高不等於毛利額大（僅 3 個 `.trap-block`，其餘陷阱走其他形式）
@@ -95,3 +95,19 @@
 | 7 | 零售便利商店 | 商品庫存補貨 | P6 | #059669 |
 
 重複：#1 與 #2 共用 Lora+Outfit 字型與 P2 基線；#2、#3、#6 主色皆為藍（#2d5be3／#3B82F6／#2563EB），#3 與 #1 的 accent 同為 #3B82F6；#5 與 #6 同用 Plus Jakarta Sans。尚未使用：P1、P5。
+
+## 配色驗證紀錄（B.9-1，2026-10-14）
+
+用 `validate_palette.js` 驗 `c()` 的 5 個類別色（blue／teal／orange／purple／red）。只列硬傷的處置與剩下的軟性問題。
+
+| # | 儀表板 | 模式 | 硬傷與處置 | 仍存在（軟性，未修） |
+|---|---|---|---|---|
+| 1 | 餐飲連鎖 | dark | 無 | 明度：orange #d4870a 超出範圍 |
+| 2 | 電商DTC | light | 無 | 對比 < 3:1：teal、orange（需保留數字標籤） |
+| 3 | 品牌訊息通道 | dark | 正常視力 ΔE 10.8（teal≈orange）→ `--warn` #F59E0B 改 #FDBA74，ΔE 17.7 | 明度：#fdba74 超出範圍 |
+| 4 | 健身房 | dark | 色盲 ΔE 5.7（orange↔teal）→ `--accent2` #22C55E 改 #0D9488，ΔE 16.6 | 明度：blue、orange、purple 超出範圍 |
+| 5 | 網紅個人品牌 | light | 無 | 色盲 ΔE 7.9（orange↔teal，需保留標籤）；blue #7c3aed 與 purple #9333ea 不相鄰但相近 |
+| 6 | SaaS訂閱制 | light | 無 | 色盲 ΔE 7.9（orange↔teal，需保留標籤） |
+| 7 | 零售便利商店 | light | 正常視力 ΔE 10.2（blue≈teal）→ `--accent2` #10B981 改 #0284C7，ΔE 16.9 | 無 |
+
+新產的儀表板：preset 選定後先跑一次驗證器，硬傷在 Phase 4 就換掉，不要等交付。

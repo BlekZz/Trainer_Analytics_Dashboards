@@ -130,6 +130,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .ev{display:inline;background:rgba(34,211,238,0.1);border-radius:4px;padding:1px 5px;font-family:'JetBrains Mono',monospace;font-size:0.71rem;color:var(--accent);font-weight:500}
 .trap-block{background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:6px;padding:10px 13px;margin-top:10px;font-size:0.8rem;color:var(--text-muted);line-height:1.6}
 .trap-label{display:inline-block;background:rgba(239,68,68,0.18);color:var(--danger);font-size:0.7rem;font-weight:700;padding:1px 7px;border-radius:4px;margin-bottom:6px}
+.trap-tag{display:inline-block;flex-shrink:0;align-self:flex-start;white-space:nowrap;font-size:0.7rem;font-weight:600;padding:1px 6px;border-radius:4px;margin-left:6px;background:rgba(239,68,68,0.1);color:var(--danger);opacity:0.85}
 /* ─── nav-hint ─── */
 .nav-hint{display:flex;align-items:flex-start;gap:10px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:6px;padding:9px 12px;margin:10px 0;cursor:pointer}
 .nav-hint:hover{background:rgba(245,158,11,0.14)}
@@ -313,7 +314,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
                 <p><span class="tag-f">F:</span> 月費ARPU NT$1,500最高，年費NT$1,200最低。</p>
                 <p><span class="tag-i">I:</span> <span class="fia i">I</span> 年費會員續約率達87.4%（vs 月費56.1%），留存期更長。<span class="fia a">A</span> 估算示意（留存月數為假設值）：若月費平均留存6個月 → LTV≈NT$9,000；年費若留存24個月 → LTV≈NT$28,800。此估算需從歷史資料計算實際平均留存月數才能確認。</p>
                 <p><span class="tag-a">A:</span> 🎯 行動：(1) 建立各方案歷史平均留存月數資料 (2) 計算真實LTV再決定推廣優先級 (3) 評估月費→年費升級轉換率及激勵方案</p>
-                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span><strong>只看ARPU高低決定推廣方向是高頻錯誤。</strong>月費ARPU NT$1,500聽起來最優，但其年續約率僅56.1%——近一半月費會員一年內流失。優先推廣月費可能降低整體黏性，反而拉高長期的人均獲客成本。</div>
+                <div class="trap-block" data-trap-stage="read" data-trap="單指標決策"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜單指標決策</span><strong>只看ARPU高低決定推廣方向是高頻錯誤。</strong>月費ARPU NT$1,500聽起來最優，但其年續約率僅56.1%——近一半月費會員一年內流失。優先推廣月費可能降低整體黏性，反而拉高長期的人均獲客成本。</div>
                 <button class="chart-ref-btn" onclick="goToChart('retention','card-cPlanArpu')">📍 查看：各方案ARPU</button>
               </div></div>
             </div>
@@ -345,7 +346,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
               <div class="qa-answer"><div class="answer-block">
                 <p><span class="tag-f">F:</span> 1月新增367人，比年均高出 102%。2月立即跌至98人（-73%）。</p>
                 <p><span class="tag-i">I:</span> <span class="fia i">I</span> 主因推測是「新年健身決心效應」——元旦後短期動機驅動大量入會，屬健身房產業系統性季節性現象，並非行銷活動所拉動。<span class="fia i">I</span> 這批短期動機驅動的會員留存率往往偏低，若追蹤其3個月留存率，預計明顯低於全年均值。</p>
-                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span><strong>把1月高峰視為行銷成功的佐證</strong>並加碼投入複製，是常見陷阱。更重要的問題是：這批會員的3個月留存率是多少？若LTV極低，高入會量反而代表高獲客成本浪費。</div>
+                <div class="trap-block" data-trap-stage="read" data-trap="基線缺失"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜基線缺失</span><strong>把1月高峰視為行銷成功的佐證</strong>並加碼投入複製，是常見陷阱。更重要的問題是：這批會員的3個月留存率是多少？若LTV極低，高入會量反而代表高獲客成本浪費。</div>
                 <button class="chart-ref-btn" onclick="goToChart('member','card-cMonthFlow')">📍 查看：月度趨勢圖</button>
               </div></div>
             </div>
@@ -424,7 +425,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
             <div class="qa-answer"><div class="answer-block">
               <p><span class="tag-f">F:</span> 假日09時50人 vs 平日24人，假日高出108%。</p>
               <p><span class="tag-i">I:</span> <span class="fia i">I</span> 推測主要族群包含有通勤約束的上班族（假日可從容使用）及學生族群。<span class="fia i">I</span> 若此假設成立，假日上午安排熱門課程（瑜珈、飛輪）應有助提升課程滿座率。</p>
-              <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>這張圖顯示<strong>每日內的時段分佈</strong>，非跨日總量比較。假日每日入場約640次雖高於平日470次，但不能由此推論「假日比平日有更高商業價值」——需同時考量設施使用率與教練排班成本。</div>
+              <div class="trap-block" data-trap-stage="wrangle" data-trap="分母錯置"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">加工｜分母錯置</span>這張圖顯示<strong>每日內的時段分佈</strong>，非跨日總量比較。假日每日入場約640次雖高於平日470次，但不能由此推論「假日比平日有更高商業價值」——需同時考量設施使用率與教練排班成本。</div>
               <button class="chart-ref-btn" onclick="goToChart('behavior','card-cHourly')">📍 查看：24小時熱力圖</button>
             </div></div>
           </div>
@@ -460,7 +461,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
                 <p><span class="tag-f">F:</span> 平日19時平均47人次為最高峰，18時43人次次之。</p>
                 <p><span class="tag-i">I:</span> <span class="fia i">I</span> 增加晚間課程有助於轉化人流為結構性消費，提升黏性。<span class="fia a">A</span> 但「人次最多」≠「應優先排班」——需同時知道此時段設施使用率是否已飽和。若空間已滿載，增加課程反而惡化體驗。</p>
                 <p><span class="tag-a">A:</span> 🎯 行動：(1) 取得各設施使用率峰谷數據 (2) 評估教練資源可用性 (3) 單館A/B測試增加19時課程，追蹤滿意度與續約率</p>
-                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>尖峰人次高，可能是<strong>需求高（應增加供給）</strong>，也可能是<strong>供給已飽和（增加更多人反而降低品質）</strong>。兩種情形在入場人次圖上無法區分，需設施使用率數據才能判斷。</div>
+                <div class="trap-block" data-trap-stage="read" data-trap="過度推論"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜過度推論</span>尖峰人次高，可能是<strong>需求高（應增加供給）</strong>，也可能是<strong>供給已飽和（增加更多人反而降低品質）</strong>。兩種情形在入場人次圖上無法區分，需設施使用率數據才能判斷。</div>
                 <button class="chart-ref-btn" onclick="goToChart('behavior','card-cHourly')">📍 查看：24小時熱力圖</button>
               </div></div>
             </div>
@@ -481,7 +482,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
               <div class="qa-answer"><div class="answer-block">
                 <p><span class="tag-f">F:</span> 從<span class="ev">月均入場次數分佈圖</span>，低頻組1,384人佔20.2%。</p>
                 <p><span class="tag-i">I:</span> <span class="fia i">I</span> 低頻使用是流失的早期指標——入場頻率從5次降到1次，往往預示1-2個月內不續約。這群人構成「沉默流失池」，若不干預將持續補充年流失率的26.2%。</p>
-                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>圖中顯示的是<strong>現有活躍會籍</strong>的頻次分佈——已流失者不在圖中。真實的低頻問題比這張圖更嚴重：離開的人在流失前幾乎都是低頻使用者，但他們已不在統計池內。</div>
+                <div class="trap-block" data-trap-stage="read" data-trap="倖存者偏誤"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜倖存者偏誤</span>圖中顯示的是<strong>現有活躍會籍</strong>的頻次分佈——已流失者不在圖中。真實的低頻問題比這張圖更嚴重：離開的人在流失前幾乎都是低頻使用者，但他們已不在統計池內。</div>
                 <button class="chart-ref-btn" onclick="goToChart('behavior','card-cFreqDist')">📍 查看：頻次分佈圖</button>
               </div></div>
             </div>
@@ -574,7 +575,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
                 <p><span class="tag-f">F:</span> 板橋館：1,983人、月均ARPU NT$1,268（最低）、月均入場2.01次（最低）、年續約率60.8%（最低）。</p>
                 <p><span class="tag-i">I:</span> <span class="fia i">I</span> 若維持60.8%續約率，每年需補充約778人才能維持規模，而中山館只需補充698人——板橋館的補充壓力較高。<span class="fia a">A</span> 但「緊急干預」需先排除：(1) 開幕年齡效應（新館天然流失率高）；(2) 板橋地區競爭環境是否特別激烈；(3) 此改善計畫需要板橋館詳細進線/流失細分數據，超出本儀表板範圍。</p>
                 <p><span class="tag-a">A:</span> 🎯 行動：(1) 取得板橋館會員年資分布，確認是否為新館效應 (2) 若確認為結構性問題，設計「前6個月新會員強化計畫」 (3) 設3個月目標：續約率從60.8%提升至65%</p>
-                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>三指標墊底看起來嚴峻，但<strong>「最差」≠「立即需要大量資源」</strong>。若板橋館只是開幕第2年並在自然改善中，過度干預反而干擾成長軌跡。需加入時間維度（趨勢方向）才能做干預決策。</div>
+                <div class="trap-block" data-trap-stage="read" data-trap="基線缺失"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜基線缺失</span>三指標墊底看起來嚴峻，但<strong>「最差」≠「立即需要大量資源」</strong>。若板橋館只是開幕第2年並在自然改善中，過度干預反而干擾成長軌跡。需加入時間維度（趨勢方向）才能做干預決策。</div>
                 <button class="chart-ref-btn" onclick="goToChart('retention','card-cBranchScatter')">📍 查看：分店散點圖</button>
               </div></div>
             </div>
@@ -653,7 +654,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
                 <p><span class="tag-f">F:</span> 流失原因分佈：忙碌31%、價格22%、轉他18%、搬家15%、不滿意9%、其他5%。</p>
                 <p><span class="tag-i">I:</span> <span class="fia i">I</span> 可干預度分析：課程設備不滿（9%）可直接改善；轉他健身房（18%）可用差異化服務應對；搬家（15%）及工作忙碌（31%）相對不可干預。<span class="fia a">A</span> 但「工作忙碌」可能是藉口而非真因——部分會員可能因低頻使用導致「感到不划算」，這才是潛在真因。需用低頻使用者的流失率交叉驗證。</p>
                 <p><span class="tag-a">A:</span> 🎯 行動：(1) 追蹤「忙碌流失者」的離開前3個月入場頻率 (2) 若低頻佔比高，根本問題是習慣建立失敗，而非時間管理 (3) 對低頻會員提前干預：教練check-in/特訓計畫</p>
-                <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>流失調查的自陳原因 ≠ 真實原因。用戶傾向給出<strong>「社會可接受的理由」</strong>（我太忙了）而非真實動機（去了兩次就失去動力）。31%的「忙碌」應視為「待驗證的假設」，而非不可撼動的事實。</div>
+                <div class="trap-block" data-trap-stage="curate" data-trap="自陳偏誤"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">整理｜自陳偏誤</span>流失調查的自陳原因 ≠ 真實原因。用戶傾向給出<strong>「社會可接受的理由」</strong>（我太忙了）而非真實動機（去了兩次就失去動力）。31%的「忙碌」應視為「待驗證的假設」，而非不可撼動的事實。</div>
                 <button class="chart-ref-btn" onclick="goToChart('retention','card-cChurnReason')">📍 查看：流失原因圖</button>
                 <button class="chart-ref-btn" onclick="goToChart('behavior','card-cFreqDist')">📍 查看：入場頻率分佈</button>
               </div></div>
@@ -678,7 +679,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
             <p>② <span class="fia i">I</span> 若1月新會員的3個月留存率僅50%，則367人中約184人在4月底流失，這批人的CAC完全損失。與其持續高成本拓客，優先提升留存可能ROI更高。</p>
             <p>③ <span class="fia a">A</span> 但此結論依賴「留存成本<拓客成本」的假設——需實際CAC與留存干預成本數據才能確認。</p>
             <p>④ 建議框架：以「LTV ÷ CAC ≥ 3」為門檻評估拓客效率；若月費新客LTV過低，優先投資現有會員升級年費。</p>
-            <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>流失率高≠一定先留客。若CAC極低（例如靠自然口碑），即使留存率偏低，持續拓客仍可能優於昂貴的留存干預計畫。</div>
+            <div class="trap-block" data-trap-stage="read" data-trap="單指標決策"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜單指標決策</span>流失率高≠一定先留客。若CAC極低（例如靠自然口碑），即使留存率偏低，持續拓客仍可能優於昂貴的留存干預計畫。</div>
           </div>
         </div>
         <div class="train-item">
@@ -706,7 +707,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
             <p><span class="fia f">F</span> TRX出席率58.4%，在7種課程中最低；月排班14場也最少。</p>
             <p><span class="fia i">I</span> 低出席率可能來自：(1) 時段不好（分析時段 vs 出席率交叉）；(2) 名額設計過大（每班30人但只有17人來）；(3) 宣傳不足；(4) 真實需求低。</p>
             <p><span class="fia a">A</span> 需要的額外數據：① 每班實際預約人數 vs 可容納名額（評估是否供給過剩）；② TRX學員的整體續約率（若TRX學員續約率高，刪除反而傷害留存）；③ 無課程替代方案的接受度調查。</p>
-            <div class="trap-block"><span class="trap-label">⚠ 陷阱</span>「出席率低」ꜝ「應刪除」——如果TRX的少數忠實學員是高頻使用/高續約的VIP會員，刪除TRX可能觸發這些高LTV會員的流失，得不償失。</div>
+            <div class="trap-block" data-trap-stage="read" data-trap="過度推論"><span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜過度推論</span>「出席率低」ꜝ「應刪除」——如果TRX的少數忠實學員是高頻使用/高續約的VIP會員，刪除TRX可能觸發這些高LTV會員的流失，得不償失。</div>
           </div>
         </div>
         <div class="train-item">

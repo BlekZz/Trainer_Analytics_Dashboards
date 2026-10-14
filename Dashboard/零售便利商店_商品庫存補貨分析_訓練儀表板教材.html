@@ -227,6 +227,7 @@
       font-size: 0.8rem; color: #b91c1c; display: flex; gap: 8px; align-items: flex-start;
     }
     .trap-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.trap-tag{display:inline-block;flex-shrink:0;align-self:flex-start;white-space:nowrap;font-size:0.7rem;font-weight:600;padding:1px 6px;border-radius:4px;margin-left:6px;background:rgba(220,38,38,0.1);color:#b91c1c;opacity:0.85}
     .nav-hint {
       display: inline-flex; align-items: center; gap: 6px;
       background: rgba(212,135,10,0.08); border: 1px solid rgba(212,135,10,0.25);
@@ -441,7 +442,7 @@
           <p><span class="tag-f">F:</span> 從<span class="ev">帕累托累積曲線</span>看，前 <span class="fia f">16% SKU</span>（即 427 個 A 類 SKU）已累積貢獻 <strong>78.9%</strong> 的收入，非常接近 80/20 法則的理論值。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('p1','cc-pareto')">📍 查看：帕累托累積曲線</button>
-        <div class="trap-block"><span class="trap-icon">⚠️</span><span>常見錯誤：回答「前 20% SKU」。實際曲線在 16% 處已達 78.9%，集中度高於標準 80/20 情境，進一步強調 A 類保障的重要性。</span></div>
+        <div class="trap-block" data-trap-stage="read" data-trap="錨定效應"><span class="trap-icon">⚠️</span><span class="trap-tag">解讀｜錨定效應</span><span>常見錯誤：回答「前 20% SKU」。實際曲線在 16% 處已達 78.9%，集中度高於標準 80/20 情境，進一步強調 A 類保障的重要性。</span></div>
       </div>
     </div>
     <div class="qa-item">
@@ -482,7 +483,7 @@
           <p><span class="tag-i">I:</span> 從<span class="ev">月度營收趨勢 &amp; 毛利率雙軸</span>看，旺季促銷（折扣、買一送一）使實際售價降低，壓縮毛利率。此外，旺季時食品飲料、生鮮熟食等<span class="fia i">本就低毛利品類銷量比重上升</span>，整體品類混搭效果也會拉低加總毛利率。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('p1','cc-monthly')">📍 查看：月度營收趨勢 &amp; 毛利率雙軸</button>
-        <div class="trap-block"><span class="trap-icon">⚠️</span><span>不要只說「賣得多所以毛利率低」——銷量增加本身不影響毛利率。是促銷讓利與品類結構改變才是原因。</span></div>
+        <div class="trap-block" data-trap-stage="read" data-trap="相關≠因果"><span class="trap-icon">⚠️</span><span class="trap-tag">解讀｜相關≠因果</span><span>不要只說「賣得多所以毛利率低」——銷量增加本身不影響毛利率。是促銷讓利與品類結構改變才是原因。</span></div>
       </div>
     </div>
     <div class="qa-item">
@@ -741,7 +742,7 @@
         </div>
         <button class="chart-ref-btn" onclick="goToChart('p3','cc-waterfall')">📍 查看：品類收入結構</button>
         <button class="chart-ref-btn" onclick="goToChart('p3','cc-cat-gm')">📍 查看：品類毛利率 &amp; 毛利金額</button>
-        <div class="trap-block"><span class="trap-icon">⚠️</span><span>毛利率高不等於毛利金額大。冷藏飲料雖然率高，但體量（863萬收入）小於食品飲料（2,218萬），所以絕對金額（382萬）不如食品飲料（692萬）。</span></div>
+        <div class="trap-block" data-trap-stage="wrangle" data-trap="量級錯置"><span class="trap-icon">⚠️</span><span class="trap-tag">加工｜量級錯置</span><span>毛利率高不等於毛利金額大。冷藏飲料雖然率高，但體量（863萬收入）小於食品飲料（2,218萬），所以絕對金額（382萬）不如食品飲料（692萬）。</span></div>
       </div>
     </div>
     <div class="qa-item">

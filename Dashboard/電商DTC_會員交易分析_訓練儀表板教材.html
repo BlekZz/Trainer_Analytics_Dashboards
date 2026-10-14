@@ -212,6 +212,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
 .trap-block{background:var(--trap-bg);border:1px solid var(--trap-border);border-left:3px solid var(--danger);border-radius:6px;padding:10px 13px;margin:10px 0;font-size:12.5px;color:#7a2b22;}
 .trap-block strong{color:var(--danger);font-weight:700;}
 .trap-block .trap-label{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;background:var(--danger);color:#fff;padding:1px 6px;border-radius:3px;margin-right:6px;letter-spacing:0.4px;}
+.trap-tag{display:inline-block;flex-shrink:0;align-self:flex-start;white-space:nowrap;font-size:0.7rem;font-weight:600;padding:1px 6px;border-radius:4px;margin-left:6px;background:rgba(212,58,47,0.1);color:var(--danger);opacity:0.85}
 
 /* META-LEVEL DESIGN-CHOICES BLOCK (D12) */
 .meta-panel{background:linear-gradient(135deg, #fff8f0 0%, #fff 100%);border:1px solid var(--accent-4);border-top:3px solid var(--accent-4);border-radius:var(--radius);padding:24px 26px;margin-top:24px;box-shadow:var(--shadow-sm);}
@@ -413,8 +414,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
           <div class="ans-block">
             <span class="ans-head act">🎯 行動</span>分析師的好習慣：拿到任何 KPI，**第一步先做「能不能用圖表加減算回來」的內部一致性驗算**。如本例差距在 1–2% 內屬合理口徑差異，但若超過 5%，必須先去釐清定義才能做後續解讀。
           </div>
-          <div class="trap-block">
-            <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤推論：</strong>實習生看到 KPI 與圖表的小差距會慌張改數字。但<strong>合理的口徑差異是業界常態</strong>，重點不在「消滅差距」，而在「能解釋差距」並把口徑寫清楚。
+          <div class="trap-block" data-trap-stage="curate" data-trap="口徑差焦慮">
+            <span class="trap-label">⚠ 陷阱</span><span class="trap-tag">整理｜口徑差焦慮</span><strong>常見錯誤推論：</strong>實習生看到 KPI 與圖表的小差距會慌張改數字。但<strong>合理的口徑差異是業界常態</strong>，重點不在「消滅差距」，而在「能解釋差距」並把口徑寫清楚。
           </div>
           <button class="chart-ref-btn" onclick="goToChart('member','card-cMemberTrend')">📍 查看：每月新增 vs 流失圖</button>
         </div></div></div>
@@ -452,8 +453,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
             <div class="ans-block">
               <span class="ans-head act">🎯 行動</span>結論：14% 高階會員貢獻過半營收 → 流失 10% 衝擊整體 <strong>~5–6%</strong>。這種「少數人貢獻多數營收」稱為<strong>集中風險</strong>，需獨立的留存監控機制（例如 Platinum 客戶每月人工聯繫）。
             </div>
-            <div class="trap-block">
-              <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤：</strong>用「人均消費 × 流失人數」直接相乘得出衝擊金額，會忽略「等級內部消費差異」（同樣 Gold 等級內部，最高消費 vs 最低可能差 5 倍）。資深分析師會明確區分「人均」與「個體」並標註 A（Assumption）。
+            <div class="trap-block" data-trap-stage="wrangle" data-trap="平均數陷阱">
+              <span class="trap-label">⚠ 陷阱</span><span class="trap-tag">加工｜平均數陷阱</span><strong>常見錯誤：</strong>用「人均消費 × 流失人數」直接相乘得出衝擊金額，會忽略「等級內部消費差異」（同樣 Gold 等級內部，最高消費 vs 最低可能差 5 倍）。資深分析師會明確區分「人均」與「個體」並標註 A（Assumption）。
             </div>
             <button class="chart-ref-btn" onclick="goToChart('member','card-cMemberTier')">📍 查看：等級結構圓餅圖</button>
         </div></div></div>
@@ -516,8 +517,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
           <div class="ans-block">
             <span class="ans-head inf">🧠 推論</span><span class="fia i">I</span> <strong>短期是優勢：</strong>25-34 歲是電商最熟悉、消費力強的核心客群，服務成本低、營收效率高。<br><span class="fia i">I</span> <strong>長期是隱患：</strong>過度依賴單一年齡層，若這批人消費偏好移轉（例如轉向二手平台），整體業務將被集中衝擊。
           </div>
-          <div class="trap-block">
-            <span class="trap-label">⚠ 陷阱</span><strong>分析師常見過度推論：</strong>「年齡分佈 + 渠道分佈」放在同一頁時，很容易跨度推論「年輕人 = 社群來源」。<span class="fia a">A</span> <strong>這是無資料支持的假設</strong>——35-44 歲也可能大量來自社群，現有資料完全無法區分。<br><br>資深分析師的反射動作：看到「兩個獨立分佈」想做交叉推論時，<strong>必須先確認是否存在「年齡 × 來源」交叉表</strong>。若沒有，停留在「現有資料能說的部分」即可。
+          <div class="trap-block" data-trap-stage="read" data-trap="過度推論">
+            <span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜過度推論</span><strong>分析師常見過度推論：</strong>「年齡分佈 + 渠道分佈」放在同一頁時，很容易跨度推論「年輕人 = 社群來源」。<span class="fia a">A</span> <strong>這是無資料支持的假設</strong>——35-44 歲也可能大量來自社群，現有資料完全無法區分。<br><br>資深分析師的反射動作：看到「兩個獨立分佈」想做交叉推論時，<strong>必須先確認是否存在「年齡 × 來源」交叉表</strong>。若沒有，停留在「現有資料能說的部分」即可。
           </div>
           <div class="ans-block">
             <span class="ans-head act">🎯 行動</span>能說的：「年齡分佈集中是已知風險，且我們缺乏年齡 × 來源、年齡 × LTV 的交叉資料，建議下一步補上這兩個維度，才能評估『年輕族群是否同時是低 LTV 族群』」——把「需要的資料」明確化，比給一個自圓其說的答案更有價值。
@@ -639,8 +640,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
             <div class="ans-block">
               <span class="ans-head act">🎯 行動</span>觀察兩個「具備穩定性質」的品類是否值得擴大：<strong>美妝（16%）與食品（11.9%）都具備高頻回購特性</strong>，能穩定基本盤。若能把這兩者從合計 28% 提升到 35-40%，整體營收的季節依賴度會明顯下降。
             </div>
-            <div class="trap-block">
-              <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤推論：</strong>看到「3C 佔最高」就直覺認為「太集中」要分散。但 40% 在多品類零售算<strong>中度集中</strong>不算高，需先設定「健康集中度的標準」（例如業界平均最大品類佔比 35-50%）再判斷，不能僅看單一數字。
+            <div class="trap-block" data-trap-stage="read" data-trap="基線缺失">
+              <span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜基線缺失</span><strong>常見錯誤推論：</strong>看到「3C 佔最高」就直覺認為「太集中」要分散。但 40% 在多品類零售算<strong>中度集中</strong>不算高，需先設定「健康集中度的標準」（例如業界平均最大品類佔比 35-50%）再判斷，不能僅看單一數字。
             </div>
             <button class="chart-ref-btn" onclick="goToChart('transaction','card-cCatPie')">📍 查看：品類佔比圓餅圖</button>
         </div></div></div>
@@ -840,8 +841,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
             <div class="ans-block">
               <span class="ans-head act">🎯 行動</span>兩套不同的干預：<br><strong>對「從未購買」用戶：</strong>聚焦「降低首購門檻」——首購禮包、限時 0 元試用、社群轉介推薦碼。目標是把他們從 0 推到 1。<br><strong>對「只買 1 次」用戶：</strong>聚焦「縮短再購週期」——參考下方再購間隔圖，在首購後 7、14、25 天分別觸發個人化推薦。目標是把他們從 1 推到 2-3。
             </div>
-            <div class="trap-block">
-              <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤：</strong>把「未首購」與「只買1次」混為一池，用同一套策略對待。前者需要的是「品牌信任建立」，後者需要的是「再購誘因」，搞錯就會在最大的池子上浪費資源。
+            <div class="trap-block" data-trap-stage="wrangle" data-trap="分組過粗">
+              <span class="trap-label">⚠ 陷阱</span><span class="trap-tag">加工｜分組過粗</span><strong>常見錯誤：</strong>把「未首購」與「只買1次」混為一池，用同一套策略對待。前者需要的是「品牌信任建立」，後者需要的是「再購誘因」，搞錯就會在最大的池子上浪費資源。
             </div>
             <button class="chart-ref-btn" onclick="goToChart('cross','card-cFreqDist')">📍 查看：頻次分佈圖</button>
         </div></div></div>
@@ -879,8 +880,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
             <div class="ans-block">
               <span class="ans-head act">🎯 行動</span>提案結構：<strong>(1)</strong> 提出 LTV 對比圖作為論據主體；<strong>(2)</strong> 補上「預算分配 vs 渠道貢獻」對照表，把不對齊指出來；<strong>(3)</strong> 提案分階段移轉預算（避免一次性大調動風險）；<strong>(4)</strong> 設定 6 個月後重評時點。<span class="fia a">A</span> 此推論假設「增加投入會等比例放大效益」，實際 SEO/內容行銷有「滯後效應」需 3-6 個月才見效，提案需明說。
             </div>
-            <div class="trap-block">
-              <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤：</strong>只看 LTV 不看 CAC（獲客成本）。本 Dashboard 缺少 CAC 資料——官網 SEO 雖然「邊際成本低」但「初始投入大」（內容團隊、技術建置），完整的渠道評估必須包含 LTV/CAC 比值才有說服力。
+            <div class="trap-block" data-trap-stage="read" data-trap="基線缺失">
+              <span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜基線缺失</span><strong>常見錯誤：</strong>只看 LTV 不看 CAC（獲客成本）。本 Dashboard 缺少 CAC 資料——官網 SEO 雖然「邊際成本低」但「初始投入大」（內容團隊、技術建置），完整的渠道評估必須包含 LTV/CAC 比值才有說服力。
             </div>
             <button class="chart-ref-btn" onclick="goToChart('cross','card-cChannelLTV')">📍 查看：渠道 LTV 條形圖</button>
         </div></div></div>
@@ -952,8 +953,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
         <div class="ans-block">
           <span class="ans-head act">🎯 行動</span>Silver 留存方案 ROI 最高（人數規模 × 單人損失 × 升等潛力的三維乘積最大）。具體可設計「Silver 專屬升等加速器」，讓接近 Gold 門檻的用戶獲得額外動力。
         </div>
-        <div class="trap-block">
-          <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤：</strong>只看「人數最多」選 Bronze 或只看「人均最高」選 Platinum。資深思維是<strong>人數 × 單人損失 × 替代難度</strong>的綜合判斷。
+        <div class="trap-block" data-trap-stage="read" data-trap="單指標決策">
+          <span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜單指標決策</span><strong>常見錯誤：</strong>只看「人數最多」選 Bronze 或只看「人均最高」選 Platinum。資深思維是<strong>人數 × 單人損失 × 替代難度</strong>的綜合判斷。
         </div>
         <button class="chart-ref-btn" onclick="goToChart('member','card-cMemberTier')">📍 查看：等級結構圓餅圖</button>
         </div></div></div>
@@ -980,8 +981,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
         <div class="ans-block">
           <span class="ans-head act">🎯 行動</span>三層優化：<br>① <strong>Landing Page 改造</strong>：設計「首購禮包」並引導第一筆消費落在回購率高的品類（美妝、食品）；<br>② <strong>自動化跟進</strong>：對社群來源新用戶，第 7 天觸發個人化推薦（參考本頁<span class="ev">再購間隔圖</span>的黃金窗口）；<br>③ <strong>KPI 改變</strong>：評估社群廣告時從純 CPA 改成「首年 LTV 達標率」——這個改變比任何素材優化都更根本。
         </div>
-        <div class="trap-block">
-          <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤：</strong>看到「LTV 低」就直覺要停掉社群投放。但社群的真實價值可能在「品牌曝光擴散」與「上層漏斗導流」，停掉會影響後續其他渠道的效率。<strong>渠道評估必須看「整個漏斗」</strong>不是單一渠道指標。
+        <div class="trap-block" data-trap-stage="read" data-trap="單指標決策">
+          <span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜單指標決策</span><strong>常見錯誤：</strong>看到「LTV 低」就直覺要停掉社群投放。但社群的真實價值可能在「品牌曝光擴散」與「上層漏斗導流」，停掉會影響後續其他渠道的效率。<strong>渠道評估必須看「整個漏斗」</strong>不是單一渠道指標。
         </div>
         <button class="chart-ref-btn" onclick="goToChart('cross','card-cChannelLTV')">📍 查看：渠道 LTV 條形圖</button>
         </div></div></div>
@@ -1006,8 +1007,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
         <div class="ans-block">
           <span class="ans-head act">🎯 行動</span>從本頁<span class="ev">頻次分佈圖</span>可看到 3,601 名只買 1 次、加上頻次圖下方註記 32,915 名從未購買——<strong>這是降低集中風險的「補救池」</strong>。雙軌策略：核心守、長尾擴。
         </div>
-        <div class="trap-block">
-          <span class="trap-label">⚠ 陷阱</span><strong>常見錯誤：</strong>把「集中度」單純視為負面詞。實際上適度集中是「商業效率」的體現，過度分散反而代表「沒有真正忠誠的客戶」。<strong>關鍵是「集中風險是否可控」</strong>——有沒有早期預警、有沒有替補資源、流失多少才會傷骨。
+        <div class="trap-block" data-trap-stage="read" data-trap="過度集中推論">
+          <span class="trap-label">⚠ 陷阱</span><span class="trap-tag">解讀｜過度集中推論</span><strong>常見錯誤：</strong>把「集中度」單純視為負面詞。實際上適度集中是「商業效率」的體現，過度分散反而代表「沒有真正忠誠的客戶」。<strong>關鍵是「集中風險是否可控」</strong>——有沒有早期預警、有沒有替補資源、流失多少才會傷骨。
         </div>
         <button class="chart-ref-btn" onclick="goToChart('cross','card-cFreqDist')">📍 查看：頻次分佈圖</button>
         </div></div></div>

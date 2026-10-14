@@ -239,6 +239,7 @@
       font-size: 0.8rem; color: #FCA5A5; display: flex; gap: 8px; align-items: flex-start;
     }
     .trap-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.trap-tag{display:inline-block;flex-shrink:0;align-self:flex-start;white-space:nowrap;font-size:0.7rem;font-weight:600;padding:1px 6px;border-radius:4px;margin-left:6px;background:rgba(239,68,68,0.12);color:#FCA5A5;opacity:0.85}
     .nav-hint {
       display: inline-flex; align-items: center; gap: 6px;
       background: rgba(253,186,116,0.08); border: 1px solid rgba(253,186,116,0.28);
@@ -525,8 +526,8 @@
           <p><span class="tag-i">I:</span> 對話型通道的單次對話轉換率（962÷19,500 ≈ <strong>4.93%</strong>）遠高於推播通道的觸達轉換率（888÷110,000 ≈ <strong>0.81%</strong>）。這反映出「雙向互動」在推進決策上比「單向推播」更有效率，但不意味著推播沒有價值——推播的規模效益仍在，且觸達成本通常更低。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-1','card-c1-push-conv-bar')">📍 查看：推播 vs 對話型轉換貢獻</button>
-        <div class="trap-block">
-          <span class="trap-icon">⚠</span>
+        <div class="trap-block" data-trap-stage="read" data-trap="過度推論">
+          <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜過度推論</span>
           <div><strong>陷阱：</strong>不能直接說「對話型通道比推播好」——兩者成本結構完全不同。推播的邊際成本極低，對話型需要人力或 AI 客服資源，ROI 需考量成本才能比較。</div>
         </div>
       </div>
@@ -543,8 +544,8 @@
           <p><span class="tag-i">I:</span> Meta 對話 6,800 次帶來 773 新會員，比率 = <strong>11.4%</strong>。LINE 推播 72,000 觸達帶來 1,287 新會員，比率 = <strong>1.79%</strong>。若用「每百次觸及帶來的新會員」衡量，Meta 遠比 LINE 更高效。但這是不同口徑的比較（對話 vs 觸達），需謹慎解讀。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-1','card-c1-src-donut')">📍 查看：新會員來源分佈</button>
-        <div class="trap-block">
-          <span class="trap-icon">⚠</span>
+        <div class="trap-block" data-trap-stage="curate" data-trap="口徑定義不一致">
+          <span class="trap-icon">⚠</span><span class="trap-tag">整理｜口徑定義不一致</span>
           <div><strong>口徑陷阱：</strong>LINE 的分母是「觸達數（到達收件匣的推播量）」，Meta 的分母是「主動發起對話的用戶數」。後者本質上是已篩選過意圖強度的族群，直接比率不具可比性。</div>
         </div>
       </div>
@@ -562,8 +563,8 @@
           <p style="margin-top:10px"><span class="tag-a">A:</span> Chat 的棄單率達 <strong>13%</strong>（三通道最高），意味著有 8,500×13% = <strong>1,105 次</strong>對話在未轉換前流失。若能將棄單率從 13% 降至 7%（同時 FCR 71% 的水準顯示服務品質不差），每季可多挽回約 509 次對話。若維持現有轉換率（2.75%），可多轉化約 14 個新會員。這是最直接的改善槓桿。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-3','card-c3-resolution')">📍 查看：解決狀態分佈（含棄單率）</button>
-        <div class="trap-block">
-          <span class="trap-icon">⚠</span>
+        <div class="trap-block" data-trap-stage="read" data-trap="假設外推">
+          <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜假設外推</span>
           <div><strong>假設陷阱：</strong>上述推算假設「被挽回的棄單用戶」轉換率與現有用戶相同，但棄單者通常意圖較弱，實際效果可能低估。此為假設，需 A/B test 驗證。</div>
         </div>
       </div>
@@ -673,8 +674,8 @@
           <p><span class="tag-i">I:</span> LINE CTOR（Click-to-Open Rate）= 8,640 ÷ 27,360 = <strong>31.6%</strong>；Email CTOR = 3,040 ÷ 8,360 = <strong>36.4%</strong>。此口徑下 Email 反而高於 LINE，這顯示「有打開的人，Email 更傾向點擊」。兩個口徑各有用途：觸達 CTR 衡量整體效率；CTOR 衡量內容吸引力。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-2','card-c2-rates')">📍 查看：開封率 vs CTR 對比</button>
-        <div class="trap-block">
-          <span class="trap-icon">⚠</span>
+        <div class="trap-block" data-trap-stage="wrangle" data-trap="分母錯置">
+          <span class="trap-icon">⚠</span><span class="trap-tag">加工｜分母錯置</span>
           <div><strong>口徑陷阱：</strong>只看「觸達 CTR」會錯誤結論「LINE 內容比 Email 更吸引人點擊」，但 Email 低 CTR 主要來自低開封率。正確結論是：Email 的瓶頸在開封，而非點擊意願。</div>
         </div>
       </div>
@@ -691,8 +692,8 @@
           <p><span class="tag-i">I:</span> 觸達成長 +18.2%，轉換成長 +20%，轉換率微幅提升。可能原因：(1) 訊息內容或 CTA 優化；(2) 季節性因素（Q4 末年終購物旺季）；(3) 受眾名單品質提升（優化退訂清單）。這是正向信號，但需排除季節性干擾才能確認。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-2','card-c2-monthly')">📍 查看：月度推播觸達趨勢</button>
-        <div class="trap-block">
-          <span class="trap-icon">⚠</span>
+        <div class="trap-block" data-trap-stage="read" data-trap="基線缺失">
+          <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜基線缺失</span>
           <div><strong>歸因陷阱：</strong>Q4 的轉換率提升可能主要來自節慶消費行為，而非行銷操作改善。若與 Q3 比較後依然有增長，結論才更可信。</div>
         </div>
       </div>
@@ -723,8 +724,8 @@
           <p><span class="tag-a">A:</span> 以當前轉換率計算：LINE 觸達轉換率 <strong>0.917%</strong>（660÷72,000），Email <strong>0.600%</strong>（228÷38,000）。若把所有 110,000 觸達都給 LINE，理論最大轉換 = 110,000×0.917% ≈ <strong>1,009 筆</strong>，比現在 888 多 121 筆。但這假設 LINE 名單可擴展至 110,000 且維持相同轉換率，實際上名單品質會因擴充而稀釋。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-2','card-c2-cvr')">📍 查看：觸達→轉換率對比</button>
-        <div class="trap-block">
-          <span class="trap-icon">⚠</span>
+        <div class="trap-block" data-trap-stage="read" data-trap="線性外推">
+          <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜線性外推</span>
           <div><strong>假設陷阱：</strong>轉換率不是固定不變的——增加觸達量意味著觸及更多「邊際用戶」，這些人的轉換率通常更低。等比例放大的計算會高估實際效果。</div>
         </div>
       </div>
@@ -822,8 +823,8 @@
           <p><span class="tag-i">I:</span> 可能原因：(1) Meta Messaging 的用戶族群通常來自廣告，問題多樣且複雜，超出 FAQ/bot 能處理的範圍；(2) Meta 平台的用戶習慣傾向長篇對話，平均 6.8 輪也印證複雜度；(3) 客服資源可能未針對 Meta 來源用戶的問題類型做特化訓練。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-3','card-c3-resolution')">📍 查看：解決狀態分佈</button>
-        <div class="trap-block">
-          <span class="trap-icon">⚠</span>
+        <div class="trap-block" data-trap-stage="read" data-trap="過度推論">
+          <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜過度推論</span>
           <div><strong>陷阱：</strong>高升級率不一定是壞事——若升級後轉換率更高，這可能是一個「品質篩選」機制，把高意圖用戶轉給人工，效果反而更好。需要看升級後的轉換數據才能下結論。</div>
         </div>
       </div>
@@ -840,8 +841,8 @@
           <p><span class="tag-i">I:</span> 不矛盾。FCR 衡量「<strong>有完成對話的用戶中</strong>，一次解決的比例」；棄單率衡量「在對話完成前就離開的比例」。兩者分母不同。可能的解釋：官網 Chat 的入口門檻低（頁面彈窗），吸引了大量輕度意圖用戶，這些人容易中途放棄；而真正堅持完成對話的用戶，客服效率高（平均 2.9 輪、1.2 分鐘首回）。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-3','card-c3-resolution')">📍 查看：解決狀態分佈</button>
-        <div class="trap-block">
-          <span class="trap-icon">⚠</span>
+        <div class="trap-block" data-trap-stage="wrangle" data-trap="分母錯置">
+          <span class="trap-icon">⚠</span><span class="trap-tag">加工｜分母錯置</span>
           <div><strong>FCR 偽象陷阱：</strong>高 FCR + 高棄單率 可能代表「分母被篩小了」——留下來的都是願意等待的用戶，FCR 自然高。如果改善棄單（讓更多人留下），FCR 可能反而下降。</div>
         </div>
       </div>
@@ -873,8 +874,8 @@
           <p style="margin-top:10px"><span class="tag-a">A:</span> 需找槓桿最大的改善點。若改善 Meta FCR 從 54%→64%，直接影響 6,800×10% = 680 次原本升級的對話，若以 7% 轉換率估算可多 <strong>48 筆轉換</strong>。若改善官網 Chat 棄單率從 13%→8%，多 425 次完成對話，以 2.75% 轉換率多 <strong>12 筆</strong>。Meta FCR 改善空間最大，且基數高（6,800 對話），是最值得優先投入的槓桿點。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-1','card-c1-ch-conv')">📍 查看：各通道轉換數對比（P1）</button>
-        <div class="trap-block">
-          <span class="trap-icon">⚠</span>
+        <div class="trap-block" data-trap-stage="read" data-trap="假設外推">
+          <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜假設外推</span>
           <div><strong>假設：</strong>以上推算假設轉換率維持恆定，但改善 FCR 也可能改變用戶體驗的整體品質，帶動轉換率本身的提升，效果可能被低估。</div>
         </div>
       </div>
@@ -971,8 +972,8 @@
           <p><span class="tag-i">I:</span> <strong>不能。</strong>原因：(1) 口徑不同——Meta 分母是「主動發起對話的高意圖用戶」，LINE 是「被動收到推播的廣泛受眾」，母體性質不同；(2) 成本結構不同——LINE 邊際成本極低，Meta 需客服人力回覆；(3) 規模天花板不同——Meta 對話量受限於願意主動發訊的用戶數，無法像 LINE 一樣大規模主動觸及。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-4','card-c4-efficiency')">📍 查看：每百次觸及/對話帶來的新會員效率</button>
-        <div class="trap-block">
-          <span class="trap-icon">⚠</span>
+        <div class="trap-block" data-trap-stage="wrangle" data-trap="量級錯置">
+          <span class="trap-icon">⚠</span><span class="trap-tag">加工｜量級錯置</span>
           <div><strong>量質倒置陷阱：</strong>效率指標（per unit）高，不代表絕對貢獻可以等比例放大。這是最常見的通道決策錯誤。</div>
         </div>
       </div>
@@ -989,8 +990,8 @@
           <p><span class="tag-i">I:</span> 值得，但需調整評估框架。官網 Chat 的「新會員」貢獻看起來低，但應考慮：(1) 這是用戶主動尋求協助的通道，取得新會員的「意向品質」可能高於推播通道；(2) 高 FCR 代表客服效率高，成本相對可控；(3) 高棄單率（13%）是明顯的改善機會——若能降低棄單，新會員可能進一步增長。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-4','card-c4-efficiency')">📍 查看：每百次觸及/對話帶來的新會員效率</button>
-        <div class="trap-block">
-          <span class="trap-icon">⚠</span>
+        <div class="trap-block" data-trap-stage="read" data-trap="基線缺失">
+          <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜基線缺失</span>
           <div><strong>假設：</strong>「意向品質高」是推測，需 LTV 數據才能驗證。若 Chat 帶來的新會員 LTV 與其他通道相近，則無法支持此論點。</div>
         </div>
       </div>
@@ -1008,8 +1009,8 @@
           <p style="margin-top:10px"><span class="tag-a">A:</span> 需增加 644 位新會員（3,218×20%）的策略組合：(1) LINE 觸達量若從 72,000 增至 85,000（+18%），以目前 1.79% 效率約多 <strong>234 位</strong>；(2) Meta 對話量從 6,800 增至 8,500，以 11.37% 效率約多 <strong>193 位</strong>；(3) 官網 Chat 棄單率從 13% 降至 8%，多 425 次完成對話，以 3.4% 效率多 <strong>14 位</strong>；(4) 其餘從 Email 或 WA 最佳化補足。以上合計約 441–600 位，若加上季節性 Q1 成長（若 Q4 月均增長 12% 延續），有機會達標。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-2','card-c2-monthly')">📍 查看：月度推播觸達趨勢（P2）</button>
-        <div class="trap-block">
-          <span class="trap-icon">⚠</span>
+        <div class="trap-block" data-trap-stage="read" data-trap="假設疊加">
+          <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜假設疊加</span>
           <div><strong>假設疊加：</strong>此策略堆疊了 4 個假設（擴量不稀釋轉換率、廣告效益維持、季節性延續、棄單改善有效），實際結果的不確定性隨假設數量指數增加。</div>
         </div>
       </div>
