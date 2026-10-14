@@ -99,6 +99,7 @@ node dev/script/audit-dashboards.mjs Dashboard/新檔.html    # 只檢查指定�
 | FAIL | `goToChart(page, cardId)` 目標不存在或不在所宣告分頁 | E.1 #23 |
 | WARN | trap-block 缺分類標記、涵蓋 <3 階段、同名陷阱 >2 次 | E.1 #45、C.4c |
 | WARN | 雙 Y-axis 圖沒有對應「雙軸假相關」trap-block | E.1 #26、B.9-2 |
+| FAIL | findings-section 載入後未坍縮（含裸 text node） | E.1 #33、#42 |
 
 Exit code：`0` 全部無 FAIL／`1` 有 FAIL／`2` 環境錯誤。**交付條件 = exit 0**；WARN 逐條判斷是否為刻意差異化。
 腳本不覆蓋的項目（QA toggle 互動、視覺品質、教學內容正確性）仍依 E.1 其餘條目與 E.9 人工／AI 目視檢查。
