@@ -4,7 +4,7 @@
 
 ---
 
-## E.1 44 項 hard-check 清單
+## E.1 47 項 hard-check 清單
 
 依序檢查，**全綠才能交付**：
 
@@ -40,7 +40,7 @@
 - [ ] **23. 每道 QA 訓練題答案都有 `chart-ref-btn`** — 點擊執行 `goToChart(page, cardId)`，觸發頁切換 + scrollIntoView + chartFlash 動畫；所有對應 `chart-card` 必須有 `id="card-{id}"`
 - [ ] **24. KPI 卡值不截斷** — `.kpi-value` 禁用 `overflow: hidden; text-overflow: ellipsis; white-space: nowrap`；改用 `font-size: clamp()` + `word-break: break-word`；在 1400px 寬度下確認最長 KPI 值完整顯示
 - [ ] **25. Bar/Column chart 資料依顯示值降序排列** — 月份時間軸例外；多圖共享標籤時使用一致的固定排序順序
-- [ ] **26. 值域差距 >10x 的雙數列使用雙 Y-axis** — 禁用對數刻度；右軸加 `grid: { drawOnChartArea: false }`，避免格線重疊
+- [ ] **26. 值域差距 >10x 不用雙 Y-axis 硬塞** — 禁用對數刻度；預設拆兩張圖或以共同基期指數化到同一軸。雙 Y-axis 只允許作為刻意教學陷阱（必須有 `data-trap="雙軸假相關"` 的 trap-block 與設計選擇說明，見 B.9-2）
 - [ ] **27. 禁止使用 `Chart.defaults.set('plugins.datalabels', ...)`** — 此呼叫覆蓋 ChartDataLabels 內部 option merger，會導致 dual-axis 圖和 fill-line 圖整個消失（不只是 label 消失），且不報錯；改為在每個圖表逐一設定 `datalabels: { display: false/true }`
 - [ ] **28. `switchPage` 用 `setTimeout(60ms)` 包住 draw 呼叫** — DOM classList 切換後瀏覽器尚未完成 layout；同步呼叫 drawXxx() 時 canvas 尺寸為 0，圖表靜默初始化成空白；正確寫法：`setTimeout(() => { if (name==='ops') drawOps(); ... }, 60)`
 - [ ] **29. 所有用到的 `.hNNN` CSS class 必須有定義** — 容器高度 0 = 圖表完全不可見且不報錯；生成 HTML 前確認 `.h240/.h260/.h280/.h300/.h360/.h420/.h480/.h520` 全部在 `:root` 下方定義
@@ -69,6 +69,12 @@
 - [ ] **43. 散點圖象限分割線來自資料均值 + 封閉三角成立** — x/y 分割線使用實際資料均值（如 total_revenue / store_count / 12），非任意整數；若 x 軸由業務公式反推（如月均來客 = 年收入 ÷ AOV ÷ 12），assertConsistency 有 Check 驗算反推值誤差 < 1%
 - [ ] **44. 散點圖四象限都有代表點** — 資料設計確保四個象限各有 ≥1 個點；若某象限在商業邏輯上自然空缺（如精品型低客流高客單），在設計選擇揭露說明，否則學員會以為是資料設計錯誤
 
+### 陷阱分類與視覺驗收（3 項，2026-10-14 新增）
+
+- [ ] **45. 每個 trap-block 有 `data-trap-stage`＋`data-trap`＋可見 `.trap-tag`，整份涵蓋 ≥3 階段** — 見 C.4c；audit 腳本會 WARN
+- [ ] **46. 類別色通過 `validate_palette.js`** — 正常視力 ΔE ≥ 15、色盲 ΔE ≥ 6；色盲 6–8 或對比 < 3:1 時，對應系列有可見數字標籤（見 B.9-1）
+- [ ] **47. 圖卡有單位與資料期間，bar 值軸從 0 起，≥2 系列不只靠顏色辨識** — 見 B.9-5／6／8
+
 ---
 
 ## E.2 自動驗證腳本（`dev/script/audit-dashboards.mjs`）
@@ -90,6 +96,9 @@ node dev/script/audit-dashboards.mjs Dashboard/新檔.html    # 只檢查指定�
 | WARN | `Chart.defaults.plugins.datalabels.display !== false` | SKILL Layer 1 樣板 |
 | WARN | `<title>` 與檔名不一致 | 檔名規範 |
 | WARN | 缺 `.ev`／`.nav-hint`／`.chart-ref-btn` | E.1 #12 #14 #23 |
+| FAIL | `goToChart(page, cardId)` 目標不存在或不在所宣告分頁 | E.1 #23 |
+| WARN | trap-block 缺分類標記、涵蓋 <3 階段、同名陷阱 >2 次 | E.1 #45、C.4c |
+| WARN | 雙 Y-axis 圖沒有對應「雙軸假相關」trap-block | E.1 #26、B.9-2 |
 
 Exit code：`0` 全部無 FAIL／`1` 有 FAIL／`2` 環境錯誤。**交付條件 = exit 0**；WARN 逐條判斷是否為刻意差異化。
 腳本不覆蓋的項目（QA toggle 互動、視覺品質、教學內容正確性）仍依 E.1 其餘條目與 E.9 人工／AI 目視檢查。
@@ -177,7 +186,7 @@ print("✓ All 9 data assertions passed")
 1. dashboard.html          # 完整可獨立打開的 HTML 檔
 2. DATA.json               # 資料 single source
 3. CHANGELOG.md            # 差異化記錄（vs 範本）
-4. verification-report.txt # E.1 44 項自檢結果
+4. verification-report.txt # E.1 47 項自檢結果
 5. screenshots/            # 三頁完整截圖（可選）
    ├── p1.png
    ├── p2.png
@@ -305,7 +314,7 @@ print("✓ All 9 data assertions passed")
 
 ---
 
-## E.9 Design QA 清單（Phase 4.5 專用，18 項）
+## E.9 Design QA 清單（Phase 4.5 專用，22 項）
 
 > 在 Phase 4.5 執行，瀏覽器開啟後目視 + 原始碼逐項確認。
 > **全部 ✅ 才能進 Phase 5。有任何 ❌ 必須修復後重跑。**
@@ -315,7 +324,7 @@ print("✓ All 9 data assertions passed")
 - [ ] **DQ-1. Bar / horizontal bar：軸 max 已設定** — 所有帶 `datalabels { anchor:'end' }` 的圖，對應值軸有明確 `max`，公式為 `Math.ceil(Math.max(...data) * 1.2)`（或取整到合適單位）；確認最高 bar 標籤完整可見，不被截
 - [ ] **DQ-2. Stacked bar：動態加總 max** — Y 軸 `max` 由所有 category 加總最大值 × 1.2 動態計算，非硬編；公式：`Math.ceil(Math.max(...labels.map((_,i) => datasets.reduce((s,ds)=>s+ds.data[i],0))) * 1.2 / rounding) * rounding`
 - [ ] **DQ-3. 折線圖 Y 軸 max（如有 datalabels）** — 若折線圖啟用 datalabels，同樣設 `max = Math.ceil(Math.max(...data) * 1.2)`；若無 datalabels 則 auto-scale 可接受
-- [ ] **DQ-4. 值域比例差距檢查** — 找出同一圖表最大值 / 最小非零值比率；若 > 10x，確認已用雙 Y-axis 處理，且最小值組有足夠可見高度（bar ≥ 3% 可見 ≈ 目視可辨識）
+- [ ] **DQ-4. 值域比例差距檢查** — 找出同一圖表最大值 / 最小非零值比率；若 > 10x，確認已拆圖或指數化（雙 Y-axis 僅限 B.9-2 的教學陷阱），且最小值組有足夠可見高度（bar ≥ 3% 可見 ≈ 目視可辨識）
 
 ### Donut / Pie 規範（4 項）
 
@@ -346,6 +355,13 @@ print("✓ All 9 data assertions passed")
 - [ ] **DQ-17. 只有一個 `DOMContentLoaded` handler** — grep `DOMContentLoaded` 確認全文只有一個 handler；若有多個，findings label 會因重複 click 綁定而 toggle 互相抵消（點了沒反應）；合併為單一 handler 或確認各自不重複操作同一元素
 - [ ] **DQ-18. findings-section collapse 真正生效** — 目視確認 findings 區塊在頁面載入後預設坍縮（只見標題 + 箭頭）；若含 `<strong>`/`<br>`/raw text node 的 findings-section 坍縮後仍有內容可見，需加 `.findings-content` wrapper（entry 21）
 
+### 視覺驗收（4 項，2026-10-14 新增，見 B.9）
+
+- [ ] **DQ-19. 配色驗證器通過** — 執行 B.9-1 的指令，貼上結果；硬傷（正常 ΔE < 15、色盲 ΔE < 6）必須換色後重跑
+- [ ] **DQ-20. 一張圖一條值軸** — 每個雙 Y-axis 圖都能對到一個 `data-trap="雙軸假相關"` 的 trap-block；對不到就拆圖
+- [ ] **DQ-21. 標題、單位、期間** — 抽 3 張圖卡確認標題寫洞見（或設計選擇有說明為何不寫）、軸有單位、圖卡標資料期間
+- [ ] **DQ-22. 不只靠顏色** — ≥2 系列的圖都有 legend，≤4 系列另有直接標籤
+
 ---
 
 ### Design QA 輸出格式
@@ -375,8 +391,12 @@ Phase 4.5 結束後，輸出以下格式的報告（不需等使用者確認，�
 | DQ-16 | 製作時間 chip 格式 | ✅ | 🗓️ 製作時間：20260614 |
 | DQ-17 | DOMContentLoaded 不重複 | ✅ | grep 確認只有 1 個 |
 | DQ-18 | findings collapse 真正生效 | ✅ | 目視確認坍縮 |
+| DQ-19 | 配色驗證器 | ✅ | 正常 ΔE 20.7／色盲 11.1 |
+| DQ-20 | 單一值軸 | ✅ | 雙軸 1 張，對應 trap-block 雙軸假相關 |
+| DQ-21 | 標題／單位／期間 | ✅ | |
+| DQ-22 | 不只靠顏色 | ✅ | |
 
-**通過 18/18 → ✅ 可進 Phase 5**
+**通過 22/22 → ✅ 可進 Phase 5**
 ```
 
 若有 ❌ 項目，明確列出：

@@ -187,12 +187,12 @@ author: Blake
 > 4. 有任何 ❌ → 修復後重跑清單，直到全部 ✅
 
 17. 切換每一個分頁（P1 → P2 → P3 → P4），目視確認所有圖表渲染正確（非空白）
-18. 跑完 E.9 Design QA 18 項清單
-19. 輸出 Design QA 結果摘要表格，並明確聲明「通過 N/18，可（或不可）進 Phase 5」
+18. 跑完 E.9 Design QA 22 項清單
+19. 輸出 Design QA 結果摘要表格，並明確聲明「通過 N/22，可（或不可）進 Phase 5」
 
 ### Phase 5 — 驗收（依模組 E）
 20. 跑 `node dev/script/audit-dashboards.mjs Dashboard/<新檔>.html`，**exit 0 才繼續**（E.2）
-21. 跑 E.1 完整 hard-check 清單（44 項）
+21. 跑 E.1 完整 hard-check 清單（47 項）
 22. 交付前產出 changelog：跟範本相比差異化了哪些
 
 ---
@@ -221,9 +221,12 @@ author: Blake
 | 選視覺 Preset（色票 + 字型） | D.9 |
 | 選擴充圖表類型（Waterfall 等） | D.10 |
 | 想跟前一份不同（三軸差異化） | D（全篇） |
-| Design QA（Phase 4.5） | E.9（18 項視覺驗收） |
+| Design QA（Phase 4.5） | E.9（22 項視覺驗收） |
+| 陷阱分類與覆蓋矩陣 | C.4c |
+| 視覺驗收規則（配色驗證器、單一值軸） | B.9 |
+| 資料矛盾題／同統計量不同形狀 | C.7 T5、A 原則 6–7 |
 | 自動驗收（assert／渲染／紅線元素） | E.2（`dev/script/audit-dashboards.mjs`） |
-| 交付前完整檢查 | E.1（44 項 hard-check） |
+| 交付前完整檢查 | E.1（47 項 hard-check） |
 | Agent 工作角色與稽核門 | F（全篇） |
 
 ---

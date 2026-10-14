@@ -11,6 +11,8 @@
  *   [WARN] Chart.defaults.plugins.datalabels.display 未設為 false（opt-in 規範）
  *   [WARN] <title> 與檔名不一致
  *   [WARN] 缺 .ev 證據碼 / .nav-hint / .chart-ref-btn（E.1 #12 / #14 / #23）
+ *   [WARN] trap-block 缺 data-trap-stage／data-trap、涵蓋 <3 階段、同名 >2 次（C.4c）
+ *   [WARN] 雙 Y-axis 圖沒有對應「雙軸假相關」trap-block（B.9-2）
  *
  * 用法：
  *   node dev/script/audit-dashboards.mjs                 # 檢查 Dashboard/*.html
@@ -161,6 +163,21 @@ const PAGE_AUDIT = async (pageWait) => {
       badRefs.push(`${pg}/${id}：card 位於 #${pageEl ? pageEl.id : '?'}，與 page 參數不符`);
   }
   if (badRefs.length) out.fail.push('goToChart 目標錯誤：' + [...new Set(badRefs)].slice(0, 6).join(' | '));
+  // C.4c 陷阱分類：每個 trap-block 要有合法 stage＋名稱，整份涵蓋 ≥3 階段，同名 ≤2 次
+  const STAGES = ['curate', 'wrangle', 'visualize', 'read'];
+  const traps = [...document.querySelectorAll('.trap-block')];
+  const untagged = traps.filter(t => !STAGES.includes(t.dataset.trapStage) || !t.dataset.trap);
+  if (untagged.length) out.warn.push(`${untagged.length}/${traps.length} 個 trap-block 缺 data-trap-stage／data-trap（C.4c）`);
+  const stagesHit = new Set(traps.map(t => t.dataset.trapStage).filter(s => STAGES.includes(s)));
+  if (traps.length && stagesHit.size < 3) out.warn.push(`陷阱只涵蓋 ${stagesHit.size} 個階段（${[...stagesHit].join('/') || '無'}），需 ≥3（C.4c）`);
+  const nameCount = {};
+  traps.forEach(t => { if (t.dataset.trap) nameCount[t.dataset.trap] = (nameCount[t.dataset.trap] || 0) + 1; });
+  const dup = Object.entries(nameCount).filter(([, n]) => n > 2).map(([k, n]) => `${k}×${n}`);
+  if (dup.length) out.warn.push('同名陷阱超過 2 次：' + dup.join('、'));
+  // B.9-2 雙 Y-axis 只允許當教學陷阱
+  const dualAxis = cvs.filter(cv => { const ch = Chart.getChart(cv); return ch && Object.values(ch.scales).filter(s => s.axis === 'y').length >= 2; }).map(cv => cv.id);
+  if (dualAxis.length && !nameCount['雙軸假相關']) out.warn.push(`雙 Y-axis 圖 ${dualAxis.join(', ')} 沒有對應的「雙軸假相關」trap-block（B.9-2）`);
+  Object.assign(out.info, { stages: stagesHit.size, dualAxis: dualAxis.length });
   const optional = { '.ev': '證據碼（E.1 #12）', '.nav-hint': '跨頁 nav-hint（E.1 #14）', '.chart-ref-btn': '圖表索引按鈕（E.1 #23）' };
   for (const [sel, label] of Object.entries(optional)) if (!count(sel)) out.warn.push(`缺 ${sel} ${label}`);
   Object.assign(out.info, { pages: pages.length, charts: cvs.length - noChart.length, canvas: cvs.length, qa, trap, fia, title: document.title });

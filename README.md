@@ -51,8 +51,8 @@
 4. 補充 `assertConsistency()` 中的跨欄驗算規則
 5. 從 `Skill/module-D-diff.md` D.9 選一個 Visual Preset（P1–P7），不可與前一份相同
 6. 撰寫 KPI 卡、圖表 findings、QA 題組
-7. **Phase 4.5 Design QA**：依 `Skill/module-E-checklist.md` E.9 跑完 18 項視覺驗收，全部通過才繼續
-8. 對照 `Skill/module-E-checklist.md` E.1 完成 44 項上線前完整 QA
+7. **Phase 4.5 Design QA**：依 `Skill/module-E-checklist.md` E.9 跑完 22 項視覺驗收，全部通過才繼續
+8. 對照 `Skill/module-E-checklist.md` E.1 完成 47 項上線前完整 QA
 
 ---
 

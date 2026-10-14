@@ -93,7 +93,7 @@
    x: { min: 0, max: Math.ceil(Math.max(...data) * 1.2 / rounding) * rounding }
    ```
 
-   同時注意**值域比例差距**：若最大值 / 最小值 > 10x，最小值 bar/line 在視覺上幾乎消失無法辨識。此時應用雙 Y-axis 或對最小值組加 annotation 說明，避免誤導比較。
+   同時注意**值域比例差距**：若最大值 / 最小值 > 10x，最小值 bar/line 在視覺上幾乎消失無法辨識。此時拆成兩張圖、改 small multiples，或以共同基期指數化（t0 = 100）放在同一軸；對最小值組加 annotation 說明。雙 Y-axis 只在 B.9 規定的「刻意教學陷阱」情況下使用。
 
 ---
 
@@ -311,7 +311,7 @@ function mk(id, type, labels, datasets, opts={}) {
    - `layout: { padding: 32 }` 預留空間給外部 datalabels
    - 當外部 datalabels 已顯示 label+value，**legend 可設 `display: false`** 避免重複
 3. **多圖共享標籤陣列** — 以最核心指標降序排定後，所有圖使用相同順序，確保視覺一致。
-4. **值域差距 >10x** — 禁用對數刻度；改用**雙 Y-axis**，右軸加 `grid: { drawOnChartArea: false }`。
+4. **值域差距 >10x** — 禁用對數刻度；預設拆兩張圖或以共同基期指數化（t0 = 100）放同一軸。雙 Y-axis 只用於 B.9 的刻意教學陷阱，此時右軸加 `grid: { drawOnChartArea: false }`。
 
 ---
 
@@ -497,10 +497,33 @@ KPI 值禁止截斷（🔴 紅線）：
 5. **🚫 圓餅圖切超過 6 塊** — 切到第 7 塊以後變成「色塊大亂鬥」，改用縱向 bar
 6. **🚫 用陰影、漸層、3D 效果** — 訓練型 dashboard 要「平實」，不是 pitch deck
 7. **🚫 QA item 預設展開** — 一打開頁面看到 18 道答案會直接放棄
-8. **🚫 對數刻度處理大值域差距** — 兩條線相差 100x 時，log scale 刻度讓讀者無法判斷絕對值；改用雙 Y-axis（各軸有語意單位）
+8. **🚫 對數刻度處理大值域差距** — 兩條線相差 100x 時，log scale 刻度讓讀者無法判斷絕對值；改拆兩張圖或指數化到同一軸（雙 Y-axis 規則見 B.9）
 9. **🚫 `Chart.register(ChartDataLabels)` 缺失** — datalabels 全靜默失效，Chart.js 不報錯；每次生成後必須在瀏覽器 console 確認數值出現
 10. **🚫 `position:sticky` 加在 `overflow:hidden` 子元素上** — sticky 靜默失效，側板位置錯誤；sticky 必須加在 flex child（`#def-panel-outer`）上，見 B.3 規格
 11. **🚫 annotation plugin 用 `window['chartjs-plugin-annotation']` 判斷** — CDN UMD 全域是 `window.ChartAnnotation`；用錯名稱導致 plugin 未 register，所有 annotation 靜默消失
 12. **🚫 `Object.assign(dl, opts.plugins.datalabels)` 合併 datalabels config** — `Object.assign` 不新增原本沒有的 key；若 explicit config 沒有 `display` 欄位，`dl.display:false` 維持不變，所有 horizontal bar / stacked bar 的 labels 靜默不顯示且不報錯。**正確寫法：** `dl = { ...dl, display: true, ...opts.plugins.datalabels }`（spread 讓 explicit config 覆蓋 `display:true`，沒有 `display` 的 explicit config 自動得到 `display:true`；要隱藏才明確寫 `display: false`）
 13. **🚫 `.findings-section` 缺少預設坍縮** — 一進頁面就暴露所有分析結論，訓練效果為零；必須在 `DOMContentLoaded` 呼叫 `s.classList.add('collapsed')`；見 B.5 完整 Pattern
 14. **🚫 `new Chart()` 直接建立的圖表（雷達、氣泡、散點）未設 `maintainAspectRatio: false`** — Chart.js 預設 `maintainAspectRatio: true`，高度由容器寬度 × aspect ratio 計算，容器的 `height` CSS 完全無效，導致圖表過大或尺寸不受控；此類圖表必須在 options 明確加 `responsive: true, maintainAspectRatio: false` 並搭配容器 `style="height:NNNpx"`
+15. **🚫 雙 Y-axis 當成一般解法** — 兩條軸的對齊是任意的，會憑空造出一個資料裡沒有的相關（見 B.9-2）
+16. **🚫 只靠顏色區分系列** — 色盲讀者無法分辨；≥2 系列必須有 legend，≤4 系列再加直接標籤
+
+---
+
+## B.9 視覺驗收規則（2026-10-14 新增，衍生自 dataviz skill 與 Data-to-Viz）
+
+這節補的是「圖畫對了，但讀者會讀錯」的那一類問題。逐項列入 E.9（DQ-19 起）。
+
+1. **配色要跑驗證器，不准目測。** 取 `c()` 的 5 個類別色（blue／teal／orange／purple／red，gray 是中性色不算），用 Claude Code 內建 `dataviz` skill 的 `scripts/validate_palette.js` 驗：
+   ```bash
+   node <dataviz>/scripts/validate_palette.js "#hex1,#hex2,#hex3,#hex4,#hex5" --mode light --surface "#<body 背景色>"
+   ```
+   深色 preset 用 `--mode dark`。**正常視力 ΔE < 15、色盲 ΔE < 6 是硬傷，必須換色**；色盲 ΔE 6–8 只有在加了直接標籤或紋理時才合法；對比 < 3:1 時，該色的系列必須有可見數字標籤。明度超出範圍屬美感問題，記錄即可。
+2. **一張圖一條值軸。** 兩個尺度差很多的量：拆兩張圖、small multiples，或以共同基期指數化（t0 = 100）。**雙 Y-axis 只允許當刻意教學陷阱**：該圖對應的 QA 必須有 `data-trap-stage="visualize" data-trap="雙軸假相關"` 的 trap-block，並在設計選擇揭露裡說明。
+3. **顏色跟著實體走，不跟名次走。** 同一個品類／通道在所有圖用同一色；篩選或排序後不可重新上色。
+4. **類別色不超過 6 個；donut／pie 不超過 6 塊，且不拿來比較接近的數值**（改 bar）。第 7 類以後併入「其他」。
+5. **不能只靠顏色辨識。** ≥2 系列有 legend；≤4 系列再加直接標籤；單一系列不需要 legend（標題已說明）。
+6. **bar／column 的值軸一律從 0 開始。** 折線圖可以非零基線，但軸上要有清楚刻度；同頁要互相比較的圖，用一致刻度。
+7. **圖卡標題寫洞見，不只寫主題。** 「12 月營收創高，但毛利率全年最低」優於「月度營收趨勢」。若刻意不寫洞見（留給學員判讀），在設計選擇揭露裡說明。
+8. **軸要有單位，圖卡要標資料期間。** 例：「萬元」「次／年」「2024/01–12」。
+
+> 來源：Claude Code 內建 `dataviz` skill（anti-patterns、non-negotiables、validate_palette.js）；Data-to-Viz「The problem with dual axes」「To cut or not to cut」。以本專案用語重寫。
