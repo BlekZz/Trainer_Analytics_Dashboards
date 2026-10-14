@@ -46,7 +46,7 @@ def split_total(total, weights):
 # ── P1 monthly funnel ───────────────────────────────────────────────
 season = [1.18, 0.78, 0.92, 0.95, 0.98, 0.96, 1.08, 1.06, 0.93, 0.97, 1.05, 1.14]
 appts = split_total(A["appointments"], season)
-cancelled = split_total(A["cancelled"], appts)
+cancelled = split_total(A["cancelled"], np.array(appts) * (1 + RNG.normal(0, 0.08, MONTHS)))  # monthly variation
 rate_path = np.linspace(86.4, 79.8, MONTHS) + RNG.normal(0, 0.45, MONTHS)  # drifts down, with noise
 attended = [round(a * r / 100) for a, r in zip(appts, rate_path)]
 attended[-1] += A["attended"] - sum(attended)  # close on anchor
@@ -68,9 +68,10 @@ revisit_by_cat = {"labels": treat_cats,
                   "base": [1500, 1700, 2600, 2900, 3300],
                   "revisit": [810, 765, 1014, 1015, 1316]}
 
+# cohort = 2025 年內第一次到診的月份（新舊客皆含）；H2 = 7–10 月（滿 90 天觀察期），180 天尚無法觀察 → None
 cohort = {"days": [30, 60, 90, 180],
-          "h1": [21.0, 34.5, 44.8, 58.2],
-          "h2": [17.6, 28.9, 37.1, 49.0]}
+          "h1": [21.0, 34.5, 44.8, 58.2], "h1_n": 6078,
+          "h2": [17.6, 28.9, 37.1, None], "h2_n": 5922}
 
 # Simpson: both segments improve, aggregate falls because the new-customer share rises
 simpson = {
@@ -194,7 +195,8 @@ eq(sum(returning_visits), A["attended"] - A["new_customers"], "returning visits 
 rb = revisit_by_cat
 eq(sum(rb["base"]), 12000, "revisit base")
 eq(round(sum(rb["revisit"]) / sum(rb["base"]) * 100, 1), A["revisit_90d"], "revisit_90d by category")
-eq(cohort["h1"][2] * 0.5 + cohort["h2"][2] * 0.5, A["revisit_90d"], "cohort 90d mean ≈ anchor", 0.05)
+eq(cohort["h1_n"] + cohort["h2_n"], 12000, "cohort sizes = revisit base")
+eq(round((cohort["h1"][2] * cohort["h1_n"] + cohort["h2"][2] * cohort["h2_n"]) / 12000, 1), A["revisit_90d"], "cohort weighted 90d")
 sp = simpson
 eq(sum(sp["curr"]["base"]), 12000, "simpson curr base")
 eq(round(sum(sp["curr"]["revisit"]) / sum(sp["curr"]["base"]) * 100, 1), A["revisit_90d"], "simpson curr aggregate")

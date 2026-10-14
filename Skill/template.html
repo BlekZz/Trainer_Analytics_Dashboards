@@ -322,6 +322,12 @@
       /* ── C.4c 陷阱分類 chip／E.1 #12 證據碼（2026-10-14） ── */
     .trap-tag { display: inline-block; flex-shrink: 0; align-self: flex-start; white-space: nowrap; font-size: 0.7rem; font-weight: 600; padding: 1px 6px; border-radius: 4px; margin-left: 6px; background: rgba(212,67,47,0.12); color: #e8847a; opacity: 0.85; }
     .ev { display: inline; background: rgba(59,130,246,0.14); border-radius: 4px; padding: 1px 5px; font-family: 'JetBrains Mono', monospace; font-size: 0.71rem; color: var(--accent); font-weight: 500; }
+    /* ── Findings 預設坍縮（B.5 紅線，E.1 #33） ── */
+    .findings-label { cursor: pointer; user-select: none; display: flex; align-items: center; justify-content: space-between; font-size: 0.74rem; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+    .findings-label::after { content: '▲'; font-size: 8px; transition: transform 0.22s; opacity: 0.65; }
+    .findings-section.collapsed .findings-label { margin-bottom: 0; }
+    .findings-section.collapsed .findings-label::after { transform: rotate(180deg); }
+    .findings-section.collapsed > *:not(.findings-label) { display: none; }
 </style>
 </head>
 <body>
@@ -476,25 +482,19 @@
   <div class="chart-card" id="card-cVisitAOV">
     <div class="chart-card-title">{洞見式標題，例：Q4 來客明顯走高，2 月春節最低}（人次｜{資料期間}）</div>
     <div class="chart-block h300"><canvas id="cVisitAOV"></canvas></div>
-    <div class="findings-section">
-      <strong>圖表解讀：</strong>藍柱 = 月度來客人次。旺季集中於 Q4（10–12月），來客量顯著提升；客單價全年維持穩定（NT$285–287），顯示業績成長由來客人次驅動，非提價效應。Q1二月最低，受農曆春節影響。
-    </div>
+    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>圖表解讀：</strong>藍柱 = 月度來客人次。旺季集中於 Q4（10–12月），來客量顯著提升；客單價全年維持穩定（NT$285–287），顯示業績成長由來客人次驅動，非提價效應。Q1二月最低，受農曆春節影響。</div></div>
   </div>
 
   <div class="chart-grid chart-grid-2" style="margin-top:18px">
     <div class="chart-card" id="card-cDineTakeout">
       <div class="chart-card-title">內用 vs 外帶比例（月）</div>
       <div class="chart-block h260"><canvas id="cDineTakeout"></canvas></div>
-      <div class="findings-section">
-        <strong>趨勢：</strong>外帶佔比從1月38%穩定上升至12月47%，全年均值43.2%。外帶佔比上升不等同內用絕對人次下降。
-      </div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>趨勢：</strong>外帶佔比從1月38%穩定上升至12月47%，全年均值43.2%。外帶佔比上升不等同內用絕對人次下降。</div></div>
     </div>
     <div class="chart-card" id="card-cRevCat">
       <div class="chart-card-title">月度品類業績結構（万NT$）</div>
       <div class="chart-block h260"><canvas id="cRevCat"></canvas></div>
-      <div class="findings-section">
-        <strong>品類佔比：</strong>套餐5,861万（42%）、單點4,605万（33%）、飲料3,488万（25%）。紅虛線為月度總業績趨勢。
-      </div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>品類佔比：</strong>套餐5,861万（42%）、單點4,605万（33%）、飲料3,488万（25%）。紅虛線為月度總業績趨勢。</div></div>
     </div>
   </div>
 
@@ -502,9 +502,7 @@
   <div class="chart-card" id="card-cStoreRank">
     <div class="chart-card-title">門市年度業績（万NT$，降序）— 34門市</div>
     <div class="chart-block h520"><canvas id="cStoreRank"></canvas></div>
-    <div class="findings-section">
-      <strong>差距：</strong>信義旗艦790万 vs 高雄苓雅139万，差距約5.7倍。前10名均超350万，後10名均低於270万。門市業績受選址、商圈客流量高度影響。
-    </div>
+    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>差距：</strong>信義旗艦790万 vs 高雄苓雅139万，差距約5.7倍。前10名均超350万，後10名均低於270万。門市業績受選址、商圈客流量高度影響。</div></div>
   </div>
 
   <hr class="section-divider">
@@ -670,17 +668,13 @@
   <div class="chart-card" id="card-cHourly">
     <div class="chart-card-title">每小時來客指數（0–23時）</div>
     <div class="chart-block h260"><canvas id="cHourly"></canvas></div>
-    <div class="findings-section">
-      <strong>雙峰型：</strong>午間高峰 12:00（指數54），晚間主高峰 19:00（指數78）。早市（6-8時）有小波峰，宵夜（22時後）快速下滑。排班建議：11:30 和 18:00 前完成備料，19:00–21:00 配置最大人力。
-    </div>
+    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>雙峰型：</strong>午間高峰 12:00（指數54），晚間主高峰 19:00（指數78）。早市（6-8時）有小波峰，宵夜（22時後）快速下滑。排班建議：11:30 和 18:00 前完成備料，19:00–21:00 配置最大人力。</div></div>
   </div>
 
   <div class="chart-card" id="card-cFreqDist" style="margin-top:18px">
     <div class="chart-card-title">顧客消費頻率分布</div>
     <div class="chart-block h280"><canvas id="cFreqDist"></canvas></div>
-    <div class="findings-section">
-      <strong>分布特徵：</strong>年2-3次最多（15,850人，27.2%），顯示大量偶發性顧客。年24次以上VIP族群（4,918人）雖人數少，但貢獻佔比高。
-    </div>
+    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>分布特徵：</strong>年2-3次最多（15,850人，27.2%），顯示大量偶發性顧客。年24次以上VIP族群（4,918人）雖人數少，但貢獻佔比高。</div></div>
   </div>
 
   <div class="chart-grid chart-grid-2" style="margin-top:18px">
@@ -691,9 +685,7 @@
     <div class="chart-card" id="card-cTierAOV">
       <div class="chart-card-title">各等級平均客單價（NT$）</div>
       <div class="chart-block h240"><canvas id="cTierAOV"></canvas></div>
-      <div class="findings-section" style="font-size:0.75rem">
-        <strong style="color:var(--warn)">逆直覺：</strong>VIP客單價(271) &lt; 常客(303)。原因見Q11。
-      </div>
+      <div class="findings-section" style="font-size:0.75rem"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong style="color:var(--warn)">逆直覺：</strong>VIP客單價(271) &lt; 常客(303)。原因見Q11。</div></div>
     </div>
   </div>
 
@@ -836,18 +828,14 @@
   <div class="chart-card" id="card-cStoreScatter">
     <div class="chart-card-title">34門市散點圖（x=月均來客，y=平均客單價）— 中線：x=1196, y=NT$287</div>
     <div class="chart-block h420"><canvas id="cStoreScatter"></canvas></div>
-    <div class="findings-section">
-      <strong>四象限解讀：</strong>右上（高流量高客單）= 旗艦型（信義旗艦、101商圈、忠孝復興等商圈核心店）；左上（低流量高客單）= 精品型（淡水、竹北、台中西屯、台南東區），商圈規模小但客單高，需差異化管理目標；右下（高流量低客單）= 效率提升型（士林、萬華等），流量佳但客單有提升空間；左下（低流量低客單）= 需根本診斷（高雄苓雅等），先辨別外部選址問題或內部體驗問題。中線設定：x=月均1,196人次（= 486,217÷12÷34），y=NT$287（全局AOV）。
-    </div>
+    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>四象限解讀：</strong>右上（高流量高客單）= 旗艦型（信義旗艦、101商圈、忠孝復興等商圈核心店）；左上（低流量高客單）= 精品型（淡水、竹北、台中西屯、台南東區），商圈規模小但客單高，需差異化管理目標；右下（高流量低客單）= 效率提升型（士林、萬華等），流量佳但客單有提升空間；左下（低流量低客單）= 需根本診斷（高雄苓雅等），先辨別外部選址問題或內部體驗問題。中線設定：x=月均1,196人次（= 486,217÷12÷34），y=NT$287（全局AOV）。</div></div>
   </div>
 
   <div class="section-title" style="margin-top:28px">顧客再購間隔分布</div>
   <div class="chart-card" id="card-cRepurchase">
     <div class="chart-card-title">再購間隔天數分布（有回購行為顧客）</div>
     <div class="chart-block h280"><canvas id="cRepurchase"></canvas></div>
-    <div class="findings-section">
-      <strong>行為特徵：</strong>回購高峰在8-14天（7,200人），顯示大多數回購顧客在約一週後自然回訪。≤7天的快速回購者（3,500人）可能為高頻VIP的子集。≤30天回購合計21,462人 = 總顧客數36.8%，與KPI口徑封閉。
-    </div>
+    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>行為特徵：</strong>回購高峰在8-14天（7,200人），顯示大多數回購顧客在約一週後自然回訪。≤7天的快速回購者（3,500人）可能為高頻VIP的子集。≤30天回購合計21,462人 = 總顧客數36.8%，與KPI口徑封閉。</div></div>
   </div>
 
   <hr class="section-divider">
@@ -1740,7 +1728,13 @@ function goToChart(page, cardId) {
   }, 200);
 }
 
-// Init first page
+// Init：findings 預設坍縮（唯一的 DOMContentLoaded handler，DQ-17）＋首頁
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.findings-section').forEach(sec => {
+    sec.classList.add('collapsed');
+    sec.querySelector('.findings-label')?.addEventListener('click', () => sec.classList.toggle('collapsed'));
+  });
+});
 switchPage('ops');
 </script>
 </body>

@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>醫美連鎖_預約回診分析_訓練儀表板教材</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* P5 醫療信任型（accent 依 B.9-1 驗證改 #0369A1） */
+    :root {
+      --bg: #ECFEFF; --bg-card: #FFFFFF; --bg-finding: #E0F9FB;
+      --accent: #0369A1; --accent2: #059669; --warn: #D97706; --danger: #DC2626; --purple: #7C3AED;
+      --text: #164E63; --text-muted: #64748B; --border: rgba(0,0,0,0.07);
+      --radius: 16px;
+      --header-h: 138px;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'Source Sans 3', sans-serif; font-size: 15px; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+
+    /* ── Header (3-row sticky) ── */
+    .site-header { position: sticky; top: 0; z-index: 200; background: rgba(236,254,255,0.97); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .header-row-1 { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 13px 24px 10px; border-bottom: 1px solid var(--border); }
+    .header-title { font-family: 'Lexend', sans-serif; font-size: 1.05rem; font-weight: 600; color: var(--text); white-space: nowrap; }
+    .meta-chip { display: inline-flex; align-items: center; gap: 4px; border-radius: 20px; padding: 2px 10px; font-size: 0.69rem; background: rgba(3,105,161,0.05); color: var(--text-muted); border: 1px solid rgba(3,105,161,0.15); white-space: nowrap; }
+    .meta-chip.demo { background: rgba(217,119,6,0.1); color: #B45309; border-color: rgba(217,119,6,0.3); font-weight: 600; }
+    .header-row-2 { display: flex; align-items: center; padding: 0 24px; border-bottom: 1px solid var(--border); }
+    .def-toggle-btn { display: flex; align-items: center; gap: 7px; background: rgba(3,105,161,0.08); border: 1px solid rgba(3,105,161,0.25); border-radius: 7px; padding: 7px 13px; margin: 7px 16px 7px 0; color: var(--accent); font-family: 'Source Sans 3', sans-serif; font-size: 0.8rem; font-weight: 600; cursor: pointer; flex-shrink: 0; user-select: none; white-space: nowrap; }
+    .def-toggle-btn:hover, .def-toggle-btn.open { background: rgba(3,105,161,0.15); }
+    .def-toggle-arrow { font-size: 0.85rem; display: inline-block; transition: transform 0.25s ease; opacity: 0.65; }
+    .def-toggle-btn.open .def-toggle-arrow { transform: rotate(90deg); }
+    .nav-tabs { display: flex; gap: 3px; }
+    .nav-tab { padding: 9px 18px; border-radius: 7px 7px 0 0; cursor: pointer; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); border: 1px solid transparent; border-bottom: none; margin-bottom: -1px; white-space: nowrap; }
+    .nav-tab:hover { color: var(--text); background: rgba(3,105,161,0.04); }
+    .nav-tab.active { color: var(--accent); background: var(--bg-card); border-color: var(--border); }
+    .header-legend { display: flex; align-items: center; flex-wrap: wrap; padding: 7px 24px; font-size: 0.72rem; color: var(--text-muted); }
+    .legend-colors, .legend-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .legend-colors > span, .legend-right > span { display: flex; align-items: center; gap: 5px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .legend-vdivider { width: 1px; height: 15px; background: rgba(0,0,0,0.12); flex-shrink: 0; margin: 0 14px; }
+    .badge { display: inline-block; border-radius: 4px; padding: 1px 6px; font-size: 0.68rem; font-weight: 600; }
+    .badge.l1 { background: rgba(5,150,105,0.12); color: #047857; border: 1px solid rgba(5,150,105,0.3); }
+    .badge.l2 { background: rgba(3,105,161,0.12); color: var(--accent); border: 1px solid rgba(3,105,161,0.3); }
+    .badge.l3 { background: rgba(124,58,237,0.12); color: var(--purple); border: 1px solid rgba(124,58,237,0.3); }
+
+    /* ── Side def panel ── */
+    #main-wrapper { display: flex; align-items: flex-start; }
+    #def-panel-outer { flex-shrink: 0; width: 0; overflow: hidden; transition: width 0.28s cubic-bezier(0.4,0,0.2,1); position: sticky; top: var(--header-h); height: calc(100vh - var(--header-h)); align-self: flex-start; }
+    #def-panel-outer.open { width: 323px; }
+    #def-panel-inner { width: 323px; height: 100%; overflow-y: auto; background: var(--bg-card); border-right: 1px solid var(--border); padding: 18px 16px; }
+    .def-search-wrap { margin-bottom: 12px; }
+    .def-search-wrap input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 7px 11px; color: var(--text); font-family: inherit; font-size: 0.8rem; outline: none; }
+    .def-search-wrap input:focus { border-color: rgba(3,105,161,0.5); }
+    .def-no-result { font-size: 0.78rem; color: var(--text-muted); padding: 10px 4px; text-align: center; display: none; }
+    #def-panel-inner h3 { font-family: 'Lexend', sans-serif; font-size: 0.78rem; color: var(--accent); letter-spacing: 0.06em; margin-bottom: 14px; padding-bottom: 9px; border-bottom: 1px solid var(--border); }
+    .def-item { background: var(--bg-finding); border-radius: 8px; padding: 11px 13px; margin-bottom: 8px; }
+    .def-item h4 { font-size: 0.78rem; color: var(--accent); margin-bottom: 4px; font-family: 'Lexend', sans-serif; font-weight: 600; }
+    .def-item p { font-size: 0.76rem; color: var(--text-muted); line-height: 1.55; }
+    #content-area { flex: 1; min-width: 0; }
+
+    /* ── Pages ── */
+    .page { display: none; padding: 24px; max-width: 1400px; margin: 0 auto; }
+    .page.active { display: block; }
+    .section-title { font-family: 'Lexend', sans-serif; font-size: 1.02rem; font-weight: 600; color: var(--text); margin: 28px 0 16px; padding-left: 12px; border-left: 3px solid var(--accent); }
+    .section-title:first-child { margin-top: 4px; }
+    .page-intro { font-size: 0.86rem; color: var(--text-muted); margin: -6px 0 18px 15px; }
+
+    /* ── KPI cards ── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px,1fr)); gap: 14px; margin-bottom: 26px; }
+    .kpi-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; position: relative; overflow: hidden; }
+    .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--kpi-color, var(--accent)); }
+    .kpi-label { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px; }
+    .kpi-value { font-family: 'JetBrains Mono', monospace; font-size: clamp(1.05rem, 2.4vw, 1.5rem); font-weight: 600; color: var(--text); line-height: 1.2; word-break: break-word; }
+    .kpi-sub { font-size: 0.74rem; margin-top: 5px; color: var(--text-muted); }
+    .kpi-down { color: var(--danger); }
+    .kpi-up { color: #047857; }
+
+    /* ── Charts ── */
+    .chart-grid { display: grid; gap: 18px; margin-bottom: 24px; }
+    .chart-grid-2 { grid-template-columns: 1fr 1fr; }
+    .chart-grid-4 { grid-template-columns: repeat(4, 1fr); }
+    @media(max-width:1100px) { .chart-grid-4 { grid-template-columns: 1fr 1fr; } }
+    @media(max-width:900px) { .chart-grid-2, .chart-grid-4 { grid-template-columns: 1fr; } }
+    .chart-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; min-width: 0; overflow: hidden; }
+    .chart-card-title { font-family: 'Lexend', sans-serif; font-size: 0.88rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .chart-card-meta { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 12px; }
+    .chart-block { position: relative; }
+    .chart-block canvas { display: block; }
+    .h240 { height: 240px; } .h280 { height: 280px; } .h300 { height: 300px; } .h320 { height: 320px; }
+
+    /* ── Findings（預設坍縮，B.5） ── */
+    .findings-section { background: var(--bg-finding); border-left: 4px solid var(--accent); border-radius: 10px; padding: 10px 14px; margin-top: 14px; font-size: 0.82rem; color: var(--text-muted); }
+    .findings-section strong { color: var(--text); }
+    .findings-label { cursor: pointer; user-select: none; display: flex; align-items: center; justify-content: space-between; font-size: 0.74rem; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+    .findings-label::after { content: '▲'; font-size: 8px; transition: transform 0.22s; opacity: 0.65; }
+    .findings-section.collapsed .findings-label { margin-bottom: 0; }
+    .findings-section.collapsed .findings-label::after { transform: rotate(180deg); }
+    .findings-section.collapsed > *:not(.findings-label) { display: none; }
+
+    /* ── Q&A ── */
+    .qa-section { margin-top: 24px; }
+    .qa-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+    .question { padding: 14px 18px; cursor: pointer; display: flex; align-items: flex-start; gap: 10px; user-select: none; }
+    .question:hover { background: rgba(3,105,161,0.03); }
+    .question-text { flex: 1; font-weight: 600; font-size: 0.9rem; }
+    .question-arrow { color: var(--text-muted); font-size: 0.8rem; margin-top: 2px; transition: transform 0.2s; flex-shrink: 0; }
+    .qa-item.open .question-arrow { transform: rotate(90deg); }
+    .answer { display: none; padding: 0 18px 18px; font-size: 0.86rem; line-height: 1.75; }
+    .answer.show { display: block; }
+    .answer-block p { margin-top: 6px; }
+    .tag-f, .tag-i, .tag-a { display: inline-block; border-radius: 4px; padding: 0 5px; font-size: 0.72rem; font-weight: 700; margin-right: 3px; }
+    .tag-f { background: rgba(5,150,105,0.12); color: #047857; }
+    .tag-i { background: rgba(3,105,161,0.12); color: var(--accent); }
+    .tag-a { background: rgba(217,119,6,0.14); color: #B45309; }
+    .ev { display: inline; background: rgba(3,105,161,0.1); border-radius: 4px; padding: 1px 5px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--accent); font-weight: 500; }
+    .trap-block { background: rgba(217,119,6,0.08); border: 1px solid rgba(217,119,6,0.35); border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 0.82rem; color: #92400E; display: flex; gap: 8px; align-items: flex-start; }
+    .trap-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .trap-tag { display: inline-block; flex-shrink: 0; align-self: flex-start; white-space: nowrap; font-size: 0.7rem; font-weight: 600; padding: 1px 6px; border-radius: 4px; background: rgba(217,119,6,0.16); color: #92400E; }
+    .nav-hint { display: inline-flex; align-items: center; gap: 6px; background: rgba(124,58,237,0.07); border: 1px solid rgba(124,58,237,0.28); border-radius: 8px; padding: 7px 13px; margin-top: 10px; font-size: 0.78rem; color: var(--purple); cursor: pointer; }
+    .chart-ref-btn { display: inline-flex; align-items: center; gap: 5px; background: rgba(3,105,161,0.06); border: 1px solid rgba(3,105,161,0.25); border-radius: 6px; padding: 5px 12px; margin: 8px 6px 0 0; font-size: 0.78rem; color: var(--accent); cursor: pointer; font-family: inherit; }
+    .chart-ref-btn:hover { background: rgba(3,105,161,0.12); }
+    @keyframes chartFlash { 0%,100% { box-shadow: none; } 50% { box-shadow: 0 0 0 3px rgba(3,105,161,0.55); } }
+    .chart-flash { animation: chartFlash 0.55s ease-in-out 4; }
+
+    /* ── Reveal（P4 先給統計量、再開圖） ── */
+    .reveal-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 9px 18px; font-family: 'Lexend', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; margin: 4px 0 16px; }
+    .reveal-btn[disabled] { background: var(--text-muted); cursor: default; }
+    .stat-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; background: var(--bg-card); border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; }
+    .stat-table th, .stat-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); text-align: right; }
+    .stat-table th:first-child, .stat-table td:first-child { text-align: left; }
+    .stat-table th { font-family: 'Lexend', sans-serif; font-weight: 600; color: var(--text); background: var(--bg-finding); }
+    .stat-table td { font-family: 'JetBrains Mono', monospace; }
+    #quartet-wrap { position: relative; }
+    #quartet-wrap.veiled .chart-grid { filter: blur(22px); opacity: 0.35; pointer-events: none; user-select: none; }
+    .veil-note { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; z-index: 5; }
+    #quartet-wrap.veiled .veil-note { display: flex; }
+    .veil-note span { background: rgba(255,255,255,0.92); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; font-family: 'Lexend', sans-serif; font-size: 0.9rem; color: var(--text); box-shadow: 0 4px 18px rgba(15,23,42,0.08); }
+
+    /* ── Training / design panels ── */
+    .training-block { background: rgba(124,58,237,0.05); border: 1px solid rgba(124,58,237,0.22); border-radius: var(--radius); padding: 20px; margin-top: 28px; }
+    .training-title { font-family: 'Lexend', sans-serif; font-size: 0.98rem; font-weight: 600; color: var(--purple); margin-bottom: 14px; }
+    .design-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    @media(max-width:700px) { .design-grid { grid-template-columns: 1fr; } }
+    .design-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .design-item h4 { font-family: 'Lexend', sans-serif; font-size: 0.84rem; color: var(--accent); margin-bottom: 4px; }
+    .design-item p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.55; }
+    .page-footer { padding: 32px 24px; text-align: center; font-size: 0.76rem; color: var(--text-muted); }
+
+    @media(max-width:600px) {
+      .header-row-1 { padding: 10px 16px 8px; }
+      .header-row-2 { padding: 0 16px; overflow-x: auto; }
+      .header-legend { padding: 5px 16px; }
+      .header-legend .legend-vdivider { display: none; }
+      .page { padding: 16px; }
+    }
+    @media(max-width:480px) { .kpi-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<header class="site-header" id="top-header">
+  <div class="header-row-1">
+    <span class="header-title">醫美連鎖_預約回診分析_訓練儀表板</span>
+    <span class="meta-chip">📅 資料期間：2025/01/01 – 2025/12/31</span>
+    <span class="meta-chip">📊 6 間診所 × 48,000 筆預約 × 14,200 位顧客</span>
+    <span class="meta-chip demo">⚗️ DEMO 合成資料集</span>
+    <span style="flex:1"></span>
+    <span class="meta-chip">✏️ 製作者：Blake</span>
+    <span class="meta-chip">🗓️ 製作時間：20261014</span>
+  </div>
+  <div class="header-row-2">
+    <button class="def-toggle-btn" id="defToggleBtn" onclick="toggleDef()">
+      <span>📖</span><span>指標定義</span><span class="def-toggle-arrow">›</span>
+    </button>
+    <div class="nav-tabs">
+      <div class="nav-tab active" id="tab-p1" onclick="switchPage('p1')">📅 預約漏斗與出席</div>
+      <div class="nav-tab" id="tab-p2" onclick="switchPage('p2')">🔁 顧客結構與回診</div>
+      <div class="nav-tab" id="tab-p3" onclick="switchPage('p3')">💉 療程與營收</div>
+      <div class="nav-tab" id="tab-p4" onclick="switchPage('p4')">🧪 醫師品質：只看平均會錯在哪</div>
+    </div>
+  </div>
+  <div class="header-legend">
+    <div class="legend-colors">
+      <span><span class="dot" style="background:var(--accent)"></span>事實數據</span>
+      <span><span class="dot" style="background:var(--accent2)"></span>正向指標</span>
+      <span><span class="dot" style="background:var(--warn)"></span>注意／推論</span>
+      <span><span class="dot" style="background:var(--danger)"></span>警示／流失</span>
+      <span><span class="dot" style="background:var(--purple)"></span>行為／時序</span>
+    </div>
+    <span class="legend-vdivider"></span>
+    <div class="legend-right">
+      <span><span class="badge l1">L1</span> 單圖事實</span>
+      <span><span class="badge l2">L2</span> 同頁交叉</span>
+      <span><span class="badge l3">L3</span> 跨頁推論</span>
+      <span class="legend-vdivider"></span>
+      <span><span class="tag-f">F</span> 事實</span>
+      <span><span class="tag-i">I</span> 推論</span>
+      <span><span class="tag-a">A</span> 假設</span>
+    </div>
+  </div>
+</header>
+
+<div id="main-wrapper">
+  <div id="def-panel-outer">
+    <div id="def-panel-inner">
+      <h3>📖 指標定義</h3>
+      <div class="def-search-wrap"><input type="text" id="defSearch" placeholder="🔍 搜尋指標關鍵字…" autocomplete="off" oninput="filterDef(this.value)"></div>
+      <div class="def-no-result" id="defNoResult">沒有符合的指標</div>
+      <div class="def-item"><h4>預約數</h4><p>預約系統中建立的預約筆數，同一位顧客預約 3 次就算 3 筆。改期視為同一筆預約（不重算），取消後重新預約則算新的一筆。</p></div>
+      <div class="def-item"><h4>取消</h4><p>顧客在預約時段開始<strong>前</strong>主動通知取消的預約。</p></div>
+      <div class="def-item"><h4>爽約（No-show）</h4><p>預約時段開始後，未事先通知且未到診；<strong>遲到超過 15 分鐘</strong>依院所規定也記為爽約（該時段已讓給候補）。</p></div>
+      <div class="def-item"><h4>到診率</h4><p>實到筆數 ÷ 預約數。2025 年：39,840 ÷ 48,000 = 83.0%。</p></div>
+      <div class="def-item"><h4>爽約率</h4><p>爽約筆數 ÷ <strong>預約數</strong>（不是 ÷ 實到數）。2025 年：4,560 ÷ 48,000 = 9.5%。</p></div>
+      <div class="def-item"><h4>不重複顧客</h4><p>以身分證字號去重的顧客人數。注意：病歷號以診所為單位核發，同一人在兩間診所就診會有兩個病歷號；若以病歷號計數會高估顧客數。</p></div>
+      <div class="def-item"><h4>新客／舊客</h4><p>新客：2025 年首次到診（過去從未在本連鎖到診）。舊客：2025 年以前曾到診。</p></div>
+      <div class="def-item"><h4>90 天回診率</h4><p>基準期（1–10 月）有到診的顧客中，在該次到診後 90 天內再次到診的比例。11–12 月的顧客觀察期不滿 90 天，不納入分母。</p></div>
+      <div class="def-item"><h4>Cohort（同期群）</h4><p>依顧客「2025 年內第一次到診」的月份分群（新客、舊客都包含），追蹤每一群在 30／60／90／180 天後的累計回診比例。H1 = 1–6 月（6,078 人）；H2 = 7–10 月（5,922 人）。H2 到年底還不滿 180 天，該格無法觀察。</p></div>
+      <div class="def-item"><h4>客單價（AOV，Average Order Value）</h4><p>營收 ÷ 實到筆數。2025 年：23,904 萬 × 10,000 ÷ 39,840 = NT$6,000。</p></div>
+      <div class="def-item"><h4>YoY（Year-over-Year／年比）</h4><p>(本期 − 去年同期) ÷ 去年同期。例：預約數 (48,000 − 42,105) ÷ 42,105 = +14.0%。</p></div>
+      <div class="def-item"><h4>pp（百分點）</h4><p>兩個百分比相減的差。到診率 86.0% → 83.0% 是下降 3.0 pp，不是下降 3.0%。</p></div>
+      <div class="def-item"><h4>療程後滿意度</h4><p>療程結束後 7 天內寄送的問卷分數（0–100）。<strong>只有填答的顧客才有分數</strong>。</p></div>
+      <div class="def-item"><h4>半年內回購金額</h4><p>該次療程後 180 天內，同一顧客在本連鎖的消費總額（千元）。</p></div>
+      <div class="def-item"><h4>相關係數（r）</h4><p>衡量兩個變數「線性」關係的強度，介於 −1 到 1。r 只描述直線關係，無法告訴你資料點長什麼形狀。</p></div>
+      <div class="def-item"><h4>F／I／A 答案標籤</h4><p><strong style="color:#047857">F 事實</strong>：可直接從圖表讀出。<strong style="color:var(--accent)">I 推論</strong>：基於事實的合理解釋。<strong style="color:#B45309">A 假設</strong>：需要額外資料驗證的判斷或建議。</p></div>
+    </div>
+  </div>
+  <div id="content-area">
+
+<!-- ══════════ P1 預約漏斗與出席 ══════════ -->
+<div id="page-p1" class="page active">
+  <div class="section-title">預約到底流失在哪一步？</div>
+  <p class="page-intro">一筆預約只有三種結局：事先取消、爽約、實際到診。先看規模，再看哪一段在變差。</p>
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-label">全年預約數</div><div class="kpi-value" data-kpi="appointments"></div><div class="kpi-sub kpi-up" data-kpi="appt_yoy"></div></div>
+    <div class="kpi-card" style="--kpi-color:var(--accent2)"><div class="kpi-label">到診率</div><div class="kpi-value" data-kpi="attend_rate"></div><div class="kpi-sub kpi-down" data-kpi="attend_delta"></div></div>
+    <div class="kpi-card" style="--kpi-color:var(--danger)"><div class="kpi-label">爽約率（÷ 預約數）</div><div class="kpi-value" data-kpi="noshow_rate"></div><div class="kpi-sub" data-kpi="noshow_n"></div></div>
+    <div class="kpi-card" style="--kpi-color:var(--warn)"><div class="kpi-label">取消率（÷ 預約數）</div><div class="kpi-value" data-kpi="cancel_rate"></div><div class="kpi-sub" data-kpi="cancel_n"></div></div>
+  </div>
+
+  <div class="chart-grid chart-grid-2">
+    <div class="chart-card" id="card-cAppts">
+      <div class="chart-card-title">預約數全年 48,000 筆，1 月與 12 月是兩個高峰</div>
+      <div class="chart-card-meta">單位：筆｜2025/01–12</div>
+      <div class="chart-block h280"><canvas id="cAppts"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">1 月（4,720 筆）與 12 月（4,560 筆）最高，對應農曆年前與年終的「變美需求」；2 月（3,120 筆）最低。預約的季節性很明顯，但這張圖只告訴你<strong>有多少人想來</strong>，不代表有多少人真的來了。</div></div>
+    </div>
+    <div class="chart-card" id="card-cAttend">
+      <div class="chart-card-title">到診率一路下滑：1 月 86.2% → 12 月 79.0%</div>
+      <div class="chart-card-meta">單位：%｜2025/01–12｜Y 軸範圍 76–90%</div>
+      <div class="chart-block h280"><canvas id="cAttend"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">上半年到診率 84.7%，下半年 81.4%。下滑從 5 月開始明顯，第四季最低。注意 Y 軸只畫了 76–90%：線的陡峭程度被放大了，要讀的是刻度上的 pp 數，不是線的斜率。</div></div>
+    </div>
+    <div class="chart-card" id="card-cReason">
+      <div class="chart-card-title">爽約原因：「忘記」最多，佔 34.0%</div>
+      <div class="chart-card-meta">單位：筆｜2025 全年｜n = 4,560 筆爽約</div>
+      <div class="chart-block h280"><canvas id="cReason"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">忘記 1,550 筆、臨時有事 1,280 筆、遲到超過 15 分 820 筆、價格考量 540 筆、其他 370 筆。第三名「遲到超過 15 分」的顧客其實<strong>有來</strong>，只是依院所規定被記為爽約——這個分類本身就是一個口徑選擇。</div></div>
+    </div>
+    <div class="chart-card" id="card-cLead">
+      <div class="chart-card-title">提前越久預約，爽約率越高：當天 4.0% → 15 天以上 15.7%</div>
+      <div class="chart-card-meta">單位：%（爽約 ÷ 該組預約數）｜依預約提前天數分組</div>
+      <div class="chart-block h280"><canvas id="cLead"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">提前 8 天以上的預約佔全部預約的 32.5%，卻貢獻了 47.3% 的爽約。這是一個「什麼時候該提醒」的線索，但還不能直接說是提前天數<strong>造成</strong>爽約。</div></div>
+    </div>
+  </div>
+
+  <div class="section-title">訓練題組 — 預約與出席</div>
+  <div class="qa-section">
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)"><span class="badge l1">L1·F</span><span class="question-text">Q1：2025 年的 48,000 筆預約，最後分別變成了什麼結局？</span><span class="question-arrow">▶</span></div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">KPI 卡</span>與<span class="ev">月度預約數</span>：48,000 筆 = 事先取消 3,600 筆（7.5%）＋ 爽約 4,560 筆（9.5%）＋ 實際到診 39,840 筆（83.0%）。三者加總剛好等於預約數，漏斗是閉合的。</p>
+          <p><span class="tag-i">I:</span> 每 100 筆預約大約有 17 筆沒有變成到診。取消至少有提前通知、時段還能補人；爽約的時段通常直接空掉，對產能的傷害更大。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('p1','card-cAppts')">📍 查看：月度預約數</button>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)"><span class="badge l1">L1·F</span><span class="question-text">Q2：到診率從年初到年底掉了多少？這個下滑有多嚴重？</span><span class="question-arrow">▶</span></div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">月度到診率</span>：1 月 86.2%，12 月 79.0%，下降 <strong>7.2 pp</strong>；上半年 84.7%、下半年 81.4%。</p>
+          <p><span class="tag-i">I:</span> 「嚴不嚴重」要換算成規模：以全年 48,000 筆計，到診率每差 1 pp 約等於 480 筆到診。下半年比上半年低 3.3 pp；以下半年 24,920 筆預約計，約少了 820 筆到診。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('p1','card-cAttend')">📍 查看：月度到診率</button>
+        <div class="trap-block" data-trap-stage="visualize" data-trap="截斷軸"><span class="trap-icon">⚠</span><span class="trap-tag">呈現｜截斷軸</span><div><strong>常見陷阱：</strong>這張折線圖的 Y 軸只畫 76–90%，所以線看起來像在「崩跌」。如果換成 0–100% 的軸，它只是一條緩坡。截斷軸放大的是<strong>視覺印象</strong>：判斷嚴重程度要讀刻度上的 pp 數，再換算成筆數（如上面的 480 筆／pp），不要讀線的斜率。反過來，也不能因為「其實是緩坡」就說不重要。</div></div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)"><span class="badge l2">L2·I</span><span class="question-text">Q3：有人報告「爽約率 11.4%」，KPI 卡卻寫 9.5%。誰算錯了？</span><span class="question-arrow">▶</span></div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">KPI 卡</span>：爽約 4,560 筆。4,560 ÷ 48,000（預約數）= 9.5%；4,560 ÷ 39,840（實到數）= 11.4%。</p>
+          <p><span class="tag-i">I:</span> 兩個數字的計算都沒錯，錯在<strong>分母</strong>。爽約是「預約」的一種結局，分母應該是預約數（見指標定義）。用實到數當分母，等於問「每 100 個到診的人，對應有幾個沒來的人」，這不是爽約率的意思，而且會讓數字看起來更嚴重。</p>
+          <p><span class="tag-a">A:</span> 跨部門報告時，建議每個比率都寫出「÷ 什麼」。若業務部門習慣用另一種口徑，就並列兩個數字並標明分母，不要只留一個。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('p1','card-cAppts')">📍 查看：月度預約數</button>
+        <div class="trap-block" data-trap-stage="wrangle" data-trap="分母錯置"><span class="trap-icon">⚠</span><span class="trap-tag">加工｜分母錯置</span><div><strong>常見陷阱：</strong>看到兩個不同的比率，第一反應是「有人算錯」或「資料有問題」。先檢查分母：同一個分子配不同分母，兩個數字都可以是對的，只是回答的問題不同。</div></div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)"><span class="badge l2">L2·I</span><span class="question-text">Q4：提前越久預約，爽約率越高。所以該限制顧客只能提前 7 天內預約嗎？</span><span class="question-arrow">▶</span></div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">預約提前天數 × 爽約率</span>：當天 4.0%、1–3 天 7.0%、4–7 天 9.5%、8–14 天 12.5%、15 天以上 15.7%。提前 8 天以上的預約佔 32.5%，卻貢獻 47.3% 的爽約。</p>
+          <p><span class="tag-i">I:</span> 從<span class="ev">爽約原因</span>，「忘記」是第一名（34.0%），和「提前越久越容易忘」的方向一致。但這張圖只顯示兩者<strong>一起變動</strong>，並沒有證明是提前天數本身造成爽約。</p>
+          <p><span class="tag-a">A:</span> 比「限制預約」風險更低的做法：對提前 8 天以上的預約在前 3 天、前 1 天各發一次提醒，追蹤一季看這兩組的爽約率是否下降。限制預約可能直接把想提前規劃的顧客推走。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('p1','card-cLead')">📍 查看：預約提前天數 × 爽約率</button>
+        <button class="chart-ref-btn" onclick="goToChart('p1','card-cReason')">📍 查看：爽約原因</button>
+        <div class="trap-block" data-trap-stage="read" data-trap="相關≠因果"><span class="trap-icon">⚠</span><span class="trap-tag">解讀｜相關≠因果</span><div><strong>常見陷阱：</strong>提前很久預約的人，可能本來就是另一群人——例如被促銷吸引、先卡位再說的新客。若是族群不同造成的差異，限制預約天數不會降低爽約，只會流失這群人。下一頁可以看到新客比例在下半年明顯上升。</div></div>
+        <div class="nav-hint" onclick="switchPage('p2')">➜ 到 P2 看新客與舊客的結構變化</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)"><span class="badge l2">L2·I</span><span class="question-text">Q5：爽約原因第三名是「遲到超過 15 分」（820 筆）。這些人真的算爽約嗎？</span><span class="question-arrow">▶</span></div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">爽約原因</span>：遲到超過 15 分 820 筆，佔爽約的 18.0%。依指標定義，遲到超過 15 分鐘依院所規定記為爽約。</p>
+          <p><span class="tag-i">I:</span> 這 820 位顧客其實有到，被記為爽約是<strong>定義的結果</strong>。若改成「遲到算改約」，爽約筆數變成 4,560 − 820 = 3,740，爽約率從 9.5% 降到 7.8%。同一份資料，口徑一換，KPI 就差 1.7 pp。</p>
+          <p><span class="tag-a">A:</span> 若各診所對「遲到幾分鐘算爽約」的規定不一致（例如有的 10 分、有的 20 分），診所之間的爽約率就不能直接比較。分析前要先確認這條規則在 6 間診所是否統一。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('p1','card-cReason')">📍 查看：爽約原因</button>
+        <div class="trap-block" data-trap-stage="curate" data-trap="口徑定義不一致"><span class="trap-icon">⚠</span><span class="trap-tag">整理｜口徑定義不一致</span><div><strong>常見陷阱：</strong>把資料裡的分類當成客觀事實。「爽約」是院所的作業規則決定的，不是顧客行為的直接紀錄。比較不同診所或不同年度之前，先問：這個分類的規則有沒有變過、各單位是否一致。</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ P2 顧客結構與回診 ══════════ -->
+<div id="page-p2" class="page">
+  <div class="section-title">誰會回來？</div>
+  <p class="page-intro">預約變多了，但回來的人是變多還是變少？先拆新客與舊客，再看回診曲線。</p>
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-label">不重複顧客</div><div class="kpi-value" data-kpi="customers"></div><div class="kpi-sub" data-kpi="customers_split"></div></div>
+    <div class="kpi-card" style="--kpi-color:var(--accent2)"><div class="kpi-label">90 天回診率</div><div class="kpi-value" data-kpi="revisit"></div><div class="kpi-sub kpi-down" data-kpi="revisit_delta"></div></div>
+    <div class="kpi-card" style="--kpi-color:var(--purple)"><div class="kpi-label">新客到診占比（H1 → H2）</div><div class="kpi-value" data-kpi="new_share"></div><div class="kpi-sub" data-kpi="new_share_sub"></div></div>
+  </div>
+
+  <div class="chart-grid chart-grid-2">
+    <div class="chart-card" id="card-cNewRet">
+      <div class="chart-card-title">新客到診占比從 1 月 13.3% 升到 12 月 26.8%</div>
+      <div class="chart-card-meta">單位：筆（到診）｜2025/01–12｜新客 = 2025 年首次到診</div>
+      <div class="chart-block h300"><canvas id="cNewRet"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">新客到診從上半年 3,317 筆增加到下半年 4,783 筆，占比從 17.0% 升到 23.6%。下半年的新客促銷把一批「第一次來試試看」的顧客帶進來——他們會不會再回來，是下一張圖要回答的事。</div></div>
+    </div>
+    <div class="chart-card" id="card-cRevisitCat">
+      <div class="chart-card-title">皮秒／音波拉提回診率最高（54.0%），雷射美白最低（35.0%）</div>
+      <div class="chart-card-meta">單位：%｜基準期 1–10 月到診顧客 n = 12,000｜依該次療程類別分組</div>
+      <div class="chart-block h300"><canvas id="cRevisitCat"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">五類療程的 90 天回診率介於 35.0%–54.0%。加權後整體為 41.0%。回診率高低和療程本身的「自然週期」有關，例如需要分次施打的療程本來就會排定回診。</div></div>
+    </div>
+    <div class="chart-card" id="card-cCohort">
+      <div class="chart-card-title">下半年那群顧客的回診曲線，每個時點都低於上半年</div>
+      <div class="chart-card-meta">單位：累計回診 %｜H1 = 1–6 月首次到診（6,078 人）；H2 = 7–10 月（5,922 人）</div>
+      <div class="chart-block h300"><canvas id="cCohort"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">90 天：H1 44.8%、H2 37.1%，差 7.7 pp。H2 的 180 天點是空的——這群人到 12 月 31 日還不滿 180 天，<strong>不是回診率為 0</strong>，而是還看不到。</div></div>
+    </div>
+    <div class="chart-card" id="card-cSimpson">
+      <div class="chart-card-title">新客、舊客的回診率都比去年高，整體卻從 46.0% 降到 41.0%</div>
+      <div class="chart-card-meta">單位：%｜90 天回診率｜2024 vs 2025，基準期皆為 1–10 月</div>
+      <div class="chart-block h300"><canvas id="cSimpson"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">新客 25.0% → 26.0%、舊客 60.0% → 61.0%，兩群都進步 1 pp；但新客占基準期顧客的比例從 40.0% 升到 57.1%。整體數字是兩群的加權平均，權重一變，整體就可能往反方向走。</div></div>
+    </div>
+  </div>
+
+  <div class="section-title">訓練題組 — 顧客與回診</div>
+  <div class="qa-section">
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)"><span class="badge l1">L1·F</span><span class="question-text">Q1：2025 年新客在到診中的占比，上下半年各是多少？</span><span class="question-arrow">▶</span></div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">新客／舊客月度到診</span>：上半年新客 3,317 筆，占到診 17.0%；下半年 4,783 筆，占 23.6%。單月從 1 月 13.3% 升到 12 月 26.8%。</p>
+          <p><span class="tag-i">I:</span> 新客成長速度明顯快於整體到診，下半年的顧客組成和上半年已經不一樣。後面所有「整體平均」類的指標，都要先想到這個組成變化。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('p2','card-cNewRet')">📍 查看：新客／舊客月度到診</button>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)"><span class="badge l1">L1·F</span><span class="question-text">Q2：哪一類療程的顧客最常回來？可以據此加推這類療程嗎？</span><span class="question-arrow">▶</span></div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">療程別 90 天回診率</span>：皮秒／音波拉提 54.0% 最高，其次玻尿酸 45.0%、保養療程 39.9%、肉毒 39.0%，雷射美白 35.0% 最低。</p>
+          <p><span class="tag-i">I:</span> 回診率反映的不只是滿意度，還有療程設計：分次施作的療程（例如一個療程包含多次）本來就會排定回診；肉毒的效果通常維持數月，90 天內不回來是正常的。</p>
+          <p><span class="tag-a">A:</span> 要判斷「哪類療程的顧客黏著度高」，應該拿各療程的<strong>預期回診間隔</strong>當基準比較，例如「在建議回診時間內回來的比例」。這需要療程的建議週期資料，本儀表板沒有提供。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('p2','card-cRevisitCat')">📍 查看：療程別 90 天回診率</button>
+        <div class="trap-block" data-trap-stage="read" data-trap="基線缺失"><span class="trap-icon">⚠</span><span class="trap-tag">解讀｜基線缺失</span><div><strong>常見陷阱：</strong>把不同療程的回診率直接排名，等於假設每種療程「應該」回來的頻率都一樣。沒有各療程的自然週期當基準，54.0% 和 35.0% 誰比較好，其實無法判斷。</div></div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)"><span class="badge l2">L2·I</span><span class="question-text">Q3：H2 那群顧客的 180 天回診率是空的。報告時可以寫「H2 180 天回診率 0%」或直接拿 H1 的 58.2% 來比嗎？</span><span class="question-arrow">▶</span></div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">同期群回診曲線</span>：H1 在 30／60／90／180 天分別是 21.0%／34.5%／44.8%／58.2%；H2 是 17.6%／28.9%／37.1%，180 天沒有數值。</p>
+          <p><span class="tag-i">I:</span> 兩種寫法都不對。H2 是 7–10 月才第一次到診的顧客，到資料截止日還不滿 180 天，這格是「<strong>還觀察不到</strong>」，不是 0。能公平比較的只有兩群都有的時點：在 90 天時 H2 已比 H1 低 7.7 pp。</p>
+          <p><span class="tag-a">A:</span> 若一定要給 180 天的估計，必須標成 [A] 並寫出估計方法（例如假設 H2 從 90 天到 180 天的增幅和 H1 相同），而且要等 2026 年 4 月資料進來後用實際值取代。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('p2','card-cCohort')">📍 查看：同期群回診曲線</button>
+        <div class="trap-block" data-trap-stage="curate" data-trap="觀察期不足"><span class="trap-icon">⚠</span><span class="trap-tag">整理｜觀察期不足</span><div><strong>常見陷阱：</strong>把「還沒發生」當成「沒有發生」。越晚加入的群，觀察時間越短，任何累計指標都會被系統性低估。比較不同 cohort 前，先確認每一群的觀察期是否一樣長。</div></div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)"><span class="badge l2">L2·I</span><span class="question-text">Q4：90 天回診率從 46.0% 掉到 41.0%。主管說「服務品質變差了」，你同意嗎？</span><span class="question-arrow">▶</span></div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">新客／舊客回診率 2024 vs 2025</span>：新客 25.0% → 26.0%，舊客 60.0% → 61.0%，兩群都上升 1 pp；新客占基準期顧客的比例從 40.0% 升到 57.1%；整體從 46.0% 降到 41.0%。</p>
+          <p><span class="tag-i">I:</span> 不同意「服務變差」這個結論。同一類顧客的回診率都在進步，整體下滑是因為回診率本來就比較低的新客，在分母裡的比重大幅增加。這是 Simpson 悖論的典型結構：<strong>分組的趨勢和加總的趨勢方向相反</strong>。</p>
+          <p><span class="tag-a">A:</span> 對主管的回報建議分兩層：① 服務品質（分群回診率）穩定略升；② 顧客組成改變，新客占比上升拉低整體。接著要問的是：新客促銷帶來的顧客，長期價值是否值得這個獲客成本？</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('p2','card-cSimpson')">📍 查看：新客／舊客回診率 2024 vs 2025</button>
+        <div class="trap-block" data-trap-stage="wrangle" data-trap="Simpson 悖論"><span class="trap-icon">⚠</span><span class="trap-tag">加工｜Simpson 悖論</span><div><strong>常見陷阱：</strong>只看整體平均就下結論。只要各組的權重在兩期之間改變，整體數字的變化方向就可能和每一組都相反。整體指標出現意外變動時，先按最重要的分群拆開看。</div></div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)"><span class="badge l3">L3·A</span><span class="question-text">Q5：P1 的爽約率在下半年升高，P2 的新客占比也在下半年升高。可以說「新客比較會爽約」嗎？</span><span class="question-arrow">▶</span></div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">月度到診率</span>（P1）：上半年到診率 84.7%、下半年 81.4%；從<span class="ev">新客／舊客月度到診</span>：新客到診占比上半年 17.0%、下半年 23.6%。</p>
+          <p><span class="tag-i">I:</span> 兩條時間序列同時往不利方向走，「新客比較會爽約」是一個合理的假說，但目前的資料無法證明。本儀表板的爽約資料沒有拆新客／舊客，同期間也可能有其他變化（例如下半年預約提前天數變長）。</p>
+          <p><span class="tag-a">A:</span> 驗證方法：請資料端提供「爽約筆數 × 新舊客」的交叉表，直接比較兩群的爽約率。在拿到之前，報告只能寫成「下半年爽約率上升，與新客占比上升同時發生，因果待驗證」。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('p1','card-cAttend')">📍 查看：月度到診率（P1）</button>
+        <button class="chart-ref-btn" onclick="goToChart('p2','card-cNewRet')">📍 查看：新客／舊客月度到診</button>
+        <div class="trap-block" data-trap-stage="read" data-trap="過度推論"><span class="trap-icon">⚠</span><span class="trap-tag">解讀｜過度推論</span><div><strong>常見陷阱：</strong>兩個時間序列「同時」變化，就把其中一個當成另一個的原因。時間上的巧合不是證據；要拿到同一個單位（每一筆預約）上兩個變數的交叉資料，才能談誰影響誰。</div></div>
+        <div class="nav-hint" onclick="switchPage('p1')">➜ 回到 P1 看到診率與爽約原因</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ P3 療程與營收 ══════════ -->
+<div id="page-p3" class="page">
+  <div class="section-title">錢從哪裡來？</div>
+  <p class="page-intro">到診筆數多的療程，不一定是賺最多的療程。把「量」和「錢」分開看。</p>
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-label">全年營收</div><div class="kpi-value" data-kpi="revenue"></div><div class="kpi-sub" data-kpi="revenue_sub"></div></div>
+    <div class="kpi-card" style="--kpi-color:var(--warn)"><div class="kpi-label">平均客單價（營收 ÷ 實到）</div><div class="kpi-value" data-kpi="aov"></div><div class="kpi-sub" data-kpi="aov_sub"></div></div>
+    <div class="kpi-card" style="--kpi-color:var(--purple)"><div class="kpi-label">醫師人數</div><div class="kpi-value" data-kpi="doctors"></div><div class="kpi-sub" data-kpi="doctors_sub"></div></div>
+  </div>
+
+  <div class="chart-grid chart-grid-2">
+    <div class="chart-card" id="card-cRevCat">
+      <div class="chart-card-title">皮秒／音波拉提營收最高：7,650 萬（32.0%）</div>
+      <div class="chart-card-meta">單位：萬元｜2025 全年｜依療程類別，降序</div>
+      <div class="chart-block h300"><canvas id="cRevCat"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">前兩名（皮秒／音波拉提、玻尿酸）合計 13,864 萬，占營收 58.0%。這兩類都是高單價療程：平均每次到診分別約 NT$17,386 與 NT$11,096。</div></div>
+    </div>
+    <div class="chart-card" id="card-cMix">
+      <div class="chart-card-title">保養療程占到診 32.6%，卻只貢獻 10.0% 營收</div>
+      <div class="chart-card-meta">單位：到診筆數占比｜2025 全年｜n = 39,840 筆</div>
+      <div class="chart-block h300"><canvas id="cMix"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">這張圖的切片是<strong>到診筆數</strong>，不是營收。把它和左邊的營收圖對照：保養療程筆數最多（13,000 筆）但每次約 NT$1,840；皮秒／音波拉提只占 11.0% 筆數，卻是營收第一。</div></div>
+    </div>
+    <div class="chart-card" id="card-cAovHist">
+      <div class="chart-card-title">65.3% 的到診消費低於 NT$6,000——平均客單價不是「典型顧客」</div>
+      <div class="chart-card-meta">單位：到診筆數｜依單次消費金額分組（順序軸，不排序）</div>
+      <div class="chart-block h300"><canvas id="cAovHist"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">最多的一組是 NT$3 千以下（14,200 筆，35.6%）。累計到 NT$6 千的有 65.3%。少數 2 萬以上的高單價療程（1,800 筆，4.5%）把平均值往上拉到 NT$6,000。</div></div>
+    </div>
+    <div class="chart-card" id="card-cDoctors">
+      <div class="chart-card-title">醫師間的到診筆數差 1.7 倍：王醫師 6,200 筆 vs 劉醫師 3,640 筆</div>
+      <div class="chart-card-meta">單位：到診筆數｜2025 全年｜8 位醫師，降序</div>
+      <div class="chart-block h300"><canvas id="cDoctors"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">前 3 位醫師合計 17,400 筆，占 43.7%。這張圖只有「筆數」，沒有每位醫師的排班時數，也沒有他們主要做哪一類療程。</div></div>
+    </div>
+  </div>
+
+  <div class="section-title">訓練題組 — 療程與營收</div>
+  <div class="qa-section">
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)"><span class="badge l1">L1·F</span><span class="question-text">Q1：哪兩類療程貢獻最多營收？合計占多少？</span><span class="question-arrow">▶</span></div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">療程別營收</span>：皮秒／音波拉提 7,650 萬（32.0%）、玻尿酸 6,214 萬（26.0%），合計 13,864 萬，占全年 23,904 萬的 58.0%。</p>
+          <p><span class="tag-i">I:</span> 營收高度依賴兩類高單價療程。這兩類的需求若受景氣或競爭影響，對整體營收的衝擊會比筆數占比看起來大得多。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('p3','card-cRevCat')">📍 查看：療程別營收</button>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)"><span class="badge l2">L2·I</span><span class="question-text">Q2：行銷想用「平均每位顧客每次消費 NT$6,000」來設計新客優惠門檻。這個數字適合嗎？</span><span class="question-arrow">▶</span></div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">單次消費金額分布</span>：NT$3 千以下 35.6%、3–6 千 29.6%、6 千–1 萬 18.6%、1–2 萬 11.6%、2 萬以上 4.5%。累計到 NT$6 千為 65.3%。</p>
+          <p><span class="tag-i">I:</span> 不適合直接用。分布是右偏的：大多數到診落在 NT$6 千以下，中位數落在 3–6 千那一組，少數高單價療程把平均拉高。以 NT$6,000 當門檻，約三分之二的到診都達不到，優惠會變成只有少數人用得到。</p>
+          <p><span class="tag-a">A:</span> 若目標是「讓多數新客用得到」，門檻應該參考中位數所在的區間；若目標是「把顧客推往高單價療程」，才適合把門檻設在平均值以上。兩種目標要先講清楚。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('p3','card-cAovHist')">📍 查看：單次消費金額分布</button>
+        <div class="trap-block" data-trap-stage="wrangle" data-trap="平均數陷阱"><span class="trap-icon">⚠</span><span class="trap-tag">加工｜平均數陷阱</span><div><strong>常見陷阱：</strong>把平均值當成「典型的那個人」。在右偏分布裡，平均數會落在大多數人之上；要描述典型顧客，先看分布或中位數。</div></div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)"><span class="badge l2">L2·I</span><span class="question-text">Q3：保養療程占到診三分之一，營收只占一成。是否應該縮減保養療程，把時段讓給高單價療程？</span><span class="question-arrow">▶</span></div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">療程組合（到診筆數）</span>與<span class="ev">療程別營收</span>：保養療程 13,000 筆（32.6%），營收 2,392 萬（10.0%），每次約 NT$1,840。從<span class="ev">療程別 90 天回診率</span>（P2）：保養療程 39.9%，排第三。</p>
+          <p><span class="tag-i">I:</span> 只看單次營收，保養療程確實效率最低。但它可能扮演「入口」角色：低門檻、高頻率，讓顧客持續和診所保持接觸，之後才轉向高單價療程。本儀表板沒有「顧客從哪類療程轉到哪類療程」的資料，這個角色只能推測。</p>
+          <p><span class="tag-a">A:</span> 決策前需要的資料：首次到診做保養療程的顧客，一年內轉做高單價療程的比例。若轉換率高，保養療程是獲客管道，不該只用單次營收評估。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('p3','card-cMix')">📍 查看：療程組合</button>
+        <button class="chart-ref-btn" onclick="goToChart('p2','card-cRevisitCat')">📍 查看：療程別回診率（P2）</button>
+        <div class="trap-block" data-trap-stage="read" data-trap="單指標決策"><span class="trap-icon">⚠</span><span class="trap-tag">解讀｜單指標決策</span><div><strong>常見陷阱：</strong>用一個指標（單次營收）判斷一項業務該不該留。同一項業務可能在另一個指標（獲客、回診、轉換）上扮演關鍵角色，砍掉之後損失會出現在別的報表裡。</div></div>
+        <div class="nav-hint" onclick="switchPage('p2')">➜ 到 P2 對照各療程的回診率</div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)"><span class="badge l2">L2·I</span><span class="question-text">Q4：劉醫師的到診筆數只有王醫師的 59%。可以據此判斷劉醫師的產能比較差嗎？</span><span class="question-arrow">▶</span></div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">醫師別到診筆數</span>：王醫師 6,200 筆、劉醫師 3,640 筆，3,640 ÷ 6,200 = 58.7%。</p>
+          <p><span class="tag-i">I:</span> 不能。「產能」應該是筆數 ÷ 排班時數，這張圖只有分子。如果劉醫師的排班時數少，或專做單次耗時較長的高單價療程，筆數低是合理的結果。</p>
+          <p><span class="tag-a">A:</span> 公平的比較需要兩個分母：每位醫師的排班時數，以及療程類別組成。補齊後再比較「每小時到診筆數」與「每小時營收」。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('p3','card-cDoctors')">📍 查看：醫師別到診筆數</button>
+        <div class="trap-block" data-trap-stage="wrangle" data-trap="分母錯置"><span class="trap-icon">⚠</span><span class="trap-tag">加工｜分母錯置</span><div><strong>常見陷阱：</strong>用總量比較不同規模的單位。人、門市、醫師的「投入量」不同時，總量差異大多只是投入差異；要比效率，就要找到正確的分母。</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ P4 醫師品質 ══════════ -->
+<div id="page-p4" class="page">
+  <div class="section-title">只看平均會錯在哪？</div>
+  <p class="page-intro">主管想知道「滿意度越高的顧客，是不是回購越多」，請你比較 4 位醫師的病人。<strong>先只看下面的統計量表，寫下你的結論，再按按鈕打開散點圖。</strong></p>
+
+  <table class="stat-table" id="stat-table">
+    <thead><tr><th>醫師</th><th>病人數</th><th>平均滿意度</th><th>滿意度標準差</th><th>平均半年回購（千元）</th><th>回購標準差</th><th>相關係數 r</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <button class="reveal-btn" id="revealBtn" onclick="revealQuartet()">我寫好結論了，打開散點圖 ➜</button>
+
+  <div id="quartet-wrap" class="veiled">
+    <div class="veil-note"><span>🙈 先根據上表寫下你的結論，再打開圖</span></div>
+    <div class="chart-grid chart-grid-4">
+      <div class="chart-card" id="card-cQ0"><div class="chart-card-title" data-qtitle="0"></div><div class="chart-card-meta">x：療程後滿意度｜y：半年回購（千元）</div><div class="chart-block h240"><canvas id="cQ0"></canvas></div></div>
+      <div class="chart-card" id="card-cQ1"><div class="chart-card-title" data-qtitle="1"></div><div class="chart-card-meta">x：療程後滿意度｜y：半年回購（千元）</div><div class="chart-block h240"><canvas id="cQ1"></canvas></div></div>
+      <div class="chart-card" id="card-cQ2"><div class="chart-card-title" data-qtitle="2"></div><div class="chart-card-meta">x：療程後滿意度｜y：半年回購（千元）</div><div class="chart-block h240"><canvas id="cQ2"></canvas></div></div>
+      <div class="chart-card" id="card-cQ3"><div class="chart-card-title" data-qtitle="3"></div><div class="chart-card-meta">x：療程後滿意度｜y：半年回購（千元）</div><div class="chart-block h240"><canvas id="cQ3"></canvas></div></div>
+    </div>
+    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——打開圖之後再看</div><div class="findings-content">四張圖用<strong>相同的座標範圍</strong>，可以直接比較。王醫師：大致是一條斜線。林醫師：28 位病人看不出關係，只有 2 位高滿意、高回購的病人撐起整體相關。陳醫師：兩群病人，群與群之間有落差，但各群內部幾乎沒有關係。張醫師：U 形，滿意度很低和很高的病人回購都比較多。</div></div>
+  </div>
+
+  <div class="section-title">訓練題組 — 同統計量、不同形狀</div>
+  <div class="qa-section">
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)"><span class="badge l1">L1·F</span><span class="question-text">Q1：只看統計量表，四位醫師之間有什麼差異？</span><span class="question-arrow">▶</span></div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">統計量表</span>：四位醫師各 30 位病人，平均滿意度都是 70.0、標準差 8.0；平均半年回購都是 24.0 千元、標準差 6.0；相關係數都是 0.60。</p>
+          <p><span class="tag-i">I:</span> 只看這張表，四位醫師完全分不出差別，很容易寫出「四位醫師的病人都呈現中度正相關：滿意度越高、回購越多」的結論。這正是本頁要檢驗的結論。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('p4','stat-table')">📍 查看：統計量表</button>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)"><span class="badge l2">L2·I</span><span class="question-text">Q2：打開散點圖之後，四位醫師各是什麼形狀？Q1 的結論還成立嗎？</span><span class="question-arrow">▶</span></div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">四位醫師的散點圖</span>：王醫師接近線性；林醫師主群 28 人相關係數 0.00，另有 2 位病人落在（95.1, 41.9）與（91.1, 40.9）；陳醫師分成兩群，平均約在（62.3, 20.1）與（77.7, 27.9）；張醫師是 U 形，谷底約在滿意度 67 分。</p>
+          <p><span class="tag-i">I:</span> 「滿意度越高、回購越多」只對王醫師大致成立。林醫師的關係來自兩位極端病人；陳醫師的關係來自兩群病人的差異，群內並沒有這個關係；張醫師的病人在 67 分以下時，滿意度越<strong>低</strong>反而回購越多——可能是不滿意的病人回來做補打或修正。</p>
+          <p><span class="tag-a">A:</span> 對每位醫師的管理建議都不同：林醫師要先了解那兩位病人是誰；陳醫師要找出兩群病人的差別（療程類型？新舊客？）；張醫師要確認低滿意度病人的回購是否為「補救性消費」，那是成本，不是忠誠。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('p4','card-cQ1')">📍 查看：林醫師散點圖</button>
+        <button class="chart-ref-btn" onclick="goToChart('p4','card-cQ3')">📍 查看：張醫師散點圖</button>
+        <div class="trap-block" data-trap-stage="visualize" data-trap="同統計量不同形狀"><span class="trap-icon">⚠</span><span class="trap-tag">呈現｜同統計量不同形狀</span><div><strong>常見陷阱：</strong>用平均數、標準差、相關係數就下結論，不畫圖。摘要統計量把整群資料壓成幾個數字，形狀資訊全部丟失；四組完全不同的資料可以有一模一樣的摘要。<strong>先畫圖，再算數字。</strong></div></div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)"><span class="badge l2">L2·I</span><span class="question-text">Q3：林醫師的 r = 0.60 是誰撐起來的？分析時該怎麼處理這兩個點？</span><span class="question-arrow">▶</span></div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">林醫師散點圖</span>：拿掉右上角 2 位病人後，其餘 28 人的相關係數是 0.00；加上這 2 人，整體變成 0.60。</p>
+          <p><span class="tag-i">I:</span> 林醫師「滿意度與回購正相關」的結論，完全由 2 位病人決定。這 2 位可能是 VIP 或特殊方案的顧客，代表的是個案，不是林醫師病人的普遍模式。</p>
+          <p><span class="tag-a">A:</span> 不要直接刪掉離群點，也不要直接保留：先查這兩筆是否為資料錯誤（例如把年度消費誤填成半年），確認是真實顧客後，報告時同時列出「含／不含這 2 人」的兩個結果。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('p4','card-cQ1')">📍 查看：林醫師散點圖</button>
+        <div class="trap-block" data-trap-stage="curate" data-trap="離群值未處理"><span class="trap-icon">⚠</span><span class="trap-tag">整理｜離群值未處理</span><div><strong>常見陷阱：</strong>相關係數對極端值非常敏感，少數幾個點就能從 0 拉到中度相關。算任何相關之前，先畫散點圖找離群點，並確認它們是錯誤資料還是真實但罕見的個案。</div></div>
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="question" onclick="toggleQA(this)"><span class="badge l2">L2·I</span><span class="question-text">Q4：滿意度分數來自療程後的問卷。用這份資料評估「滿意度對回購的影響」，還有什麼要擔心的？</span><span class="question-arrow">▶</span></div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">指標定義</span>：療程後滿意度來自療程後 7 天內寄送的問卷，只有填答的顧客才有分數。本儀表板沒有提供問卷回收率。</p>
+          <p><span class="tag-i">I:</span> 願意填問卷的人，往往是體驗特別好或特別差的人；完全不在乎、也不打算回來的顧客，很可能根本沒填。散點圖裡看到的只是「有填問卷的人」，最該被理解的那群沉默顧客反而不在圖上。</p>
+          <p><span class="tag-a">A:</span> 先向資料端要問卷回收率，並比較「有填」與「沒填」兩群的回購金額。若兩群差很多，散點圖的結論只能套用在填答者身上。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('p4','card-cQ0')">📍 查看：王醫師散點圖</button>
+        <div class="trap-block" data-trap-stage="read" data-trap="倖存者偏誤"><span class="trap-icon">⚠</span><span class="trap-tag">解讀｜倖存者偏誤</span><div><strong>常見陷阱：</strong>只分析「留下紀錄的人」，就把結論推到全部顧客。問卷、評論、回診紀錄都會自動篩掉某一群人；先問「誰沒有出現在這份資料裡」。</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ 綜合訓練題 T1–T5 ══════════ -->
+  <div class="training-block">
+    <div class="training-title">★ 綜合訓練題（T1–T5）— 跨頁推論與決策</div>
+    <div class="qa-section" style="margin-top:0">
+      <div class="qa-item">
+        <div class="question" onclick="toggleQA(this)"><span class="badge l3">L3·A</span><span class="question-text">T1：如果明年只能做一件事來提升「實際到診數」，你選什麼？為什麼？</span><span class="question-arrow">▶</span></div>
+        <div class="answer">
+          <div class="answer-block">
+            <p><span class="tag-i">I:</span> ① 結論：優先對提前 8 天以上的預約加強提醒。② 證據：這類預約占 32.5%，卻貢獻 47.3% 的爽約（<span class="ev">預約提前天數 × 爽約率</span>）；爽約原因第一名是「忘記」（34.0%，<span class="ev">爽約原因</span>）；全年到診率每 1 pp 約等於 480 筆到診（<span class="ev">月度到診率</span>）。</p>
+            <p><span class="tag-a">A:</span> ③ 對照否定論點：也可以加大新客促銷衝預約量，但新客的 90 天回診率只有 26.0%（<span class="ev">新客／舊客回診率</span>），量會進來，卻留不太住。④ 行動：先在 2 間診所試行「前 3 天＋前 1 天」雙提醒一季，和其他 4 間比較爽約率；有效再全面推行。</p>
+          </div>
+          <button class="chart-ref-btn" onclick="goToChart('p1','card-cLead')">📍 查看：預約提前天數 × 爽約率</button>
+          <div class="trap-block" data-trap-stage="read" data-trap="錨定效應"><span class="trap-icon">⚠</span><span class="trap-tag">解讀｜錨定效應</span><div><strong>常見陷阱：</strong>被第一個看到的數字（例如「忘記 34.0%」）定錨，以為解決最大的原因就能解決問題。提醒只能處理「忘記」；「臨時有事」「遲到」需要不同的對策，例如候補名單或彈性改約。</div></div>
+        </div>
+      </div>
+
+      <div class="qa-item">
+        <div class="question" onclick="toggleQA(this)"><span class="badge l3">L3·A</span><span class="question-text">T2：下半年的新客促銷，帶來大量新客，但回診率低。明年要繼續、調整，還是停掉？</span><span class="question-arrow">▶</span></div>
+        <div class="answer">
+          <div class="answer-block">
+            <p><span class="tag-i">I:</span> ① 兩面論述：支持繼續——新客到診從上半年 3,317 筆增加到下半年 4,783 筆（<span class="ev">新客／舊客月度到診</span>），預約 YoY +14.0%。支持停掉——新客 90 天回診率 26.0%，遠低於舊客 61.0%（<span class="ev">新客／舊客回診率</span>），而且下半年到診率下滑。</p>
+            <p><span class="tag-a">A:</span> ② 用第三個維度決策：需要「促銷獲客成本」和「新客一年內的累計消費」——本儀表板都沒有。③ 不選擇的代價：直接停掉，明年新客量可能回到上半年水準；直接繼續，可能持續用優惠買進不會回來的顧客。建議改成「調整」：保留促銷，但把優惠綁在第二次到診（例如回診才折抵），用設計篩選會回來的人。</p>
+          </div>
+          <button class="chart-ref-btn" onclick="goToChart('p2','card-cSimpson')">📍 查看：新客／舊客回診率</button>
+          <div class="trap-block" data-trap-stage="wrangle" data-trap="挑選期間"><span class="trap-icon">⚠</span><span class="trap-tag">加工｜挑選期間</span><div><strong>常見陷阱：</strong>用半年的資料判斷一個「獲客」活動。新客的價值要看較長的時間窗；7–10 月的新客到年底才觀察了 2–5 個月，現在就說「不划算」或「很成功」，都是挑了一個太短的期間。</div></div>
+        </div>
+      </div>
+
+      <div class="qa-item">
+        <div class="question" onclick="toggleQA(this)"><span class="badge l3">L3·A</span><span class="question-text">T3：58.0% 的營收來自兩類高單價療程。這是好現象還是警訊？</span><span class="question-arrow">▶</span></div>
+        <div class="answer">
+          <div class="answer-block">
+            <p><span class="tag-i">I:</span> ① 雙重視角：好的一面——高單價療程是競爭力，皮秒／音波拉提的 90 天回診率也是五類中最高（54.0%，<span class="ev">療程別 90 天回診率</span>）。警訊的一面——營收集中在兩類（<span class="ev">療程別營收</span>），若主力醫師離職、儀器停機或競爭對手降價，衝擊會直接打到近六成營收。</p>
+            <p><span class="tag-a">A:</span> ② 計算衝擊：若這兩類療程需求下降 20%，營收約減少 13,864 萬 × 20% ≈ 2,773 萬，約占全年 11.6%。③ 補救池：保養療程顧客量最大（13,000 筆），若能提高他們轉做高單價療程的比例，可以分散風險、也不必砍掉保養療程。</p>
+          </div>
+          <button class="chart-ref-btn" onclick="goToChart('p3','card-cRevCat')">📍 查看：療程別營收</button>
+          <div class="trap-block" data-trap-stage="read" data-trap="過度集中推論"><span class="trap-icon">⚠</span><span class="trap-tag">解讀｜過度集中推論</span><div><strong>常見陷阱：</strong>把「集中」直接等同「有效率」或「很危險」。集中度本身是中性的，要搭配「這兩類需求有多穩定」「能不能被替代」才能判斷是優勢還是風險。</div></div>
+        </div>
+      </div>
+
+      <div class="qa-item">
+        <div class="question" onclick="toggleQA(this)"><span class="badge l3">L3·A</span><span class="question-text">T4：這份儀表板還缺哪些分析視角？至少提出 3 個。</span><span class="question-arrow">▶</span></div>
+        <div class="answer">
+          <div class="answer-block">
+            <p><span class="tag-a">A:</span> 明顯的三個：① <strong>爽約 × 新舊客交叉</strong>——P2 Q5 的假說需要它驗證；② <strong>醫師排班時數</strong>——P3 Q4 的產能比較缺分母；③ <strong>6 間診所分開看</strong>——標題寫 6 間診所，但全部圖表都是合計，診所之間的差異可能藏著另一個 Simpson 悖論。</p>
+            <p><span class="tag-a">A:</span> 進階的兩個：④ <strong>療程轉換路徑</strong>——保養療程顧客之後轉做哪些療程（P3 Q3）；⑤ <strong>問卷回收率與獲客成本</strong>——前者決定 P4 的結論能推到多少人，後者決定 T2 促銷值不值得。</p>
+          </div>
+          <button class="chart-ref-btn" onclick="goToChart('p3','card-cDoctors')">📍 查看：醫師別到診筆數</button>
+          <div class="trap-block" data-trap-stage="read" data-trap="過度推論"><span class="trap-icon">⚠</span><span class="trap-tag">解讀｜過度推論</span><div><strong>常見陷阱：</strong>只列出「想要更多資料」而不說每一項資料要回答哪個問題。好的缺失維度清單，每一項都要對應到一個目前無法下結論的具體題目。</div></div>
+        </div>
+      </div>
+
+      <div class="qa-item">
+        <div class="question" onclick="toggleQA(this)"><span class="badge l3">L3·A</span><span class="question-text">T5：P1 說預約數成長 14.0%，P2 說回診率掉了 5.0 pp——這家連鎖在變好，還是變壞？</span><span class="question-arrow">▶</span></div>
+        <div class="answer">
+          <div class="answer-block">
+            <p><span class="tag-f">F:</span> ① 各自讀：從<span class="ev">KPI 卡</span>，預約數 48,000 筆，去年 42,105 筆，YoY +14.0%；從<span class="ev">新客／舊客回診率</span>，90 天回診率 46.0% → 41.0%。</p>
+            <p><span class="tag-i">I:</span> ② 找矛盾：兩個指標的分母不同、族群組成也不同。預約數成長主要來自新客；回診率下滑是因為回診率較低的新客在分母中的比例從 40.0% 升到 57.1%，而新客、舊客各自的回診率其實都上升了 1 pp。兩個數字都對，它們描述的是同一個變化（新客湧入）的兩面。</p>
+            <p><span class="tag-a">A:</span> ③ 下判斷：「變好或變壞」取決於新客明年會不會留下來，現在還不能下結論。建議追加監控：H2 新客的 180 天回診率（2026 年 4 月可觀察）、以及新客第二次到診的轉換率。若兩者明年改善，今年的新客擴張就是值得的。</p>
+          </div>
+          <button class="chart-ref-btn" onclick="goToChart('p1','card-cAppts')">📍 查看：月度預約數</button>
+          <button class="chart-ref-btn" onclick="goToChart('p2','card-cSimpson')">📍 查看：新客／舊客回診率</button>
+          <div class="trap-block" data-trap-stage="curate" data-trap="重複紀錄"><span class="trap-icon">⚠</span><span class="trap-tag">整理｜重複紀錄</span><div><strong>常見陷阱：</strong>直接把「預約數成長」當成「需求成長」。依指標定義，取消後重新預約會算成新的一筆；如果下半年取消後重約的情況變多，預約數會被灌大。比較預約數之前，先確認同一位顧客在同一週期內的重複預約有多少。</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ 📐 設計選擇揭露 ══════════ -->
+  <div class="section-title">📐 這份 Dashboard 的設計選擇</div>
+  <div class="design-grid">
+    <div class="design-item"><h4>1. 視覺：P5 醫療信任型，主色經驗證後調整</h4><p>原 P5 的主色 #0891B2 與第二色 #059669 正常視力也難分辨（ΔE 11.8），依配色驗證結果改為 #0369A1（ΔE 18.5）。橘色與綠色在紅綠色盲下 ΔE 7.9，所以這兩色的圖都保留數字標籤。</p></div>
+    <div class="design-item"><h4>2. 刻意截斷的到診率軸</h4><p>P1 月度到診率的 Y 軸只畫 76–90%，是刻意的教學陷阱（P1 Q2），讓學員練習「讀刻度，不讀斜率」。其他所有長條圖的值軸都從 0 開始。</p></div>
+    <div class="design-item"><h4>3. 全部單一值軸</h4><p>這份儀表板沒有任何雙 Y 軸圖。量級不同的指標（例如預約數與到診率）都拆成兩張圖。</p></div>
+    <div class="design-item"><h4>4. 刻意埋設的 Simpson 悖論</h4><p>新客、舊客的回診率都比去年高 1 pp，但新客占比從 40.0% 升到 57.1%，使整體回診率下降 5.0 pp。這個結構是資料生成時刻意設計的（P2 Q4、T5）。</p></div>
+    <div class="design-item"><h4>5. Cohort 的空白格是真的空白</h4><p>H2 群到資料截止日不滿 180 天，該格留空而不是填 0 或填估計值，讓學員練習分辨「沒發生」和「還看不到」（P2 Q3）。</p></div>
+    <div class="design-item"><h4>6. 四位醫師的資料是「同統計量、不同形狀」</h4><p>四組資料的平均數、標準差、相關係數完全相同（70.0／8.0／24.0／6.0／0.60），形狀分別是線性、兩個極端點、兩群、U 形。P4 刻意先只給統計量、再揭曉圖形。</p></div>
+    <div class="design-item"><h4>7. 爽約的定義包含遲到</h4><p>「遲到超過 15 分鐘記為爽約」是刻意保留的口徑選擇，讓學員看到同一份資料換一個定義，KPI 就差 1.7 pp（P1 Q5）。</p></div>
+    <div class="design-item"><h4>8. 刻意缺失的維度</h4><p>爽約沒有拆新舊客、醫師沒有排班時數、6 間診所沒有分開呈現。這些缺口是給 T4 的素材，也讓 P2 Q5、P3 Q4 只能停在假說。</p></div>
+  </div>
+</div>
+</div>
+
+<div class="page-footer">醫美連鎖 預約回診分析 訓練儀表板教材 · 2025 年度資料 · 全部數據為合成資料，僅供訓練用途</div>
+  </div><!-- content-area -->
+</div><!-- main-wrapper -->
+
+<script>
+// ══════════ DATA（由 dev/script/gen_data_medaesthetic.py 生成，改數字請改生成器後重跑） ══════════
+const DATA = /*__DATA__*/{
+  "anchors": {"year":2025,"clinics":6,"appointments":48000,"cancelled":3600,"noshow":4560,"attended":39840,"attend_rate":83.0,"prev_appointments":42105,"prev_attend_rate":86.0,"unique_customers":14200,"new_customers":8100,"returning_customers":6100,"revenue_wan":23904,"aov":6000,"revisit_90d":41.0,"prev_revisit_90d":46.0,"appt_yoy":14.0},
+  "months": ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],
+  "appts": [4720,3120,3680,3800,3920,3840,4320,4240,3720,3880,4200,4560],
+  "cancelled": [316,237,291,283,280,291,306,352,267,275,328,374],
+  "attended": [4068,2688,3141,3223,3257,3173,3586,3543,3049,3159,3350,3603],
+  "noshow": [336,195,248,294,383,376,428,345,404,446,522,583],
+  "noshow_reasons": {"labels":["忘記","臨時有事","遲到超過15分","價格考量","其他"],"counts":[1550,1280,820,540,370]},
+  "lead": {"labels":["當天","1–3天","4–7天","8–14天","15天以上"],"appts":[6200,13400,12800,9100,6500],"noshow":[248,938,1216,1137,1021]},
+  "new_visits": [540,424,540,579,617,617,733,733,694,772,887,964],
+  "returning_visits": [3528,2264,2601,2644,2640,2556,2853,2810,2355,2387,2463,2639],
+  "revisit_by_cat": {"labels":["皮秒／音波拉提","玻尿酸","肉毒","雷射美白","保養療程"],"base":[1500,1700,2600,2900,3300],"revisit":[810,765,1014,1015,1316]},
+  "cohort": {"days":[30,60,90,180],"h1":[21.0,34.5,44.8,58.2],"h1_n":6078,"h2":[17.6,28.9,37.1,null],"h2_n":5922},
+  "simpson": {"segments":["新客","舊客"],"prev":{"base":[4800,7200],"revisit":[1200,4320]},"curr":{"base":[6857,5143],"revisit":[1783,3137]}},
+  "rev_by_cat": {"labels":["皮秒／音波拉提","玻尿酸","肉毒","雷射美白","保養療程"],"revenue_wan":[7650,6214,4302,3346,2392],"visits":[4400,5600,7640,9200,13000]},
+  "aov_hist": {"labels":["<3千","3–6千","6千–1萬","1–2萬","2萬以上"],"visits":[14200,11800,7400,4640,1800]},
+  "doctors": {"labels":["王醫師","林醫師","陳醫師","張醫師","李醫師","黃醫師","吳醫師","劉醫師"],"visits":[6200,5800,5400,5100,4900,4600,4200,3640]},
+  "quartet": {"doctors":["王醫師","林醫師","陳醫師","張醫師"],"kinds":["linear","outlier","clusters","ushape"],"x_label":"療程後滿意度（0–100）","y_label":"半年內回購金額（千元）","points":[[{"x":67.7,"y":19.9},{"x":63.6,"y":16.7},{"x":75.6,"y":31.5},{"x":84.6,"y":31.3},{"x":73.9,"y":22.0},{"x":74.4,"y":18.0},{"x":77.3,"y":27.2},{"x":72.4,"y":18.6},{"x":73.2,"y":25.2},{"x":55.3,"y":16.8},{"x":70.5,"y":23.0},{"x":68.0,"y":22.3},{"x":62.6,"y":12.9},{"x":76.7,"y":20.3},{"x":72.9,"y":27.4},{"x":55.5,"y":24.8},{"x":77.9,"y":36.5},{"x":83.3,"y":27.8},{"x":76.2,"y":31.6},{"x":68.6,"y":32.0},{"x":53.5,"y":14.8},{"x":69.6,"y":28.5},{"x":64.1,"y":16.5},{"x":78.5,"y":23.4},{"x":71.9,"y":26.6},{"x":72.0,"y":25.5},{"x":53.6,"y":19.9},{"x":71.2,"y":31.5},{"x":72.1,"y":29.8},{"x":63.6,"y":17.6}],[{"x":76.7,"y":20.9},{"x":61.9,"y":20.3},{"x":67.7,"y":20.7},{"x":75.3,"y":27.4},{"x":75.7,"y":25.2},{"x":62.3,"y":19.8},{"x":66.5,"y":21.1},{"x":64.6,"y":24.4},{"x":67.6,"y":20.7},{"x":72.7,"y":23.7},{"x":71.2,"y":24.4},{"x":64.8,"y":19.7},{"x":65.3,"y":24.5},{"x":78.8,"y":18.6},{"x":69.4,"y":19.3},{"x":68.8,"y":20.6},{"x":68.2,"y":32.0},{"x":71.0,"y":30.4},{"x":60.6,"y":28.3},{"x":72.6,"y":21.5},{"x":63.3,"y":18.8},{"x":68.4,"y":28.9},{"x":59.8,"y":24.6},{"x":77.3,"y":16.6},{"x":63.8,"y":18.0},{"x":61.4,"y":20.1},{"x":69.9,"y":26.6},{"x":68.3,"y":20.1},{"x":95.1,"y":41.9},{"x":91.1,"y":40.9}],[{"x":65.2,"y":18.5},{"x":63.4,"y":21.7},{"x":61.9,"y":18.7},{"x":63.4,"y":19.1},{"x":64.4,"y":22.5},{"x":62.2,"y":21.5},{"x":58.9,"y":17.6},{"x":60.5,"y":24.3},{"x":65.6,"y":17.0},{"x":62.3,"y":17.0},{"x":59.8,"y":22.2},{"x":62.3,"y":19.7},{"x":59.7,"y":28.5},{"x":59.5,"y":14.2},{"x":65.5,"y":19.1},{"x":78.9,"y":36.9},{"x":76.2,"y":27.4},{"x":76.0,"y":24.2},{"x":80.1,"y":24.7},{"x":77.9,"y":31.3},{"x":74.5,"y":28.4},{"x":77.0,"y":39.6},{"x":81.3,"y":30.9},{"x":81.4,"y":23.1},{"x":80.2,"y":22.8},{"x":74.2,"y":27.2},{"x":78.2,"y":24.4},{"x":76.5,"y":34.4},{"x":77.4,"y":19.6},{"x":75.6,"y":23.7}],[{"x":56.6,"y":27.4},{"x":58.4,"y":24.4},{"x":58.5,"y":25.0},{"x":58.9,"y":25.1},{"x":60.5,"y":22.3},{"x":61.1,"y":21.2},{"x":61.9,"y":20.0},{"x":62.8,"y":19.5},{"x":63.7,"y":18.0},{"x":64.4,"y":19.0},{"x":65.6,"y":18.8},{"x":66.5,"y":17.0},{"x":68.3,"y":18.7},{"x":68.1,"y":18.7},{"x":70.0,"y":18.6},{"x":71.1,"y":18.6},{"x":72.0,"y":19.4},{"x":72.3,"y":20.4},{"x":73.7,"y":20.8},{"x":73.2,"y":20.4},{"x":75.5,"y":23.6},{"x":76.0,"y":24.8},{"x":77.0,"y":25.6},{"x":77.6,"y":27.2},{"x":79.1,"y":30.0},{"x":79.3,"y":31.5},{"x":80.2,"y":32.0},{"x":82.0,"y":35.7},{"x":82.4,"y":36.3},{"x":83.3,"y":39.9}]],"stats":[[70.0,8.0,24.0,6.0,0.6],[70.0,8.0,24.0,6.0,0.6],[70.0,8.0,24.0,6.0,0.6],[70.0,8.0,24.0,6.0,0.6]]}
+}/*__END__*/;
+
+// ══════════ CONSISTENCY GUARD ══════════
+function assertConsistency() {
+  const errors = [];
+  const A = DATA.anchors;
+  const sum = arr => arr.reduce((a, b) => a + b, 0);
+  const eq = (got, exp, label, tol = 0) => { if (Math.abs(got - exp) > tol) errors.push(`${label}: got ${got}, expected ${exp}`); };
+  eq(A.cancelled + A.noshow + A.attended, A.appointments, 'funnel closes');
+  eq(+(A.attended / A.appointments * 100).toFixed(1), A.attend_rate, 'attend_rate');
+  eq(A.new_customers + A.returning_customers, A.unique_customers, 'customer split');
+  eq(A.attended * A.aov / 10000, A.revenue_wan, 'revenue = attended × aov');
+  eq(+((A.appointments / A.prev_appointments - 1) * 100).toFixed(1), A.appt_yoy, 'appt_yoy');
+  eq(sum(DATA.appts), A.appointments, 'monthly appts');
+  eq(sum(DATA.cancelled), A.cancelled, 'monthly cancelled');
+  eq(sum(DATA.attended), A.attended, 'monthly attended');
+  eq(sum(DATA.noshow), A.noshow, 'monthly noshow');
+  DATA.appts.forEach((a, i) => eq(DATA.cancelled[i] + DATA.noshow[i] + DATA.attended[i], a, `month ${i + 1} closes`));
+  eq(sum(DATA.noshow_reasons.counts), A.noshow, 'noshow reasons');
+  eq(sum(DATA.lead.appts), A.appointments, 'lead appts');
+  eq(sum(DATA.lead.noshow), A.noshow, 'lead noshow');
+  eq(sum(DATA.new_visits), A.new_customers, 'new visits');
+  DATA.attended.forEach((t, i) => eq(DATA.new_visits[i] + DATA.returning_visits[i], t, `month ${i + 1} new+returning`));
+  const rb = DATA.revisit_by_cat;
+  eq(+(sum(rb.revisit) / sum(rb.base) * 100).toFixed(1), A.revisit_90d, 'revisit by category');
+  const sp = DATA.simpson;
+  eq(+(sum(sp.curr.revisit) / sum(sp.curr.base) * 100).toFixed(1), A.revisit_90d, 'simpson curr');
+  eq(+(sum(sp.prev.revisit) / sum(sp.prev.base) * 100).toFixed(1), A.prev_revisit_90d, 'simpson prev');
+  eq(sum(sp.curr.revisit), sum(rb.revisit), 'simpson = category revisit');
+  const co = DATA.cohort;
+  eq(co.h1_n + co.h2_n, sum(rb.base), 'cohort sizes = revisit base');
+  eq(+((co.h1[2] * co.h1_n + co.h2[2] * co.h2_n) / (co.h1_n + co.h2_n)).toFixed(1), A.revisit_90d, 'cohort weighted 90d');
+  eq(sum(DATA.rev_by_cat.revenue_wan), A.revenue_wan, 'revenue by category');
+  eq(sum(DATA.rev_by_cat.visits), A.attended, 'visits by category');
+  eq(sum(DATA.aov_hist.visits), A.attended, 'aov histogram');
+  eq(sum(DATA.doctors.visits), A.attended, 'doctor visits');
+  const st = pts => {
+    const n = pts.length, mx = sum(pts.map(p => p.x)) / n, my = sum(pts.map(p => p.y)) / n;
+    const sx = Math.sqrt(sum(pts.map(p => (p.x - mx) ** 2)) / n), sy = Math.sqrt(sum(pts.map(p => (p.y - my) ** 2)) / n);
+    const r = sum(pts.map(p => (p.x - mx) * (p.y - my))) / n / sx / sy;
+    return [mx, sx, my, sy, r];
+  };
+  DATA.quartet.points.forEach((pts, k) => {
+    const [mx, sx, my, sy, r] = st(pts);
+    eq(+mx.toFixed(1), 70.0, `quartet ${k} mean x`, 0.1); eq(+sx.toFixed(1), 8.0, `quartet ${k} sd x`, 0.1);
+    eq(+my.toFixed(1), 24.0, `quartet ${k} mean y`, 0.1); eq(+sy.toFixed(1), 6.0, `quartet ${k} sd y`, 0.1);
+    eq(+r.toFixed(2), 0.60, `quartet ${k} r`, 0.01);
+  });
+  if (errors.length === 0) console.log('✓ All data consistency checks passed');
+  else errors.forEach(e => console.error('✗ Consistency error:', e));
+}
+assertConsistency();
+
+// ══════════ CHART UTILITIES ══════════
+Chart.register(ChartDataLabels);
+if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
+Chart.defaults.plugins.datalabels.display = false; // opt-in per chart
+Chart.defaults.color = '#475569';
+Chart.defaults.borderColor = 'rgba(15,23,42,0.07)';
+Chart.defaults.font.family = "'Source Sans 3', sans-serif";
+
+const TT = { mode: 'index', intersect: false, backgroundColor: '#164E63', titleColor: '#FFFFFF', bodyColor: '#E0F2FE', borderWidth: 0, padding: 10, cornerRadius: 8 };
+
+function c(key, alpha = 1) {
+  const map = { blue: '3,105,161', teal: '5,150,105', orange: '217,119,6', purple: '124,58,237', red: '220,38,38', gray: '100,116,139' };
+  return `rgba(${map[key] || map.blue},${alpha})`;
+}
+
+function mk(id, type, labels, datasets, opts = {}) {
+  const ctx = document.getElementById(id)?.getContext('2d');
+  if (!ctx) return;
+  const def = { legend: { display: false }, tooltip: TT, datalabels: { display: false } };
+  const { plugins, ...rest } = opts;
+  return new Chart(ctx, {
+    type, data: { labels, datasets },
+    options: { responsive: true, maintainAspectRatio: false, animation: { duration: 480, easing: 'easeOutQuart' }, ...rest, plugins: { ...def, ...(plugins || {}) } }
+  });
+}
+const fmt = n => n.toLocaleString('en-US');
+const axisMax = (arr, step) => Math.ceil(Math.max(...arr) * 1.2 / step) * step;
+
+// ══════════ DRAW（Layer 2–4 填入） ══════════
+// KPI 卡數值一律由 DATA 計算（SSOT），HTML 不寫死數字
+const pct = (a, b, d = 1) => (a / b * 100).toFixed(d) + '%';
+const KPI = {
+  appointments: A => fmt(A.appointments) + ' 筆',
+  appt_yoy: A => `YoY ${A.appt_yoy > 0 ? '+' : ''}${A.appt_yoy.toFixed(1)}%（去年 ${fmt(A.prev_appointments)}）`,
+  attend_rate: A => A.attend_rate.toFixed(1) + '%',
+  attend_delta: A => `${(A.attend_rate - A.prev_attend_rate).toFixed(1)} pp（去年 ${A.prev_attend_rate.toFixed(1)}%）`,
+  noshow_rate: A => pct(A.noshow, A.appointments),
+  noshow_n: A => fmt(A.noshow) + ' 筆',
+  cancel_rate: A => pct(A.cancelled, A.appointments),
+  cancel_n: A => fmt(A.cancelled) + ' 筆',
+  customers: A => fmt(A.unique_customers) + ' 人',
+  customers_split: A => `新客 ${fmt(A.new_customers)}／舊客 ${fmt(A.returning_customers)}`,
+  revisit: A => A.revisit_90d.toFixed(1) + '%',
+  revisit_delta: A => `${(A.revisit_90d - A.prev_revisit_90d).toFixed(1)} pp（去年 ${A.prev_revisit_90d.toFixed(1)}%）`,
+  new_share: () => { const s = h => pct(sum6(DATA.new_visits, h), sum6(DATA.attended, h)); return `${s(0)} → ${s(1)}`; },
+  new_share_sub: () => `新客到診 ${fmt(sum6(DATA.new_visits, 0))} → ${fmt(sum6(DATA.new_visits, 1))} 筆`,
+  revenue: A => fmt(A.revenue_wan) + ' 萬',
+  revenue_sub: A => `實到 ${fmt(A.attended)} 筆 × NT$${fmt(A.aov)}`,
+  aov: A => 'NT$' + fmt(A.aov),
+  aov_sub: () => { const h = DATA.aov_hist.visits, t = h.reduce((a, b) => a + b, 0); return `${pct(h[0] + h[1], t)} 的到診低於 NT$6,000`; },
+  doctors: () => DATA.doctors.labels.length + ' 位',
+  doctors_sub: () => { const v = DATA.doctors.visits; return `最多／最少 = ${(Math.max(...v) / Math.min(...v)).toFixed(1)} 倍`; },
+};
+const sum6 = (arr, half) => arr.slice(half * 6, half * 6 + 6).reduce((a, b) => a + b, 0);
+function fillKPIs() {
+  document.querySelectorAll('[data-kpi]').forEach(el => {
+    const f = KPI[el.dataset.kpi];
+    el.textContent = f ? f(DATA.anchors) : '⚠ 未定義 KPI：' + el.dataset.kpi;
+  });
+}
+
+function draw_p1() {
+  const M = DATA.months;
+  mk('cAppts', 'bar', M, [{ label: '預約數', data: DATA.appts, backgroundColor: c('blue', 0.75), borderRadius: 4 }], {
+    plugins: { datalabels: { display: true, anchor: 'end', align: 'end', color: '#475569', font: { size: 10 }, formatter: v => fmt(v) } },
+    scales: { y: { min: 0, max: axisMax(DATA.appts, 500), title: { display: true, text: '筆' } }, x: { grid: { display: false } } }
+  });
+  const rate = DATA.attended.map((t, i) => +(t / DATA.appts[i] * 100).toFixed(1));
+  mk('cAttend', 'line', M, [{ label: '到診率', data: rate, borderColor: c('teal'), backgroundColor: c('teal', 0.1), borderWidth: 2, pointRadius: 4, pointHoverRadius: 10, tension: 0.25 }], {
+    interaction: { mode: 'index', intersect: false },
+    plugins: { datalabels: { display: true, align: 'top', color: '#047857', font: { size: 10 }, formatter: v => v.toFixed(1) } },
+    // 刻意截斷軸（教學陷阱，見 Q2 trap-block「截斷軸」）
+    scales: { y: { min: 76, max: 90, title: { display: true, text: '%' }, ticks: { callback: v => v + '%' } }, x: { grid: { display: false } } }
+  });
+  const R = DATA.noshow_reasons;
+  mk('cReason', 'bar', R.labels, [{ label: '爽約筆數', data: R.counts, backgroundColor: c('red', 0.7), borderRadius: 4 }], {
+    indexAxis: 'y',
+    plugins: { datalabels: { display: true, anchor: 'end', align: 'end', color: '#475569', font: { size: 11 }, formatter: v => `${fmt(v)}（${pct(v, DATA.anchors.noshow)}）` } },
+    scales: { x: { min: 0, max: axisMax(R.counts, 200), title: { display: true, text: '筆' } }, y: { grid: { display: false } } }
+  });
+  const L = DATA.lead, lr = L.noshow.map((n, i) => +(n / L.appts[i] * 100).toFixed(1));
+  mk('cLead', 'bar', L.labels, [{ label: '爽約率', data: lr, backgroundColor: c('orange', 0.75), borderRadius: 4 }], {
+    plugins: {
+      datalabels: { display: true, anchor: 'end', align: 'end', color: '#475569', font: { size: 11 }, formatter: (v, ctx) => `${v.toFixed(1)}%\n(${fmt(L.noshow[ctx.dataIndex])}/${fmt(L.appts[ctx.dataIndex])})`, textAlign: 'center' },
+      tooltip: { ...TT, callbacks: { label: ctx => ` 爽約率 ${ctx.raw}%（${fmt(L.noshow[ctx.dataIndex])} ÷ ${fmt(L.appts[ctx.dataIndex])}）` } }
+    },
+    scales: { y: { min: 0, max: 22, title: { display: true, text: '%' }, ticks: { callback: v => v + '%' } }, x: { grid: { display: false } } }
+  });
+}
+function draw_p2() {
+  const M = DATA.months, tot = DATA.attended;
+  mk('cNewRet', 'bar', M, [
+    { label: '舊客到診', data: DATA.returning_visits, backgroundColor: c('blue', 0.7), stack: 's', borderRadius: 2 },
+    { label: '新客到診', data: DATA.new_visits, backgroundColor: c('purple', 0.75), stack: 's', borderRadius: 2,
+      datalabels: { display: true, anchor: 'end', align: 'end', color: '#475569', font: { size: 10 }, formatter: (v, ctx) => pct(v, tot[ctx.dataIndex]) } }
+  ], {
+    plugins: { legend: { display: true, position: 'bottom' },
+      tooltip: { ...TT, callbacks: { label: ctx => ` ${ctx.dataset.label}：${fmt(ctx.raw)} 筆（${pct(ctx.raw, tot[ctx.dataIndex])}）` } } },
+    scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, min: 0, max: axisMax(tot, 500), title: { display: true, text: '筆' } } }
+  });
+  const rb = DATA.revisit_by_cat;
+  const rows = rb.labels.map((l, i) => ({ l, r: +(rb.revisit[i] / rb.base[i] * 100).toFixed(1), n: rb.base[i] })).sort((a, b) => b.r - a.r);
+  mk('cRevisitCat', 'bar', rows.map(x => x.l), [{ label: '90 天回診率', data: rows.map(x => x.r), backgroundColor: c('teal', 0.75), borderRadius: 4 }], {
+    plugins: { datalabels: { display: true, anchor: 'end', align: 'end', color: '#475569', font: { size: 11 }, textAlign: 'center', formatter: (v, ctx) => [`${v.toFixed(1)}%`, `n=${fmt(rows[ctx.dataIndex].n)}`] } },
+    scales: { y: { min: 0, max: 70, title: { display: true, text: '%' }, ticks: { callback: v => v + '%' } }, x: { grid: { display: false } } }
+  });
+  const co = DATA.cohort, days = co.days.map(d => d + ' 天');
+  mk('cCohort', 'line', days, [
+    { label: `H1（1–6 月，${fmt(co.h1_n)} 人）`, data: co.h1, borderColor: c('blue'), backgroundColor: c('blue', 0.1), borderWidth: 2, pointRadius: 4, pointHoverRadius: 10 },
+    { label: `H2（7–10 月，${fmt(co.h2_n)} 人）`, data: co.h2, borderColor: c('orange'), backgroundColor: c('orange', 0.1), borderWidth: 2, pointRadius: 4, pointHoverRadius: 10, spanGaps: false }
+  ], {
+    interaction: { mode: 'index', intersect: false },
+    plugins: { legend: { display: true, position: 'bottom' },
+      datalabels: { display: ctx => ctx.dataset.data[ctx.dataIndex] != null, align: ctx => ctx.datasetIndex === 1 ? 'bottom' : 'top', color: '#475569', font: { size: 10 }, formatter: v => v.toFixed(1) + '%' },
+      annotation: { annotations: { na: { type: 'label', xValue: 2.55, yValue: 14, content: ['H2 180 天：觀察期未滿', '（資料截至 2025/12/31）'], color: '#B45309', font: { size: 11 }, backgroundColor: 'rgba(217,119,6,0.08)', padding: 6 } } } },
+    scales: { y: { min: 0, max: 70, title: { display: true, text: '累計回診 %' }, ticks: { callback: v => v + '%' } }, x: { grid: { display: false } } }
+  });
+  const sp = DATA.simpson, rate = (s, i) => +(s.revisit[i] / s.base[i] * 100).toFixed(1);
+  const agg = s => +(s.revisit.reduce((a, b) => a + b, 0) / s.base.reduce((a, b) => a + b, 0) * 100).toFixed(1);
+  const lbl = ['新客', '舊客', '整體'];
+  mk('cSimpson', 'bar', lbl, [
+    { label: '2024', data: [rate(sp.prev, 0), rate(sp.prev, 1), agg(sp.prev)], backgroundColor: c('gray', 0.55), borderRadius: 4 },
+    { label: '2025', data: [rate(sp.curr, 0), rate(sp.curr, 1), agg(sp.curr)], backgroundColor: c('blue', 0.8), borderRadius: 4 }
+  ], {
+    plugins: { legend: { display: true, position: 'bottom' },
+      datalabels: { display: true, anchor: 'end', align: 'end', color: '#475569', font: { size: 11 }, formatter: v => v.toFixed(1) + '%' } },
+    scales: { y: { min: 0, max: 80, title: { display: true, text: '%' }, ticks: { callback: v => v + '%' } }, x: { grid: { display: false } } }
+  });
+}
+
+function draw_p3() {
+  const rc = DATA.rev_by_cat, A = DATA.anchors;
+  mk('cRevCat', 'bar', rc.labels, [{ label: '營收（萬）', data: rc.revenue_wan, backgroundColor: c('blue', 0.75), borderRadius: 4 }], {
+    plugins: { datalabels: { display: true, anchor: 'end', align: 'end', color: '#475569', font: { size: 11 }, formatter: v => `${fmt(v)}（${pct(v, A.revenue_wan)}）` } },
+    scales: { y: { min: 0, max: axisMax(rc.revenue_wan, 1000), title: { display: true, text: '萬元' } }, x: { grid: { display: false } } }
+  });
+  const mix = rc.labels.map((l, i) => ({ l, v: rc.visits[i] })).sort((a, b) => b.v - a.v);
+  const mixColors = ['teal', 'blue', 'orange', 'purple', 'gray'].map(k => c(k, 0.8)); // red 保留給警示語意
+  new Chart(document.getElementById('cMix'), {
+    type: 'doughnut',
+    data: { labels: mix.map(x => x.l), datasets: [{ data: mix.map(x => x.v), backgroundColor: mixColors, borderColor: '#FFFFFF', borderWidth: 2 }] },
+    options: { responsive: true, maintainAspectRatio: false, rotation: -90, cutout: '55%', layout: { padding: 36 },
+      plugins: { legend: { display: false }, tooltip: { ...TT, mode: 'nearest', callbacks: { label: ctx => ` ${ctx.label}：${fmt(ctx.raw)} 筆（${pct(ctx.raw, A.attended)}）` } },
+        datalabels: { display: true, anchor: 'end', align: 'end', offset: 6, color: '#334155', font: { size: 11, weight: 600 }, textAlign: 'center', formatter: (v, ctx) => `${ctx.chart.data.labels[ctx.dataIndex]}\n${pct(v, A.attended)}` } } }
+  });
+  const ah = DATA.aov_hist;
+  mk('cAovHist', 'bar', ah.labels, [{ label: '到診筆數', data: ah.visits, backgroundColor: c('orange', 0.75), borderRadius: 4 }], {
+    plugins: { datalabels: { display: true, anchor: 'end', align: 'end', color: '#475569', font: { size: 11 }, formatter: v => `${fmt(v)}（${pct(v, A.attended)}）` } },
+    scales: { y: { min: 0, max: axisMax(ah.visits, 2000), title: { display: true, text: '筆' } }, x: { grid: { display: false }, title: { display: true, text: '單次消費金額（NT$）' } } }
+  });
+  const dc = DATA.doctors;
+  mk('cDoctors', 'bar', dc.labels, [{ label: '到診筆數', data: dc.visits, backgroundColor: c('purple', 0.7), borderRadius: 4 }], {
+    plugins: { datalabels: { display: true, anchor: 'end', align: 'end', color: '#475569', font: { size: 11 }, formatter: v => fmt(v) } },
+    scales: { y: { min: 0, max: axisMax(dc.visits, 1000), title: { display: true, text: '筆' } }, x: { grid: { display: false } } }
+  });
+}
+function quartetStats(pts) {
+  const n = pts.length, s = a => a.reduce((x, y) => x + y, 0);
+  const mx = s(pts.map(p => p.x)) / n, my = s(pts.map(p => p.y)) / n;
+  const sx = Math.sqrt(s(pts.map(p => (p.x - mx) ** 2)) / n), sy = Math.sqrt(s(pts.map(p => (p.y - my) ** 2)) / n);
+  return { n, mx, sx, my, sy, r: s(pts.map(p => (p.x - mx) * (p.y - my))) / n / sx / sy };
+}
+function draw_p4() {
+  const Q = DATA.quartet;
+  // 統計量表一律由原始點重算（不抄生成器的數字）
+  document.querySelector('#stat-table tbody').innerHTML = Q.points.map((pts, i) => {
+    const t = quartetStats(pts);
+    return `<tr><td>${Q.doctors[i]}</td><td>${t.n}</td><td>${t.mx.toFixed(1)}</td><td>${t.sx.toFixed(1)}</td><td>${t.my.toFixed(1)}</td><td>${t.sy.toFixed(1)}</td><td>${t.r.toFixed(2)}</td></tr>`;
+  }).join('');
+  Q.points.forEach((pts, i) => {
+    document.querySelector(`[data-qtitle="${i}"]`).textContent = `${Q.doctors[i]}（r = ${quartetStats(pts).r.toFixed(2)}）`;
+    mk('cQ' + i, 'scatter', null, [{ label: Q.doctors[i], data: pts, backgroundColor: c('blue', 0.55), borderColor: c('blue', 0.9), pointRadius: 4, pointHoverRadius: 10 }], {
+      plugins: { tooltip: { ...TT, mode: 'nearest', intersect: true, callbacks: { label: ctx => ` 滿意度 ${ctx.raw.x}，回購 ${ctx.raw.y} 千元` } } },
+      // 四張圖共用相同座標範圍（small multiples 一致刻度，B.9-6）
+      scales: { x: { min: 50, max: 100, title: { display: true, text: '滿意度' } }, y: { min: 10, max: 45, title: { display: true, text: '千元' } } }
+    });
+  });
+}
+function revealQuartet() {
+  document.getElementById('quartet-wrap').classList.remove('veiled');
+  const b = document.getElementById('revealBtn');
+  b.disabled = true; b.textContent = '已揭曉：對照你剛才寫下的結論';
+}
+
+// ══════════ PAGE / UI ══════════
+const PAGES = ['p1', 'p2', 'p3', 'p4'];
+const initialized = {};
+function switchPage(name) {
+  PAGES.forEach(p => {
+    document.getElementById('page-' + p).classList.toggle('active', p === name);
+    document.getElementById('tab-' + p).classList.toggle('active', p === name);
+  });
+  if (!initialized[name]) {
+    initialized[name] = true;
+    setTimeout(() => { const fn = window['draw_' + name]; if (fn) fn(); }, 60);
+  }
+}
+function toggleDef() {
+  const outer = document.getElementById('def-panel-outer');
+  outer.classList.toggle('open');
+  document.getElementById('defToggleBtn').classList.toggle('open');
+  if (!outer.classList.contains('open')) { document.getElementById('defSearch').value = ''; filterDef(''); }
+  outer.addEventListener('transitionend', () => Object.values(Chart.instances).forEach(ch => ch.resize()), { once: true });
+}
+function filterDef(query) {
+  const q = query.trim().toLowerCase();
+  let matched = 0;
+  document.querySelectorAll('#def-panel-inner .def-item').forEach(item => {
+    const show = q === '' || item.textContent.toLowerCase().includes(q);
+    item.style.display = show ? '' : 'none';
+    if (show) matched++;
+  });
+  document.getElementById('defNoResult').style.display = (q !== '' && matched === 0) ? 'block' : 'none';
+}
+function syncHeaderHeight() { document.documentElement.style.setProperty('--header-h', document.getElementById('top-header').offsetHeight + 'px'); }
+window.addEventListener('load', syncHeaderHeight);
+window.addEventListener('resize', syncHeaderHeight);
+function toggleQA(el) {
+  const item = el.closest('.qa-item');
+  const open = !item.classList.contains('open');
+  item.classList.toggle('open', open);
+  item.querySelector('.answer').classList.toggle('show', open);
+}
+function goToChart(page, cardId) {
+  switchPage(page);
+  setTimeout(() => {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    card.classList.remove('chart-flash'); void card.offsetWidth; card.classList.add('chart-flash');
+    setTimeout(() => card.classList.remove('chart-flash'), 2400);
+  }, 200);
+}
+document.addEventListener('DOMContentLoaded', () => {
+  fillKPIs();
+  document.querySelectorAll('.findings-section').forEach(s => {
+    s.classList.add('collapsed');
+    s.querySelector('.findings-label')?.addEventListener('click', () => s.classList.toggle('collapsed'));
+  });
+  switchPage('p1');
+});
+</script>
+</body>
+</html>

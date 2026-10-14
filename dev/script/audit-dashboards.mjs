@@ -163,6 +163,15 @@ const PAGE_AUDIT = async (pageWait) => {
       badRefs.push(`${pg}/${id}：card 位於 #${pageEl ? pageEl.id : '?'}，與 page 參數不符`);
   }
   if (badRefs.length) out.fail.push('goToChart 目標錯誤：' + [...new Set(badRefs)].slice(0, 6).join(' | '));
+  // B.5／E.1 #33：findings 載入後必須預設坍縮（檢查「看得到的內容」，不只看 class）
+  const openFindings = [...document.querySelectorAll('.findings-section')].filter(sec => {
+    // 第一個子元素是標題列（.findings-label 或 .findings-toggle-btn 等各份寫法），其餘才是內容
+    // 用 computed display 判斷（隱藏分頁裡的區塊也能檢查）；裸 text node 收合不了（tech-notes #21）一律算未坍縮
+    const visible = [...sec.children].slice(1).filter(ch => getComputedStyle(ch).display !== 'none' && ch.textContent.trim());
+    const strayText = [...sec.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
+    return visible.length || strayText;
+  });
+  if (openFindings.length) out.fail.push(`${openFindings.length} 個 findings-section 載入後未坍縮（E.1 #33）`);
   // C.4c 陷阱分類：每個 trap-block 要有合法 stage＋名稱，整份涵蓋 ≥3 階段，同名 ≤2 次
   const STAGES = ['curate', 'wrangle', 'visualize', 'read'];
   const traps = [...document.querySelectorAll('.trap-block')];
