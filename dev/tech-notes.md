@@ -606,3 +606,16 @@ plugins: {
 ```
 
 **注意：** `mk()` factory 在 `options.plugins.datalabels` 未設定時會套用全域 register 的 datalabels 預設值。Donut chart **不經過 `mk()`**，直接 `new Chart()` 建立，因此需要在 plugins 區塊明確設定 datalabels，不能依賴全域。
+
+---
+
+## 25. 全域預設改動與內容回填：先量「中性」，再交付（2026-10-14）
+
+**問題：** 補上 `Chart.defaults.plugins.datalabels.display = false` 時，電商DTC 有 11 張圖的數字消失。原因是那些圖只寫了 datalabels 樣式，沒寫 `display:true`，一直靠舊預設 true 在顯示。光讀程式碼看不出來。
+
+**做法：**
+- **改全域預設**：改動前後各拍一次每個 canvas 的 `toDataURL()` 雜湊並比對（切過所有分頁、等 2.5s 動畫）。基準要拍兩次：零售 P1 的 4 張圖本來就會在兩種狀態之間跳。修法是給每個 datalabels 設定補上顯式 `display:true`。
+- **subagent 回填 `.ev`／`.chart-ref-btn`**：先把允許的新增（按鈕、`card-` id、ev 包裹、「從〈圖〉，」前綴、CSS）正規化掉，再跟 `git show HEAD:` 比對，剩下的差異逐條判讀。本次因此撤回了餐飲 3 處沒有真實出處的硬標。
+- **交付閘**：`node dev/script/audit-dashboards.mjs` 必須 exit 0。它也會檢查 `goToChart(page, cardId)` 的目標存在，且位於所宣告的分頁。
+
+**[global]** 方法本身已上行為 `~/.claude/technotes/verification-testing.md` verification-143；本條只保留本專案的具體值。
