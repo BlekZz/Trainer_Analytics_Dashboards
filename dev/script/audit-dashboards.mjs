@@ -130,6 +130,11 @@ const PAGE_AUDIT = async (pageWait) => {
   const pages = [...new Set([...document.querySelectorAll('[onclick*="switchPage"]')]
     .map(t => (t.getAttribute('onclick').match(/switchPage\(\s*['"]([^'"]+)['"]/) || [])[1]).filter(Boolean))];
   if (!pages.length) out.fail.push('找不到任何 switchPage 分頁');
+  // 版面結構：所有分頁必須是同一個容器的子元素（多一個 </div> 會讓後面的分頁跑到外層，圖照畫但版面錯位）
+  const pageEls = [...document.querySelectorAll('.page')];
+  const parents = new Set(pageEls.map(el => el.parentElement));
+  if (parents.size > 1) out.fail.push('分頁不在同一個容器內（疑似多餘的 </div>）：' + pageEls.map(el => `#${el.id}→${el.parentElement.id || el.parentElement.tagName.toLowerCase()}`).join(', '));
+  if (document.documentElement.scrollWidth > window.innerWidth + 1) out.fail.push(`頁面橫向溢出：內容寬 ${document.documentElement.scrollWidth}px > 視窗 ${window.innerWidth}px`);
   for (const p of pages) {
     try { switchPage(p); } catch (e) { out.fail.push(`switchPage('${p}') throw: ${e.message}`); }
     await new Promise(r => setTimeout(r, pageWait));

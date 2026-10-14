@@ -619,3 +619,14 @@ plugins: {
 - **交付閘**：`node dev/script/audit-dashboards.mjs` 必須 exit 0。它也會檢查 `goToChart(page, cardId)` 的目標存在，且位於所宣告的分頁。
 
 **[global]** 方法本身已上行為 `~/.claude/technotes/verification-testing.md` verification-143；本條只保留本專案的具體值。
+
+---
+
+## 26. 多一個 `</div>` 會讓後面的分頁跑出內容區，而圖表照畫、audit 照綠（2026-10-14）
+
+**問題：** 第 8 份分層建構時，P2–P4 用 Edit 取代 `<div id="page-pX" class="page">` 加佔位註解，新內容自帶結尾 `</div>`，原本的結尾 `</div>` 卻沒被取代，每頁多一個。結果 P3 變成 `#main-wrapper` 的 flex 子元素、P4 掉到 `<body>`：1440px 寬時內容區只剩 439px，P3／P4 被擠到右側並切邊。圖表照常渲染，所以當時的 audit 全綠。
+
+**做法：**
+- `audit-dashboards.mjs` 已加 FAIL 檢查：所有 `.page` 的 parentElement 必須是同一個容器（mutation：拿修正前的版本 → FAIL）。
+- 用 Edit 取代「開頭 tag＋佔位」時，old_string 要連同該區塊的結尾 tag 一起取代，或 new_string 不要自帶結尾。
+- 用瀏覽器驗修正時，網址加 `?v=<任意值>` 避開快取；本次第一次重截圖讀到的是快取舊版。
