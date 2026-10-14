@@ -147,6 +147,20 @@ const PAGE_AUDIT = async (pageWait) => {
   if (!trap) out.fail.push('缺 .trap-block（紅線 #3）');
   if (!fia) out.fail.push('缺 F/I/A 標註（紅線 #2）');
   if (!designPanel) out.fail.push('缺「設計選擇／設計說明」區塊（紅線 #4）');
+  // goToChart(page, cardId) 目標必須存在，且位於該 page 的容器內（避免跳錯頁／死連結）
+  const badRefs = [];
+  for (const el of document.querySelectorAll('[onclick*="goToChart"]')) {
+    const m = el.getAttribute('onclick').match(/goToChart\(\s*['"]([^'"]+)['"]\s*,\s*['"]([^'"]+)['"]/);
+    if (!m) { badRefs.push('無法解析：' + el.getAttribute('onclick')); continue; }
+    const [, pg, id] = m, card = document.getElementById(id);
+    const pageEl = card && card.closest('.page');
+    const tabFor = pageEl && [...document.querySelectorAll('[onclick*="switchPage"]')]
+      .some(t => new RegExp(`switchPage\\(\\s*['"]${pg}['"]`).test(t.getAttribute('onclick')));
+    if (!card) badRefs.push(`${pg}/${id}：card 不存在`);
+    else if (!pageEl || !tabFor || !(pageEl.id === pg || pageEl.id.endsWith('-' + pg) || pageEl.id === 'page-' + pg || pageEl.id === 'p-' + pg))
+      badRefs.push(`${pg}/${id}：card 位於 #${pageEl ? pageEl.id : '?'}，與 page 參數不符`);
+  }
+  if (badRefs.length) out.fail.push('goToChart 目標錯誤：' + [...new Set(badRefs)].slice(0, 6).join(' | '));
   const optional = { '.ev': '證據碼（E.1 #12）', '.nav-hint': '跨頁 nav-hint（E.1 #14）', '.chart-ref-btn': '圖表索引按鈕（E.1 #23）' };
   for (const [sel, label] of Object.entries(optional)) if (!count(sel)) out.warn.push(`缺 ${sel} ${label}`);
   Object.assign(out.info, { pages: pages.length, charts: cvs.length - noChart.length, canvas: cvs.length, qa, trap, fia, title: document.title });
