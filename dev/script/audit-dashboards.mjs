@@ -10,6 +10,7 @@
  *   [FAIL] 教學紅線元素存在：.qa-item、.trap-block、F/I/A 標註、設計選擇／設計說明區塊
  *   [WARN] Chart.defaults.plugins.datalabels.display 未設為 false（opt-in 規範）
  *   [WARN] <title> 與檔名不一致
+ *   [WARN] 缺 .ev 證據碼 / .nav-hint / .chart-ref-btn（E.1 #12 / #14 / #23）
  *
  * 用法：
  *   node dev/script/audit-dashboards.mjs                 # 檢查 Dashboard/*.html
@@ -146,6 +147,8 @@ const PAGE_AUDIT = async (pageWait) => {
   if (!trap) out.fail.push('缺 .trap-block（紅線 #3）');
   if (!fia) out.fail.push('缺 F/I/A 標註（紅線 #2）');
   if (!designPanel) out.fail.push('缺「設計選擇／設計說明」區塊（紅線 #4）');
+  const optional = { '.ev': '證據碼（E.1 #12）', '.nav-hint': '跨頁 nav-hint（E.1 #14）', '.chart-ref-btn': '圖表索引按鈕（E.1 #23）' };
+  for (const [sel, label] of Object.entries(optional)) if (!count(sel)) out.warn.push(`缺 ${sel} ${label}`);
   Object.assign(out.info, { pages: pages.length, charts: cvs.length - noChart.length, canvas: cvs.length, qa, trap, fia, title: document.title });
   return out;
 };
