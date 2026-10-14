@@ -319,7 +319,10 @@
     @media(max-width:480px) {
       .kpi-grid { grid-template-columns: 1fr; }
     }
-  </style>
+      /* ── C.4c 陷阱分類 chip／E.1 #12 證據碼（2026-10-14） ── */
+    .trap-tag { display: inline-block; flex-shrink: 0; align-self: flex-start; white-space: nowrap; font-size: 0.7rem; font-weight: 600; padding: 1px 6px; border-radius: 4px; margin-left: 6px; background: rgba(212,67,47,0.12); color: #e8847a; opacity: 0.85; }
+    .ev { display: inline; background: rgba(59,130,246,0.14); border-radius: 4px; padding: 1px 5px; font-family: 'JetBrains Mono', monospace; font-size: 0.71rem; color: var(--accent); font-weight: 500; }
+</style>
 </head>
 <body>
 
@@ -471,10 +474,10 @@
 
   <div class="section-title">月度來客趨勢 × 客單價</div>
   <div class="chart-card" id="card-cVisitAOV">
-    <div class="chart-card-title">月度來客人次（左軸）× 月均客單價（右軸）</div>
+    <div class="chart-card-title">{洞見式標題，例：Q4 來客明顯走高，2 月春節最低}（人次｜{資料期間}）</div>
     <div class="chart-block h300"><canvas id="cVisitAOV"></canvas></div>
     <div class="findings-section">
-      <strong>圖表解讀：</strong>藍柱 = 月度來客人次（左軸），橘線 = 月均客單價（右軸）。旺季集中於 Q4（10–12月），來客量顯著提升；客單價全年維持穩定（NT$285–287），顯示業績成長由來客人次驅動，非提價效應。Q1二月最低，受農曆春節影響。
+      <strong>圖表解讀：</strong>藍柱 = 月度來客人次。旺季集中於 Q4（10–12月），來客量顯著提升；客單價全年維持穩定（NT$285–287），顯示業績成長由來客人次驅動，非提價效應。Q1二月最低，受農曆春節影響。
     </div>
   </div>
 
@@ -569,8 +572,8 @@
           <p><span class="tag-i">I:</span> 外帶比例上升反映外帶偏好增加，<strong>但不等同於內用絕對人次下降</strong>。若同期總來客人次也在成長（+10.2% YoY），則內用絕對人次可能仍維持或小幅成長，只是成長速度慢於外帶。</p>
           <p>交叉驗證：需同時看總來客趨勢（月度趨勢圖）與外帶佔比趨勢（本圖）才能下定論。</p>
         </div>
-        <div class="trap-block">
-          <span class="trap-icon">⚠</span>
+        <div class="trap-block" data-trap-stage="wrangle" data-trap="量級錯置">
+          <span class="trap-icon">⚠</span><span class="trap-tag">加工｜量級錯置</span>
           <div><strong>常見陷阱：</strong>比例上升 ≠ 絕對量下降。看到「外帶佔比上升」就直接推論「內用在萎縮」是比例vs.絕對量的基本混淆，需要同時對照總量圖表才能做出正確判斷。</div>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('ops','card-cDineTakeout')">📍 查看：內用 vs 外帶比例</button>
@@ -606,8 +609,8 @@
           <p><span class="tag-i">I:</span> 高業績門市已有成熟客群和位置紅利，邊際改善空間受限；低業績門市可能有兩種情況：A) 選址問題（外部因素，難以改變）；B) 運營效率問題（內部因素，有改善空間）。</p>
           <p><span class="tag-a">A:</span> 建議 <strong>先診斷低業績原因</strong>，再決策資源分配——若是選址導致的低流量，投入改善的ROI很低；若是菜單、服務、效率問題，則有高槓桿改善機會。不應不加區分地「優先改善低業績門市」。</p>
         </div>
-        <div class="trap-block">
-          <span class="trap-icon">⚠</span>
+        <div class="trap-block" data-trap-stage="read" data-trap="過度推論">
+          <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜過度推論</span>
           <div><strong>常見陷阱：</strong>直覺上「低業績門市最需要幫助」聽起來合理，但選址差的門市即使大幅改善運營，也難以追趕商圈客流先天不足的劣勢。診斷原因先於資源投入，是分析師vs.直覺決策者的核心差距。</div>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('ops','card-cStoreRank')">📍 查看：34門市業績排行</button>
@@ -760,8 +763,8 @@
           <p><span class="tag-i">I:</span> 這是逆直覺的關鍵洞察。VIP的定義是年消費≥12次（月均≥1次），頻率遠高於常客（年4-11次）。<strong>高頻率造成「習慣性點餐」行為</strong>——每次不一定點最貴的組合，但年度總消費額（LTV）遠高於常客。</p>
           <p><span class="tag-a">A:</span> 估算示意（年均頻次為假設值，非儀表板原始資料）：若VIP年均32次、AOV=271，則年LTV≈ NT$8,672；常客若年均15次、AOV=303，年LTV≈ NT$4,545——VIP的LTV幾乎是常客的1.9倍。實際頻次需從門市點單記錄計算，此處為說明原理的估算。</p>
         </div>
-        <div class="trap-block">
-          <span class="trap-icon">⚠</span>
+        <div class="trap-block" data-trap-stage="wrangle" data-trap="平均數陷阱">
+          <span class="trap-icon">⚠</span><span class="trap-tag">加工｜平均數陷阱</span>
           <div><strong>常見陷阱：</strong>AOV（每次客單價）≠ LTV（全年總價值）。用單次消費金額評估顧客價值，會系統性低估高頻顧客的重要性——這是餐飲分析中最典型的單指標陷阱之一。</div>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('cust','card-cTierAOV')">📍 查看：各等級平均客單價</button>
@@ -797,8 +800,8 @@
           <p><span class="tag-i">I:</span> 高頻顧客已習慣性高頻消費，維持黏性的成本較低但邊際提升空間有限；中頻顧客（年7-11次）距離12次高頻門檻僅差1-5次，轉化槓桿最高。</p>
           <p><span class="tag-a">A:</span> 首要行動：<strong>設計「年7-11次→年12次+」的升頻方案</strong>，例如「滿10次送下次折扣」，將中頻轉高頻的槓桿效果（+21,170人×貢獻率提升）遠大於只服務現有12,480名VIP。</p>
         </div>
-        <div class="trap-block">
-          <span class="trap-icon">⚠</span>
+        <div class="trap-block" data-trap-stage="wrangle" data-trap="分母錯置">
+          <span class="trap-icon">⚠</span><span class="trap-tag">加工｜分母錯置</span>
           <div><strong>常見陷阱：</strong>「提升高頻貢獻率」≠「只服務現有高頻顧客」。如果資源都投在已飽和的VIP族群，分母（總業績）增加有限；真正的槓桿在拉升中間層。</div>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('cust','card-cFreqDist')">📍 查看：顧客消費頻率分布</button>
@@ -905,8 +908,8 @@
             <li>左下（低業績×低客單）→ 根本診斷：先判斷是選址問題還是運營問題，再決定是否繼續投資</li>
           </ul>
         </div>
-        <div class="trap-block">
-          <span class="trap-icon">⚠</span>
+        <div class="trap-block" data-trap-stage="wrangle" data-trap="分組過粗">
+          <span class="trap-icon">⚠</span><span class="trap-tag">加工｜分組過粗</span>
           <div><strong>常見陷阱：</strong>只用單一業績指標分級，會將「高流量低客單」和「低流量低客單」的門市混為一談——前者問題是品項組合，後者問題是選址或品牌認知，改善方法完全不同。雙維度分析是分析師思維的核心。</div>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('deep','card-cStoreScatter')">📍 查看：門市四象限散點圖</button>
@@ -917,7 +920,7 @@
 
   <!-- ── Training Questions Block ── -->
   <div class="training-block">
-    <div class="training-title">進階訓練題組（T1–T4）— 數據局限性與批判思維</div>
+    <div class="training-title">進階訓練題組（T1–T5）— 數據局限性與批判思維</div>
     <div class="qa-section">
 
       <!-- T1 -->
@@ -933,8 +936,8 @@
             <p><span class="tag-i">I:</span> 缺少翻桌率使「來客成長」的詮釋變得不完整——無法區分成長是來自「更多不同顧客」還是「同樣顧客更多次光顧但座位效率沒提升」。對內用門市而言，翻桌率是空間效率的核心指標。</p>
             <p><span class="tag-a">A:</span> 補救方案三種：① 加入翻桌率KPI（= 每日桌次使用數 ÷ 桌數）；② 用POS時間戳計算同桌平均停留時長；③ 將來客人次與座位數交叉計算理論翻桌率（= 來客人次 ÷ 座位數 ÷ 營業時數）。</p>
           </div>
-          <div class="trap-block">
-            <span class="trap-icon">⚠</span>
+          <div class="trap-block" data-trap-stage="read" data-trap="單指標決策">
+            <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜單指標決策</span>
             <div><strong>常見陷阱：</strong>用「來客成長=一切向好」替代翻桌率分析，可能掩蓋座位效率下降的問題——在租金固定的門市，翻桌率才是真正的坪效驅動因子。</div>
           </div>
         </div>
@@ -954,8 +957,8 @@
             <p><span class="tag-i">I:</span> 旗艦店客群結構以「觀光客/初次嘗鮮客」為主——高流量、低黏性；中型社區店客群以「習慣型回購客/周邊居民/辦公族」為主——低流量、高黏性。<strong>客群結構不同，相同KPI目標毫無意義。</strong></p>
             <p><span class="tag-a">A:</span> 不應用同一30日回購率目標管理性質不同的門市，應按客群類型設定分層目標：觀光型門市追求客單和首次好評；社區型門市追求回購率和VIP轉化率。</p>
           </div>
-          <div class="trap-block">
-            <span class="trap-icon">⚠</span>
+          <div class="trap-block" data-trap-stage="read" data-trap="基線缺失">
+            <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜基線缺失</span>
             <div><strong>常見陷阱：</strong>用統一KPI目標衡量本質不同的門市，不但無法帶來改善，還可能驅動錯誤行動——例如讓旗艦店花大量資源追求「提升回購率」，但其目標客群根本不住在附近。</div>
           </div>
         </div>
@@ -975,8 +978,8 @@
             <p><span class="tag-i">I:</span> 外送平台（UberEats/Foodpanda等）通常抽成15-30%，是高業績但低利潤的通路；自取外帶的成本結構與內用相近，利潤率不受影響。若外帶成長主要由外送平台貢獻，則表面業績成長可能伴隨利潤侵蝕。</p>
             <p><span class="tag-a">A:</span> 在做「擴大外帶/外送」策略前，<strong>必須先拆分外送vs自取比例</strong>——兩者成本結構差異巨大，混合數字可能導致推薦了最貴的成長路徑。建議在下版儀表板中加入「外送平台佔比」指標。</p>
           </div>
-          <div class="trap-block">
-            <span class="trap-icon">⚠</span>
+          <div class="trap-block" data-trap-stage="read" data-trap="過度推論">
+            <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜過度推論</span>
             <div><strong>常見陷阱：</strong>看到「外帶成長」就建議「強化外送合作」，但若外送已是主要外帶來源，此建議等於在高抽成渠道投入更多——可能是連鎖成本最高的成長路徑。</div>
           </div>
         </div>
@@ -996,12 +999,33 @@
             <p><span class="tag-i">I:</span> 以品類角度分析：套餐組合42%佔比意味著它是業績的最大支柱。任何使套餐品類受衝擊的事件（關鍵食材漲價/缺貨、旗艦套餐口味投訴、競品推出強力替代套餐），都會直接影響業績的42%部分，風險集中而非分散。HHI=3,478顯示即使在品類層級，集中程度已遠超「高度集中」門檻（>2,500）。</p>
             <p><span class="tag-a">A:</span> 建議：① 定期監控前5名品項的業績佔比趨勢，設定警戒線（如單品佔比>15%需建立備案）；② 建立「品項替代矩陣」——每個高佔比品項需有替代方案；③ 適度多元化品項組合，降低集中度風險，同時不犧牲明星品項的推廣力度。</p>
           </div>
-          <div class="trap-block">
-            <span class="trap-icon">⚠</span>
+          <div class="trap-block" data-trap-stage="read" data-trap="過度集中推論">
+            <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜過度集中推論</span>
             <div><strong>常見陷阱：</strong>「集中度高=效率好，管理簡單」是常見誤解。集中度高確實降低運營複雜度，但同時也意味著更高的脆弱性（anti-fragility角度）——單一依賴是供應鏈與市場風險的放大器。</div>
           </div>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('ops','card-cRevCat')">📍 查看：月度品類業績結構</button>
+      </div>
+
+      <!-- T5（選用）資料矛盾題：見 Skill C.7 T5、A 原則 7。不用時整段刪除。 -->
+      <div class="qa-item">
+        <div class="question" onclick="toggleQA(this)">
+          <span class="badge l3">L3·A</span>
+          <span class="question-text">T5：{指標 X} 說 {故事 A}，{指標 Y} 卻說 {故事 B}——哪一個是對的？</span>
+          <span class="question-arrow">▶</span>
+        </div>
+        <div class="answer">
+          <div class="answer-block">
+            <p><span class="tag-f">F:</span> ① 各自讀：從<span class="ev">{圖 X 名稱}</span>，{指標 X 的數字}；從<span class="ev">{圖 Y 名稱}</span>，{指標 Y 的數字}。</p>
+            <p><span class="tag-i">I:</span> ② 找矛盾：兩者的{分母／時間窗／族群組成}不同——{具體說明差在哪，必須能從 DATA 反推}。</p>
+            <p><span class="tag-a">A:</span> ③ 下判斷：{承認不確定性的建議}；下個月追加監控 {指標 Z}，才能判斷哪個故事為真。</p>
+          </div>
+          <div class="trap-block" data-trap-stage="curate" data-trap="口徑定義不一致">
+            <span class="trap-icon">⚠</span><span class="trap-tag">整理｜口徑定義不一致</span>
+            <div><strong>常見陷阱：</strong>{兩個指標用了不同定義，卻被當成同一件事比較}。先對齊口徑，再談誰對誰錯。</div>
+          </div>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('ops','card-cVisitAOV')">📍 查看：{圖 X 名稱}</button>
       </div>
 
     </div><!-- end training qa-section -->
@@ -1018,9 +1042,8 @@
       <strong>閱讀設計：</strong>KPI 卡同時呈現絕對值、YoY 和前年基準，讀者第一眼即可判斷方向與幅度，無需自行計算。</p>
     </div>
     <div class="design-item">
-      <h4>2. 月度趨勢：來客 + 客單雙軸同圖</h4>
-      <p><strong>視覺設計邏輯：</strong>雙軸共時呈現讓讀者直接看出兩個指標的同步或背離關係。若用兩張獨立圖，讀者必須在腦中疊加比較，遺漏「旺季來客暴增但客單下滑」這類關鍵訊號的機率大幅上升。<br><br>
-      <strong>閱讀設計：</strong>右軸刻意縮窄範圍（NT$270–300），讓客單的細微波動在視覺上放大，以便讀者察覺平穩背後的微變化。</p>
+      <h4>2. 月度趨勢：單一值軸</h4>
+      <p><strong>視覺設計邏輯：</strong>一張圖只用一條值軸（B.9-2）。兩個量級不同的指標要同框比較時，拆成兩張圖或指數化到同一軸；雙軸只在刻意設計成教學陷阱時使用，並在此處說明刻度是怎麼選的、會造成什麼誤讀。</p>
     </div>
     <div class="design-item">
       <h4>3. 外帶佔比用% 而非絕對人次</h4>
@@ -1240,64 +1263,30 @@ const initialized = { ops: false, cust: false, deep: false };
 // ══════════════════════════════════════════════════
 function drawOps() {
   const months = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-  const monthlyAov = months.map((_,i) => Math.round(
-    (DATA.monthly_category['套餐組合'][i] + DATA.monthly_category['單點餐食'][i] + DATA.monthly_category['飲料飲品'][i])
-    * 10000 / DATA.monthly_visits[i]
-  ));
+  // 品類名稱一律從 DATA 讀，不寫死（換產業時只改 DATA）
+  const catKeys = Object.keys(DATA.monthly_category);
+  const monthlyTotal = months.map((_,i) => catKeys.reduce((s,k) => s + DATA.monthly_category[k][i], 0));
 
-  // cVisitAOV: dual-axis bar+line
-  new Chart(document.getElementById('cVisitAOV').getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: months,
-      datasets: [
-        {
-          type: 'bar',
-          label: '來客人次',
-          data: DATA.monthly_visits,
-          backgroundColor: c('blue', 0.55),
-          borderColor: c('blue', 0.9),
-          borderWidth: 1,
-          yAxisID: 'y'
-        },
-        {
-          type: 'line',
-          label: '平均客單價 (NT$)',
-          data: monthlyAov,
-          borderColor: c('orange'),
-          backgroundColor: c('orange', 0.1),
-          borderWidth: 2,
-          pointRadius: 3,
-          pointHoverRadius: 5,
-          tension: 0.35,
-          yAxisID: 'y2',
-          fill: false
-        }
-      ]
+  // cVisitAOV：單一值軸（B.9-2）。第二個指標（如客單價）請另開一張圖，或以 t0=100 指數化放同一軸。
+  // 雙 Y-axis 只允許當刻意教學陷阱，且對應 QA 必須有 data-trap="雙軸假相關" 的 trap-block。
+  mk('cVisitAOV', 'bar', months, [
+    {
+      label: '來客人次',
+      data: DATA.monthly_visits,
+      backgroundColor: c('blue', 0.55),
+      borderColor: c('blue', 0.9),
+      borderWidth: 1
+    }
+  ], {
+    plugins: {
+      legend: { display: false },
+      tooltip: TT,
+      datalabels: { display: false }
     },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      animation: { duration: 480 },
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: { display: true, labels: { color: '#8b949e', boxWidth: 12, font: { size: 11 } } },
-        tooltip: TT,
-        datalabels: { display: false }
-      },
-      scales: {
-        y: {
-          type: 'linear', position: 'left',
-          grid: { color: 'rgba(255,255,255,0.05)' },
-          ticks: { color: '#8b949e', callback: v => (v/1000).toFixed(0)+'K' }
-        },
-        y2: {
-          type: 'linear', position: 'right',
-          grid: { drawOnChartArea: false },
-          ticks: { color: c('orange'), callback: v => 'NT$'+v },
-          min: 283, max: 290
-        },
-        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8b949e' } }
-      }
+    scales: {
+      y: { min: 0, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b949e', callback: v => (v/1000).toFixed(0)+'K' },
+           title: { display: true, text: '人次', color: '#8b949e' } },
+      x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8b949e' } }
     }
   });
 
@@ -1328,13 +1317,7 @@ function drawOps() {
   });
 
   // cRevCat: stacked bar + total line
-  const catKeys = ['套餐組合','單點餐食','飲料飲品'];
-  const catColors = ['blue','teal','purple'];
-  const monthlyTotal = months.map((_,i) =>
-    DATA.monthly_category['套餐組合'][i] +
-    DATA.monthly_category['單點餐食'][i] +
-    DATA.monthly_category['飲料飲品'][i]
-  );
+  const catColors = ['blue','teal','purple','orange','red'];
   new Chart(document.getElementById('cRevCat').getContext('2d'), {
     type: 'bar',
     data: {

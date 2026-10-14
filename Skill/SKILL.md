@@ -80,7 +80,7 @@ author: Blake
 - [`module-E-checklist.md`](./module-E-checklist.md) — 最終 QA、Playwright 自動驗證
 - [`module-F-agents.md`](./module-F-agents.md) — Agent 工作流整合：角色分工、稽核門檻
 - [`QUICKSTART.md`](./QUICKSTART.md) — 5 種對話情境的標準執行範例
-- [`template.html`](./template.html) — 無數據骨架（取自餐飲連鎖版面，DATA 已清空為 `0`／`{品類A}` 佔位）
+- [`template.html`](./template.html) — 無數據骨架（取自餐飲連鎖版面，DATA 已清空為 `0`／`{品類A}` 佔位）；已符合 2026-10-14 規則（單一值軸、陷阱分類、`.ev`、T5 題槽），`audit-dashboards.mjs Skill/template.html` 只剩 `<title>` 佔位 WARN
 
 ---
 
