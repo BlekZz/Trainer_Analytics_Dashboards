@@ -13,7 +13,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#0F172A;--bg-card:#1B2336;--bg-finding:#202D3F;
-  --accent:#22D3EE;--accent2:#22C55E;--warn:#F59E0B;--danger:#EF4444;--purple:#A78BFA;
+  --accent:#22D3EE;--accent2:#0D9488;--warn:#F59E0B;--danger:#EF4444;--purple:#A78BFA;
   --text:#F8FAFC;--text-muted:#94A3B8;--border:rgba(255,255,255,0.07);
   --radius:8px;--header-h:138px;
 }
@@ -42,7 +42,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .legend-right{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
 .legend-right>span{display:flex;align-items:center;gap:5px}
 .badge{display:inline-block;border-radius:4px;padding:1px 6px;font-size:0.67rem;font-weight:600}
-.badge.l1{background:rgba(34,197,94,0.18);color:var(--accent2);border:1px solid rgba(34,197,94,0.3)}
+.badge.l1{background:rgba(13,148,136,0.18);color:var(--accent2);border:1px solid rgba(13,148,136,0.3)}
 .badge.l2{background:rgba(34,211,238,0.15);color:var(--accent);border:1px solid rgba(34,211,238,0.3)}
 .badge.l3{background:rgba(239,68,68,0.15);color:var(--danger);border:1px solid rgba(239,68,68,0.3)}
 .fia-tag{display:inline-block;border-radius:4px;padding:1px 7px;font-family:'JetBrains Mono',monospace;font-size:0.69rem;font-weight:700}
@@ -107,7 +107,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .qa-q-text{font-size:0.84rem;color:var(--text-muted);flex:1;transition:color .2s}
 .qa-item.open .qa-q-text{color:var(--text);font-weight:500}
 .qa-level,.qa-depth{display:inline-flex;align-items:center;justify-content:center;width:24px;height:18px;border-radius:4px;font-size:0.66rem;font-weight:700;flex-shrink:0;margin-top:2px}
-.qa-level.l1{background:rgba(34,197,94,0.18);color:var(--accent2);border:1px solid rgba(34,197,94,0.3)}
+.qa-level.l1{background:rgba(13,148,136,0.18);color:var(--accent2);border:1px solid rgba(13,148,136,0.3)}
 .qa-level.l2{background:rgba(34,211,238,0.15);color:var(--accent);border:1px solid rgba(34,211,238,0.3)}
 .qa-level.l3{background:rgba(239,68,68,0.15);color:var(--danger);border:1px solid rgba(239,68,68,0.3)}
 .qa-depth.f{background:rgba(34,211,238,0.12);color:var(--accent)}
@@ -197,7 +197,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
   <div class="header-legend">
     <div class="legend-colors">
       <span><span class="dot" style="background:#22D3EE"></span>主資料/事實</span>
-      <span><span class="dot" style="background:#22C55E"></span>正向/穩定</span>
+      <span><span class="dot" style="background:#0D9488"></span>正向/穩定</span>
       <span><span class="dot" style="background:#F59E0B"></span>注意/季節性</span>
       <span><span class="dot" style="background:#EF4444"></span>警示/流失</span>
       <span><span class="dot" style="background:#A78BFA"></span>行為/時間</span>
@@ -841,7 +841,7 @@ const TT={
   bodyFont:{family:"'DM Sans',sans-serif",size:12}
 };
 function c(k,a=1){
-  const m={blue:'34,211,238',teal:'34,197,94',orange:'245,158,11',red:'239,68,68',purple:'167,139,250',gray:'100,116,139'};
+  const m={blue:'34,211,238',teal:'13,148,136',orange:'245,158,11',red:'239,68,68',purple:'167,139,250',gray:'100,116,139'};
   return `rgba(${m[k]||m.gray},${a})`;
 }
 function mk(id,type,labels,datasets,opts={}){

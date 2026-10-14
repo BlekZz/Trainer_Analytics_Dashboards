@@ -19,7 +19,7 @@
       --bg-finding:#0F1E35;
       --accent:    #3B82F6;
       --accent2:   #D97706;
-      --warn:      #F59E0B;
+      --warn:      #FDBA74;
       --danger:    #EF4444;
       --purple:    #8B5CF6;
       --text:      #F1F5F9;
@@ -56,8 +56,8 @@
       border: 1px solid rgba(148,163,184,0.15); white-space: nowrap;
     }
     .meta-chip.demo {
-      background: rgba(245,158,11,0.13); color: var(--warn);
-      border-color: rgba(245,158,11,0.3); font-weight: 600;
+      background: rgba(253,186,116,0.13); color: var(--warn);
+      border-color: rgba(253,186,116,0.3); font-weight: 600;
     }
     .header-row-2 {
       display: flex; align-items: center;
@@ -227,11 +227,11 @@
 
     .tag-f { display: inline-block; background: rgba(217,119,6,0.18); color: var(--accent2); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
     .tag-i { display: inline-block; background: rgba(59,130,246,0.18); color: var(--accent); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
-    .tag-a { display: inline-block; background: rgba(245,158,11,0.18); color: var(--warn); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
+    .tag-a { display: inline-block; background: rgba(253,186,116,0.18); color: var(--warn); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
     .fia { display: inline-block; border-radius: 3px; padding: 0 4px; font-size: 0.68rem; font-weight: 700; }
     .fia.f { background: rgba(217,119,6,0.18); color: var(--accent2); }
     .fia.i { background: rgba(59,130,246,0.18); color: var(--accent); }
-    .fia.a { background: rgba(245,158,11,0.18); color: var(--warn); }
+    .fia.a { background: rgba(253,186,116,0.18); color: var(--warn); }
 
     .trap-block {
       background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.28);
@@ -241,12 +241,12 @@
     .trap-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
     .nav-hint {
       display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.28);
+      background: rgba(253,186,116,0.08); border: 1px solid rgba(253,186,116,0.28);
       border-radius: 8px; padding: 8px 14px; margin-top: 10px;
       font-size: 0.78rem; color: var(--warn); cursor: pointer;
       transition: background 0.2s;
     }
-    .nav-hint:hover { background: rgba(245,158,11,0.15); }
+    .nav-hint:hover { background: rgba(253,186,116,0.15); }
     .answer-block { margin-bottom: 6px; }
     .answer-block p { margin-top: 4px; }
 
@@ -281,8 +281,8 @@
 
     /* ── Warn annotation label ── */
     .chart-warn-label {
-      font-size: 0.72rem; color: var(--warn); background: rgba(245,158,11,0.1);
-      border: 1px solid rgba(245,158,11,0.25); border-radius: 6px;
+      font-size: 0.72rem; color: var(--warn); background: rgba(253,186,116,0.1);
+      border: 1px solid rgba(253,186,116,0.25); border-radius: 6px;
       padding: 5px 10px; margin-top: 8px; display: inline-block;
     }
 
@@ -1189,7 +1189,7 @@ function c(key, alpha) {
   const map = {
     blue:   `rgba(59,130,246,${alpha})`,
     teal:   `rgba(217,119,6,${alpha})`,
-    orange: `rgba(245,158,11,${alpha})`,
+    orange: `rgba(253,186,116,${alpha})`,
     red:    `rgba(239,68,68,${alpha})`,
     purple: `rgba(139,92,246,${alpha})`,
     gray:   `rgba(100,110,135,${alpha})`
@@ -1551,8 +1551,8 @@ function drawPage3() {
               borderDash: [6, 4],
               label: {
                 display: true, content: '加權均值 64.3%',
-                position: 'end', backgroundColor: 'rgba(245,158,11,0.15)',
-                color: '#F59E0B', font: { family: "'IBM Plex Mono', monospace", size: 10 },
+                position: 'end', backgroundColor: 'rgba(253,186,116,0.15)',
+                color: '#FDBA74', font: { family: "'IBM Plex Mono', monospace", size: 10 },
                 padding: { x: 6, y: 3 }
               }
             }
@@ -1632,9 +1632,9 @@ function drawPage3() {
         },
         y2: {
           position: 'right',
-          title: { display: true, text: '首回時間 (分鐘)', color: '#F59E0B', font: { size: 10 } },
+          title: { display: true, text: '首回時間 (分鐘)', color: '#FDBA74', font: { size: 10 } },
           grid: { drawOnChartArea: false },
-          ticks: { color: '#F59E0B', font: { family: "'IBM Plex Mono', monospace", size: 9 }, callback: v => v + 'min' },
+          ticks: { color: '#FDBA74', font: { family: "'IBM Plex Mono', monospace", size: 9 }, callback: v => v + 'min' },
           suggestedMax: 12
         }
       },
@@ -1823,13 +1823,13 @@ function drawPage4() {
           annotations: {
             divLine: {
               type: 'line', xMin: 1.5, xMax: 1.5,
-              borderColor: 'rgba(245,158,11,0.5)', borderWidth: 1, borderDash: [4,4],
+              borderColor: 'rgba(253,186,116,0.5)', borderWidth: 1, borderDash: [4,4],
               label: {
                 display: true,
                 content: ['← 推播通道', '對話型通道 →'],
                 position: 'start',
-                backgroundColor: 'rgba(245,158,11,0.08)',
-                color: '#F59E0B',
+                backgroundColor: 'rgba(253,186,116,0.08)',
+                color: '#FDBA74',
                 font: { family: "'IBM Plex Mono', monospace", size: 9 },
                 padding: { x: 5, y: 3 }
               }
