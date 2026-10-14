@@ -630,3 +630,5 @@ plugins: {
 - `audit-dashboards.mjs` 已加 FAIL 檢查：所有 `.page` 的 parentElement 必須是同一個容器（mutation：拿修正前的版本 → FAIL）。
 - 用 Edit 取代「開頭 tag＋佔位」時，old_string 要連同該區塊的結尾 tag 一起取代，或 new_string 不要自帶結尾。
 - 用瀏覽器驗修正時，網址加 `?v=<任意值>` 避開快取；本次第一次重截圖讀到的是快取舊版。
+
+**[global]** 方法已上行為 `~/.claude/technotes/verification-testing.md` verification-145；合成資料兩條（常數比率、交叉反推、同統計量離群點出界）上行為 `technotes/synthetic-data.md` synthetic-data-001／002。
