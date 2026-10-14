@@ -23,7 +23,7 @@ A collection of single-file analytics training dashboards for industry-specific 
 │   └── module-E-checklist.md
 ├── dev/                ← 開發文件（非交付物）
 │   ├── tech-notes.md  ← 技術踩坑記錄
-│   └── TODO.md         ← 待辦事項
+│   └── script/audit-dashboards.mjs ← 交付前自動驗收（E.2）
 └── CLAUDE.md
 ```
 
@@ -54,6 +54,8 @@ Google Fonts: varies by visual preset (see Skill/module-D-diff.md D.9)
 **Single source of truth:** All chart numbers live in the `DATA` object (search `const DATA = {`). Never hardcode a number in HTML or chart calls — read from `DATA.*` instead.
 
 **Consistency guard:** `assertConsistency()` validates internal cross-checks on every page load. Run the file in a browser and check the console — `✓ All data consistency checks passed` must appear before shipping any data change.
+
+**Automated audit:** `node dev/script/audit-dashboards.mjs [file...]` (zero-dependency, drives headless Chromium/Edge via CDP) runs `assertConsistency()`, switches every page, verifies every canvas rendered, and checks the red-line elements. Exit 0 = shippable; run it after any change to `Dashboard/*.html`.
 
 **Lazy chart rendering:** Charts are drawn only when their tab is first activated. `switchPage(name)` sets `initialized[name] = true` and calls the draw function once.
 
@@ -108,7 +110,7 @@ Rules:
 
 1. **選 Visual Preset** — 從 `Skill/module-D-diff.md` D.9 選一個 preset，不可與前一份相同。覆蓋 `:root` tokens 與 Google Fonts import。
 2. Start from `Skill/template.html` — copy to `Dashboard/{產業}_{主題}_訓練儀表板教材.html`.
-3. Fill in `DATA` first; run in browser, confirm `assertConsistency()` passes.
+3. Fill in `DATA` first; run `node dev/script/audit-dashboards.mjs <file>` and confirm `assertConsistency()` passes.
 4. Add cross-check rules to `assertConsistency()` for every anchor value.
 5. Keep everything in one file — single-file constraint is intentional (zero-dependency delivery to interns).
 6. Once complete, the file stays in `Dashboard/`; no version suffix in filename (git tracks versions).

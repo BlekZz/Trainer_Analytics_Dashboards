@@ -30,7 +30,7 @@
 │   └── module-E-checklist.md ← 上線前 QA 清單
 └── dev/                ← 開發筆記（非交付物）
     ├── tech-notes.md  ← 技術踩坑記錄
-    └── TODO.md         ← 待辦事項
+    └── script/audit-dashboards.mjs ← 交付前自動驗收（E.2）
 ```
 
 ---
