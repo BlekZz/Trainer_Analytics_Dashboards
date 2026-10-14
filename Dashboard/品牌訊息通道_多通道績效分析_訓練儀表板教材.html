@@ -710,6 +710,11 @@
           <p><span class="tag-f">F:</span> 從<span class="ev">新會員來源分佈（各通道絕對量）</span>，推播新會員合計 <strong>1,802 位</strong>。LINE：1,287 位（<strong>71.4%</strong>）；Email：515 位（<strong>28.6%</strong>）。LINE 是推播通道中帶來新會員的主要來源。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-4','card-c4-src-bar')">📍 查看：新會員來源分佈（P4）</button>
+        <button class="chart-ref-btn" onclick="goToChart('page-2','card-c2-funnel')">📍 查看：LINE vs Email 漏斗對比</button>
+        <div class="trap-block" data-trap-stage="visualize" data-trap="雙軸假相關">
+          <span class="trap-icon">⚠</span><span class="trap-tag">呈現｜雙軸假相關</span>
+          <div><strong>陷阱：</strong>不要用本頁「LINE vs Email 漏斗對比」的柱高來比兩個通道的規模。那張圖 LINE 用左軸、Email 用右軸，兩條軸各自依自己的最大值縮放，所以兩邊柱子看起來差不多高；實際上觸達是 72,000 對 38,000（約 1.9 倍），漏斗最後一階是 660 對 228（約 2.9 倍）。<strong>同一個指標分兩條軸畫，柱高就失去比較意義</strong>，比大小要看數字，或改看 P4 單軸的來源分佈圖。</div>
+        </div>
       </div>
     </div>
 
@@ -823,6 +828,11 @@
           <p><span class="tag-i">I:</span> 可能原因：(1) Meta Messaging 的用戶族群通常來自廣告，問題多樣且複雜，超出 FAQ/bot 能處理的範圍；(2) Meta 平台的用戶習慣傾向長篇對話，平均 6.8 輪也印證複雜度；(3) 客服資源可能未針對 Meta 來源用戶的問題類型做特化訓練。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('page-3','card-c3-resolution')">📍 查看：解決狀態分佈</button>
+        <button class="chart-ref-btn" onclick="goToChart('page-3','card-c3-efficiency')">📍 查看：平均輪數 vs 首回時間</button>
+        <div class="trap-block" data-trap-stage="visualize" data-trap="雙軸假相關">
+          <span class="trap-icon">⚠</span><span class="trap-tag">呈現｜雙軸假相關</span>
+          <div><strong>陷阱：</strong>「平均輪數 vs 首回時間」把輪數（左軸）和分鐘（右軸）並排畫，紫柱和橘柱誰比較高，取決於兩條軸各自的範圍，沒有任何意義。要比的是<strong>同一個指標在三個通道之間的倍數</strong>：Meta 的平均輪數是官網客服的約 2.3 倍（6.8 對 2.9），首回時間卻是 7 倍（8.4 對 1.2 分鐘）。真正值得追問的是「等待時間拉長的幅度遠大於對話變長的幅度」，這在柱高上看不出來。</div>
+        </div>
         <div class="trap-block" data-trap-stage="read" data-trap="過度推論">
           <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜過度推論</span>
           <div><strong>陷阱：</strong>高升級率不一定是壞事——若升級後轉換率更高，這可能是一個「品質篩選」機制，把高意圖用戶轉給人工，效果反而更好。需要看升級後的轉換數據才能下結論。</div>
