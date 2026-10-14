@@ -207,6 +207,11 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
 .training-hd p{font-size:13px;color:var(--text-s);}
 .nav-hint{display:flex;align-items:flex-start;gap:7px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:6px;padding:7px 11px;margin-bottom:10px;font-size:12.5px;color:#78350F;line-height:1.4;cursor:pointer;transition:background 0.15s;}
 .nav-hint:hover{background:#FEF3C7;}
+/* ─── chart-ref-btn ─── */
+@keyframes chartFlash{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 3px rgba(59,130,246,0.5)}}
+.chart-flash{animation:chartFlash .55s ease-in-out 4}
+.chart-ref-btn{display:inline-flex;align-items:center;gap:5px;background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.25);border-radius:6px;padding:5px 12px;margin:2px 0 8px;font-size:12px;color:var(--accent);cursor:pointer;font-family:inherit;transition:background .2s}
+.chart-ref-btn:hover{background:rgba(59,130,246,0.14)}
 .nav-hint .nh-body{flex:1;}
 .nav-hint .nh-label{font-weight:700;display:block;margin-bottom:1px;}
 .nav-hint .nh-sub{color:#92400E;font-size:11.5px;}
@@ -406,7 +411,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
 
         <div class="section-label" style="margin-top:24px">📈 12 個月追蹤人數趨勢</div>
         <div class="chart-group">
-          <div class="chart-block">
+          <div class="chart-block" id="card-chart-p1-trend">
             <div class="chart-title">五平台追蹤人數趨勢（2025/07 – 2026/06）</div>
             <div class="chart-subtitle">追蹤人數月底快照，觀察各平台成長斜率差異</div>
             <div class="chart-wrap"><canvas id="chart-p1-trend" height="240"></canvas></div>
@@ -426,7 +431,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
         <div class="section-label">📊 月增追蹤人數 by Platform</div>
         <div class="chart-row c1-1">
           <div class="chart-group">
-            <div class="chart-block">
+            <div class="chart-block" id="card-chart-p1-growth">
               <div class="chart-title">月增追蹤人數（各平台，12 個月）</div>
               <div class="chart-subtitle">每月相較上月新增的追蹤數；負值代表淨流失</div>
               <div class="chart-wrap"><canvas id="chart-p1-growth" height="240"></canvas></div>
@@ -441,7 +446,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
             </div>
           </div>
           <div class="chart-group">
-            <div class="chart-block">
+            <div class="chart-block" id="card-chart-p1-active">
               <div class="chart-title">30 日活躍率趨勢（%）</div>
               <div class="chart-subtitle">各平台近 30 日有互動的受眾佔追蹤數比例</div>
               <div class="chart-wrap"><canvas id="chart-p1-active" height="240"></canvas></div>
@@ -460,7 +465,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
         <div class="section-label" style="margin-top:16px">🗂️ 當月平台組合分佈</div>
         <div class="chart-row c1-1">
           <div class="chart-group">
-            <div class="chart-block">
+            <div class="chart-block" id="card-chart-p1-dist">
               <div class="chart-title">當前追蹤人數平台佔比（2026/06）</div>
               <div class="chart-subtitle">視覺化平台依賴集中度</div>
               <div class="chart-wrap"><canvas id="chart-p1-dist" height="220"></canvas></div>
@@ -524,6 +529,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia f">F</span> Instagram 本月新增 <strong>1,300 人</strong>（185,000 − 183,700）。<br>
                   <span class="fia f">F</span> 雖然 IG 總追蹤數仍遠高於 TikTok（18.5 萬 vs 12.7 萬），本月的<strong>新增量</strong>是 TikTok 較大。
                 </div>
+                <button class="chart-ref-btn" onclick="goToChart('p1','card-chart-p1-growth')">📍 查看：月增追蹤人數圖</button>
               </div>
             </div></div>
           </div>
@@ -542,6 +548,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia f">F</span> <span class="ev">月增追蹤圖</span>：TikTok 月增從 2025/10 高峰 7,700 降至 2026/06 的 1,700，放緩幅度顯著。<br>
                   <span class="fia f">F</span> <span class="ev">活躍率趨勢圖</span>：TikTok 活躍率同期維持 70–72%，無明顯下滑。
                 </div>
+                <button class="chart-ref-btn" onclick="goToChart('p1','card-chart-p1-active')">📍 查看：30 日活躍率趨勢圖</button>
                 <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
                   <span class="fia i">I</span> 初期高增長通常由演算法「病毒式推送」驅動，帶入大量看過一支影片就追蹤的輕度用戶。<br>
                   <span class="fia i">I</span> 成長放緩但活躍率維穩，推測追蹤者組成已從「被動接觸」轉向「主動選擇」的核心受眾——這是比追蹤數更有業配價值的訊號。<br>
@@ -566,6 +573,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia f">F</span> <span class="ev">追蹤趨勢圖</span>：FB 從 66,000 降至 61,200，年流失 4,800 人（−7.3%）。<br>
                   <span class="fia f">F</span> <span class="ev">活躍率趨勢圖</span>：FB 活躍率從 46% 降至 38%，降幅約 8pp，但與其追蹤人數的降幅（7.3%）相近。
                 </div>
+                <button class="chart-ref-btn" onclick="goToChart('p1','card-chart-p1-trend')">📍 查看：追蹤人數趨勢圖</button>
                 <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
                   <span class="fia i">I</span> 離開的主要是「沉默追蹤者」（不互動、也未主動取消，最終被 Meta 演算法過濾掉觸及）——這在 Facebook 業主頁上是長期常態。<br>
                   <span class="fia i">I</span> 留下來的受眾可能是早期深度粉絲或特定社群成員，其互動黏性相對穩定。<br>
@@ -591,6 +599,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia f">F</span> 無任何單一平台超過 40% 硬性門檻，但 IG 以 37.7% 最接近警戒線。<br>
                   <span class="fia f">F</span> IG + TikTok 合計 63.6%，短影音 / 圖文雙平台合計依賴度偏高。
                 </div>
+                <button class="chart-ref-btn" onclick="goToChart('p1','card-chart-p1-dist')">📍 查看：平台佔比圖</button>
                 <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
                   <span class="fia i">I</span> 單一平台雖未觸發門檻，但雙平台集中（63.6%）意味著若 Meta 或 TikTok 其中一個演算法驟變，整體觸及損失可能超過 60%。<br>
                   <span class="fia a">A</span> 若 TikTok 禁令發生，需假設 TikTok 25.9% 觸及短期歸零，評估這對品牌合作收入（P2）的影響幅度。
@@ -617,6 +626,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia f">F</span> 追蹤數暴漲 8,000（假設以 IG 185,000 為基礎，約 +4.3%）；活躍率從 68% 跌至 54%（−14pp）。<br>
                   <span class="fia f">F</span> 實際活躍人數：原 185,000 × 68% = 125,800 人 → 新 193,000 × 54% = 104,220 人。<strong>絕對活躍人數減少約 21,580 人。</strong>
                 </div>
+                <button class="chart-ref-btn" onclick="goToChart('p1','card-chart-p1-dist')">📍 查看：平台佔比圖</button>
                 <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
                   <span class="fia i">I</span> 追蹤數暴增 + 活躍率急跌，最常見成因是「非目標受眾大量流入」——例如某支內容被演算法推給非旅遊族群，帶來大批追蹤後不再互動的輕度用戶。<br>
                   <span class="fia i">I</span> 這類追蹤者「膨脹分母、縮小分子」，使互動率大幅下滑，甚至導致實際互動人數不升反降。<br>
@@ -671,7 +681,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
         <div class="section-label" style="margin-top:24px">📅 合作件數 × 收入趨勢（12 個月）</div>
         <div class="chart-row c2-1">
           <div class="chart-group">
-            <div class="chart-block">
+            <div class="chart-block" id="card-chart-p2-monthly">
               <div class="chart-title">月合作件數（by 類型，堆疊）</div>
               <div class="chart-subtitle">12 個月合作件數組合，觀察季節性與類型轉變</div>
               <div class="chart-wrap"><canvas id="chart-p2-monthly" height="240"></canvas></div>
@@ -687,7 +697,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
             </div>
           </div>
           <div class="chart-group">
-            <div class="chart-block">
+            <div class="chart-block" id="card-chart-p2-donut">
               <div class="chart-title">本月收入結構（by 合作類型）</div>
               <div class="chart-subtitle">2026/06，NT$318,000 合計</div>
               <div class="chart-wrap"><canvas id="chart-p2-donut" height="220"></canvas></div>
@@ -706,7 +716,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
         <div class="section-label" style="margin-top:16px">🎯 旅遊 Niche 子品類績效矩陣</div>
         <div class="chart-row c1-1">
           <div class="chart-group">
-            <div class="chart-block">
+            <div class="chart-block" id="card-chart-p2-scatter">
               <div class="chart-title">子品類：互動率 vs 每件收入（散點矩陣）</div>
               <div class="chart-subtitle">泡泡大小 = 本月合作件數；識別高互動 vs 高收益的不同策略位置</div>
               <div class="chart-wrap"><canvas id="chart-p2-scatter" height="230"></canvas></div>
@@ -722,7 +732,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
             </div>
           </div>
           <div class="chart-group">
-            <div class="chart-block">
+            <div class="chart-block" id="card-chart-p2-brands">
               <div class="chart-title">品牌收入集中度（Top 5 + Others）</div>
               <div class="chart-subtitle">評估業務風險：Top 1 / Top 3 集中比例</div>
               <div class="chart-wrap"><canvas id="chart-p2-brands" height="230"></canvas></div>
@@ -740,7 +750,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
 
         <div class="section-label" style="margin-top:16px">🔻 合作轉換漏斗（年累積）</div>
         <div class="chart-group">
-          <div class="chart-block">
+          <div class="chart-block" id="card-chart-p2-funnel">
             <div class="chart-title">品牌合作轉換漏斗（2025/07 – 2026/06 年累積）</div>
             <div class="chart-subtitle">從品牌洽詢到實際回款的完整流程，識別最高流失節點</div>
             <div id="chart-p2-funnel" class="funnel-wrap">
@@ -797,6 +807,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia f">F</span> 影片拍攝：2 件，$80,000（$40K / 件）<br>
                   <span class="fia f">F</span> 單件收入最高為<strong>實體活動（$45,000）</strong>，但本月僅有 1 件。
                 </div>
+                <button class="chart-ref-btn" onclick="goToChart('p2','card-chart-p2-donut')">📍 查看：本月收入結構圖</button>
               </div>
             </div></div>
           </div>
@@ -815,6 +826,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia f">F</span> 旅遊體驗互動率 7.3%（五品類最高），但本月每件收入 $19,000（最低）。<br>
                   <span class="fia f">F</span> 相比之下，航空互動率 5.1% 但每件 $37,000，保險 2.1% 但每件 $68,000。
                 </div>
+                <button class="chart-ref-btn" onclick="goToChart('p2','card-chart-p2-scatter')">📍 查看：互動率 vs 每件收入散點圖</button>
                 <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
                   <span class="fia i">I</span> 高互動代表受眾對此品類高度共鳴，但品牌（體驗類）普遍預算有限——這是市場結構問題，不是創作者本身的問題。<br>
                   <span class="fia i">I</span> 定價啟發：可用體驗品類的高互動率作為「媒體數據背書」，在談判其他高預算品類（如航空、保險）時展示內容感染力，間接提升溢價空間。<br>
@@ -839,6 +851,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia f">F</span> 長榮 $74K（23.3%）、安達 $68K（21.4%）、晶華 $52K（16.4%）→ Top 3 合計 $194K（61.0%）。<br>
                   <span class="fia f">F</span> Top 1 長榮的集中度（23.3%）低於業界「單客佔比 > 40% = 高危」的通用門檻。
                 </div>
+                <button class="chart-ref-btn" onclick="goToChart('p2','card-chart-p2-brands')">📍 查看：品牌收入集中度圖</button>
                 <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
                   <span class="fia i">I</span> 目前尚未觸發高危門檻，但 Top 3 集中 60%+ 意味任何一個品牌季末凍結預算都會造成當月收入可感知的波動。<br>
                   <span class="fia i">I</span> 航空和保險兩個高單價品類（分別 $74K / $68K）屬於大型企業預算，通常有固定年度框架合約，不像小品牌容易突然斷合——風險程度需結合合約結構判斷。<br>
@@ -862,6 +875,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia f">F</span> 147 次報價 → 89 件簽約，轉換率 60.5%，即每 10 份報價有 4 份在此流失。<br>
                   <span class="fia f">F</span> 前一節點（洽詢→報價）轉換率 64.5%，後段（交件→回款）均 94%+，中段為明顯瓶頸。
                 </div>
+                <button class="chart-ref-btn" onclick="goToChart('p2','card-chart-p2-funnel')">📍 查看：品牌合作轉換漏斗</button>
                 <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
                   <span class="fia a">A</span> 診斷假說（需數據驗證）：<br>
                   ① 報價高於品牌預算範圍 → 改善：在首次洽詢時先了解預算區間再報價，避免無效報價<br>
@@ -888,6 +902,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia f">F</span> A：住宿代言，$52K，代言廣告形式（通常為長約或多次曝光）。<br>
                   <span class="fia f">F</span> B：體驗貼文，$19K，預估互動率 8.5%（高於目前組合最高 7.3%）。
                 </div>
+                <button class="chart-ref-btn" onclick="goToChart('p2','card-chart-p2-scatter')">📍 查看：互動率 vs 每件收入散點圖</button>
                 <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
                   <span class="fia i">I</span> <strong>A（住宿代言）</strong>：短期收入高（$52K vs $19K），且代言廣告形式可強化品牌定位聲量；缺點是內容自由度受限，頻繁代言可能稀釋真實性。<br>
                   <span class="fia i">I</span> <strong>B（體驗貼文）</strong>：短期收入低，但 8.5% 互動率可創造高品質媒體數據資產——後續可用於談判航空、保險等高單價品牌時的 pitch deck 佐證。<br>
@@ -942,7 +957,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
 
         <div class="section-label">📊 月自然曝光趨勢（by 平台）</div>
         <div class="chart-group">
-          <div class="chart-block">
+          <div class="chart-block" id="card-chart-p3-impressions">
             <div class="chart-title">月有機曝光數趨勢（千次，各平台，12 個月）</div>
             <div class="chart-subtitle">觀察各平台自然觸及的消長；Instagram 下滑 vs TikTok 維穩是核心對比</div>
             <div class="chart-wrap"><canvas id="chart-p3-impressions" height="230"></canvas></div>
@@ -961,7 +976,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
         <div class="section-label" style="margin-top:16px">📉 Instagram 有機觸及率衰退趨勢</div>
         <div class="chart-row c1-1">
           <div class="chart-group">
-            <div class="chart-block">
+            <div class="chart-block" id="card-chart-p3-decay">
               <div class="chart-title">Instagram 有機觸及率（%，月追蹤，12 個月）</div>
               <div class="chart-subtitle">= 月有機觸及 / 追蹤人數；持續下降 = 演算法縮減有機分發</div>
               <div class="chart-wrap"><canvas id="chart-p3-decay" height="220"></canvas></div>
@@ -977,7 +992,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
             </div>
           </div>
           <div class="chart-group">
-            <div class="chart-block">
+            <div class="chart-block" id="card-chart-p3-cpm">
               <div class="chart-title">廣告 CPM by 平台（NT$，2026/06）</div>
               <div class="chart-subtitle">每千次曝光廣告成本；低 CPM ≠ 高效率，需搭配互動率判讀</div>
               <div class="chart-wrap"><canvas id="chart-p3-cpm" height="220"></canvas></div>
@@ -1066,6 +1081,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia f">F</span> 自然流量互動率 <strong>9.4%</strong>（127,800 互動 / 1,356,000 觸及），廣告流量互動率 <strong>5.0%</strong>（41,200 / 823,000）。<br>
                   <span class="fia f">F</span> 自然流量帶來轉換 <strong>4,380 次</strong>；廣告流量帶來 <strong>2,180 次</strong>。自然流量互動率和轉換均更高。
                 </div>
+                <button class="chart-ref-btn" onclick="goToChart('p3','card-chart-p3-impressions')">📍 查看：月有機曝光數趨勢圖</button>
               </div>
             </div></div>
           </div>
@@ -1084,6 +1100,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia f">F</span> CPM 排序：TikTok $45 &lt; FB $58 &lt; IG $78 &lt; YouTube $112。<br>
                   <span class="fia f">F</span> IG 有機觸及萎縮代表同樣內容的自然觸及越來越少，廣告依賴度隱性上升。
                 </div>
+                <button class="chart-ref-btn" onclick="goToChart('p3','card-chart-p3-cpm')">📍 查看：廣告 CPM 圖</button>
                 <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
                   <span class="fia i">I</span> 若以「每元購得的曝光量」為優先，$28,500 全押 TikTok ($45/K) = 約 633K 額外曝光，比押 IG 多出 270K。<br>
                   <span class="fia a">A</span> 但若業配品牌指定要在 IG 曝光（合約要求），CPM 的選擇空間受限——此時預算分配由合約義務而非效率最大化決定。
@@ -1107,6 +1124,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia f">F</span> 本月自然流量互動數：127,800（已超過 50,000 目標，純自然即可達標）。<br>
                   <span class="fia f">F</span> 但如果品牌指定的是「業配內容貼文」的互動數，而非 Jessica W. 全帳號的互動數——兩者不可混淆。
                 </div>
+                <button class="chart-ref-btn" onclick="goToChart('p3','card-chart-p3-impressions')">📍 查看：月有機曝光數趨勢圖</button>
                 <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
                   <span class="fia a">A</span> 若目標是「單篇業配貼文互動數 ≥ 50K」，則需釐清：<br>
                   ① Jessica W. 單篇 IG 貼文平均互動數（需歷史資料，dashboard 未提供）<br>
@@ -1126,7 +1144,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
         <div class="section-label">🏆 受眾質量雷達：五平台綜合評分</div>
         <div class="chart-row c2-1">
           <div class="chart-group">
-            <div class="chart-block">
+            <div class="chart-block" id="card-chart-p4-radar">
               <div class="chart-title">受眾質量雷達圖（5 維度，0–100 標準化）</div>
               <div class="chart-subtitle">互動率 / 活躍率 / 評論深度 / 分享率 / 存儲率；打破「追蹤越多越好」的單一評估視角</div>
               <div class="chart-wrap" style="height:280px"><canvas id="chart-p4-radar"></canvas></div>
@@ -1174,7 +1192,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
         <div class="section-label" style="margin-top:16px">📊 Engagement Rate vs 業界基準</div>
         <div class="chart-row c1-1">
           <div class="chart-group">
-            <div class="chart-block">
+            <div class="chart-block" id="card-chart-p4-engagement">
               <div class="chart-title">各平台互動率 vs 同量級業界基準（%）</div>
               <div class="chart-subtitle">橘色虛線 = 業界中位數（100k–500k 粉絲量級）</div>
               <div class="chart-wrap"><canvas id="chart-p4-engagement" height="230"></canvas></div>
@@ -1189,7 +1207,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
             </div>
           </div>
           <div class="chart-group">
-            <div class="chart-block">
+            <div class="chart-block" id="card-chart-p4-scatter">
               <div class="chart-title">追蹤規模 vs 互動率（散點，Size-Engagement Trade-off）</div>
               <div class="chart-subtitle">x 軸 = 追蹤人數；y 軸 = 互動率；觀察規模與質量的反相關</div>
               <div class="chart-wrap"><canvas id="chart-p4-scatter" height="230"></canvas></div>
@@ -1208,7 +1226,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
         <div class="section-label" style="margin-top:16px">📅 受眾活躍深度：30日 vs 90日</div>
         <div class="chart-row c1-1">
           <div class="chart-group">
-            <div class="chart-block">
+            <div class="chart-block" id="card-chart-p4-active">
               <div class="chart-title">30日 vs 90日活躍率（%，各平台）</div>
               <div class="chart-subtitle">兩指標差距大 = 短期有互動但缺乏長期黏性</div>
               <div class="chart-wrap"><canvas id="chart-p4-active" height="220"></canvas></div>
@@ -1223,7 +1241,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
             </div>
           </div>
           <div class="chart-group">
-            <div class="chart-block">
+            <div class="chart-block" id="card-chart-p4-depth">
               <div class="chart-title">評論深度指數（0–100，各平台）</div>
               <div class="chart-subtitle">分數越高 = 受眾留下更長、更有意義的評論；Blog 受眾深度最高</div>
               <div class="chart-wrap"><canvas id="chart-p4-depth" height="220"></canvas></div>
@@ -1256,6 +1274,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia f">F</span> 最低：Facebook <strong>1.2%</strong>（業界基準 1.5%，<strong>低於</strong>基準 −0.3pp）。<br>
                   <span class="fia f">F</span> 其他三平台（IG 3.8%、YouTube 4.1%、Blog 6.8%）均超過各自業界基準。
                 </div>
+                <button class="chart-ref-btn" onclick="goToChart('p4','card-chart-p4-engagement')">📍 查看：各平台互動率圖</button>
               </div>
             </div></div>
           </div>
@@ -1274,6 +1293,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                   <span class="fia f">F</span> Blog 追蹤（月訪客）2.8萬，互動率 6.8%（超業界基準），評論深度 91（最高），分享率 3.4%（第三高）。<br>
                   <span class="fia f">F</span> 但本月 Blog 參與業配的子品類和收入佔比相對較低（P2 數據中未單列）。
                 </div>
+                <button class="chart-ref-btn" onclick="goToChart('p4','card-chart-p4-depth')">📍 查看：評論深度指數圖</button>
                 <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
                   <span class="fia i">I</span> 評論深度高代表 Blog 讀者是「認真研究旅遊決策」的族群——這類受眾在訂房、訂機票、購買旅遊保險前通常廣泛閱讀評測文，對創作者推薦的轉換率可能遠高於社群平台。<br>
                   <span class="fia a">A</span> 若 Blog 過去業配的轉換率（點擊→訂購）可量化，其 eCPM（有效每千次轉換成本）可能優於 IG 或 TikTok——但此 dashboard 無 UTM 轉換追蹤數據，目前僅為推測。
@@ -1296,6 +1316,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                 <div class="ans-block"><span class="ans-head obs">📊 觀察</span>
                   <span class="fia a">A</span> 選 KPI 的核心原則：「對品牌決策最相關」+ 「Jessica 相對業界基準的超額優勢最大」。
                 </div>
+                <button class="chart-ref-btn" onclick="goToChart('p4','card-chart-p4-radar')">📍 查看：受眾質量雷達圖</button>
                 <div class="ans-block"><span class="ans-head inf">🧠 推論</span>
                   <span class="fia a">A</span> 建議 5 個 KPI：<br>
                   ① <strong>TikTok 互動率 8.2%（業界 6.0% +37%）</strong>——最能說明內容感染力超標<br>
@@ -1687,7 +1708,7 @@ function goToChart(page, chartId) {
   switchPage(page);
   setTimeout(() => {
     const el = document.getElementById(chartId);
-    if (el) { el.closest('.chart-group')?.classList.add('flash-target'); el.scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(()=>el.closest('.chart-group')?.classList.remove('flash-target'),2800); }
+    if (el) { el.closest('.chart-group')?.classList.add('flash-target'); el.scrollIntoView({behavior:'smooth',block:'center'}); if(el.classList.contains('chart-block')){el.classList.remove('chart-flash');void el.offsetWidth;el.classList.add('chart-flash');setTimeout(()=>el.classList.remove('chart-flash'),2400);} setTimeout(()=>el.closest('.chart-group')?.classList.remove('flash-target'),2800); }
   }, 100);
 }
 
