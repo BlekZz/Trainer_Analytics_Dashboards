@@ -225,6 +225,9 @@
       <div class="def-item"><h4>療程後滿意度</h4><p>療程結束後 7 天內寄送的問卷分數（0–100）。<strong>只有填答的顧客才有分數</strong>。</p></div>
       <div class="def-item"><h4>半年內回購金額</h4><p>該次療程後 180 天內，同一顧客在本連鎖的消費總額（千元）。</p></div>
       <div class="def-item"><h4>相關係數（r）</h4><p>衡量兩個變數「線性」關係的強度，介於 −1 到 1。r 只描述直線關係，無法告訴你資料點長什麼形狀。</p></div>
+      <div class="def-item"><h4>KPI（Key Performance Indicator／關鍵績效指標）</h4><p>每頁頂部的數字卡，是進入圖表前的快速定位，不是結論。本儀表板所有 KPI 卡的數值都由 DATA 即時計算。</p></div>
+      <div class="def-item"><h4>n（樣本數）</h4><p>計算該比率或統計量時納入的筆數或人數。例：「n = 12,000」表示 90 天回診率的分母是 12,000 位顧客。</p></div>
+      <div class="def-item"><h4>情境背景：新客優惠</h4><p>2025 年 7 月起，連鎖推出「新客首次療程優惠」。這是本情境給定的背景資訊；本儀表板沒有優惠成本與使用人數的資料。</p></div>
       <div class="def-item"><h4>F／I／A 答案標籤</h4><p><strong style="color:#047857">F 事實</strong>：可直接從圖表讀出。<strong style="color:var(--accent)">I 推論</strong>：基於事實的合理解釋。<strong style="color:#B45309">A 假設</strong>：需要額外資料驗證的判斷或建議。</p></div>
     </div>
   </div>
@@ -249,7 +252,7 @@
       <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">1 月（4,720 筆）與 12 月（4,560 筆）最高，對應農曆年前與年終的「變美需求」；2 月（3,120 筆）最低。預約的季節性很明顯，但這張圖只告訴你<strong>有多少人想來</strong>，不代表有多少人真的來了。</div></div>
     </div>
     <div class="chart-card" id="card-cAttend">
-      <div class="chart-card-title">到診率一路下滑：1 月 86.2% → 12 月 79.0%</div>
+      <div class="chart-card-title">到診率全年走低：1 月 86.2% → 12 月 79.0%</div>
       <div class="chart-card-meta">單位：%｜2025/01–12｜Y 軸範圍 76–90%</div>
       <div class="chart-block h280"><canvas id="cAttend"></canvas></div>
       <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">上半年到診率 84.7%，下半年 81.4%。下滑從 5 月開始明顯，第四季最低。注意 Y 軸只畫了 76–90%：線的陡峭程度被放大了，要讀的是刻度上的 pp 數，不是線的斜率。</div></div>
@@ -262,7 +265,7 @@
     </div>
     <div class="chart-card" id="card-cLead">
       <div class="chart-card-title">提前越久預約，爽約率越高：當天 4.0% → 15 天以上 15.7%</div>
-      <div class="chart-card-meta">單位：%（爽約 ÷ 該組預約數）｜依預約提前天數分組</div>
+      <div class="chart-card-meta">單位：%（爽約 ÷ 該組預約數）｜2025 全年｜依預約提前天數分組（順序軸，不排序）</div>
       <div class="chart-block h280"><canvas id="cLead"></canvas></div>
       <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">提前 8 天以上的預約佔全部預約的 32.5%，卻貢獻了 47.3% 的爽約。這是一個「什麼時候該提醒」的線索，但還不能直接說是提前天數<strong>造成</strong>爽約。</div></div>
     </div>
@@ -271,7 +274,7 @@
   <div class="section-title">訓練題組 — 預約與出席</div>
   <div class="qa-section">
     <div class="qa-item">
-      <div class="question" onclick="toggleQA(this)"><span class="badge l1">L1·F</span><span class="question-text">Q1：2025 年的 48,000 筆預約，最後分別變成了什麼結局？</span><span class="question-arrow">▶</span></div>
+      <div class="question" onclick="toggleQA(this)"><span class="badge l1">L1·I</span><span class="question-text">Q1：2025 年的 48,000 筆預約，最後分別變成了什麼結局？</span><span class="question-arrow">▶</span></div>
       <div class="answer">
         <div class="answer-block">
           <p><span class="tag-f">F:</span> 從<span class="ev">KPI 卡</span>與<span class="ev">月度預約數</span>：48,000 筆 = 事先取消 3,600 筆（7.5%）＋ 爽約 4,560 筆（9.5%）＋ 實際到診 39,840 筆（83.0%）。三者加總剛好等於預約數，漏斗是閉合的。</p>
@@ -282,7 +285,7 @@
     </div>
 
     <div class="qa-item">
-      <div class="question" onclick="toggleQA(this)"><span class="badge l1">L1·F</span><span class="question-text">Q2：到診率從年初到年底掉了多少？這個下滑有多嚴重？</span><span class="question-arrow">▶</span></div>
+      <div class="question" onclick="toggleQA(this)"><span class="badge l1">L1·I</span><span class="question-text">Q2：到診率從年初到年底掉了多少？這個下滑有多嚴重？</span><span class="question-arrow">▶</span></div>
       <div class="answer">
         <div class="answer-block">
           <p><span class="tag-f">F:</span> 從<span class="ev">月度到診率</span>：1 月 86.2%，12 月 79.0%，下降 <strong>7.2 pp</strong>；上半年 84.7%、下半年 81.4%。</p>
@@ -349,7 +352,7 @@
   <div class="chart-grid chart-grid-2">
     <div class="chart-card" id="card-cNewRet">
       <div class="chart-card-title">新客到診占比從 1 月 13.3% 升到 12 月 26.8%</div>
-      <div class="chart-card-meta">單位：筆（到診）｜2025/01–12｜新客 = 2025 年首次到診</div>
+      <div class="chart-card-meta">單位：筆（到診）｜2025/01–12｜新客 = 2025 年首次到診｜柱頂數字 = 該月新客占比</div>
       <div class="chart-block h300"><canvas id="cNewRet"></canvas></div>
       <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">新客到診從上半年 3,317 筆增加到下半年 4,783 筆，占比從 17.0% 升到 23.6%。下半年的新客促銷把一批「第一次來試試看」的顧客帶進來——他們會不會再回來，是下一張圖要回答的事。</div></div>
     </div>
@@ -369,14 +372,14 @@
       <div class="chart-card-title">新客、舊客的回診率都比去年高，整體卻從 46.0% 降到 41.0%</div>
       <div class="chart-card-meta">單位：%｜90 天回診率｜2024 vs 2025，基準期皆為 1–10 月</div>
       <div class="chart-block h300"><canvas id="cSimpson"></canvas></div>
-      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">新客 25.0% → 26.0%、舊客 60.0% → 61.0%，兩群都進步 1 pp；但新客占基準期顧客的比例從 40.0% 升到 57.1%。整體數字是兩群的加權平均，權重一變，整體就可能往反方向走。</div></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">新客 25.0% → 26.0%、舊客 56.0% → 57.3%，兩群都進步；但新客占基準期顧客的比例從 32.3% 升到 52.1%。整體數字是兩群的加權平均，權重一變，整體就可能往反方向走。</div></div>
     </div>
   </div>
 
   <div class="section-title">訓練題組 — 顧客與回診</div>
   <div class="qa-section">
     <div class="qa-item">
-      <div class="question" onclick="toggleQA(this)"><span class="badge l1">L1·F</span><span class="question-text">Q1：2025 年新客在到診中的占比，上下半年各是多少？</span><span class="question-arrow">▶</span></div>
+      <div class="question" onclick="toggleQA(this)"><span class="badge l1">L1·I</span><span class="question-text">Q1：2025 年新客在到診中的占比，上下半年各是多少？</span><span class="question-arrow">▶</span></div>
       <div class="answer">
         <div class="answer-block">
           <p><span class="tag-f">F:</span> 從<span class="ev">新客／舊客月度到診</span>：上半年新客 3,317 筆，占到診 17.0%；下半年 4,783 筆，占 23.6%。單月從 1 月 13.3% 升到 12 月 26.8%。</p>
@@ -387,7 +390,7 @@
     </div>
 
     <div class="qa-item">
-      <div class="question" onclick="toggleQA(this)"><span class="badge l1">L1·F</span><span class="question-text">Q2：哪一類療程的顧客最常回來？可以據此加推這類療程嗎？</span><span class="question-arrow">▶</span></div>
+      <div class="question" onclick="toggleQA(this)"><span class="badge l1">L1·A</span><span class="question-text">Q2：哪一類療程的顧客最常回來？可以據此加推這類療程嗎？</span><span class="question-arrow">▶</span></div>
       <div class="answer">
         <div class="answer-block">
           <p><span class="tag-f">F:</span> 從<span class="ev">療程別 90 天回診率</span>：皮秒／音波拉提 54.0% 最高，其次玻尿酸 45.0%、保養療程 39.9%、肉毒 39.0%，雷射美白 35.0% 最低。</p>
@@ -416,7 +419,7 @@
       <div class="question" onclick="toggleQA(this)"><span class="badge l2">L2·I</span><span class="question-text">Q4：90 天回診率從 46.0% 掉到 41.0%。主管說「服務品質變差了」，你同意嗎？</span><span class="question-arrow">▶</span></div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> 從<span class="ev">新客／舊客回診率 2024 vs 2025</span>：新客 25.0% → 26.0%，舊客 60.0% → 61.0%，兩群都上升 1 pp；新客占基準期顧客的比例從 40.0% 升到 57.1%；整體從 46.0% 降到 41.0%。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">新客／舊客回診率 2024 vs 2025</span>：新客 25.0% → 26.0%（+1.0 pp），舊客 56.0% → 57.3%（+1.3 pp）；新客占基準期顧客的比例從 32.3% 升到 52.1%（2025 年的 6,249 人＝1–10 月新客首次到診加總，可在新客／舊客月度到診圖反推）；整體從 46.0% 降到 41.0%。</p>
           <p><span class="tag-i">I:</span> 不同意「服務變差」這個結論。同一類顧客的回診率都在進步，整體下滑是因為回診率本來就比較低的新客，在分母裡的比重大幅增加。這是 Simpson 悖論的典型結構：<strong>分組的趨勢和加總的趨勢方向相反</strong>。</p>
           <p><span class="tag-a">A:</span> 對主管的回報建議分兩層：① 服務品質（分群回診率）穩定略升；② 顧客組成改變，新客占比上升拉低整體。接著要問的是：新客促銷帶來的顧客，長期價值是否值得這個獲客成本？</p>
         </div>
@@ -468,7 +471,7 @@
     </div>
     <div class="chart-card" id="card-cAovHist">
       <div class="chart-card-title">65.3% 的到診消費低於 NT$6,000——平均客單價不是「典型顧客」</div>
-      <div class="chart-card-meta">單位：到診筆數｜依單次消費金額分組（順序軸，不排序）</div>
+      <div class="chart-card-meta">單位：到診筆數｜2025 全年｜依單次消費金額分組（順序軸，不排序）</div>
       <div class="chart-block h300"><canvas id="cAovHist"></canvas></div>
       <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content">最多的一組是 NT$3 千以下（14,200 筆，35.6%）。累計到 NT$6 千的有 65.3%。少數 2 萬以上的高單價療程（1,800 筆，4.5%）把平均值往上拉到 NT$6,000。</div></div>
     </div>
@@ -483,7 +486,7 @@
   <div class="section-title">訓練題組 — 療程與營收</div>
   <div class="qa-section">
     <div class="qa-item">
-      <div class="question" onclick="toggleQA(this)"><span class="badge l1">L1·F</span><span class="question-text">Q1：哪兩類療程貢獻最多營收？合計占多少？</span><span class="question-arrow">▶</span></div>
+      <div class="question" onclick="toggleQA(this)"><span class="badge l1">L1·I</span><span class="question-text">Q1：哪兩類療程貢獻最多營收？合計占多少？</span><span class="question-arrow">▶</span></div>
       <div class="answer">
         <div class="answer-block">
           <p><span class="tag-f">F:</span> 從<span class="ev">療程別營收</span>：皮秒／音波拉提 7,650 萬（32.0%）、玻尿酸 6,214 萬（26.0%），合計 13,864 萬，占全年 23,904 萬的 58.0%。</p>
@@ -551,10 +554,10 @@
   <div id="quartet-wrap" class="veiled">
     <div class="veil-note"><span>🙈 先根據上表寫下你的結論，再打開圖</span></div>
     <div class="chart-grid chart-grid-4">
-      <div class="chart-card" id="card-cQ0"><div class="chart-card-title" data-qtitle="0"></div><div class="chart-card-meta">x：療程後滿意度｜y：半年回購（千元）</div><div class="chart-block h240"><canvas id="cQ0"></canvas></div></div>
-      <div class="chart-card" id="card-cQ1"><div class="chart-card-title" data-qtitle="1"></div><div class="chart-card-meta">x：療程後滿意度｜y：半年回購（千元）</div><div class="chart-block h240"><canvas id="cQ1"></canvas></div></div>
-      <div class="chart-card" id="card-cQ2"><div class="chart-card-title" data-qtitle="2"></div><div class="chart-card-meta">x：療程後滿意度｜y：半年回購（千元）</div><div class="chart-block h240"><canvas id="cQ2"></canvas></div></div>
-      <div class="chart-card" id="card-cQ3"><div class="chart-card-title" data-qtitle="3"></div><div class="chart-card-meta">x：療程後滿意度｜y：半年回購（千元）</div><div class="chart-block h240"><canvas id="cQ3"></canvas></div></div>
+      <div class="chart-card" id="card-cQ0"><div class="chart-card-title" data-qtitle="0"></div><div class="chart-card-meta">x：療程後滿意度｜y：半年回購（千元）｜2025 療程病人各 30 位</div><div class="chart-block h240"><canvas id="cQ0"></canvas></div></div>
+      <div class="chart-card" id="card-cQ1"><div class="chart-card-title" data-qtitle="1"></div><div class="chart-card-meta">x：療程後滿意度｜y：半年回購（千元）｜2025 療程病人各 30 位</div><div class="chart-block h240"><canvas id="cQ1"></canvas></div></div>
+      <div class="chart-card" id="card-cQ2"><div class="chart-card-title" data-qtitle="2"></div><div class="chart-card-meta">x：療程後滿意度｜y：半年回購（千元）｜2025 療程病人各 30 位</div><div class="chart-block h240"><canvas id="cQ2"></canvas></div></div>
+      <div class="chart-card" id="card-cQ3"><div class="chart-card-title" data-qtitle="3"></div><div class="chart-card-meta">x：療程後滿意度｜y：半年回購（千元）｜2025 療程病人各 30 位</div><div class="chart-block h240"><canvas id="cQ3"></canvas></div></div>
     </div>
     <div class="findings-section"><div class="findings-label">🔍 圖表解讀——打開圖之後再看</div><div class="findings-content">四張圖用<strong>相同的座標範圍</strong>，可以直接比較。王醫師：大致是一條斜線。林醫師：28 位病人看不出關係，只有 2 位高滿意、高回購的病人撐起整體相關。陳醫師：兩群病人，群與群之間有落差，但各群內部幾乎沒有關係。張醫師：U 形，滿意度很低和很高的病人回購都比較多。</div></div>
   </div>
@@ -562,7 +565,7 @@
   <div class="section-title">訓練題組 — 同統計量、不同形狀</div>
   <div class="qa-section">
     <div class="qa-item">
-      <div class="question" onclick="toggleQA(this)"><span class="badge l1">L1·F</span><span class="question-text">Q1：只看統計量表，四位醫師之間有什麼差異？</span><span class="question-arrow">▶</span></div>
+      <div class="question" onclick="toggleQA(this)"><span class="badge l1">L1·I</span><span class="question-text">Q1：只看統計量表，四位醫師之間有什麼差異？</span><span class="question-arrow">▶</span></div>
       <div class="answer">
         <div class="answer-block">
           <p><span class="tag-f">F:</span> 從<span class="ev">統計量表</span>：四位醫師各 30 位病人，平均滿意度都是 70.0、標準差 8.0；平均半年回購都是 24.0 千元、標準差 6.0；相關係數都是 0.60。</p>
@@ -591,7 +594,7 @@
       <div class="answer">
         <div class="answer-block">
           <p><span class="tag-f">F:</span> 從<span class="ev">林醫師散點圖</span>：拿掉右上角 2 位病人後，其餘 28 人的相關係數是 0.00；加上這 2 人，整體變成 0.60。</p>
-          <p><span class="tag-i">I:</span> 林醫師「滿意度與回購正相關」的結論，完全由 2 位病人決定。這 2 位可能是 VIP 或特殊方案的顧客，代表的是個案，不是林醫師病人的普遍模式。</p>
+          <p><span class="tag-i">I:</span> 林醫師「滿意度與回購正相關」的結論，完全由 2 位病人決定。這 2 位可能是高消費常客或特殊方案的顧客，代表的是個案，不是林醫師病人的普遍模式。</p>
           <p><span class="tag-a">A:</span> 不要直接刪掉離群點，也不要直接保留：先查這兩筆是否為資料錯誤（例如把年度消費誤填成半年），確認是真實顧客後，報告時同時列出「含／不含這 2 人」的兩個結果。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('p4','card-cQ1')">📍 查看：林醫師散點圖</button>
@@ -625,6 +628,7 @@
             <p><span class="tag-a">A:</span> ③ 對照否定論點：也可以加大新客促銷衝預約量，但新客的 90 天回診率只有 26.0%（<span class="ev">新客／舊客回診率</span>），量會進來，卻留不太住。④ 行動：先在 2 間診所試行「前 3 天＋前 1 天」雙提醒一季，和其他 4 間比較爽約率；有效再全面推行。</p>
           </div>
           <button class="chart-ref-btn" onclick="goToChart('p1','card-cLead')">📍 查看：預約提前天數 × 爽約率</button>
+          <div class="nav-hint" onclick="switchPage('p1')">➜ 回到 P1 看爽約原因與提前天數</div>
           <div class="trap-block" data-trap-stage="read" data-trap="錨定效應"><span class="trap-icon">⚠</span><span class="trap-tag">解讀｜錨定效應</span><div><strong>常見陷阱：</strong>被第一個看到的數字（例如「忘記 34.0%」）定錨，以為解決最大的原因就能解決問題。提醒只能處理「忘記」；「臨時有事」「遲到」需要不同的對策，例如候補名單或彈性改約。</div></div>
         </div>
       </div>
@@ -633,10 +637,11 @@
         <div class="question" onclick="toggleQA(this)"><span class="badge l3">L3·A</span><span class="question-text">T2：下半年的新客促銷，帶來大量新客，但回診率低。明年要繼續、調整，還是停掉？</span><span class="question-arrow">▶</span></div>
         <div class="answer">
           <div class="answer-block">
-            <p><span class="tag-i">I:</span> ① 兩面論述：支持繼續——新客到診從上半年 3,317 筆增加到下半年 4,783 筆（<span class="ev">新客／舊客月度到診</span>），預約 YoY +14.0%。支持停掉——新客 90 天回診率 26.0%，遠低於舊客 61.0%（<span class="ev">新客／舊客回診率</span>），而且下半年到診率下滑。</p>
+            <p><span class="tag-i">I:</span> ① 兩面論述：支持繼續——新客到診從上半年 3,317 筆增加到下半年 4,783 筆（<span class="ev">新客／舊客月度到診</span>），預約 YoY +14.0%。支持停掉——新客 90 天回診率 26.0%，遠低於舊客 57.3%（<span class="ev">新客／舊客回診率</span>），而且下半年到診率下滑。</p>
             <p><span class="tag-a">A:</span> ② 用第三個維度決策：需要「促銷獲客成本」和「新客一年內的累計消費」——本儀表板都沒有。③ 不選擇的代價：直接停掉，明年新客量可能回到上半年水準；直接繼續，可能持續用優惠買進不會回來的顧客。建議改成「調整」：保留促銷，但把優惠綁在第二次到診（例如回診才折抵），用設計篩選會回來的人。</p>
           </div>
           <button class="chart-ref-btn" onclick="goToChart('p2','card-cSimpson')">📍 查看：新客／舊客回診率</button>
+          <div class="nav-hint" onclick="switchPage('p2')">➜ 到 P2 對照新客回診與 cohort 觀察期</div>
           <div class="trap-block" data-trap-stage="wrangle" data-trap="挑選期間"><span class="trap-icon">⚠</span><span class="trap-tag">加工｜挑選期間</span><div><strong>常見陷阱：</strong>用半年的資料判斷一個「獲客」活動。新客的價值要看較長的時間窗；7–10 月的新客到年底才觀察了 2–5 個月，現在就說「不划算」或「很成功」，都是挑了一個太短的期間。</div></div>
         </div>
       </div>
@@ -649,6 +654,7 @@
             <p><span class="tag-a">A:</span> ② 計算衝擊：若這兩類療程需求下降 20%，營收約減少 13,864 萬 × 20% ≈ 2,773 萬，約占全年 11.6%。③ 補救池：保養療程顧客量最大（13,000 筆），若能提高他們轉做高單價療程的比例，可以分散風險、也不必砍掉保養療程。</p>
           </div>
           <button class="chart-ref-btn" onclick="goToChart('p3','card-cRevCat')">📍 查看：療程別營收</button>
+          <div class="nav-hint" onclick="switchPage('p3')">➜ 到 P3 看療程營收與到診組合</div>
           <div class="trap-block" data-trap-stage="read" data-trap="過度集中推論"><span class="trap-icon">⚠</span><span class="trap-tag">解讀｜過度集中推論</span><div><strong>常見陷阱：</strong>把「集中」直接等同「有效率」或「很危險」。集中度本身是中性的，要搭配「這兩類需求有多穩定」「能不能被替代」才能判斷是優勢還是風險。</div></div>
         </div>
       </div>
@@ -661,6 +667,7 @@
             <p><span class="tag-a">A:</span> 進階的兩個：④ <strong>療程轉換路徑</strong>——保養療程顧客之後轉做哪些療程（P3 Q3）；⑤ <strong>問卷回收率與獲客成本</strong>——前者決定 P4 的結論能推到多少人，後者決定 T2 促銷值不值得。</p>
           </div>
           <button class="chart-ref-btn" onclick="goToChart('p3','card-cDoctors')">📍 查看：醫師別到診筆數</button>
+          <div class="nav-hint" onclick="switchPage('p1')">➜ 從 P1 開始逐頁找「目前無法下結論」的題目</div>
           <div class="trap-block" data-trap-stage="read" data-trap="過度推論"><span class="trap-icon">⚠</span><span class="trap-tag">解讀｜過度推論</span><div><strong>常見陷阱：</strong>只列出「想要更多資料」而不說每一項資料要回答哪個問題。好的缺失維度清單，每一項都要對應到一個目前無法下結論的具體題目。</div></div>
         </div>
       </div>
@@ -670,11 +677,12 @@
         <div class="answer">
           <div class="answer-block">
             <p><span class="tag-f">F:</span> ① 各自讀：從<span class="ev">KPI 卡</span>，預約數 48,000 筆，去年 42,105 筆，YoY +14.0%；從<span class="ev">新客／舊客回診率</span>，90 天回診率 46.0% → 41.0%。</p>
-            <p><span class="tag-i">I:</span> ② 找矛盾：兩個指標的分母不同、族群組成也不同。預約數成長主要來自新客；回診率下滑是因為回診率較低的新客在分母中的比例從 40.0% 升到 57.1%，而新客、舊客各自的回診率其實都上升了 1 pp。兩個數字都對，它們描述的是同一個變化（新客湧入）的兩面。</p>
+            <p><span class="tag-i">I:</span> ② 找矛盾：兩個指標的分母不同、族群組成也不同。預約數成長主要來自新客；回診率下滑是因為回診率較低的新客在分母中的比例從 32.3% 升到 52.1%，而新客、舊客各自的回診率其實都上升了（+1.0 pp、+1.3 pp）。兩個數字都對，它們描述的是同一個變化（新客湧入）的兩面。</p>
             <p><span class="tag-a">A:</span> ③ 下判斷：「變好或變壞」取決於新客明年會不會留下來，現在還不能下結論。建議追加監控：H2 新客的 180 天回診率（2026 年 4 月可觀察）、以及新客第二次到診的轉換率。若兩者明年改善，今年的新客擴張就是值得的。</p>
           </div>
           <button class="chart-ref-btn" onclick="goToChart('p1','card-cAppts')">📍 查看：月度預約數</button>
           <button class="chart-ref-btn" onclick="goToChart('p2','card-cSimpson')">📍 查看：新客／舊客回診率</button>
+          <div class="nav-hint" onclick="switchPage('p2')">➜ 到 P2 看新客／舊客回診率的拆解</div>
           <div class="trap-block" data-trap-stage="curate" data-trap="重複紀錄"><span class="trap-icon">⚠</span><span class="trap-tag">整理｜重複紀錄</span><div><strong>常見陷阱：</strong>直接把「預約數成長」當成「需求成長」。依指標定義，取消後重新預約會算成新的一筆；如果下半年取消後重約的情況變多，預約數會被灌大。比較預約數之前，先確認同一位顧客在同一週期內的重複預約有多少。</div></div>
         </div>
       </div>
@@ -687,11 +695,13 @@
     <div class="design-item"><h4>1. 視覺：P5 醫療信任型，主色經驗證後調整</h4><p>原 P5 的主色 #0891B2 與第二色 #059669 正常視力也難分辨（ΔE 11.8），依配色驗證結果改為 #0369A1（ΔE 18.5）。橘色與綠色在紅綠色盲下 ΔE 7.9，所以這兩色的圖都保留數字標籤。</p></div>
     <div class="design-item"><h4>2. 刻意截斷的到診率軸</h4><p>P1 月度到診率的 Y 軸只畫 76–90%，是刻意的教學陷阱（P1 Q2），讓學員練習「讀刻度，不讀斜率」。其他所有長條圖的值軸都從 0 開始。</p></div>
     <div class="design-item"><h4>3. 全部單一值軸</h4><p>這份儀表板沒有任何雙 Y 軸圖。量級不同的指標（例如預約數與到診率）都拆成兩張圖。</p></div>
-    <div class="design-item"><h4>4. 刻意埋設的 Simpson 悖論</h4><p>新客、舊客的回診率都比去年高 1 pp，但新客占比從 40.0% 升到 57.1%，使整體回診率下降 5.0 pp。這個結構是資料生成時刻意設計的（P2 Q4、T5）。</p></div>
+    <div class="design-item"><h4>4. 刻意埋設的 Simpson 悖論</h4><p>新客、舊客的回診率都比去年高（+1.0 pp、+1.3 pp），但新客占比從 32.3% 升到 52.1%，使整體回診率下降 5.0 pp。這個結構是資料生成時刻意設計的（P2 Q4、T5）。</p></div>
     <div class="design-item"><h4>5. Cohort 的空白格是真的空白</h4><p>H2 群到資料截止日不滿 180 天，該格留空而不是填 0 或填估計值，讓學員練習分辨「沒發生」和「還看不到」（P2 Q3）。</p></div>
     <div class="design-item"><h4>6. 四位醫師的資料是「同統計量、不同形狀」</h4><p>四組資料的平均數、標準差、相關係數完全相同（70.0／8.0／24.0／6.0／0.60），形狀分別是線性、兩個極端點、兩群、U 形。P4 刻意先只給統計量、再揭曉圖形。</p></div>
     <div class="design-item"><h4>7. 爽約的定義包含遲到</h4><p>「遲到超過 15 分鐘記為爽約」是刻意保留的口徑選擇，讓學員看到同一份資料換一個定義，KPI 就差 1.7 pp（P1 Q5）。</p></div>
     <div class="design-item"><h4>8. 刻意缺失的維度</h4><p>爽約沒有拆新舊客、醫師沒有排班時數、6 間診所沒有分開呈現。這些缺口是給 T4 的素材，也讓 P2 Q5、P3 Q4 只能停在假說。</p></div>
+    <div class="design-item"><h4>9. 訓練題放在最後一頁，P4 圖卡標題不寫洞見</h4><p>T1–T5 需要跨四頁的證據，所以放在最後一頁而不是 P3 末。P4 四張散點圖的標題刻意只寫醫師名與 r 值，不寫洞見：寫出來就等於直接公布答案，破壞「先看統計量、再看圖」的揭示設計。</p></div>
+    <div class="design-item"><h4>10. 新客到診圖的柱頂數字是占比</h4><p>P2 新客／舊客月度到診的柱頂標的是「當月新客占比」而非堆疊加總，因為這張圖要讀的是組成變化；各段筆數放在 tooltip。</p></div>
   </div>
 </div>
 </div>
@@ -715,7 +725,7 @@ const DATA = /*__DATA__*/{
   "returning_visits": [3528,2264,2601,2644,2640,2556,2853,2810,2355,2387,2463,2639],
   "revisit_by_cat": {"labels":["皮秒／音波拉提","玻尿酸","肉毒","雷射美白","保養療程"],"base":[1500,1700,2600,2900,3300],"revisit":[810,765,1014,1015,1316]},
   "cohort": {"days":[30,60,90,180],"h1":[21.0,34.5,44.8,58.2],"h1_n":6078,"h2":[17.6,28.9,37.1,null],"h2_n":5922},
-  "simpson": {"segments":["新客","舊客"],"prev":{"base":[4800,7200],"revisit":[1200,4320]},"curr":{"base":[6857,5143],"revisit":[1783,3137]}},
+  "simpson": {"segments":["新客","舊客"],"prev":{"base":[3871,8129],"revisit":[968,4552]},"curr":{"base":[6249,5751],"revisit":[1625,3295]}},
   "rev_by_cat": {"labels":["皮秒／音波拉提","玻尿酸","肉毒","雷射美白","保養療程"],"revenue_wan":[7650,6214,4302,3346,2392],"visits":[4400,5600,7640,9200,13000]},
   "aov_hist": {"labels":["<3千","3–6千","6千–1萬","1–2萬","2萬以上"],"visits":[14200,11800,7400,4640,1800]},
   "doctors": {"labels":["王醫師","林醫師","陳醫師","張醫師","李醫師","黃醫師","吳醫師","劉醫師"],"visits":[6200,5800,5400,5100,4900,4600,4200,3640]},
@@ -749,6 +759,7 @@ function assertConsistency() {
   eq(+(sum(sp.curr.revisit) / sum(sp.curr.base) * 100).toFixed(1), A.revisit_90d, 'simpson curr');
   eq(+(sum(sp.prev.revisit) / sum(sp.prev.base) * 100).toFixed(1), A.prev_revisit_90d, 'simpson prev');
   eq(sum(sp.curr.revisit), sum(rb.revisit), 'simpson = category revisit');
+  eq(sp.curr.base[0], sum(DATA.new_visits.slice(0, 10)), 'simpson new base = Jan–Oct new visits');
   const co = DATA.cohort;
   eq(co.h1_n + co.h2_n, sum(rb.base), 'cohort sizes = revisit base');
   eq(+((co.h1[2] * co.h1_n + co.h2[2] * co.h2_n) / (co.h1_n + co.h2_n)).toFixed(1), A.revisit_90d, 'cohort weighted 90d');

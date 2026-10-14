@@ -74,10 +74,13 @@ cohort = {"days": [30, 60, 90, 180],
           "h2": [17.6, 28.9, 37.1, None], "h2_n": 5922}
 
 # Simpson: both segments improve, aggregate falls because the new-customer share rises
+# 基準期 = 1–10 月到診顧客（12,000 人）；新客基期必須等於 1–10 月新客首次到診加總
+new_base_curr = sum(new_visits[:10])
 simpson = {
     "segments": ["新客", "舊客"],
-    "prev": {"base": [4800, 7200], "revisit": [1200, 4320]},   # 25% / 60%  → 46.0%
-    "curr": {"base": [6857, 5143], "revisit": [1783, 3137]},   # 26% / 61%  → 41.0%
+    "prev": {"base": [3871, 8129], "revisit": [968, 4552]},                          # 25.0% / 56.0% → 46.0%
+    "curr": {"base": [new_base_curr, 12000 - new_base_curr],
+             "revisit": [round(new_base_curr * 0.26), 4920 - round(new_base_curr * 0.26)]},  # 26.0% / ~57.3% → 41.0%
 }
 
 # ── P3 treatments & revenue ─────────────────────────────────────────
@@ -199,6 +202,7 @@ eq(cohort["h1_n"] + cohort["h2_n"], 12000, "cohort sizes = revisit base")
 eq(round((cohort["h1"][2] * cohort["h1_n"] + cohort["h2"][2] * cohort["h2_n"]) / 12000, 1), A["revisit_90d"], "cohort weighted 90d")
 sp = simpson
 eq(sum(sp["curr"]["base"]), 12000, "simpson curr base")
+eq(sp["curr"]["base"][0], sum(new_visits[:10]), "simpson new base = Jan–Oct new visits")
 eq(round(sum(sp["curr"]["revisit"]) / sum(sp["curr"]["base"]) * 100, 1), A["revisit_90d"], "simpson curr aggregate")
 eq(round(sum(sp["prev"]["revisit"]) / sum(sp["prev"]["base"]) * 100, 1), A["prev_revisit_90d"], "simpson prev aggregate")
 eq(sum(sp["curr"]["revisit"]), sum(rb["revisit"]), "simpson revisit = category revisit")
