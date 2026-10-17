@@ -34,8 +34,8 @@ A collection of single-file analytics training dashboards for industry-specific 
 `Skill/` 是**本專案的凍結自足版**（版本鎖定，隨 repo 走），不再與任何全域路徑保持同步：
 
 - 在本專案 scale 內繼續產同版本的 dashboard 流水線 → **直接用這份 project-based `Skill/`，不需啟動任何 global skill**。
-- 全域備份在 `~/.claude/coldbench/skills/dashboard-training-factory/`（僅備份用途，無同步義務）。
-- 教學方法論的**權威演進版**已遷移至 tutor skill family（`~/.claude/coldbench/skills/tutor-*` 與 `mock-data-forge`）——**開新的教學專案請用 `/init-tutorial`，勿以本專案為起點**。
+- 全域備份在 `<Hub>/coldbench/skills/dashboard-training-factory/`（僅備份用途，無同步義務）。
+- 教學方法論的**權威演進版**已遷移至 tutor skill family（`<Hub>/coldbench/skills/tutor-*` 與 `mock-data-forge`）——**開新的教學專案請用 `/init-tutorial`，勿以本專案為起點**。
 
 ## External Dependencies (CDN, pinned)
 
@@ -121,7 +121,7 @@ Rules:
 
 `Agent/` 目錄存放本專案所有 active agent 的 `.md` 定義，隨 repo 一起 commit，與 `Skill/` 同屬**凍結自足版**——本專案派工時直接讀 `Agent/` 內的角色定義就地派工，不需要（也不要）複製到 `~/.claude/agents/`。
 
-**與新架構的關係：** 全域 agent 架構已重組——Corporate Training Designer 與 Code Reviewer 的教學/稽核職能在新架構由 `~/.claude/coldbench/agents/tutor-designer.md` / `tutor-audit-pedagogy.md` / `tutor-audit-accuracy.md` 承接。本專案續用凍結版，不遷移。
+**與新架構的關係：** 全域 agent 架構已重組——Corporate Training Designer 與 Code Reviewer 的教學/稽核職能在新架構由 `<Hub>/coldbench/agents/tutor-designer.md` / `tutor-audit-pedagogy.md` / `tutor-audit-accuracy.md` 承接。本專案續用凍結版，不遷移。
 
 **維護規則：** 若本專案內 agent 定義有更新，直接改 `Agent/` 裡對應的 `.md` 並 commit（不外流到全域）。
 

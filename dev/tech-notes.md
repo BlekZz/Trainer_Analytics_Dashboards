@@ -1,7 +1,7 @@
 # 分析訓練儀表板 — 開發 Knowhow
 
-> Global technotes pointers: `~/.claude/technotes/windows.md`、`~/.claude/technotes/git.md`、`~/.claude/technotes/claude-code.md`（單檔 HTML 按結構層拆 subagent call）（SSOT 在池，本檔不複製池內容）
-> Global knowledge pointers: `~/.claude/knowledge/web-frontend.md`（SSOT 在池，本檔不複製池內容）
+> Global technotes pointers: `<Hub>/technotes/windows.md`、`<Hub>/technotes/git.md`、`<Hub>/technotes/claude-code.md`（單檔 HTML 按結構層拆 subagent call）（SSOT 在池，本檔不複製池內容）
+> Global knowledge pointers: `<Hub>/knowledge/web-frontend.md`（SSOT 在池，本檔不複製池內容）
 
 開發過程中累積的非顯而易見技巧與決策。
 
@@ -618,7 +618,7 @@ plugins: {
 - **subagent 回填 `.ev`／`.chart-ref-btn`**：先把允許的新增（按鈕、`card-` id、ev 包裹、「從〈圖〉，」前綴、CSS）正規化掉，再跟 `git show HEAD:` 比對，剩下的差異逐條判讀。本次因此撤回了餐飲 3 處沒有真實出處的硬標。
 - **交付閘**：`node dev/script/audit-dashboards.mjs` 必須 exit 0。它也會檢查 `goToChart(page, cardId)` 的目標存在，且位於所宣告的分頁。
 
-**[global]** 方法本身已上行為 `~/.claude/technotes/verification-testing.md` verification-143；本條只保留本專案的具體值。
+**[global]** 方法本身已上行為 `<Hub>/technotes/verification-testing.md` verification-143；本條只保留本專案的具體值。
 
 ---
 
@@ -631,4 +631,4 @@ plugins: {
 - 用 Edit 取代「開頭 tag＋佔位」時，old_string 要連同該區塊的結尾 tag 一起取代，或 new_string 不要自帶結尾。
 - 用瀏覽器驗修正時，網址加 `?v=<任意值>` 避開快取；本次第一次重截圖讀到的是快取舊版。
 
-**[global]** 方法已上行為 `~/.claude/technotes/verification-testing.md` verification-145；合成資料兩條（常數比率、交叉反推、同統計量離群點出界）上行為 `technotes/synthetic-data.md` synthetic-data-001／002。
+**[global]** 方法已上行為 `<Hub>/technotes/verification-testing.md` verification-145；合成資料兩條（常數比率、交叉反推、同統計量離群點出界）上行為 `technotes/synthetic-data.md` synthetic-data-001／002。
