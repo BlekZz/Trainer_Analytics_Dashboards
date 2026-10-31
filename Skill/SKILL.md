@@ -108,10 +108,9 @@ author: Blake
 > 用文字向使用者聲明（不需等待回覆，聲明後立即執行）：
 > ```
 > 【Phase 3 分層建構計畫】
-> Layer 1：骨架 + DATA + assertConsistency（Write tool，新建檔案）
-> Layer 2：P1 所有圖表 + QA（Edit append）
-> Layer 3：P2 所有圖表 + QA（Edit append）
-> Layer 4：P3 + 收尾面板（Edit append）
+> Layer 1：骨架 + DATA + assertConsistency（從 template 複製後 Write）
+> Layer 2…N：末頁以外的每個資料頁一層——該頁所有圖表 + QA（Edit）
+> 最後一層：最後一頁 + 收尾面板（訓練題／設計選擇／定義面板）
 > 每層完成後確認渲染正常再進下一層。現在開始 Layer 1。
 > ```
 >
@@ -121,14 +120,15 @@ author: Blake
 >
 > 完整 dashboard HTML 約 1,200–2,000 行，單次輸出極易觸碰 32,000 token 輸出上限，導致連線中斷、檔案不完整寫入，且 agent 不報錯只是靜默截斷。
 >
-> **強制分 4 層依序建構，每層完成後確認再進下一層：**
+> **強制分層依序建構（Layer 1 骨架＋每個資料頁一層，3 頁 = 4 層、4 頁 = 5 層），每層完成後確認再進下一層：**
 >
 > | 層次 | 內容 | 完成標誌 |
 > |---|---|---|
-> | **Layer 1 — 骨架** | HEAD + P4 CSS + `<body>` 結構（header/main-wrapper/def-panel/content-area 空殼）+ 完整 DATA 物件 + `assertConsistency()` + utility functions（`mk`, `c`, `TT`, `switchPage`, `goToChart`, `toggleDef`, `toggleQA`） | `assertConsistency()` 通過，console 無錯 |
-> | **Layer 2 — P1 圖表+QA** | P1 所有 canvas 元素 + KPI HTML + `drawMember()` 完整實作 + P1 所有 QA items | P1 分頁開啟後所有圖表渲染，QA 可展開 |
-> | **Layer 3 — P2 圖表+QA** | P2 所有 canvas 元素 + KPI HTML + `drawBehavior()` 完整實作 + P2 所有 QA items | P2 分頁開啟後所有圖表渲染 |
-> | **Layer 4 — P3 + 收尾** | P3 所有 canvas 元素 + KPI HTML + `drawRetention()` + P3 QA + 訓練題面板 + 設計選擇面板 + 定義面板 `<dl>` 內容 | P3 渲染，面板可開合，assertConsistency 再跑一次 |
+> | **Layer 1 — 骨架** | HEAD + 所選 preset 的 CSS + `<body>` 結構（header/main-wrapper/def-panel/content-area 空殼）+ 完整 DATA 物件 + `assertConsistency()` + utility functions（`mk`, `c`, `TT`, `switchPage`, `goToChart`, `toggleDef`, `toggleQA`） | `assertConsistency()` 通過，console 無錯 |
+> | **Layer 2…N — 每頁圖表+QA**（末頁以外每個資料頁一層） | 該頁所有 canvas 元素 + KPI HTML + 該頁的 `drawXxx()` 完整實作 + 該頁所有 QA items | 該分頁開啟後所有圖表渲染，QA 可展開 |
+> | **最後一層 — 末頁 + 收尾** | 末頁的圖表＋QA（同上）+ 訓練題面板 + 設計選擇面板 + 定義面板 `<dl>` 內容 | 末頁渲染，面板可開合，assertConsistency 再跑一次 |
+>
+> **draw 函式命名**：沿用 template 的慣例——每頁一個 `draw` + 頁 key 的 PascalCase（template 的頁 key `ops`／`cust`／`deep` 對應 `drawOps()`／`drawCust()`／`drawDeep()`）；換頁 key 時 `switchPage` 的 `pages` 陣列與分派一併改。
 >
 > **🔴 Layer 1 必填樣板（`<script>` 區塊最頂端，任何 Chart 實例化之前）：**
 >
@@ -142,16 +142,15 @@ author: Blake
 > 以及 `switchPage` 必須用 `setTimeout(60ms)` 包住所有 draw 呼叫：
 >
 > ```javascript
-> function switchPage(name) {
->   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
->   document.getElementById('page-' + name).classList.add('active');
->   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
->   document.querySelector(`[onclick*="'${name}'"]`).classList.add('active');
+> // 節錄自 template 的 switchPage（完整版以 template 為準）
 >   if (!initialized[name]) {
 >     initialized[name] = true;
->     setTimeout(() => { const fn = window['draw_' + name]; if (fn) fn(); }, 60);
+>     setTimeout(() => {
+>       if (name === 'ops') drawOps();
+>       if (name === 'cust') drawCust();
+>       if (name === 'deep') drawDeep();
+>     }, 60);
 >   }
-> }
 > ```
 >
 > **原因（entry 14-A/14-B/14-C in tech-notes）：**
@@ -161,14 +160,15 @@ author: Blake
 > - annotation plugin global 是 `window.ChartAnnotation`，不是 `window['chartjs-plugin-annotation']`
 >
 > **執行規則：**
-> - 每層用 **Write tool**（Layer 1）或 **Edit tool 追加**（Layer 2–4）寫入檔案，不要在 agent prompt 裡一次輸出整份 HTML
+> - 每層用 **Write tool**（Layer 1）或 **Edit tool**（Layer 2 以後）寫入檔案，不要在 agent prompt 裡一次輸出整份 HTML
+> - **用 Edit 取代「開頭 tag＋佔位」時，old_string 必須連同該區塊對應的結尾 tag 一起取代**（或 new_string 不自帶結尾 tag）——否則每頁多一個 `</div>`，後面的分頁跑出內容區、圖表照畫、audit 照綠（tech-notes #26）
 > - 若有 agent 協助，**每個 agent 只負責一層**，由主 Claude 把關資料數字正確性後再觸發下一層
 > - Layer 1 完成後立即用瀏覽器開啟確認 `assertConsistency` 通過，再進 Layer 2
 > - 任何層次寫入後發現資料錯誤，**先修 DATA 物件，再重跑 assertConsistency，再繼續**
 
-10. 從 `Skill/template.html` 骨架開始，按 Layer 1–4 順序建構
+10. 從 `Skill/template.html` 骨架開始，按 Layer 1 → 各頁 → 收尾層的順序建構
 11. Layer 1：注入 DATA 物件 + utility functions，確認 assertConsistency 通過
-12. Layer 2–4：依模組 B 規範繪製所有圖表（用標準 mk() factory），依模組 C 規範撰寫問題與答案
+12. Layer 2 以後：依模組 B 規範繪製所有圖表（用 template 的 mk() factory），依模組 C 規範撰寫問題與答案
 13. 每層 Write/Edit 後在瀏覽器確認渲染正常再繼續
 
 ### Phase 4 — 差異化注入（依模組 D）
@@ -193,7 +193,7 @@ author: Blake
 ### Phase 5 — 驗收（依模組 E）
 20. 跑 `node dev/script/audit-dashboards.mjs Dashboard/<新檔>.html`，**exit 0 才繼續**（E.2）
 21. 跑 E.1 完整 hard-check 清單（47 項）
-22. 交付前產出 changelog：跟範本相比差異化了哪些
+22. 交付前在 `Skill/ARCHIVE.md` 新增本份條目（差異化與陷阱主題，見 E.5／E.7）
 
 ---
 
@@ -214,7 +214,7 @@ author: Blake
 | 想做什麼 | 看哪個模組 |
 |---|---|
 | 設計新的合成資料集 | A.1 ~ A.3 |
-| 確保數字內部一致 | A.4（assertion 9 條） |
+| 確保數字內部一致 | A.4（assertConsistency 契約＋基礎檢查類別） |
 | 選 chart 類型 | B.2 |
 | 寫題目並標難度 | C.1（二維矩陣） |
 | 寫答案的三段式 | C.2（觀察→推論→行動） |

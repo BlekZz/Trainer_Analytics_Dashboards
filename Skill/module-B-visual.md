@@ -52,22 +52,35 @@
 
    **🔴 堆疊 bar 必備：bar 頂端顯示加總值 + tooltip 顯示各段佔比**
 
+   **加總規則**：只加總**同一個 stack 的組成系列**——排除總量折線、比較線（目標／去年同期）與被 legend 隱藏的系列；總量為 0 時不顯示標籤、佔比不除以 0。
+
    ```javascript
-   // datalabels: 只在最後一個 dataset 顯示總量
+   // 同 stack、可見的組成系列（總量線等疊加系列沒有 stack 或 type 不同，自然被排除）
+   const stackParts = (chart, stackId) => chart.data.datasets
+     .map((ds, i) => ({ ds, i }))
+     .filter(({ ds, i }) => ds.stack === stackId && (ds.type ?? chart.config.type) === 'bar'
+                            && chart.isDatasetVisible(i));
+   const stackTotal = (chart, stackId, idx) =>
+     stackParts(chart, stackId).reduce((s, { ds }) => s + (Number(ds.data[idx]) || 0), 0);
+
+   // datalabels: 只在該 stack 最上層的可見組成系列顯示總量
    datalabels: {
-     display: (ctx) => ctx.datasetIndex === ctx.chart.data.datasets.length - 1,
-     formatter: (v, ctx) => {
-       const tot = ctx.chart.data.datasets.reduce((s, ds) => s + ds.data[ctx.dataIndex], 0);
-       return tot + ' 單位';  // 換成實際單位
+     display: (ctx) => {
+       const parts = stackParts(ctx.chart, ctx.dataset.stack);
+       return parts.length > 0 && parts[parts.length - 1].i === ctx.datasetIndex
+              && stackTotal(ctx.chart, ctx.dataset.stack, ctx.dataIndex) !== 0;
      },
+     formatter: (v, ctx) => stackTotal(ctx.chart, ctx.dataset.stack, ctx.dataIndex) + ' 單位',  // 換成實際單位
      anchor: 'end', align: 'end', color: '#374151',
      font: { size: 11, weight: 600 }
    }
 
-   // tooltip: 顯示原始值 + 佔比
+   // tooltip: 顯示原始值 + 佔比（只對組成系列算佔比；總量線等只顯示原值）
    tooltip: { callbacks: { label: (ctx) => {
-     const tot = ctx.chart.data.datasets.reduce((s, ds) => s + ds.data[ctx.dataIndex], 0);
-     return ` ${ctx.dataset.label}: ${ctx.raw} (${(ctx.raw/tot*100).toFixed(1)}%)`;
+     if (!ctx.dataset.stack) return ` ${ctx.dataset.label}: ${ctx.raw}`;
+     const tot = stackTotal(ctx.chart, ctx.dataset.stack, ctx.dataIndex);
+     const pct = tot ? ` (${(ctx.raw / tot * 100).toFixed(1)}%)` : '';
+     return ` ${ctx.dataset.label}: ${ctx.raw}${pct}`;
    }}}
    ```
 
@@ -238,57 +251,19 @@ if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
 
 ### mk() Chart Factory
 
-所有圖表透過此 factory 創建，確保 auto-datalabels、正確合併邏輯、plugins 深合併：
+**唯一可執行實作在 `Skill/template.html` 的 `function mk(`**——新 dashboard 直接沿用 template 的版本，本文件不再保留另一份程式碼（兩份並存會漂移）。簽名：`mk(id, type, labels, datasets, opts={})`。
 
-```javascript
-function mk(id, type, labels, datasets, opts={}) {
-  const ctx = document.getElementById(id);
-  if (!ctx) return null;
-  const isHorizBar = opts.indexAxis === 'y';
-  const isStacked  = opts.scales?.x?.stacked || opts.scales?.y?.stacked ||
-                     (datasets[0]?.stack);
+**合併契約（template 的 mk() 必須滿足，修改 mk() 時以此驗收）：**
+- 預設 plugins：`legend: { display: false }`、`tooltip: TT`、`datalabels: { display: false }`
+- `opts.plugins` 的 `tooltip`／`legend`／`datalabels` 與預設**逐鍵深合併**——呼叫端只寫部分欄位（如只給 `tooltip.callbacks`）時，未寫的預設欄位（TT 樣式等）保留，不是整個物件被替換
+- 呼叫端**有提供** `opts.plugins.datalabels` 但沒寫 `display` → 注入預設 `display: true`；要隱藏才顯式寫 `display: false`
+- 其餘 `opts`（scales、indexAxis、layout…）照常覆蓋 Chart.js options；`responsive: true`、`maintainAspectRatio: false` 為預設
 
-  // Auto-datalabels: 垂直非堆疊 bar 自動開啟數值顯示，其他圖表預設關閉
-  let dl = { display: false };
-  if (type === 'bar' && !isHorizBar && !isStacked) {
-    dl = {
-      display: true, anchor: 'end', align: 'top', clip: false,
-      color: 'var(--text-b)',
-      font: { size: 10, weight: '600' },
-      padding: { bottom: 2 },
-      formatter: v => (v == null) ? '' : (Math.abs(v) >= 1000 ? (v/1000).toFixed(1)+'K' : String(v))
-    };
-  }
-
-  // 🔴 Merge rule（2026-06 修正）：必須用 spread，禁止 Object.assign
-  // Object.assign 不新增 display 鍵 → explicit config 沒有 display 時，display:false 維持，labels 靜默不顯示
-  // Spread pattern：explicit config 沒有 display → 預設 true；有 display:false → 仍可覆蓋
-  if (opts.plugins?.datalabels) {
-    dl = { ...dl, display: true, ...opts.plugins.datalabels };
-  }
-
-  const mergedPlugins = { ...TT.plugins, ...(opts.plugins || {}), datalabels: dl };
-  const topPad = (type === 'bar' && !isHorizBar && !isStacked) ? 28 : 18;
-
-  return new Chart(ctx, {
-    type,
-    data: { labels, datasets },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      layout: { padding: { top: topPad, ...(opts.layout?.padding || {}) } },
-      ...TT,
-      ...opts,
-      plugins: mergedPlugins
-    }
-  });
-}
-```
+> **為什麼要「注入 `display: true`」**（2026-06 事故）：預設 `datalabels.display` 是 `false`；呼叫端只寫 `{ anchor, align, formatter }` 而沒寫 `display` 時，不論用 `Object.assign` 還是 spread 合併，`display:false` 都會保留下來（呼叫端根本沒提供這個 key 可覆蓋），水平 bar／堆疊 bar 的數值靜默不顯示且不報錯。修法是合併時先放入 `display: true` 再套呼叫端設定，而不是換合併語法。
 
 **規則：**
 - `maintainAspectRatio: false` — 高度由容器 `style="height:NNNpx"` 或 `.hNNN` CSS class 控制
-- **垂直非堆疊 bar 自動顯示數值**，無須在 opts.plugins.datalabels 重複設定（除非要自訂 formatter/顏色）
-- **水平 bar / 堆疊 bar** 需在 opts.plugins 提供 `datalabels: { anchor, align, formatter }`；`display` 可省略（預設 true），**要隱藏才顯式寫 `display: false`**
+- datalabels 預設關閉；**要顯示數值就在 `opts.plugins.datalabels` 提供設定**（`anchor`／`align`／`formatter` 等），`display` 可省略（契約會注入 true），**要隱藏才顯式寫 `display: false`**
 - `mk()` 外直接寫的 `new Chart()`（雷達、氣泡、散點）必須手動加 `responsive: true, maintainAspectRatio: false`，且容器必須有明確 `height`，否則尺寸由寬度 × aspect ratio 決定
 - 不要在 mk() 外另寫 `new Chart()`，除非需要 custom plugin（如 donut 中央文字）
 
@@ -437,7 +412,11 @@ function goToChart(page, cardId) {
 數字/技術    JetBrains Mono      JBM-400 ~ 700
 ```
 
-數字必須用 JetBrains Mono（等寬字型）——不論是 datalabels、tooltip 還是 F/I/A 標籤。否則百分比、金額對齊會醜。
+（上表為 P2 baseline；其他 preset 的字型配對見 D.9，角色分工相同。）
+
+數字必須用等寬字型（P2 為 JetBrains Mono）——datalabels、tooltip、KPI 數值。否則百分比、金額對齊會醜。
+
+**F/I/A 與難度標籤不用等寬字型**：`.badge`、`.tag-f/i/a`、`.fia` 不設 `font-family`，繼承正文字型；只有 `.fi-tag` 保留 `font-family: monospace`（與 E.1 #41 同一規則）。
 
 ---
 
@@ -501,7 +480,7 @@ KPI 值禁止截斷（🔴 紅線）：
 9. **🚫 `Chart.register(ChartDataLabels)` 缺失** — datalabels 全靜默失效，Chart.js 不報錯；每次生成後必須在瀏覽器 console 確認數值出現
 10. **🚫 `position:sticky` 加在 `overflow:hidden` 子元素上** — sticky 靜默失效，側板位置錯誤；sticky 必須加在 flex child（`#def-panel-outer`）上，見 B.3 規格
 11. **🚫 annotation plugin 用 `window['chartjs-plugin-annotation']` 判斷** — CDN UMD 全域是 `window.ChartAnnotation`；用錯名稱導致 plugin 未 register，所有 annotation 靜默消失
-12. **🚫 `Object.assign(dl, opts.plugins.datalabels)` 合併 datalabels config** — `Object.assign` 不新增原本沒有的 key；若 explicit config 沒有 `display` 欄位，`dl.display:false` 維持不變，所有 horizontal bar / stacked bar 的 labels 靜默不顯示且不報錯。**正確寫法：** `dl = { ...dl, display: true, ...opts.plugins.datalabels }`（spread 讓 explicit config 覆蓋 `display:true`，沒有 `display` 的 explicit config 自動得到 `display:true`；要隱藏才明確寫 `display: false`）
+12. **🚫 給了 datalabels 設定卻沒讓 `display` 變成 true** — 預設 `datalabels.display:false`；呼叫端只寫 `{ anchor, align, formatter }` 時，不論 `Object.assign` 或 spread，呼叫端沒提供的 `display` 都不會被覆蓋，所有 horizontal bar / stacked bar 的 labels 靜默不顯示且不報錯。**正確做法：** 沿用 template 的 `mk()`，其合併契約在呼叫端提供 datalabels 而未寫 `display` 時注入 `display: true`（見 B.4）；要隱藏才明確寫 `display: false`
 13. **🚫 `.findings-section` 缺少預設坍縮** — 一進頁面就暴露所有分析結論，訓練效果為零；必須在 `DOMContentLoaded` 呼叫 `s.classList.add('collapsed')`；見 B.5 完整 Pattern
 14. **🚫 `new Chart()` 直接建立的圖表（雷達、氣泡、散點）未設 `maintainAspectRatio: false`** — Chart.js 預設 `maintainAspectRatio: true`，高度由容器寬度 × aspect ratio 計算，容器的 `height` CSS 完全無效，導致圖表過大或尺寸不受控；此類圖表必須在 options 明確加 `responsive: true, maintainAspectRatio: false` 並搭配容器 `style="height:NNNpx"`
 15. **🚫 雙 Y-axis 當成一般解法** — 兩條軸的對齊是任意的，會憑空造出一個資料裡沒有的相關（見 B.9-2）

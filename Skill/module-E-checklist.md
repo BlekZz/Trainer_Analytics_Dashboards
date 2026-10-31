@@ -10,7 +10,7 @@
 
 ### 資料層 (5 項)
 - [ ] **1. DATA 物件存在且為 single source of truth** — 沒有任何 hard-code 數字遊離在 DATA 之外
-- [ ] **2. assertConsistency 全條通過** — console 顯示 `✓ All data consistency checks passed`（條數因產業不同，至少包含模組 A.4 的基礎 9 條 + 本產業追加項）
+- [ ] **2. assertConsistency 全條通過** — console 顯示 `✓ All data consistency checks passed (N checks)` 且 N > 0（條數因產業不同；模組 A.4 基礎檢查類別中本份資料適用者都要有，再加本產業追加項）
 - [ ] **3. 數字量級符合產業常識** — 對照模組 A.5 常識量級表
 - [ ] **4. 月度節律符合產業** — 對照模組 A.6 節律模式庫
 - [ ] **5. 口徑差距控制在 5% 以內** — 如有故意保留差距當教學點，必須在答案中解釋
@@ -46,14 +46,14 @@
 - [ ] **29. 所有用到的 `.hNNN` CSS class 必須有定義** — 容器高度 0 = 圖表完全不可見且不報錯；生成 HTML 前確認 `.h240/.h260/.h280/.h300/.h360/.h420/.h480/.h520` 全部在 `:root` 下方定義
 - [ ] **30. 定義側板 sticky 定位結構正確** — `position:sticky; top:var(--header-h); height:calc(100vh - var(--header-h)); align-self:flex-start` 必須加在 `#def-panel-outer`（flex child）上；`#def-panel-inner` 只設 `height:100%; overflow-y:auto`。若 sticky 加在 `overflow:hidden` 的子元素上會靜默失效，導致面板頂部出現錯誤空白
 - [ ] **31. annotation plugin 用正確全域名稱 register** — CDN UMD 全域是 `window.ChartAnnotation`，**不是** `window['chartjs-plugin-annotation']`；確認 script 頂部為：`if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);`
-- [ ] **32. `mk()` datalabels 合併使用 spread pattern，而非 Object.assign** — 確認 `mk()` 中 explicit datalabels 合併寫法為 `dl = { ...dl, display: true, ...opts.plugins.datalabels }`，而非 `Object.assign(dl, opts.plugins.datalabels)`；水平 bar / 堆疊 bar 帶有 explicit datalabels config 時，截圖確認數值出現在 bar 末端（不需 hover）
+- [ ] **32. `mk()` 沿用 template 實作且符合合併契約** — `mk()` 直接沿用 `Skill/template.html` 的版本（不另寫一份）；契約見 B.4：tooltip／legend／datalabels 深合併，呼叫端提供 datalabels 設定而未寫 `display` 時注入預設 `display: true`；水平 bar / 堆疊 bar 帶有 explicit datalabels config 時，截圖確認數值出現在 bar 末端（不需 hover）
 - [ ] **33. 所有 `.findings-section` 預設坍縮** — 開啟 dashboard 後所有 Findings 區塊應顯示摺疊狀態（只見標題列 + 箭頭▼），點擊後展開；確認 `DOMContentLoaded` 有 `document.querySelectorAll('.findings-section').forEach(s => s.classList.add('collapsed'))`
 - [ ] **34. `new Chart()` 直接建立的圖表有 `maintainAspectRatio: false` 且容器有明確 height** — 雷達、氣泡、散點等不走 `mk()` 的圖表，options 必須有 `responsive: true, maintainAspectRatio: false`，容器必須有 `style="height:NNNpx"`；截圖目視確認尺寸合理（雷達圖建議 240–320px，視頁面密度決定）
 
 ### 資料可信度（5 項）
 
 - [ ] **35. 每個 KPI 滿足「可驗算性三選一」** — (1) 直接公式推算（AOV = 總收入 ÷ 總訂單）；(2) 分佈閉合（回購率 = ≤30天人數 ÷ 總顧客）；(3) DATA.anchors 中有配對原始值（`high_freq_revenue_wan: 8135` 使 58.3% × 13,954 可驗算）。不滿足任一條的 KPI 不得出現在 KPI card 上。
-- [ ] **36. `assertConsistency` 使用 `errors` 陣列（非 `errs`）** — 陣列名稱統一為 `errors`，grep 驗證腳本依此名稱比對；確認最終 `if (errors.length === 0) console.log('✓ All data consistency checks passed')` 格式一致
+- [ ] **36. `assertConsistency` 符合 A.4 寫法契約** — 以 `check(name, cond)` 登記每條檢查、失敗訊息陣列名統一為 `errors`、成功時印 `✓ All data consistency checks passed (N checks)`；audit 讀取 N，成品 N=0 判 FAIL
 - [ ] **37. 指標計算層級與圖表呈現層級一致** — 只呈現品類資料的儀表板不可放 SKU 層級 KPI（如用品類資料計算 HHI 而非 SKU）；每個 KPI 手動用圖表可見資料反推一次，算得出才合法
 - [ ] **38. 逆直覺設計點三處同步（若有）** — 任何刻意反常識的數據設計（如 VIP AOV < 常客 AOV），必須同時在：(1) DATA 數值本身、(2) 對應 QA 的 `trap-block`、(3) 設計選擇揭露面板 三處均呈現；缺少任一處學員會以為是 bug
 - [ ] **39. 刻意缺失維度兩處說明（若有）** — 任何刻意不展示的維度（如未拆外送 vs 自取），必須在：(1) 訓練題引導學員自行察覺、(2) 設計選擇揭露說明理由；不可靜默缺失
@@ -66,8 +66,8 @@
 
 ### 散點圖完整性（2 項，只有含散點圖時才需檢查）
 
-- [ ] **43. 散點圖象限分割線來自資料均值 + 封閉三角成立** — x/y 分割線使用實際資料均值（如 total_revenue / store_count / 12），非任意整數；若 x 軸由業務公式反推（如月均來客 = 年收入 ÷ AOV ÷ 12），assertConsistency 有 Check 驗算反推值誤差 < 1%
-- [ ] **44. 散點圖四象限都有代表點** — 資料設計確保四個象限各有 ≥1 個點；若某象限在商業邏輯上自然空缺（如精品型低客流高客單），在設計選擇揭露說明，否則學員會以為是資料設計錯誤
+- [ ] **43. 散點圖象限分割線來自資料均值 + 封閉三角成立** — x/y 分割線使用實際資料均值（如 total_revenue / store_count / 12），非任意整數；若 x 軸由業務公式反推（如月均來客 = 年收入 ÷ AOV ÷ 12），assertConsistency 有 Check 驗算反推值誤差 < 1%（容差規則見 A.8 #6）
+- [ ] **44. 散點圖四象限都有代表點** — 依 A.8 #7：四個象限各有 ≥2 個點；只有「空象限本身是教學點」時可留空，且必須在設計選擇揭露說明，否則學員會以為是資料設計錯誤
 
 ### 陷阱分類與視覺驗收（3 項，2026-10-14 新增）
 
@@ -108,57 +108,38 @@ Exit code：`0` 全部無 FAIL／`1` 有 FAIL／`2` 環境錯誤。**交付條�
 
 ## E.3 必驗證的數值 hard-check
 
-除了 assertConsistency，再用 Python 預跑這幾個交叉驗算：
+生成器（Phase 2）在輸出 JSON 前，用 Python 對**同一批 A.4 檢查類別**先跑一次 assert——瀏覽器端的 `assertConsistency()` 是第二道。欄位名對齊 `Skill/template.html` 的 DATA；本份資料沒有的結構就略過該條，有的就必須寫。實際寫法見 `dev/script/gen_data_medaesthetic.py`。
 
 ```python
-import json
+A = DATA['anchors']   # DATA = 生成器即將輸出的 dict
 
-with open("DATA.json") as f:
-    DATA = json.load(f)
+# 1. 分群／分佈人數合計 = 總顧客（A.4 ①②）
+for key in ['customer_tier', 'frequency']:
+    s = sum(DATA[key]['counts'])
+    assert s == A['total_customers'], f"{key} 合計 {s} ≠ {A['total_customers']}"
 
-A = DATA['anchors']
+# 2. 時序流量合計 = 總流量（A.4 ③）
+assert sum(DATA['monthly_visits']) == A['total_visits']
 
-# 1. 月度堆疊合計
+# 3. 月度堆疊、單位分佈合計 = 年度營收錨點（A.4 ④⑤）
 monthly_sum = sum(sum(v) for v in DATA['monthly_category'].values())
 assert monthly_sum == A['total_revenue_wan'], f"月度品類合計 {monthly_sum} ≠ {A['total_revenue_wan']}"
+assert sum(DATA['store_revenue']) == A['total_revenue_wan']
 
-# 2. AOV 可反推
-derived_aov = round(A['total_revenue_wan'] * 10000 / A['total_events'])
-assert abs(derived_aov - A['per_event_avg']) <= 1, f"AOV 不一致"
-
-# 3. 各百分比類合計 = 100
-for key in ['source', 'age']:
-    s = sum(DATA[key]['pct'])
-    assert s == 100, f"{key} 合計 {s} ≠ 100"
-
-# 4. 等級類合計 = total_users
-tier_sum = sum(DATA['tier']['counts'])
-assert tier_sum == A['total_users'], f"Tier {tier_sum} ≠ {A['total_users']}"
-
-# 5. 子集合驗證
-buyer_sum = sum(DATA['frequency']['counts'])
-assert buyer_sum == A['active_users']
-
-# 6. 互補集驗證
-assert A['non_active'] == A['total_users'] - A['active_users']
-
-# 7. 月度合計 100%
+# 4. 互補佔比每期 = 100（A.4 ⑥）
 for i in range(12):
-    s = sum(DATA['payment'][k][i] for k in DATA['payment'])
-    assert s == 100, f"Month {i+1} payment sum {s} ≠ 100"
+    s = DATA['dine_takeout']['dine_in_pct'][i] + DATA['dine_takeout']['takeout_pct'][i]
+    assert s == 100, f"Month {i+1} dine+takeout {s} ≠ 100"
 
-# 8. 派生百分比
-high_freq_pct = sum(DATA['frequency']['counts'][-2:]) / buyer_sum * 100
-assert abs(high_freq_pct - DATA['kpi_anchors']['high_freq_pct']) < 0.1
+# 5. 派生 KPI 與錨點交叉（A.4 ⑦⑧）
+assert abs(A['total_revenue_wan'] * 10000 / A['total_visits'] - A['aov']) <= 1, "AOV 不一致"
+assert abs(A['high_freq_revenue_wan'] / A['total_revenue_wan'] * 100 - A['high_freq_contribution']) <= 0.1
 
-# 9. 跨類驗算
-yearly_check = sum(monthly_sum for monthly_sum in [
-    sum(arr[i] for arr in DATA['monthly_category'].values())
-    for i in range(12)
-])
-assert yearly_check == A['total_revenue_wan']
+# 6. 散點封閉三角 < 1%（A.4 ⑨；容差規則見 A.8 #6）
+for s, rev in zip(DATA['scatter_data'], DATA['store_revenue']):
+    assert abs(s['x'] * s['y'] * 12 / 10000 - rev) / rev < 0.01, f"{s['label']} 封閉三角超出 1%"
 
-print("✓ All 9 data assertions passed")
+print("✓ generator assertions passed")
 ```
 
 ---
@@ -184,17 +165,15 @@ print("✓ All 9 data assertions passed")
 最終交付給使用者的內容：
 
 ```
-1. dashboard.html          # 完整可獨立打開的 HTML 檔
-2. DATA.json               # 資料 single source
-3. CHANGELOG.md            # 差異化記錄（vs 範本）
-4. verification-report.txt # E.1 47 項自檢結果
-5. screenshots/            # 三頁完整截圖（可選）
-   ├── p1.png
-   ├── p2.png
-   └── p3.png
+1. Dashboard/{產業}_{分析主題}_訓練儀表板教材.html   # 完整可獨立打開的 HTML 檔（DATA 已注入）
+2. dev/script/gen_data_<slug>.py                      # 資料生成器（改數字改這裡，不手改 HTML 的 DATA）
+3. Skill/ARCHIVE.md 新增一筆 Dashboard #N             # 格式見 E.7，含差異化與陷阱主題
+4. audit 結果                                          # `node dev/script/audit-dashboards.mjs <新檔>` exit 0，回報時附實際輸出摘要（含 N checks）
 ```
 
-`CHANGELOG.md` 必包含：
+資料流程：`python dev/script/gen_data_<slug>.py <out.json>` → `python dev/script/inject_data.py <out.json> <html>`（第 8 份起的實際做法）。截圖（Design QA，E.9）用於驗收過程，不另列交付物。
+
+ARCHIVE 條目與交付時的差異化說明（E.6）合計必包含：
 - 跟前一份相比的視覺軸差異
 - 跟前一份相比的教學軸差異
 - 跟前一份相比的結構軸差異
@@ -271,7 +250,7 @@ print("✓ All 9 data assertions passed")
 |---|---|---|
 | 回購率 X% | X% × total_customers = ≤時間窗口桶加總 | 時間窗口切法不一致 |
 | 活躍率 / VIP 佔比 | 分子人數 ÷ total_customers | 定義面板說的門檻 ≠ 頻率分佈切點 |
-| AOV | total_revenue × 10000 ÷ total_events | monthly_aov 若硬編需逐月驗算 |
+| AOV | total_revenue_wan × 10000 ÷ total_visits | monthly_aov 若硬編需逐月驗算 |
 | YoY 成長 % | (新值 ÷ 舊值 − 1) × 100，舊值必須在 HTML 中呈現 | 舊值寫在文案但 DATA 沒有 |
 
 #### D2 — 跨陣列 identity 確認
@@ -286,8 +265,8 @@ print("✓ All 9 data assertions passed")
 
 #### D4 — 多維資料封閉三角
 若有散點圖 (scatter) 同時呈現 A × B 兩個維度，且還有第三個一維資料 C：
-- 驗算：`A[i] × B[i] × 轉換因子 ≈ C[i]`（允許 ±5%）
-- 超過 5% 差距需在「設計選擇揭露」中說明口徑差，或修正其中一組數字
+- 驗算：`A[i] × B[i] × 轉換因子 ≈ C[i]`，誤差 < 1%（容差統一規則見 A.8 #6）
+- 1%–5% 只允許作為刻意口徑差教學點，且須在答案與「設計選擇揭露」中解釋；> 5% 一律修正數字
 
 #### D5 — assertConsistency 覆蓋率確認
 讀取 assertConsistency 函式，確認以下幾類都有覆蓋：

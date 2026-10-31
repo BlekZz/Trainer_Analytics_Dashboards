@@ -10,20 +10,27 @@ A collection of single-file analytics training dashboards for industry-specific 
 
 ```
 分析訓練儀表板/
-├── Dashboard/          ← 所有成品 HTML（交付給學員的最終版）
-│   ├── 餐飲連鎖_門市營運分析_訓練儀表板教材_v1.html
-│   └── 電商DTC_會員交易分析_訓練儀表板教材_v3.html
-├── Skill/              ← dashboard-training-factory skill 的本地鏡像（唯讀參考）
-│   ├── SKILL.md
+├── Dashboard/          ← 所有成品 HTML（交付給學員的最終版；清單與已用 preset 見 Skill/ARCHIVE.md）
+│   └── {產業}_{分析主題}_訓練儀表板教材.html  × 8
+├── Skill/              ← dashboard-training-factory 的本專案凍結自足版（見下節）
+│   ├── SKILL.md        ← 入口：Phase 1–5 流程與紅線
+│   ├── QUICKSTART.md
+│   ├── ARCHIVE.md      ← 每份成品一筆紀錄＋跨份總覽
 │   ├── template.html   ← 無數據骨架，新 dashboard 從這裡開始
 │   ├── module-A-data.md
 │   ├── module-B-visual.md
 │   ├── module-C-pedagogy.md
 │   ├── module-D-diff.md
-│   └── module-E-checklist.md
+│   ├── module-E-checklist.md
+│   └── module-F-agents.md
+├── Agent/              ← active agent 定義（凍結版，見「Agent 資料夾說明」）
 ├── dev/                ← 開發文件（非交付物）
 │   ├── tech-notes.md  ← 技術踩坑記錄
-│   └── script/audit-dashboards.mjs ← 交付前自動驗收（E.2）
+│   ├── handoff/       ← 工作狀態 lane
+│   └── script/
+│       ├── audit-dashboards.mjs  ← 交付前自動驗收（E.2）
+│       ├── gen_data_*.py         ← 各份資料生成器
+│       └── inject_data.py        ← 把生成的 DATA JSON 注入 HTML
 └── CLAUDE.md
 ```
 
@@ -34,6 +41,7 @@ A collection of single-file analytics training dashboards for industry-specific 
 `Skill/` 是**本專案的凍結自足版**（版本鎖定，隨 repo 走），不再與任何全域路徑保持同步：
 
 - 在本專案 scale 內繼續產同版本的 dashboard 流水線 → **直接用這份 project-based `Skill/`，不需啟動任何 global skill**。
+- **觸發 dashboard-training-factory 時一律讀本專案 `Skill/SKILL.md`**，忽略同名全域 skill `anthropic-skills:dashboard-training-factory`（另一來源的版本，不保證與本專案 `Skill/` 一致）。
 - 全域備份在 `<Hub>/coldbench/skills/dashboard-training-factory/`（僅備份用途，無同步義務）。
 - 教學方法論的**權威演進版**已遷移至 tutor skill family（`<Hub>/coldbench/skills/tutor-*` 與 `mock-data-forge`）——**開新的教學專案請用 `/init-tutorial`，勿以本專案為起點**。
 

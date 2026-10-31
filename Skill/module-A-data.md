@@ -24,15 +24,15 @@
 
 ### 必設錨點
 
+> **欄位命名以 `Skill/template.html` 的 `const DATA = {` 為準**（本模組與模組 E 的範例都用同一套欄位名）。下列為核心錨點；完整欄位見 template。
+
 ```javascript
 anchors: {
-  total_users:    XXXXX,   // 總使用者/會員/客戶
-  total_events:   XXXXX,   // 總訂單/總訪問/總工單
-  total_revenue:  XXXXX,   // 總營收/總成本（萬/千/億依量級）
-  per_event_avg:  XXX,     // = total_revenue / total_events
-  active_users:   XXXXX,   // 活躍/已轉換的用戶
-  active_rate:    XX.X,    // = active_users / total_users
-  year:           YYYY,
+  total_customers:   XXXXX,   // 總顧客/會員/對象數
+  total_visits:      XXXXX,   // 總流量/交易次數/總訂單
+  total_revenue_wan: XXXXX,   // 總營收（萬元）
+  aov:               XXX,     // = total_revenue_wan × 10000 / total_visits
+  year:              YYYY,
 }
 ```
 
@@ -64,7 +64,7 @@ anchors: {
 // 自檢範例
 const yearlyTotalFromCategories = Object.values(DATA.monthly_category)
   .reduce((sum, arr) => sum + arr.reduce((a,b)=>a+b, 0), 0);
-assert(yearlyTotalFromCategories === DATA.anchors.total_revenue);
+assert(yearlyTotalFromCategories === DATA.anchors.total_revenue_wan);
 ```
 
 ### 原則 2：百分比類資料合計 = 100
@@ -73,7 +73,7 @@ assert(yearlyTotalFromCategories === DATA.anchors.total_revenue);
 
 ### 原則 3：分群類資料的人數合計 = 總人數
 
-等級分佈、頻次分佈（含未轉換池）、地區分佈 — 合計必須等於 total_users。
+等級分佈、頻次分佈（含未轉換池）、地區分佈 — 合計必須等於 total_customers。
 
 ### 原則 4：派生 KPI 必須能反推（三選一驗算路徑）
 
@@ -117,58 +117,68 @@ assert(yearlyTotalFromCategories === DATA.anchors.total_revenue);
 
 ---
 
-## A.4 9 項 assertConsistency 自檢
+## A.4 assertConsistency 自檢（契約＋基礎檢查類別）
 
 每份生成的 dashboard 都要在 JS 中內建 `assertConsistency()` 函式，page-load 時跑過。**任何一項失敗都要先修資料**。
 
+**寫法契約（以 `Skill/template.html` 的實作為準）：**
+- 每條檢查透過 `check(name, cond)` helper 登記；失敗訊息收進陣列 `errors`
+- 全數通過時印 `✓ All data consistency checks passed (N checks)`，N = 實際執行的檢查條數；失敗時逐條 `console.error('✗ Consistency error:', …)`
+- 成品 N 必須 > 0（audit 會把 N=0 判為 FAIL；template 未配置時為 WARN）——檢查全被註解掉卻印「通過」是假綠燈
+
+**基礎檢查類別**：依本份 DATA 實際有的結構，下列類別適用者都要寫（條數不必湊滿，也不限於這些）。範例欄位名對齊 template：
+
 ```javascript
+// 示意：check() 的實作與輸出格式以 template 為準
 function assertConsistency() {
   const A = DATA.anchors;
   const sum = arr => arr.reduce((a,b)=>a+b, 0);
   const errors = [];
+  let n = 0;
+  const check = (name, cond) => { n++; if (!cond) errors.push(name); };
 
-  // ① 分群類人數合計 = 總用戶
-  const groupSum = sum(DATA.tier.counts);
-  if (groupSum !== A.total_users) errors.push(`Tier ${groupSum} ≠ ${A.total_users}`);
+  // ① 分群類人數合計 = 總顧客
+  check(`customer_tier 合計 ${sum(DATA.customer_tier.counts)} ≠ ${A.total_customers}`,
+        sum(DATA.customer_tier.counts) === A.total_customers);
 
-  // ② 百分比類合計 = 100
-  if (sum(DATA.source.pct) !== 100) errors.push(`Source pct ≠ 100`);
-  if (sum(DATA.age.pct) !== 100) errors.push(`Age pct ≠ 100`);
+  // ② 分佈類人數合計 = 母集合（頻次分佈）
+  check(`frequency 合計 ${sum(DATA.frequency.counts)} ≠ ${A.total_customers}`,
+        sum(DATA.frequency.counts) === A.total_customers);
 
-  // ③ 事件分佈合計 = 總事件數
-  const eventSum = sum(DATA.event_distribution.counts);
-  if (eventSum !== A.total_events) errors.push(`Event dist ${eventSum} ≠ ${A.total_events}`);
+  // ③ 時序流量合計 = 總流量
+  check(`monthly_visits 合計 ≠ ${A.total_visits}`, sum(DATA.monthly_visits) === A.total_visits);
 
-  // ④ 月度堆疊類合計 = 總營收
-  const stackSum = Object.values(DATA.monthly_stack)
-    .reduce((acc, arr) => acc + sum(arr), 0);
-  if (stackSum !== A.total_revenue) errors.push(`Monthly stack ${stackSum} ≠ ${A.total_revenue}`);
+  // ④ 月度堆疊合計 = 年度營收錨點
+  const stackSum = Object.values(DATA.monthly_category).reduce((acc, arr) => acc + sum(arr), 0);
+  check(`monthly_category 合計 ${stackSum} ≠ ${A.total_revenue_wan}`, stackSum === A.total_revenue_wan);
 
-  // ⑤ 多層分佈每層合計 = 100 (例如付款方式月合計)
+  // ⑤ 單位分佈合計 = 年度營收錨點
+  check(`store_revenue 合計 ≠ ${A.total_revenue_wan}`, sum(DATA.store_revenue) === A.total_revenue_wan);
+
+  // ⑥ 互補佔比每期合計 = 100
   for (let i = 0; i < 12; i++) {
-    const s = ['cat1','cat2','cat3','cat4'].reduce((a,k)=>a+DATA.multilayer[k][i], 0);
-    if (s !== 100) errors.push(`Multilayer month ${i+1} = ${s} ≠ 100`);
+    const t = DATA.dine_takeout.dine_in_pct[i] + DATA.dine_takeout.takeout_pct[i];
+    check(`dine_takeout 第 ${i+1} 月 = ${t} ≠ 100`, t === 100);
   }
 
-  // ⑥ 子集合人數合計 = 母集合
-  const subsetSum = sum(DATA.frequency.counts);
-  if (subsetSum !== A.active_users) errors.push(`Freq ${subsetSum} ≠ active_users ${A.active_users}`);
+  // ⑦ 派生 KPI 可反推（直接計算）
+  check(`aov 反推不符`, Math.abs(A.total_revenue_wan * 10000 / A.total_visits - A.aov) <= 1);
 
-  // ⑦ 互補集合 = 全集合 - 子集合
-  if (A.non_active !== A.total_users - A.active_users) errors.push(`Complement mismatch`);
+  // ⑧ 百分比 KPI 錨點交叉
+  check(`high_freq_contribution 不符`,
+        Math.abs(A.high_freq_revenue_wan / A.total_revenue_wan * 100 - A.high_freq_contribution) <= 0.1);
 
-  // ⑧ 關鍵比例正確
-  const keyPct = (DATA.frequency.counts.slice(-2).reduce((a,b)=>a+b, 0)) / subsetSum * 100;
-  if (Math.abs(keyPct - DATA.kpis.high_freq_pct) > 0.1) errors.push(`High freq pct mismatch`);
+  // ⑨ 散點封閉三角（x × y × 12 / 10000 ≈ store_revenue，誤差 < 1%，見 A.8 #6）
+  DATA.scatter_data.forEach((s, i) => {
+    const derived = s.x * s.y * 12 / 10000;
+    check(`scatter[${i}] ${s.label} 反推 ${derived.toFixed(1)} ≠ ${DATA.store_revenue[i]}`,
+          Math.abs(derived - DATA.store_revenue[i]) / DATA.store_revenue[i] < 0.01);
+  });
 
-  // ⑨ 派生指標等於原始比例
-  const derivedAOV = A.total_revenue * 10000 / A.total_events;  // 假設營收以萬為單位
-  if (Math.abs(derivedAOV - A.per_event_avg) > 1) errors.push(`AOV derivation ≠ stored`);
-
-  if (errors.length) {
-    console.error('⚠ Data consistency errors:', errors);
+  if (errors.length === 0) {
+    console.log(`✓ All data consistency checks passed (${n} checks)`);
   } else {
-    console.log('✓ All data consistency checks passed');
+    errors.forEach(e => console.error('✗ Consistency error:', e));
   }
 }
 assertConsistency();
@@ -215,21 +225,22 @@ assertConsistency();
 
 ## A.7 Python 資料生成範例
 
+> 欄位名對齊 `Skill/template.html` 的 DATA。實際生成器範例見 `dev/script/gen_data_medaesthetic.py`（第 8 份：生成器輸出 JSON → `dev/script/inject_data.py` 注入 HTML）。
+
 ```python
 import json
+import sys
 
 # 1. 鎖錨點
 ANCHORS = {
-    "total_users": 48263,
-    "total_events": 96483,
+    "total_customers": 48263,
+    "total_visits": 96483,
     "total_revenue_wan": 4821,  # 萬元
-    "active_users": 15348,
     "year": 2024,
 }
 
 # 2. 衍生 KPI
-ANCHORS["aov"] = round(ANCHORS["total_revenue_wan"] * 10000 / ANCHORS["total_events"])
-ANCHORS["active_rate"] = round(ANCHORS["active_users"] / ANCHORS["total_users"] * 1000) / 10
+ANCHORS["aov"] = round(ANCHORS["total_revenue_wan"] * 10000 / ANCHORS["total_visits"])
 
 # 3. 設計月度節律（電商雙峰）
 monthly_factor = [0.65, 0.55, 0.70, 0.78, 0.85, 0.92, 0.95, 0.92, 0.88, 1.18, 1.36, 1.56]
@@ -266,8 +277,8 @@ total_check = sum(sum(v) for v in monthly_category.values())
 assert total_check == ANCHORS["total_revenue_wan"], f"Mismatch: {total_check}"
 print(f"✓ 月度品類合計 = {total_check} 萬 (符合錨點)")
 
-# 6. 輸出
-with open("DATA.json", "w") as f:
+# 6. 輸出（路徑由命令列給，之後以 inject_data.py 注入 HTML）
+with open(sys.argv[1], "w", encoding="utf-8") as f:
     json.dump({"anchors": ANCHORS, "monthly_category": monthly_category}, f,
               ensure_ascii=False, indent=2)
 ```
@@ -290,7 +301,7 @@ with open("DATA.json", "w") as f:
 
 4. **🚫 100% 圓餅圖加總到 98% 或 101%**
    - 結果：「合計不到 100」是專業致命傷
-   - 對策：assertion 第 ② 條強制檢查
+   - 對策：A.4 第 ⑥ 類（百分比合計 = 100）強制檢查
 
 5. **🚫 KPI 卡用「年比 +X%」但沒給去年數字**
    - 結果：學員無法驗算
@@ -299,7 +310,8 @@ with open("DATA.json", "w") as f:
 6. **🚫 散點圖的 x/y 軸獨立設定（兩軸間沒有業務等式）**
    - 結果：聰明學員用 `x × y × 12` 反推年收入，發現與 store_revenue 差到 10%+，喪失信任
    - 對策：**散點封閉三角原則** — 散點圖若同時表達「數量 × 均值 × 期數 = 總量」，x 軸必須從 store_revenue 反推：`x = round(revenue × 10000 / (y × 12))`，assertConsistency 驗證誤差 < 1%
+   - **容差統一規則**（A 與 E 共用，E.1 #43、E.8 D4 引用本條）：由生成器反推得到的等式（封閉三角 `x × y × 期數 ≈ 總量`）一律 **< 1%**，只來自四捨五入；誤差 1%–5% 只允許作為**刻意口徑差教學點**（A.3 原則 5），且須在答案與設計選擇揭露中解釋；> 5% 一律視為資料錯誤。加總類等式（分群合計、百分比合計）不適用容差，必須完全相等
 
 7. **🚫 散點圖四象限只有 3 個象限有門市**
    - 結果：四象限框架失去教學意義——學員只看到「旗艦 vs 末段」二元對比，無法練習四種決策處方
-   - 對策：**四象限均佈原則** — 資料設計階段必須確保 4 個象限都有至少 2-3 家門市。若封閉三角使某象限自然空缺（通常是「低流量高客單」象限），需刻意將 3-5 家門市的 AOV 設為高於全局均值，並在「設計選擇揭露」中說明這是刻意設計（精品型門市），防止學員誤認為 bug。
+   - 對策：**四象限均佈原則** — 資料設計階段必須確保 4 個象限**各有 ≥2 個點**（E.1 #44 引用本條）。若封閉三角使某象限自然空缺（通常是「低流量高客單」象限），需刻意將 3-5 家門市的 AOV 設為高於全局均值，並在「設計選擇揭露」中說明這是刻意設計（精品型門市），防止學員誤認為 bug。唯一例外：空象限本身就是教學點時可保留空缺，但必須在設計選擇揭露明說「此象限刻意留空」及理由。

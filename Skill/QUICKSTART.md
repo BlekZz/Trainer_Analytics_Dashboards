@@ -75,16 +75,16 @@ OK，但啟用條件熱圖改成漏斗階段轉換率柱狀圖（熱圖在這個
 ### AI 執行 Phase 2-5（簡述）
 
 ```
-✓ Phase 2: 生成 DATA.json，跑完 9 條 assertion → 全部通過
+✓ Phase 2: 生成器 dev/script/gen_data_saas_funnel.py 輸出 JSON（生成器端 assertion 全過）→ inject_data.py 注入
 ✓ Phase 3: HTML 建構完成，14 張圖全部繪製
 ✓ Phase 4: 差異化套件套用（中性灰主色 / hard-line / 4 頁漏斗 / 批判型分佈）
-✓ Phase 5: audit-dashboards.mjs exit 0 → E.1 47 項全綠
+✓ Phase 5: audit-dashboards.mjs exit 0（自動項）＋ E.1 其餘項目人工／AI 檢核全綠
 
 交付物：
-1. saas-funnel-dashboard.html (約 110KB)
-2. DATA.json
-3. CHANGELOG.md（差異化記錄）
-4. verification-report.txt
+1. Dashboard/SaaS專案管理工具_啟用漏斗分析_訓練儀表板教材.html (約 110KB)
+2. dev/script/gen_data_saas_funnel.py（資料生成器）
+3. Skill/ARCHIVE.md 新增 Dashboard #N 條目（差異化與陷阱主題）
+4. audit 結果：exit 0、assertConsistency N checks 全過
 ```
 
 ---
@@ -102,7 +102,7 @@ OK，但啟用條件熱圖改成漏斗階段轉換率柱狀圖（熱圖在這個
 ```markdown
 ## 需要更多資訊才能生成
 
-範本骨架取自餐飲連鎖版面（DATA 已清空），既有 7 份成品見 Dashboard/。換產業時請告訴我：
+範本骨架取自餐飲連鎖版面（DATA 已清空），既有成品見 Dashboard/（清單與已用 preset 見 Skill/ARCHIVE.md）。換產業時請告訴我：
 
 1. 產業情境（必要）
    例：SaaS / 餐飲連鎖 / 線上教育 / 訂閱媒體 / 健身房 / 二手平台
@@ -186,7 +186,7 @@ T4: 「這個 dashboard 還缺哪些分析才能下決策？」（5 個維度）
 - 紫色主色 → OK
 - 動畫加長 → OK
 - 訓練題改 8 道 → OK
-- chip 改 emoji 標註 F/I/A → OK（但要保留 F/I/A 可識別性，建議用 📍 ⚡ 🤔）
+- chip 改 emoji → 改為「附加」：F/I/A 字母與標註 class 保留，旁邊附加 📍 ⚡ 🤔（D.3／D.5：只能附加或改呈現，語意必留）
 
 ✗ 不可省略元素
 - 設計選擇揭露區塊（D.5 教學核心，必須存在）
