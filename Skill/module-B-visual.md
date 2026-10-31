@@ -10,7 +10,7 @@
 
 | 色名 | 標準色碼 | 語意 | 使用時機 |
 |---|---|---|---|
-| 主資料藍 | `#2d5be3` | 中性事實、主要資料 | 大多數圖表的基準色 |
+| 主資料藍 | `#3b82f6` | 中性事實、主要資料 | 大多數圖表的基準色 |
 | 正向綠 | `#2aab85` | 正向趨勢、穩定、高價值 | 活躍率、回購率、健康指標 |
 | 注意橘 | `#d4870a` | 季節性、中等強度、需注意 | 旺季、中間區段、警告但不嚴重 |
 | 警示紅 | `#d43a2f` | 流失、風險、衰退 | 流失曲線、超出門檻、急跌 |
@@ -22,7 +22,7 @@
 ```html
 <div class="color-legend">
   <span class="lg-label">色彩語意</span>
-  <span class="cl-item"><span class="cl-dot" style="background:#2d5be3"></span>主資料/事實</span>
+  <span class="cl-item"><span class="cl-dot" style="background:#3b82f6"></span>主資料/事實</span>
   <span class="cl-item"><span class="cl-dot" style="background:#2aab85"></span>正向/穩定</span>
   <span class="cl-item"><span class="cl-dot" style="background:#d4870a"></span>注意/季節性</span>
   <span class="cl-item"><span class="cl-dot" style="background:#d43a2f"></span>警示/流失</span>
@@ -144,7 +144,7 @@
 - 側板有獨立捲動（`overflow-y: auto`，高度繼承 outer 的 `height: calc(100vh - var(--header-h))`）
 - 關閉時：清空搜尋欄 + 重置 filterDef + 呼叫 `Chart.instances` 全部 resize（修復圖表寬度）
 
-> **🔴 sticky 必須加在 `#def-panel-outer`（flex child，並設 `align-self: flex-start`），不能加在 `#def-panel-inner`**——outer 的 `overflow: hidden` 會讓子元素的 sticky 靜默失效。正確 CSS（outer 加 `position: sticky; top: var(--header-h); height: calc(100vh - var(--header-h))`，inner 改 `height: 100%; overflow-y: auto`）與錯誤寫法對照見 `dev/tech-notes.md` #16。⚠ 2026-11-01 註：`Skill/template.html` 目前仍是 sticky 在 inner 的錯誤寫法，沿用 template 時須依 #16 修正。
+> **🔴 sticky 必須加在 `#def-panel-outer`（flex child，並設 `align-self: flex-start`），不能加在 `#def-panel-inner`**——outer 的 `overflow: hidden` 會讓子元素的 sticky 靜默失效。正確 CSS（outer 加 `position: sticky; top: var(--header-h); height: calc(100vh - var(--header-h))`，inner 改 `height: 100%; overflow-y: auto`）與錯誤寫法對照見 `dev/tech-notes.md` #16。`Skill/template.html` 已是正確寫法，直接沿用。
 
 ```html
 <!-- wrapper 結構 -->
@@ -236,7 +236,7 @@ if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
 
 1. **Bar / Column chart** — 資料依「顯示值」**降序排列**（最大值在左/上）。若有語意固定順序（月份時間軸）則例外。
 2. **Donut / Pie chart** — 切片依「值」**降序排列**（最大切片從 12 點鐘位置順時針開始）。實作必須：
-   - `rotation: -90`（從 12 點鐘開始，Chart.js 4 預設從 3 點鐘）
+   - **不設 `rotation`（或設 `rotation: 0`）**——Chart.js 4.4.0 預設即從 12 點鐘起畫；**不可設 `rotation: -90`**，那會讓第一片從 9 點鐘開始。2026-11-01 headless 實測第一片 `arc.startAngle`：不設／`rotation:0` → −90°（12 點鐘），`rotation:-90` → −180°（9 點鐘）。舊稿「預設從 3 點鐘、需 −90 校正」在 4.4.0 不成立（推測沿用自舊版 Chart.js 的 rotation 寫法，未實測）。audit CH-05 以實測角度判定
    - 資料陣列先依值降序排列
    - `datalabels` 必須 `display: true`，同時顯示**項目名稱 + 佔比值**（不能只靠 legend）：
      ```javascript
@@ -409,7 +409,7 @@ KPI 值禁止截斷（🔴 紅線）：
 ```css
 /* ✅ 正確 */
 .kpi-value {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);   /* 數字字型 token，隨 D.9 preset 切換 */
   font-size: clamp(1.05rem, 2.4vw, 1.55rem);
   font-weight: 600; line-height: 1.2;
   word-break: break-word;          /* 允許折行，禁止截斷 */

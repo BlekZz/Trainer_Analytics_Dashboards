@@ -80,7 +80,7 @@ OK，但啟用條件熱圖改成漏斗階段轉換率柱狀圖（熱圖在這個
 ✓ Phase 2: 生成器 dev/script/gen_data_saas_funnel.py 輸出 JSON（生成器端 assertion 全過）→ inject_data.py 注入 → audit AC-01 N>0 全過
 ✓ Phase 3: HTML 建構完成，14 張圖全部繪製，audit exit 0（無 __TODO 佔位符殘留）
 ✓ Phase 4: 教學軸／結構軸落地（4 頁漏斗 / 批判型分佈 / 陷阱密度加倍）＋差異化 changelog
-✓ Phase 5: audit-dashboards.mjs exit 0（自動項）＋ E.1 其餘項目人工／AI 檢核全綠
+✓ Phase 5: audit-dashboards.mjs exit 0（自動項）＋ E.1 C 組人工／AI 檢核全綠（B 組僅在改過 template 時跑）
 
 交付物：
 1. Dashboard/SaaS專案管理工具_啟用漏斗分析_訓練儀表板教材.html (約 110KB)

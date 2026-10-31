@@ -81,7 +81,7 @@ author: Blake
 | **3 HTML 建構** | 工作檔（已有 preset＋DATA） | 各頁圖表＋QA＋收尾面板（分層建構） | 每層渲染正常、console 無錯；完成時 audit exit 0（含 **PH-01** 佔位符清空、**QA-01～06**） |
 | **4 差異化落地** | 規格初稿的教學軸／結構軸方向；D.3 | 教學軸／結構軸元素落地＋差異化 changelog（D.6 範例 3） | D.5 不可妥協元素仍在（紅線 2–4） |
 | **4.5 Design QA** | 完成的工作檔 | Design QA 報告（E.9 格式） | E.9 DQ 全 ✅ |
-| **5 驗收與交付** | 工作檔 | E.5 交付物（HTML、生成器、ARCHIVE 條目、audit 結果） | `node dev/script/audit-dashboards.mjs Dashboard/<新檔>.html` exit 0；E.1 人工項；ARCHIVE 條目（E.7） |
+| **5 驗收與交付** | 工作檔 | E.5 交付物（HTML、生成器、ARCHIVE 條目、audit 結果） | `node dev/script/audit-dashboards.mjs Dashboard/<新檔>.html` exit 0；E.1 C 組人工項；ARCHIVE 條目（E.7） |
 
 > 視覺軸（preset）在 Phase 1 就定案並驗配色——配色硬傷要在建構前換掉，不是交付前（ARCHIVE「配色驗證紀錄」的教訓）。Phase 4 只處理教學軸與結構軸。
 
@@ -191,7 +191,7 @@ author: Blake
 
 ### Phase 5 — 驗收與交付（依模組 E）
 24. 跑 `node dev/script/audit-dashboards.mjs Dashboard/<新檔>.html`，**exit 0 才繼續**（E.2）
-25. 跑 E.1 hard-check 清單中 audit 未涵蓋的人工項（47 項）
+25. 跑 E.1 **C 組**人工判斷項（22 列；A 組已由上一步 audit 保證，B 組只在改過 template 對應程式時才跑）
 26. 交付前在 `Skill/ARCHIVE.md` 新增本份條目（差異化與陷阱主題，見 E.5／E.7）
 
 ---
@@ -225,7 +225,7 @@ author: Blake
 | 視覺驗收規則（配色驗證器、單一值軸） | B.9 |
 | 資料矛盾題／同統計量不同形狀 | C.7 T5、A 原則 6–7 |
 | 自動驗收（assert／渲染／紅線元素） | E.2（`dev/script/audit-dashboards.mjs`） |
-| 交付前完整檢查 | E.1（47 項 hard-check） |
+| 交付前完整檢查 | E.1（A 組 audit 自動／B 組 template 不變式／C 組人工，原 47 項） |
 | Agent 工作角色與稽核門 | F（全篇） |
 
 ---

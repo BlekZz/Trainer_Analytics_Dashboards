@@ -26,15 +26,18 @@ Phase 2 ────────────────────────
                失敗 → 回 Code Reviewer 修資料，不進 Phase 3
 
 Phase 3 ─────────────────────────────────────────────────────
+  （分層定義以 SKILL.md Phase 3 為準：Layer 1 骨架＋每個資料頁一層＋末頁收尾層，3 頁 = 4 層、4 頁 = 5 層）
   Layer 1  [Rapid Prototyper]
-           → HEAD + CSS + DATA 物件 + assertConsistency + utility functions
+           → 工作檔已含 preset、DATA、assertConsistency、utility functions（沿用 template 不重寫）；
+             本層只調頁數／頁 key／nav tab／switchPage 分派與各頁 <div> 空殼
                     ↓
-             ▼ GATE 3-L1：瀏覽器開啟，assertConsistency 通過，console 無錯
+             ▼ GATE 3-L1：頁面可切換，assertConsistency 通過，console 無錯
 
-  Layer 2–4  [full-output-enforcement] + [Frontend Developer]
-           → draw functions + Chart.js canvas 渲染 + QA items
+  Layer 2…N  [full-output-enforcement] + [Frontend Developer]
+           → 末頁以外每個資料頁一層：該頁 canvas + KPI HTML + drawXxx() + 該頁 QA；
+             最後一層：末頁圖表＋QA＋訓練題／設計選擇／定義面板
                     ↓
-             ▼ GATE 3-L2/3/4：每層寫入後瀏覽器確認圖表渲染，QA 可展開
+             ▼ GATE 3-L2…N：每層寫入後瀏覽器確認該頁圖表渲染，QA 可展開
                失敗 → [Minimal Change Engineer] 精確點修，不重跑整層
 
 Phase 4 ─────────────────────────────────────────────────────
@@ -44,10 +47,10 @@ Phase 4 ────────────────────────
              ▼ GATE 4：D.5 不可妥協元素仍在；色票 / 字型與前一份儀表板不同（複核 Phase 1 的選擇）
 
 Phase 5 ─────────────────────────────────────────────────────
-  [Evidence Collector] → 截圖驗收，跑 audit 腳本（E.2）＋ module-E E.1 其餘分組
+  [Evidence Collector] → 截圖驗收，跑 audit 腳本（E.2，E.1 A 組）＋ E.1 C 組人工項
   [Code Reviewer]      → 最終 JS 邏輯 + F/I/A 標記完整性
                     ↓
-             ▼ GATE 5：audit exit 0 ＋ E.1 全綠，無未標 ⚠ 的 A 題
+             ▼ GATE 5：audit exit 0 ＋ E.1 C 組全綠，無未標 ⚠ 的 A 題
                失敗 → [Minimal Change Engineer] 點修，不重跑 Phase 3
 
 交付後 ──────────────────────────────────────────────────────
@@ -63,11 +66,11 @@ Phase 5 ────────────────────────
 | Analytics Reporter | `support-analytics-reporter.md` | 資料架構師：KPI、資料維度、圖表選型 | Phase 1 | 否 |
 | Corporate Training Designer | `corporate-training-designer.md` | 教學設計師：F/I/A 問題、難度矩陣、陷阱 | Phase 1 | 否 |
 | Code Reviewer | `engineering-code-reviewer.md` | 資料稽核員：assertConsistency + 最終 JS 審查 | Phase 2 + Phase 5 | 否 |
-| Rapid Prototyper | `engineering-rapid-prototyper.md` | 骨架工程師：Layer 1，不寫 draw logic | Phase 3 Layer 1 | 否 |
-| full-output-enforcement | `output-skill.md` | 輸出守門員：防 Layer 2–4 截斷 | Phase 3 Layer 2–4 | 否 |
-| Frontend Developer | `engineering-frontend-developer.md` | 圖表工程師：Chart.js 實作、canvas 渲染 | Phase 3 Layer 2–4 | 否 |
+| Rapid Prototyper | `engineering-rapid-prototyper.md` | 骨架工程師：Layer 1（頁數／分派／空殼），不寫 draw logic | Phase 3 Layer 1 | 否 |
+| full-output-enforcement | `output-skill.md` | 輸出守門員：防 Layer 2…N 截斷 | Phase 3 Layer 2…N | 否 |
+| Frontend Developer | `engineering-frontend-developer.md` | 圖表工程師：Chart.js 實作、canvas 渲染 | Phase 3 Layer 2…N | 否 |
 | redesign-existing-projects | `redesign-skill.md` | 視覺設計師：Preset 套用、跨儀表板差異化 | Phase 1（選 preset＋PAL 驗證） | 否 |
-| Evidence Collector | `testing-evidence-collector.md` | QA 驗收員：截圖 + audit＋E.1 hard-check | Phase 5 | 否 |
+| Evidence Collector | `testing-evidence-collector.md` | QA 驗收員：截圖 + audit＋E.1 C 組 | Phase 5 | 否 |
 | Minimal Change Engineer | `engineering-minimal-change-engineer.md` | 點修工：gate 失敗時針對性修復 | Gate 3/5 失敗時 | ✓ |
 | Technical Writer | `engineering-technical-writer.md` | 知識整合：tech-notes.md 更新 | 交付後 | ✓ |
 
@@ -98,7 +101,7 @@ Phase 5 ────────────────────────
 - Console 無 JS TypeError / ReferenceError
 - `assertConsistency()` 在 DOMContentLoaded 自動執行並通過
 
-### GATE 3-L2/3/4 — 每層圖表驗收
+### GATE 3-L2…N — 每層圖表驗收
 
 - 對應分頁切換後，所有 canvas 有渲染（非空白）
 - Chart.js datalabels 設定 display:true 的圖表有顯示數值
@@ -114,8 +117,8 @@ Phase 5 ────────────────────────
 
 以 module-E 的實際分組為準，全部通過：
 
-1. **自動項**：`node dev/script/audit-dashboards.mjs <新檔>` exit 0（E.2：assertConsistency N>0 且通過、所有分頁 canvas 渲染、紅線元素檢查等）
-2. **E.1 其餘分組**：資料層、視覺層、教學層、結構層、資料可信度、視覺一致性、散點圖完整性、陷阱分類與視覺驗收——腳本未覆蓋者逐項人工／AI 檢核
+1. **E.1 A 組（audit 自動）**：`node dev/script/audit-dashboards.mjs <新檔>` exit 0（規則見 E.2）
+2. **E.1 C 組（人工判斷）**：資料／視覺／教學 22 列逐項人工／AI 檢核；B 組（template 不變式）只在改過 template 對應程式時才跑
 3. **E.9 Design QA**（SKILL Phase 4.5）結果已輸出
 
 ---
@@ -123,8 +126,8 @@ Phase 5 ────────────────────────
 ## F.4 設計原則
 
 **Rapid Prototyper 只做 Layer 1 的原因**
-Layer 1 是骨架（HEAD + DATA + utility）邏輯密度低，適合快速輸出驗證。
-Layer 2–4 有 Chart.js draw logic + 教學內容，需要 Frontend Developer 的精確度。
+Layer 1 只調骨架（頁數、分派、空殼；HEAD／DATA／utility 已從 template 與 Phase 2 帶入），邏輯密度低，適合快速輸出驗證。
+Layer 2…N 有 Chart.js draw logic + 教學內容，需要 Frontend Developer 的精確度。
 
 **full-output-enforcement + Frontend Developer 綁定的原因**
 全輸出防截斷是 mechanism；Frontend Developer 負責內容正確性。

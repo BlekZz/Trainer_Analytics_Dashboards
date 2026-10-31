@@ -139,18 +139,21 @@
     /* ── Side def panel ── */
     #main-wrapper { display: flex; align-items: flex-start; }
 
+    /* sticky 必須在 outer（flex child）上：outer 的 overflow:hidden 會讓 inner 的 sticky 靜默失效（tech-notes #16） */
     #def-panel-outer {
       flex-shrink: 0; width: 0; overflow: hidden;
       transition: width 0.28s cubic-bezier(0.4,0,0.2,1);
+      position: sticky;
+      top: var(--header-h, 138px);
+      height: calc(100vh - var(--header-h, 138px));
+      align-self: flex-start;
     }
     #def-panel-outer.open { width: 323px; }
 
     #def-panel-inner {
       width: 323px;
-      height: calc((100vh - var(--header-h, 138px)) * 1.2);
+      height: 100%;
       overflow-y: auto;
-      position: sticky;
-      top: var(--header-h, 138px);
       background: var(--bg-card);
       border-right: 1px solid var(--border);
       padding: 18px 16px;
@@ -1528,11 +1531,12 @@ function drawCust() {
       backgroundColor: c('purple', 0.12),
       borderWidth: 2.5,
       pointRadius: 2,
-      pointHoverRadius: 5,
+      pointHoverRadius: 10,   // B.5 🔴／audit CH-09：折線 hover 半徑 ≥10
       tension: 0.4,
       fill: true
     }
   ], {
+    interaction: { mode: 'index', intersect: false },   // B.5 🔴／audit CH-08：游標在任一 X 位置即觸發 tooltip
     plugins: {
       legend: { display: false },
       tooltip: TT,

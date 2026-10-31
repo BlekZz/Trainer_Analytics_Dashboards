@@ -283,10 +283,6 @@ const EXEMPTIONS = [
     reason: '既有成品圖表設定（M3 新規則首次檢出）；修正屬改 Dashboard，留待主線逐張判斷是否機械修正' })),
   { file: 'SaaS訂閱制_MRR訂閱指標分析_訓練儀表板教材.html', rule: 'CH-01', items: ['chart-waterfall'],
     reason: '浮動 bar 瀑布圖（data 為 [起,迄]），自 4.6M 起畫以放大月變動；從 0 起畫各段會壓成細線，屬圖型設計而非一般 bar' },
-  { file: 'template.html', rule: 'CH-08', items: ['cHourly'],
-    reason: 'template 範例折線圖未設 interaction index；修 template 不在 M3-A 範圍，移交主線（新 dashboard 會繼承）' },
-  { file: 'template.html', rule: 'CH-09', items: ['cHourly'],
-    reason: 'template 範例折線圖 pointHoverRadius=5；同上移交主線' },
   // 3.8 擴大逐題容器後的命中：補 F/I/A／trap／收合都需新增教學內容或改互動設計（總原則 2）
   { file: '健身房_會員全週期分析_訓練儀表板教材.html', rule: 'QA-03', items: ['p-retention/T2', 'p-retention/T4'],
     reason: '.train-item 訓練題原稿無陷阱提示；補寫需新增教學內容' },

@@ -123,7 +123,7 @@
 | 2 | 電商DTC | light | 無 | 對比 < 3:1：teal、orange（需保留數字標籤） |
 | 3 | 品牌訊息通道 | dark | 正常視力 ΔE 10.8（teal≈orange）→ `--warn` #F59E0B 改 #FDBA74，ΔE 17.7 | 明度：#fdba74 超出範圍 |
 | 4 | 健身房 | dark | 色盲 ΔE 5.7（orange↔teal）→ `--accent2` #22C55E 改 #0D9488，ΔE 16.6 | 明度：blue、orange、purple 超出範圍 |
-| 5 | 網紅個人品牌 | light | 無 | 色盲 ΔE 7.9（orange↔teal，需保留標籤）；blue #7c3aed 與 purple #9333ea 不相鄰但相近 |
+| 5 | 網紅個人品牌 | light | 無 | 色盲 ΔE 7.9（orange↔teal，需保留標籤）；blue #7c3aed 與 purple #9333ea 不相鄰但相近：正常視力 blue/purple ΔE 4.4（2026-11-01 audit 全部色對比對，列入 PAL-01／02 豁免；若同圖並列屬實際缺陷，待人工確認） |
 | 6 | SaaS訂閱制 | light | 無 | 色盲 ΔE 7.9（orange↔teal，需保留標籤） |
 | 7 | 零售便利商店 | light | 正常視力 ΔE 10.2（blue≈teal）→ `--accent2` #10B981 改 #0284C7，ΔE 16.9 | 無 |
 | 8 | 醫美連鎖 | light | 建構前即在 preset 層修正（P5 accent #0891B2→#0369A1，ΔE 11.8→18.5） | 色盲 ΔE 7.9（orange↔teal，相關圖皆有數字標籤） |
