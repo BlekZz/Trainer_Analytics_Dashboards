@@ -3,12 +3,15 @@
 Usage: python dev/script/gen_data_medaesthetic.py <out.json>
 All derived arrays are forced to close on the anchors; every assertion must pass before the JSON is written.
 """
-import json
 import sys
 
 import numpy as np
 
-RNG = np.random.default_rng(20251014)
+from datagen_lib import Checker, emit, make_rng, split_total
+
+SEED = 20251014
+GENERATOR_VERSION = "1"
+RNG = make_rng(SEED)
 MONTHS = 12
 
 # ── Anchors (locked) ────────────────────────────────────────────────
@@ -31,16 +34,6 @@ A = {
     "prev_revisit_90d": 46.0,
 }
 A["appt_yoy"] = round((A["appointments"] / A["prev_appointments"] - 1) * 100, 1)
-
-
-def split_total(total, weights):
-    """Integer split of total proportional to weights; remainder goes to the largest weights."""
-    w = np.asarray(weights, dtype=float)
-    raw = w / w.sum() * total
-    out = np.floor(raw).astype(int)
-    for i in np.argsort(-(raw - out))[: total - out.sum()]:
-        out[i] += 1
-    return out.tolist()
 
 
 # ── P1 monthly funnel ───────────────────────────────────────────────
@@ -168,12 +161,9 @@ DATA = {"anchors": A, "months": [f"{m}月" for m in range(1, 13)],
         "rev_by_cat": rev_by_cat, "aov_hist": aov_hist, "doctors": doctors, "quartet": quartet}
 
 # ── Assertions (must all pass) ──────────────────────────────────────
-errs = []
-
-
-def eq(a, b, label, tol=0):
-    if abs(a - b) > tol:
-        errs.append(f"{label}: got {a}, expected {b}")
+chk = Checker()
+eq = chk.eq
+errs = chk.errs
 
 
 eq(A["cancelled"] + A["noshow"] + A["attended"], A["appointments"], "funnel closes")
@@ -227,11 +217,9 @@ for k, st in zip(quartet["kinds"], quartet["stats"]):
     eq(st[3], TARGET["sy"], f"{k} sd y", 0.1)
     eq(st[4], TARGET["r"], f"{k} corr", 0.01)
 
-if errs:
-    print("ASSERTION FAILED:\n  " + "\n  ".join(errs))
-    sys.exit(1)
-json.dump(DATA, open(sys.argv[1], "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-print(f"✓ all assertions passed; wrote {sys.argv[1]}")
+chk.finish()
+meta_path = emit(DATA, sys.argv[1], seed=SEED, generator="gen_data_medaesthetic", generator_version=GENERATOR_VERSION)
+print(f"✓ all assertions passed; wrote {sys.argv[1]} (+ {meta_path})")
 print("monthly appts", appts)
 print("monthly attend rate", [round(t / a * 100, 1) for t, a in zip(attended, appts)])
 print("monthly noshow", noshow)
