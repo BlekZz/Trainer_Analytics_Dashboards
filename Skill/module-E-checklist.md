@@ -41,8 +41,8 @@
 - [ ] **24. KPI 卡值不截斷** — `.kpi-value` 禁用 `overflow: hidden; text-overflow: ellipsis; white-space: nowrap`；改用 `font-size: clamp()` + `word-break: break-word`；在 1400px 寬度下確認最長 KPI 值完整顯示
 - [ ] **25. Bar/Column chart 資料依顯示值降序排列** — 月份時間軸例外；多圖共享標籤時使用一致的固定排序順序
 - [ ] **26. 值域差距 >10x 不用雙 Y-axis 硬塞** — 禁用對數刻度；預設拆兩張圖或以共同基期指數化到同一軸。雙 Y-axis 只允許作為刻意教學陷阱（必須有 `data-trap="雙軸假相關"` 的 trap-block 與設計選擇說明，見 B.9-2）
-- [ ] **27. 禁止使用 `Chart.defaults.set('plugins.datalabels', ...)`** — 此呼叫覆蓋 ChartDataLabels 內部 option merger，會導致 dual-axis 圖和 fill-line 圖整個消失（不只是 label 消失），且不報錯；改為在每個圖表逐一設定 `datalabels: { display: false/true }`
-- [ ] **28. `switchPage` 用 `setTimeout(60ms)` 包住 draw 呼叫** — DOM classList 切換後瀏覽器尚未完成 layout；同步呼叫 drawXxx() 時 canvas 尺寸為 0，圖表靜默初始化成空白；正確寫法：`setTimeout(() => { if (name==='ops') drawOps(); ... }, 60)`
+- [ ] **27. 全域關閉 datalabels 統一用 template 的直接屬性賦值** — `Chart.defaults.plugins.datalabels.display = false`，各圖逐一 opt-in `datalabels: { display: true, … }`。這是統一寫法，不是因為 `Chart.defaults.set()` 會出錯：2026-11-01 以 Chart.js 4.4.0＋datalabels 2.2.0 在 headless Chrome 實測，`Chart.defaults.set('plugins.datalabels', { display: false })` 不拋錯、無 console 錯誤，與直接賦值輸出逐像素相同，雙軸 bar+line 與填色折線都正常渲染（舊稿「整個圖消失且不報錯」在此版本組合下未重現）
+- [ ] **28. lazy render 沿用 template 的 `switchPage` 契約** — 等容器尺寸有效（非 0×0）才 draw；**draw 成功才標記該頁完成**，失敗清掉已建的 Chart 實例、下次切頁可重試；不可退回「先標記再畫」或只靠固定延遲（切頁當下 canvas 可能仍為 0×0，圖表會靜默初始化成空白）。程式以 `Skill/template.html` 為準，換頁 key 時只改分派
 - [ ] **29. 所有用到的 `.hNNN` CSS class 必須有定義** — 容器高度 0 = 圖表完全不可見且不報錯；生成 HTML 前確認 `.h240/.h260/.h280/.h300/.h360/.h420/.h480/.h520` 全部在 `:root` 下方定義
 - [ ] **30. 定義側板 sticky 定位結構正確** — `position:sticky; top:var(--header-h); height:calc(100vh - var(--header-h)); align-self:flex-start` 必須加在 `#def-panel-outer`（flex child）上；`#def-panel-inner` 只設 `height:100%; overflow-y:auto`。若 sticky 加在 `overflow:hidden` 的子元素上會靜默失效，導致面板頂部出現錯誤空白
 - [ ] **31. annotation plugin 用正確全域名稱 register** — CDN UMD 全域是 `window.ChartAnnotation`，**不是** `window['chartjs-plugin-annotation']`；確認 script 頂部為：`if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);`
@@ -72,7 +72,7 @@
 ### 陷阱分類與視覺驗收（3 項，2026-10-14 新增）
 
 - [ ] **45. 每個 trap-block 有 `data-trap-stage`＋`data-trap`＋可見 `.trap-tag`，整份涵蓋 ≥3 階段** — 見 C.4c；audit 腳本會 WARN
-- [ ] **46. 類別色通過 `validate_palette.js`** — 正常視力 ΔE ≥ 15、色盲 ΔE ≥ 6；色盲 6–8 或對比 < 3:1 時，對應系列有可見數字標籤（見 B.9-1）
+- [ ] **46. 類別色通過 audit 配色規則 PAL-01／PAL-02** — 正常視力與色盲模擬色差皆無 FAIL（門檻與實作見 `dev/script/audit-dashboards.mjs` PAL 規則）；PAL WARN 或對比不足時，對應系列有可見數字標籤（見 B.9-1）
 - [ ] **47. 圖卡有單位與資料期間，bar 值軸從 0 起，≥2 系列不只靠顏色辨識** — 見 B.9-5／6／8
 
 ---
@@ -93,7 +93,7 @@ node dev/script/audit-dashboards.mjs Dashboard/新檔.html    # 只檢查指定�
 | FAIL | `ChartDataLabels` 已 register | E.1 #22 |
 | FAIL | 依序 `switchPage` 每個分頁後，每個 canvas 都有 Chart 實例且尺寸非 0 | E.1 #28 #29、DQ-13 |
 | FAIL | `.qa-item`、`.trap-block`、F/I/A 標註、設計選擇／設計說明區塊存在 | 紅線 #2 #3 #4 |
-| WARN | `Chart.defaults.plugins.datalabels.display !== false` | SKILL Layer 1 樣板 |
+| WARN | `Chart.defaults.plugins.datalabels.display !== false` | E.1 #27、SKILL Phase 3 行為契約 |
 | WARN | `<title>` 與檔名不一致 | 檔名規範 |
 | WARN | 缺 `.ev`／`.nav-hint`／`.chart-ref-btn` | E.1 #12 #14 #23 |
 | FAIL | `goToChart(page, cardId)` 目標不存在或不在所宣告分頁 | E.1 #23 |
@@ -325,8 +325,8 @@ ARCHIVE 條目與交付時的差異化說明（E.6）合計必包含：
 
 ### 跨頁渲染（2 項）
 
-- [ ] **DQ-13. 非首頁圖表正確渲染** — 依序點擊 P2、P3、P4 tab，確認每頁圖表在切換後 ≤ 200ms 完整渲染（非空白 canvas）；`switchPage` 必須包含 `setTimeout(60ms)` 才能保證 DOM layout 完成後再 draw
-- [ ] **DQ-14. 首頁 DOMContentLoaded 圖表正確渲染** — 開啟頁面不做任何點擊，P1 圖表應已完整渲染；確認 `DOMContentLoaded` 有 `setTimeout(() => draw_p1(), 60)` 而非同步呼叫
+- [ ] **DQ-13. 非首頁圖表正確渲染** — 依序點擊 P2、P3、P4 tab，確認每頁圖表在切換後 ≤ 200ms 完整渲染（非空白 canvas）；`switchPage` 符合 E.1 #28 的 lazy render 契約（等尺寸有效、成功才標記、失敗可重試）
+- [ ] **DQ-14. 首頁不點擊即正確渲染** — 開啟頁面不做任何點擊，P1 圖表應已完整渲染；首頁同樣經 `switchPage` 的 lazy render 契約進入（沿用 template 的初始化，不另寫同步 draw）
 
 ### 版本標記 & 程式結構（4 項）
 
@@ -366,7 +366,7 @@ Phase 4.5 結束後，輸出以下格式的報告（不需等使用者確認，�
 | DQ-11 | 折線圖 hover mode:index | ✅ | ch-stockout-monthly |
 | DQ-12 | pointHoverRadius≥10 | ✅ | 12 |
 | DQ-13 | 非首頁渲染正確 | ✅ | P2/P3/P4 均正常 |
-| DQ-14 | 首頁 DOMContentLoaded | ✅ | setTimeout(60) 確認 |
+| DQ-14 | 首頁不點擊即渲染 | ✅ | 經 switchPage 契約 |
 | DQ-15 | syncHeaderHeight 位置正確 | ✅ | window.load/resize 綁定 |
 | DQ-16 | 製作時間 chip 格式 | ✅ | 🗓️ 製作時間：20260614 |
 | DQ-17 | DOMContentLoaded 不重複 | ✅ | grep 確認只有 1 個 |

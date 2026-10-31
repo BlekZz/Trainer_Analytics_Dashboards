@@ -492,11 +492,7 @@ KPI 值禁止截斷（🔴 紅線）：
 
 這節補的是「圖畫對了，但讀者會讀錯」的那一類問題。逐項列入 E.9（DQ-19 起）。
 
-1. **配色要跑驗證器，不准目測。** 取 `c()` 的 5 個類別色（blue／teal／orange／purple／red，gray 是中性色不算），用 Claude Code 內建 `dataviz` skill 的 `scripts/validate_palette.js` 驗：
-   ```bash
-   node <dataviz>/scripts/validate_palette.js "#hex1,#hex2,#hex3,#hex4,#hex5" --mode light --surface "#<body 背景色>"
-   ```
-   深色 preset 用 `--mode dark`。**正常視力 ΔE < 15、色盲 ΔE < 6 是硬傷，必須換色**；色盲 ΔE 6–8 只有在加了直接標籤或紋理時才合法；對比 < 3:1 時，該色的系列必須有可見數字標籤。明度超出範圍屬美感問題，記錄即可。
+1. **配色要跑驗證，不准目測。** 驗證已內建在 audit：`node dev/script/audit-dashboards.mjs <file>` 在執行期讀頁面實際使用的 `c()` 類別色（blue／teal／orange／purple／red，gray 是中性色不算）與 body 背景色，自行計算 CIEDE2000 色差並做色盲模擬——**PAL-01**（正常視力色差）與 **PAL-02**（色盲模擬色差），不需要任何外部 skill 或腳本。**門檻與實作見 `dev/script/audit-dashboards.mjs` 的 PAL 規則**（本檔不另寫數字，以腳本為準）。判讀：PAL FAIL 是硬傷，必須換色；PAL WARN 的色對，對應系列必須有直接數字標籤或紋理才合法；對比不足時，該色的系列必須有可見數字標籤。明度超出範圍屬美感問題，記錄即可。時機：SKILL Phase 1 選定 preset 後立即跑（建構前），交付前 audit 再跑一次。
 2. **一張圖一條值軸。** 兩個尺度差很多的量：拆兩張圖、small multiples，或以共同基期指數化（t0 = 100）。**雙 Y-axis 只允許當刻意教學陷阱**：該圖對應的 QA 必須有 `data-trap-stage="visualize" data-trap="雙軸假相關"` 的 trap-block，並在設計選擇揭露裡說明。
 3. **顏色跟著實體走，不跟名次走。** 同一個品類／通道在所有圖用同一色；篩選或排序後不可重新上色。
 4. **類別色不超過 6 個；donut／pie 不超過 6 塊，且不拿來比較接近的數值**（改 bar）。第 7 類以後併入「其他」。
@@ -505,4 +501,4 @@ KPI 值禁止截斷（🔴 紅線）：
 7. **圖卡標題寫洞見，不只寫主題。** 「12 月營收創高，但毛利率全年最低」優於「月度營收趨勢」。若刻意不寫洞見（留給學員判讀），在設計選擇揭露裡說明。
 8. **軸要有單位，圖卡要標資料期間。** 例：「萬元」「次／年」「2024/01–12」。
 
-> 來源：Claude Code 內建 `dataviz` skill（anti-patterns、non-negotiables、validate_palette.js）；Data-to-Viz「The problem with dual axes」「To cut or not to cut」。以本專案用語重寫。
+> 來源：Claude Code 內建 `dataviz` skill 的 anti-patterns 與 non-negotiables（概念來源；配色驗證已由 audit PAL 規則自行實作，不再呼叫該 skill 的腳本）；Data-to-Viz「The problem with dual axes」「To cut or not to cut」。以本專案用語重寫。

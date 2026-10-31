@@ -224,7 +224,8 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 ## D.9 視覺 Preset 庫
 
 > 從 UI UX Pro Max 資料庫萃取，針對 analytics/BI dashboard 情境整理成 7 個可直接套用的視覺套餐。
-> 每個 preset 提供完整的 CSS token override + 字型配對，選一個後覆蓋 template 的 `:root` 即可。
+> 每個 preset 提供完整的 CSS token override（含字型 token `--font-head/--font-body/--font-mono`）+ Google Fonts import。template 的 `c()`、Chart 預設色、TT 在執行期讀 CSS token，**選一個後只需覆蓋 template 的 `:root` 與 Google Fonts import**，不改 JS。
+> 選定時機是 SKILL Phase 1（建構前），選完立即跑 audit 看 PAL-01／PAL-02（B.9-1）。下列色值已回填 2026-10-14 驗證後的修正（見 ARCHIVE「配色驗證紀錄」），速查表與各 preset 詳細設定一致。
 
 **使用規則：**
 - D2 目前預設是 P2（藍系分析型），這是 template 的基線，**每次產出需跟上一份使用不同 preset**
@@ -237,12 +238,12 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 
 | # | 名稱 | 底色 | 主色（--accent） | 正向（--accent2） | 字型組合 | 適合產業 |
 |---|---|---|---|---|---|---|
-| **P1** | 深色財務型 | `#020617` | `#3B82F6` | `#22C55E` | IBM Plex Sans × IBM Plex Sans | 金融、FinTech、證券 |
-| **P2** | 藍系分析型 *(預設)* | `#0d1117` | `#2d5be3` | `#2aab85` | Outfit × Lora | 電商、SaaS、通用分析 |
+| **P1** ⚠ | 深色財務型 | `#020617` | `#3B82F6` | `#22C55E`（使用前須調色，見 P1 註） | IBM Plex Sans × IBM Plex Sans | 金融、FinTech、證券 |
+| **P2** | 藍系分析型 *(預設)* | `#0d1117` | `#3b82f6` | `#2aab85` | Lora × Outfit | 電商、SaaS、通用分析 |
 | **P3** | 輕色企業型 | `#F8FAFC` | `#2563EB` | `#059669` | Plus Jakarta Sans × Plus Jakarta Sans | B2B、CRM、供應鏈 |
-| **P4** | 暗色科技型 | `#0F172A` | `#22D3EE` | `#22C55E` | Space Grotesk × DM Sans | 製造、IoT、物流 |
-| **P5** | 醫療信任型 | `#ECFEFF` | `#0891B2` | `#059669` | Lexend × Source Sans 3 | 醫療、健康、公衛 |
-| **P6** | 電商活力型 | `#ECFDF5` | `#059669` | `#10B981` | Rubik × Nunito Sans | 零售、電商、DTC |
+| **P4** | 暗色科技型 | `#0F172A` | `#22D3EE` | `#0D9488` | Space Grotesk × DM Sans | 製造、IoT、物流 |
+| **P5** | 醫療信任型 | `#ECFEFF` | `#0369A1` | `#059669` | Lexend × Source Sans 3 | 醫療、健康、公衛 |
+| **P6** | 電商活力型 | `#ECFDF5` | `#059669` | `#0284C7` | Rubik × Nunito Sans | 零售、電商、DTC |
 | **P7** | 銀行深色型 | `#020617` | `#1E3A8A` | `#A16207` | IBM Plex Sans × IBM Plex Sans | 銀行、保險、傳統金融 |
 
 ---
@@ -255,14 +256,16 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
   --accent: #3B82F6; --accent2: #22C55E; --warn: #D97706; --danger: #EF4444; --purple: #8B5CF6;
   --text: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.07);
   --radius: 10px;
+  --font-head: 'IBM Plex Sans', sans-serif; --font-body: 'IBM Plex Sans', sans-serif; --font-mono: 'IBM Plex Mono', monospace;
 }
 ```
 ```html
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap">
-/* font-family: 'IBM Plex Sans', sans-serif; 標題與內文同字族，靠字重區分層級 */
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+/* 標題與內文同字族，靠字重區分層級；數字用 IBM Plex Mono */
 ```
+- **⚠ 使用前須調色並跑 audit：** bg `#020617`／accent `#3B82F6` 與第 3 份（品牌訊息通道，P7 Modified）相同；accent2 `#22C55E` 正是第 4 份（健身房）色盲 ΔE 5.7 硬傷的來源色（ARCHIVE 配色驗證紀錄 #4）。選 P1 時先換 accent2（可參考 P4 的修正 `#0D9488`，但須以本 preset 的 bg 與其他類別色重驗），並至少換掉 bg 或 accent 之一以免與第 3 份雷同，再跑 audit 看 PAL-01／PAL-02
 - **調性：** 嚴肅、資料密度高、信任感強
-- **圖表色建議：** 正向指標用 `#22C55E`，負向用 `#EF4444`，中性資料用 `#3B82F6`
+- **圖表色建議：** 正向指標用 `--accent2`（調色後的值），負向用 `#EF4444`，中性資料用 `#3B82F6`
 - **反模式：** 不可用淺色背景 / 不可用圓角 > 12px / 不可用裝飾性動畫
 
 ---
@@ -276,6 +279,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
   --accent: #3b82f6; --accent2: #2aab85; --warn: #d4870a; --danger: #d43a2f; --purple: #7c4dff;
   --text: #e6edf3; --text-muted: #8b949e; --border: rgba(255,255,255,0.08);
   --radius: 14px;
+  --font-head: 'Lora', serif; --font-body: 'Outfit', sans-serif; --font-mono: 'JetBrains Mono', monospace;
 }
 ```
 ```html
@@ -294,6 +298,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
   --accent: #2563EB; --accent2: #059669; --warn: #D97706; --danger: #DC2626; --purple: #7C3AED;
   --text: #0F172A; --text-muted: #64748B; --border: rgba(0,0,0,0.08);
   --radius: 12px;
+  --font-head: 'Plus Jakarta Sans', sans-serif; --font-body: 'Plus Jakarta Sans', sans-serif; --font-mono: 'JetBrains Mono', monospace;
 }
 /* header 背景改為白底 */
 .site-header { background: rgba(248,250,252,0.97); border-bottom: 1px solid rgba(0,0,0,0.08); }
@@ -301,7 +306,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 .nav-tab.active { background: rgba(248,250,252,0.97); color: var(--accent); }
 ```
 ```html
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap">
 ```
 - **調性：** 明亮、親和、適合簡報式呈現給非技術決策者
 - **注意：** 淺色模式需確認 chart 資料顏色仍具足夠對比度（建議 `rgba()` alpha 提高至 0.9）
@@ -313,17 +318,19 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 ```css
 :root {
   --bg: #0F172A; --bg-card: #1B2336; --bg-finding: #202D3F;
-  --accent: #22D3EE; --accent2: #22C55E; --warn: #F59E0B; --danger: #EF4444; --purple: #A78BFA;
+  --accent: #22D3EE; --accent2: #0D9488; --warn: #F59E0B; --danger: #EF4444; --purple: #A78BFA;
   --text: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.07);
   --radius: 8px;
+  --font-head: 'Space Grotesk', sans-serif; --font-body: 'DM Sans', sans-serif; --font-mono: 'JetBrains Mono', monospace;
 }
 ```
 ```html
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap">
 /* 標題: Space Grotesk；內文: DM Sans */
 ```
 - **調性：** 科技感、高密度、偏硬派（radius 8px 強調精確）
 - **適用場景：** 製造業 OEE 分析、物流追蹤、IoT 感測器 dashboard
+- **配色驗證（B.9-1，2026-10-14，第 4 份）：** 原 accent2 `#22C55E` 與 orange 色盲 ΔE 5.7（硬傷），改 `#0D9488` 後 ΔE 16.6；已回填上方 `:root` 與速查表
 
 ---
 
@@ -335,16 +342,17 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
   --accent: #0369A1; --accent2: #059669; --warn: #D97706; --danger: #DC2626; --purple: #7C3AED;
   --text: #164E63; --text-muted: #64748B; --border: rgba(0,0,0,0.07);
   --radius: 16px;
+  --font-head: 'Lexend', sans-serif; --font-body: 'Source Sans 3', sans-serif; --font-mono: 'JetBrains Mono', monospace;
 }
 .site-header { background: rgba(236,254,255,0.97); }
 ```
 ```html
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap">
 /* 標題: Lexend（高可及性設計）；內文: Source Sans 3 */
 ```
 - **調性：** 清晰、低刺激、符合 WCAG AA
 - **反模式：** 不可用高飽和紅色（用橘代替警示）/ 不可用暗色背景
-- **配色驗證（B.9-1，2026-10-14）：** 原 accent #0891B2 與 accent2 #059669 正常視力 ΔE 11.8（硬傷），改 #0369A1 後 ΔE 18.5；orange↔accent2 色盲 ΔE 7.9（WARN），對應系列需保留數字標籤
+- **配色驗證（B.9-1，2026-10-14）：** 原 accent #0891B2 與 accent2 #059669 正常視力 ΔE 11.8（硬傷），改 #0369A1 後 ΔE 18.5（已回填上方 `:root` 與速查表）；orange↔accent2 色盲 ΔE 7.9（WARN），對應系列需保留數字標籤
 
 ---
 
@@ -353,18 +361,19 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 ```css
 :root {
   --bg: #ECFDF5; --bg-card: #FFFFFF; --bg-finding: #E8F8F1;
-  --accent: #059669; --accent2: #10B981; --warn: #D97706; --danger: #DC2626; --purple: #7C3AED;
+  --accent: #059669; --accent2: #0284C7; --warn: #D97706; --danger: #DC2626; --purple: #7C3AED;
   --text: #064E3B; --text-muted: #64748B; --border: rgba(0,0,0,0.07);
   --radius: 14px;
+  --font-head: 'Rubik', sans-serif; --font-body: 'Nunito Sans', sans-serif; --font-mono: 'JetBrains Mono', monospace;
 }
 .site-header { background: rgba(236,253,245,0.97); }
 ```
 ```html
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600&family=JetBrains+Mono:wght@400;700&display=swap">
 /* 標題: Rubik；內文: Nunito Sans */
 ```
 - **調性：** 積極、轉換導向、電商氣氛
-- **注意：** --accent 和 --accent2 同為綠系，使用時需用色相差或飽和度差異來區分語意
+- **配色驗證（B.9-1，2026-10-14，第 7 份）：** 原 accent2 `#10B981` 與 accent `#059669` 同為綠系，正常視力 ΔE 10.2（硬傷）；改 `#0284C7` 後 ΔE 16.9，已回填上方 `:root` 與速查表。正向語意因此改由藍色承載，圖例與標籤需寫明
 
 ---
 
@@ -376,10 +385,11 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
   --accent: #1E3A8A; --accent2: #A16207; --warn: #D97706; --danger: #EF4444; --purple: #6366F1;
   --text: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.06);
   --radius: 8px;
+  --font-head: 'IBM Plex Sans', sans-serif; --font-body: 'IBM Plex Sans', sans-serif; --font-mono: 'IBM Plex Mono', monospace;
 }
 ```
 ```html
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
 ```
 - **調性：** 莊重、傳統、合規感強（金色 `--accent2` 作為正向/獲利指標）
 - **反模式：** 不可用亮色主視覺 / 不可用圓角 > 10px / 不可使用 AI 紫色系漸層

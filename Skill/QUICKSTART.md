@@ -1,6 +1,7 @@
 # Quick Start：完整對話示範
 
 > 此檔展示「使用者觸發 skill → AI 執行完整流程」的標準對話樣態。
+> 各 Phase 的輸入／輸出／驗收以 `SKILL.md`「🔁 標準執行流程」的 Phase 總表為準；本檔只示範對話，不另定義流程。
 
 ---
 
@@ -59,11 +60,12 @@ P4 (5 訓練題)：T1 流失歸因策略 / T2 漏斗階段優先級 / T3 啟用�
   ⑤ LTV/CAC 比值忽略付款週期變動
 
 ### 差異化 vs 基準範本
-- 視覺：藍 → 中性灰主體 + 鋼藍強調 / radius 14 → 8 / hard-line shadow
+- 視覺：P7 銀行深色型（ARCHIVE 顯示前一份非 P7；中性深底 + 冷色強調 / radius 8）
+  → 已套到工作檔 `:root`＋字型 import，audit PAL-01／PAL-02 結果：[貼上兩行結果]
 - 教學：難度分佈批判型（L3·A 多）/ 陷阱密度加倍（I 題也加）
 - 結構：3 頁維度分頁 → 4 頁漏斗分頁 / 訓練題拆獨立頁
 
-確認以上規格後，AI 才繼續 Phase 2（資料生成）。
+確認以上規格與 preset 後，AI 才繼續 Phase 2（資料生成）。
 ```
 
 ### 使用者確認
@@ -75,9 +77,9 @@ OK，但啟用條件熱圖改成漏斗階段轉換率柱狀圖（熱圖在這個
 ### AI 執行 Phase 2-5（簡述）
 
 ```
-✓ Phase 2: 生成器 dev/script/gen_data_saas_funnel.py 輸出 JSON（生成器端 assertion 全過）→ inject_data.py 注入
-✓ Phase 3: HTML 建構完成，14 張圖全部繪製
-✓ Phase 4: 差異化套件套用（中性灰主色 / hard-line / 4 頁漏斗 / 批判型分佈）
+✓ Phase 2: 生成器 dev/script/gen_data_saas_funnel.py 輸出 JSON（生成器端 assertion 全過）→ inject_data.py 注入 → audit AC-01 N>0 全過
+✓ Phase 3: HTML 建構完成，14 張圖全部繪製，audit exit 0（無 __TODO 佔位符殘留）
+✓ Phase 4: 教學軸／結構軸落地（4 頁漏斗 / 批判型分佈 / 陷阱密度加倍）＋差異化 changelog
 ✓ Phase 5: audit-dashboards.mjs exit 0（自動項）＋ E.1 其餘項目人工／AI 檢核全綠
 
 交付物：

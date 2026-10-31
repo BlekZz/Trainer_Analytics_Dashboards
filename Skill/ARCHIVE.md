@@ -8,7 +8,7 @@
 - 產業：餐飲連鎖
 - 訓練主題：門市營運分析（來客 × 客單、外帶結構、門市分級、高頻顧客與再購）
 - 錨點：`total_customers: 58320`、`total_visits: 486217`、`total_revenue_wan: 13954`、`total_stores: 34`、`aov: 287`、`repurchase_rate_30d: 36.8`
-- 視覺 Preset：P2 藍系分析型（近似）——bg #0d1117、字型 Outfit+Lora+JetBrains Mono 與 P2 吻合；accent #3b82f6 與 P2 的 #2d5be3 略異
+- 視覺 Preset：P2 藍系分析型（近似）——bg #0d1117、字型 Outfit+Lora+JetBrains Mono 與 P2 吻合；accent #3b82f6 與 P2 的 #2d5be3 略異（2026-11-01 註：D.9 速查表的 #2d5be3 是舊值，已更正為 template 實際的 #3b82f6，#1 與 P2 一致）
 - 頁數／QA 數：3 頁／21 題
 - 差異化亮點：來客×客單雙軸同圖、右軸刻意縮窄放大客單微變；VIP AOV(287→241)低於全體的逆直覺數字直接呈現，要學員自己發現「AOV ≠ LTV」；外帶口徑未拆外送/自取，刻意留盲點。
 - 陷阱主題：比例上升不等於絕對量下降／低業績門市不一定最需協助／AOV 不等於 LTV／提升高頻貢獻不等於只服務高頻／統一 KPI 衡量異質門市
@@ -112,7 +112,7 @@
 
 ## 配色驗證紀錄（B.9-1，2026-10-14）
 
-用 `validate_palette.js` 驗 `c()` 的 5 個類別色（blue／teal／orange／purple／red）。只列硬傷的處置與剩下的軟性問題。
+當時用 dataviz skill 的 `validate_palette.js`（歷史紀錄；現行驗證改由 audit 的 PAL-01／PAL-02 規則執行，見 B.9-1）驗 `c()` 的 5 個類別色（blue／teal／orange／purple／red）。只列硬傷的處置與剩下的軟性問題。
 
 | # | 儀表板 | 模式 | 硬傷與處置 | 仍存在（軟性，未修） |
 |---|---|---|---|---|
@@ -125,4 +125,4 @@
 | 7 | 零售便利商店 | light | 正常視力 ΔE 10.2（blue≈teal）→ `--accent2` #10B981 改 #0284C7，ΔE 16.9 | 無 |
 | 8 | 醫美連鎖 | light | 建構前即在 preset 層修正（P5 accent #0891B2→#0369A1，ΔE 11.8→18.5） | 色盲 ΔE 7.9（orange↔teal，相關圖皆有數字標籤） |
 
-新產的儀表板：preset 選定後先跑一次驗證器，硬傷在 Phase 4 就換掉，不要等交付。
+新產的儀表板：preset 在 SKILL Phase 1 選定後立刻跑 audit 看 PAL-01／PAL-02，硬傷在建構前就換掉，不要等交付。上表的硬傷修正已回填 D.9（2026-11-01：P4 accent2 `#0D9488`、P5 accent `#0369A1`、P6 accent2 `#0284C7`；P1 加註須調色）。

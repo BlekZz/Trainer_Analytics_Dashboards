@@ -57,58 +57,63 @@ author: Blake
 
 ## 🗂️ 規格手冊架構
 
-本手冊分為五大模組，**依此順序執行**：
-
-```
-模組 A：資料設計與驗證 (Data Validation)
-   ↓
-模組 B：視覺與互動規範 (Visual & Interaction Standards)
-   ↓
-模組 C：教學機制設計 (Pedagogical Mechanics)
-   ↓
-模組 D：差異化策略 (Differentiation Strategy)
-   ↓
-模組 E：交付檢核清單 (Delivery Checklist)
-```
-
-每個模組對應一個獨立文件，閱讀後依序執行：
+模組是依主題分章的**參考手冊**，不是執行順序。**執行順序只以下方「🔁 標準執行流程」的 Phase 總表為準**——CLAUDE.md、QUICKSTART、module-F 都引用該表，不另行重述。
 
 - [`module-A-data.md`](./module-A-data.md) — 資料錨點、內部一致性、自檢機制
 - [`module-B-visual.md`](./module-B-visual.md) — 色彩語意、版面、Chart.js 範本
 - [`module-C-pedagogy.md`](./module-C-pedagogy.md) — 二維難度、F/I/A、陷阱設計
-- [`module-D-diff.md`](./module-D-diff.md) — 視覺/教學/結構三軸差異化
-- [`module-E-checklist.md`](./module-E-checklist.md) — 最終 QA、Playwright 自動驗證
-- [`module-F-agents.md`](./module-F-agents.md) — Agent 工作流整合：角色分工、稽核門檻
+- [`module-D-diff.md`](./module-D-diff.md) — 視覺/教學/結構三軸差異化、D.9 Preset 庫
+- [`module-E-checklist.md`](./module-E-checklist.md) — 最終 QA、自動驗收（E.2）
+- [`module-F-agents.md`](./module-F-agents.md) — Agent 工作流整合（選用）：角色分工、稽核門檻
 - [`QUICKSTART.md`](./QUICKSTART.md) — 5 種對話情境的標準執行範例
-- [`template.html`](./template.html) — 無數據骨架（取自餐飲連鎖版面，DATA 已清空為 `0`／`{品類A}` 佔位）；已符合 2026-10-14 規則（單一值軸、陷阱分類、`.ev`、T5 題槽），`audit-dashboards.mjs Skill/template.html` 只剩 `<title>` 佔位 WARN
+- [`template.html`](./template.html) — 無數據骨架（取自餐飲連鎖版面，DATA 已清空，未完成處以 `__TODO:<說明>__` 佔位）；audit 對 template 依 E.2 的 template 模式判讀（例如 AC-01「未配置」為 WARN 而非 FAIL）
 
 ---
 
 ## 🔁 標準執行流程
 
-當使用者觸發此 skill，依此流程操作：
+### Phase 總表（唯一流程定義）
 
-### Phase 1 — 規格鎖定（不要寫 code）
-1. 確認輸入：產業、訓練主題、差異化偏好
-2. 列出**至少 3 頁、最多 4 頁**的儀表板結構，每頁有明確的「分析意圖」
+| Phase | 輸入 | 輸出 | 驗收（全過才進下一 Phase） |
+|---|---|---|---|
+| **1 規格鎖定** | 產業、訓練主題、差異化偏好；`Skill/ARCHIVE.md`（已用產業／preset／陷阱） | 規格初稿（結構、圖表、題目、資料錨點、教學軸／結構軸差異化方向）＋選定的 D.9 preset＋套好 preset 的工作檔 `Dashboard/<新檔>.html` | audit **PAL-01／PAL-02**（配色驗證；此時只判讀這兩條）；**使用者確認規格** |
+| **2 資料生成** | 已確認的規格與資料錨點 | `dev/script/gen_data_<slug>.py` → DATA JSON → 注入工作檔；`assertConsistency()` 補上每個錨點的 `check()` | 生成器 assertions 全過；`inject_data.py` exit 0；audit **AC-01**（有效檢查 N>0 且全過） |
+| **3 HTML 建構** | 工作檔（已有 preset＋DATA） | 各頁圖表＋QA＋收尾面板（分層建構） | 每層渲染正常、console 無錯；完成時 audit exit 0（含 **PH-01** 佔位符清空、**QA-01～06**） |
+| **4 差異化落地** | 規格初稿的教學軸／結構軸方向；D.3 | 教學軸／結構軸元素落地＋差異化 changelog（D.6 範例 3） | D.5 不可妥協元素仍在（紅線 2–4） |
+| **4.5 Design QA** | 完成的工作檔 | Design QA 報告（E.9 格式） | E.9 DQ 全 ✅ |
+| **5 驗收與交付** | 工作檔 | E.5 交付物（HTML、生成器、ARCHIVE 條目、audit 結果） | `node dev/script/audit-dashboards.mjs Dashboard/<新檔>.html` exit 0；E.1 人工項；ARCHIVE 條目（E.7） |
+
+> 視覺軸（preset）在 Phase 1 就定案並驗配色——配色硬傷要在建構前換掉，不是交付前（ARCHIVE「配色驗證紀錄」的教訓）。Phase 4 只處理教學軸與結構軸。
+
+### Phase 1 — 規格鎖定（只換 token，不寫結構）
+1. 確認輸入：產業、訓練主題、差異化偏好；讀 `Skill/ARCHIVE.md` 跨份總覽
+2. 列出儀表板結構（頁數依 D.2 結構軸：預設 3–4 頁），每頁有明確的「分析意圖」
 3. 列出每頁 3-6 張圖表，標註：圖表類型、資料維度、預期教學作用
 4. 列出每頁 4-8 道問題，標註：[L?·?] 二維難度標籤
 5. 提供「資料錨點預告」：總會員、總訂單、總營收等核心數字
-6. **此時等待使用者確認**，不要直接開工
+6. 定教學軸／結構軸差異化方向（D.3 抽 2–3 個元素，見 D.4／D.5）
+7. **選 preset**：從 D.9 選一個，不可與前一份相同，優先選 ARCHIVE 中尚未使用的；複製 `Skill/template.html` 到 `Dashboard/{產業}_{主題}_訓練儀表板教材.html`，**只覆蓋 `:root`（含 `--font-head/--font-body/--font-mono`）與 Google Fonts import**——template 的 `c()`、Chart 預設色、TT 在執行期讀 CSS token，不需改 JS
+8. **驗配色**：`node dev/script/audit-dashboards.mjs Dashboard/<新檔>.html`，只判讀 PAL-01／PAL-02（其餘規則此時本來就會 FAIL）；PAL FAIL → 換色重跑。門檻與實作見 B.9-1
+9. **此時等待使用者確認**規格與 preset，不要直接開工
 
 ### Phase 2 — 資料生成（依模組 A）
-7. 用 Python 生成所有合成資料，並驗證內部一致性
-8. 輸出 `DATA.json`（single source of truth），跑完整 assertion 後再進下一步
-9. 任何 assertion 失敗都要先修資料
+固定管線：**情境 → 生成器 → assertions → JSON → 注入 → audit**
 
-### Phase 3 — HTML 建構（依模組 B）
+10. 情境：把錨點與各圖維度寫成 `dev/script/gen_data_<slug>.py`，共用 `dev/script/datagen_lib.py`（固定 seed、整數配額分配、assertion 收集——拒絕 NaN／inf）；欄位名對齊 template 的 DATA
+11. assertions：生成器在輸出前跑 A.4 同一批檢查類別（E.3）；任何一條失敗就不輸出，先修生成邏輯
+12. JSON：`python dev/script/gen_data_<slug>.py <out.json>`（另產 meta 側檔記 seed／schema／生成器版本）。JSON 是可重生的中間產物，放暫存路徑、不進 repo；生成器才是交付物
+13. 注入：`python dev/script/inject_data.py <out.json> Dashboard/<新檔>.html`——寫進 `const DATA = /*__DATA__*/{…}/*__END__*/;`，標記須恰好一對、寫入後讀回比對、同輸入重跑結果不變；改資料一律改生成器再重跑這兩步，不手改 HTML 內的 DATA
+14. `assertConsistency()`：為每個錨點補 `check(name, cond)`（A.4）
+15. audit：確認 AC-01 有效檢查 N>0 且無 ✗
+
+### Phase 3 — HTML 建構（依模組 B、C）
 
 > **🛑 Phase 3 ENTRY CHECKPOINT — 動任何 Write/Edit 工具之前，必須先輸出以下聲明**
 >
 > 用文字向使用者聲明（不需等待回覆，聲明後立即執行）：
 > ```
 > 【Phase 3 分層建構計畫】
-> Layer 1：骨架 + DATA + assertConsistency（從 template 複製後 Write）
+> Layer 1：骨架調整（頁數／頁 key／nav／switchPage 分派、各頁空殼）
 > Layer 2…N：末頁以外的每個資料頁一層——該頁所有圖表 + QA（Edit）
 > 最後一層：最後一頁 + 收尾面板（訓練題／設計選擇／定義面板）
 > 每層完成後確認渲染正常再進下一層。現在開始 Layer 1。
@@ -124,57 +129,37 @@ author: Blake
 >
 > | 層次 | 內容 | 完成標誌 |
 > |---|---|---|
-> | **Layer 1 — 骨架** | HEAD + 所選 preset 的 CSS + `<body>` 結構（header/main-wrapper/def-panel/content-area 空殼）+ 完整 DATA 物件 + `assertConsistency()` + utility functions（`mk`, `c`, `TT`, `switchPage`, `goToChart`, `toggleDef`, `toggleQA`） | `assertConsistency()` 通過，console 無錯 |
+> | **Layer 1 — 骨架** | 工作檔已含 preset、DATA、`assertConsistency()` 與 utility functions（`mk`, `c`, `TT`, `switchPage`, `goToChart`, `toggleDef`, `toggleQA`，沿用 template 不重寫）；本層只調整頁數／頁 key／nav tab／`switchPage` 分派與各頁 `<div>` 空殼 | 頁面可切換，`assertConsistency()` 通過，console 無錯 |
 > | **Layer 2…N — 每頁圖表+QA**（末頁以外每個資料頁一層） | 該頁所有 canvas 元素 + KPI HTML + 該頁的 `drawXxx()` 完整實作 + 該頁所有 QA items | 該分頁開啟後所有圖表渲染，QA 可展開 |
 > | **最後一層 — 末頁 + 收尾** | 末頁的圖表＋QA（同上）+ 訓練題面板 + 設計選擇面板 + 定義面板 `<dl>` 內容 | 末頁渲染，面板可開合，assertConsistency 再跑一次 |
 >
 > **draw 函式命名**：沿用 template 的慣例——每頁一個 `draw` + 頁 key 的 PascalCase（template 的頁 key `ops`／`cust`／`deep` 對應 `drawOps()`／`drawCust()`／`drawDeep()`）；換頁 key 時 `switchPage` 的 `pages` 陣列與分派一併改。
 >
-> **🔴 Layer 1 必填樣板（`<script>` 區塊最頂端，任何 Chart 實例化之前）：**
+> **🔴 template 已內建、不可拿掉的行為契約**（程式以 `Skill/template.html` 為準，本檔不另附可執行片段）：
 >
-> ```javascript
-> // ── Plugin registration ────────────────────────────────────────────
-> Chart.register(ChartDataLabels);
-> if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
-> Chart.defaults.plugins.datalabels.display = false; // opt-in per chart
-> ```
+> - **Plugin 註冊**（`<script>` 最頂端、任何 Chart 實例化之前）：`Chart.register(ChartDataLabels)`；annotation 用 `if (window.ChartAnnotation) Chart.register(window.ChartAnnotation)`；全域以直接屬性賦值 `Chart.defaults.plugins.datalabels.display = false` 關閉 label，各圖逐一 opt-in。
+> - **Lazy render**：每頁的 draw 只在第一次切到該頁時執行；執行前等容器尺寸有效（非 0×0）才畫；**draw 成功才標記該頁已完成**，失敗會清掉已建的 Chart 實例，下次切頁可重試。改頁 key 時只改分派，不要改回「先標記再畫」或固定延遲。
+> - **主題 token**：`c()`、Chart 預設文字／格線色、TT 背景在執行期讀 CSS 變數，換 preset 不需改 JS。
 >
-> 以及 `switchPage` 必須用 `setTimeout(60ms)` 包住所有 draw 呼叫：
->
-> ```javascript
-> // 節錄自 template 的 switchPage（完整版以 template 為準）
->   if (!initialized[name]) {
->     initialized[name] = true;
->     setTimeout(() => {
->       if (name === 'ops') drawOps();
->       if (name === 'cust') drawCust();
->       if (name === 'deep') drawDeep();
->     }, 60);
->   }
-> ```
->
-> **原因（entry 14-A/14-B/14-C in tech-notes）：**
+> **原因（tech-notes entry 14-A／14-C 與 2026-11-01 實測）：**
 > - ChartDataLabels CDN UMD 不自動 register；漏掉 → 所有 datalabels 靜默失效
-> - `Chart.defaults.set('plugins.datalabels',...)` 在 v4 會拋錯；改用直接屬性賦值
-> - switchPage 同步呼叫時 canvas size = 0×0，圖表空白；setTimeout 60ms 讓 DOM 完成顯示
+> - 全域關閉 datalabels 統一用直接屬性賦值（與 template 一致）。2026-11-01 以 Chart.js 4.4.0＋datalabels 2.2.0 headless Chrome 實測：`Chart.defaults.set('plugins.datalabels', { display: false })` **不拋錯**、無 console 錯誤，結果與直接賦值逐像素相同，雙軸 bar+line 與填色折線都正常渲染——舊稿「v4 會拋錯」不成立，統一寫法只是為了全專案一致（見 E.1 #27）
+> - 切頁當下容器可能還是 0×0，同步 draw 會畫成空白——所以要等尺寸有效、且失敗可重試
 > - annotation plugin global 是 `window.ChartAnnotation`，不是 `window['chartjs-plugin-annotation']`
 >
 > **執行規則：**
-> - 每層用 **Write tool**（Layer 1）或 **Edit tool**（Layer 2 以後）寫入檔案，不要在 agent prompt 裡一次輸出整份 HTML
+> - 每層用 **Edit tool** 寫入工作檔（Phase 1 已從 template 複製），不要在 agent prompt 裡一次輸出整份 HTML
 > - **用 Edit 取代「開頭 tag＋佔位」時，old_string 必須連同該區塊對應的結尾 tag 一起取代**（或 new_string 不自帶結尾 tag）——否則每頁多一個 `</div>`，後面的分頁跑出內容區、圖表照畫、audit 照綠（tech-notes #26）
 > - 若有 agent 協助，**每個 agent 只負責一層**，由主 Claude 把關資料數字正確性後再觸發下一層
-> - Layer 1 完成後立即用瀏覽器開啟確認 `assertConsistency` 通過，再進 Layer 2
-> - 任何層次寫入後發現資料錯誤，**先修 DATA 物件，再重跑 assertConsistency，再繼續**
+> - 任何層次寫入後發現資料錯誤，**先改生成器、重跑 Phase 2 的 JSON＋注入，再重跑 assertConsistency，再繼續**
 
-10. 從 `Skill/template.html` 骨架開始，按 Layer 1 → 各頁 → 收尾層的順序建構
-11. Layer 1：注入 DATA 物件 + utility functions，確認 assertConsistency 通過
-12. Layer 2 以後：依模組 B 規範繪製所有圖表（用 template 的 mk() factory），依模組 C 規範撰寫問題與答案
-13. 每層 Write/Edit 後在瀏覽器確認渲染正常再繼續
+16. 按 Layer 1 → 各頁 → 收尾層的順序建構；圖表用 template 的 `mk()` factory（模組 B），問題與答案依模組 C
+17. 每層 Edit 後在瀏覽器確認渲染正常再繼續
+18. 全部層完成後跑 audit：exit 0（`__TODO:…__` 佔位符一個都不能留，PH-01）
 
-### Phase 4 — 差異化注入（依模組 D）
-14. 從 **D.9 Preset 庫**選一個視覺套餐（P1–P7），覆蓋 `:root` tokens 與字型 import，不可與前一份相同
-15. 從差異化套件（D.3）再抽 2–3 個教學軸 / 結構軸元素
-16. 套用差異化標記，避免跟既有範本長太像
+### Phase 4 — 差異化落地（依模組 D，只處理教學軸／結構軸）
+19. 落地 Phase 1 定下的教學軸／結構軸元素（D.3），視覺軸已在 Phase 1 定案、這裡不再換 preset
+20. 核對 D.5 不可妥協元素仍在；輸出差異化 changelog（D.6 範例 3）
 
 ### Phase 4.5 — Design QA（視覺品質驗收）
 
@@ -186,14 +171,14 @@ author: Blake
 > 3. 輸出 Design QA 報告（格式見 E.9）
 > 4. 有任何 ❌ → 修復後重跑清單，直到全部 ✅
 
-17. 切換每一個分頁（P1 → P2 → P3 → P4），目視確認所有圖表渲染正確（非空白）
-18. 跑完 E.9 Design QA 22 項清單
-19. 輸出 Design QA 結果摘要表格，並明確聲明「通過 N/22，可（或不可）進 Phase 5」
+21. 切換每一個分頁，目視確認所有圖表渲染正確（非空白）
+22. 跑完 E.9 Design QA 22 項清單
+23. 輸出 Design QA 結果摘要表格，並明確聲明「通過 N/22，可（或不可）進 Phase 5」
 
-### Phase 5 — 驗收（依模組 E）
-20. 跑 `node dev/script/audit-dashboards.mjs Dashboard/<新檔>.html`，**exit 0 才繼續**（E.2）
-21. 跑 E.1 完整 hard-check 清單（47 項）
-22. 交付前在 `Skill/ARCHIVE.md` 新增本份條目（差異化與陷阱主題，見 E.5／E.7）
+### Phase 5 — 驗收與交付（依模組 E）
+24. 跑 `node dev/script/audit-dashboards.mjs Dashboard/<新檔>.html`，**exit 0 才繼續**（E.2）
+25. 跑 E.1 hard-check 清單中 audit 未涵蓋的人工項（47 項）
+26. 交付前在 `Skill/ARCHIVE.md` 新增本份條目（差異化與陷阱主題，見 E.5／E.7）
 
 ---
 
