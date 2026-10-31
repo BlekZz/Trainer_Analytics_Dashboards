@@ -114,7 +114,25 @@
 - **mutation 證據**（M1-A 實作者實測，新舊 audit 對照）：4 個 mutant（餐飲／SaaS／健身房空 assertion、SaaS 刪 page-mrr/Q4 trap）新 audit `EXIT=1`、HEAD 舊 audit `EXIT=0`；template 複製到 Skill/ 外 → AC-01 FAIL。
 - **刻意改變的既有呈現**：template cRevCat tooltip 加 `callbacks.label` 顯示佔比（module-B 堆疊 bar 必備）。
 
-### 移交給後續 milestone 的發現
+### M2（2026-11-01 完成）
+
+- **主線獨立重跑**：`node dev/script/audit-dashboards.mjs Dashboard/*.html Skill/template.html` → `EXIT=0`、`9/9 份無 FAIL`。
+- **2.7 偏離規格（主線接受）**：判定量度改為 **OKLab 歐氏距離 ×100**＋Machado 2009 色盲模擬（protan／deutan），門檻沿用 B.9-1 的 15／6／8。理由：此量度把 ARCHIVE 記錄的 9 個 ΔE 值逐一重現到小數一位（差距 0.0），證明 B.9-1 的門檻本來就是 OKLab 單位；CIEDE2000 下 #8 修正前色對 ΔE00=28.9 大於現行健身房 22.9，任何門檻都無法同時滿足「修正前 FAIL、修正後不 FAIL」。CIEDE2000 仍自行實作（Sharma 2005 參考值吻合到小數 4 位），只在 `AUDIT_PAL_VERBOSE=1` 時列為參考。
+- **PAL 比全部 10 個色對**（舊驗證器只比相鄰色）→ 7 份冒出非相鄰色對命中，依總原則 2 列入 `EXEMPTIONS` 共 12 筆（以色對為單位）。**待人工確認**：網紅個人品牌 blue `#7C3AED` ↔ purple `#9333EA` 正常 ΔE 僅 4.4，若同圖出現屬實際缺陷。
+- **mutation**：ARCHIVE 4 組修正前色＋插入 `__TODO:x__` → 新 audit 全 `EXIT=1`，HEAD 舊 audit 全 `EXIT=0`。
+- **2.4**：`gen_data_medaesthetic.py` 改用 lib 前後輸出 JSON 全文 sha256 皆 `9d81d9b2…faf3a`；inject 對第 8 份副本注入兩次與原檔 sha256 相同（`2fe09578…74fc`）。
+- **2.9 實測（Chart.js 4.4.0＋datalabels 2.2.0，2026-11-01）**：`Chart.defaults.set('plugins.datalabels',…)` 不拋錯、不讓雙軸／填色折線消失；與直接賦值逐像素相同。
+- **template baseline 外觀刻意變化**：tooltip 底色改讀 `--bg-finding`、grid 改讀 `--border`（0.08）、tooltip 內文改讀 `--text`；cTierAOV 軸改 `min:0`；散點中線標籤「中位來客」更正為「月均來客」（原算法即平均）；HHI 公式說明更正。
+
+### 移交給後續 milestone 的發現（M2 新增）
+
+- → M3 3.6：B.9-1 文字改為 OKLab×100、比全部色對、「明度範圍／對比 <3:1」未本地化須人工；Sprint 2.7 的「CIEDE2000」以本段為準
+- → M3 3.6：template P2 baseline blue `#3B82F6` ↔ purple `#7C4DFF` 正常 12.9／deutan 4.2，D.9 P2 須加註或回填修正色（第 9 份若沿用 P2 會 FAIL）
+- → M3 3.6：module-F `:41`、`:69` 仍寫 Phase 4 套 preset，GATE 1 無 PAL；tech-notes 14-B 與 2.9 實測相反、14-C 的 `setTimeout(60)` 須對齊 2.8
+- → M3 3.1：audit 既有 bug——頁面無 Chart.js 時 `res.info.title` 為 undefined 拋 `Cannot read properties of undefined (reading 'replace')`
+- → 不修：template CSS 的按鈕／badge／header 仍寫死 P2 rgba（不在 2.1 範圍；要做需 `color-mix()`）
+
+### 移交給後續 milestone 的發現（M1）
 
 - → M2 2.2：template donut `cTierDonut` datalabels 未顯式 `display:true`（全域預設 false → 百分比靜默不顯示），formatter 寫死 `58320`
 - → M2 2.2：template 範例 QA 有 21 題缺 `.ev`、6 題 L3 缺 `.nav-hint`，新 dashboard 會繼承
