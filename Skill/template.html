@@ -1145,44 +1145,48 @@ const DATA = {
    每個 check 的 expected 值必須與 DATA.anchors 一致
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function assertConsistency() {
-  const errs = [];
+  const errors = [];
+  let n = 0;
+  // check(name, cond, detail)：每呼叫一次算一條有效檢查；cond 為 false 時記錄錯誤。
+  // 成功訊息會印出條數 N，audit（AC-01）讀這個 N：成品 N=0 → FAIL；template N=0 → WARN「未配置」。
+  const check = (name, cond, detail = '') => { n++; if (!cond) errors.push(detail ? `${name}：${detail}` : name); };
   const sum = arr => arr.reduce((a,b)=>a+b,0);
 
-  // FILL IN: 加入跨欄位一致性驗算，範例如下：
+  // FILL IN: 加入跨欄位一致性驗算（一律用 check()，不要直接 errors.push），範例如下：
 
   // 1. tier counts → total_customers
   // const tierSum = sum(DATA.customer_tier.counts);
-  // if (tierSum !== DATA.anchors.total_customers) errs.push(`tier sum=${tierSum}, expected ${DATA.anchors.total_customers}`);
+  // check('tier counts → total_customers', tierSum === DATA.anchors.total_customers, `sum=${tierSum}, expected ${DATA.anchors.total_customers}`);
 
   // 2. frequency counts → total_customers
   // const freqSum = sum(DATA.frequency.counts);
-  // if (freqSum !== DATA.anchors.total_customers) errs.push(`freq sum=${freqSum}, expected ${DATA.anchors.total_customers}`);
+  // check('frequency counts → total_customers', freqSum === DATA.anchors.total_customers, `sum=${freqSum}, expected ${DATA.anchors.total_customers}`);
 
   // 3. monthly visits → total_visits
   // const visitSum = sum(DATA.monthly_visits);
-  // if (visitSum !== DATA.anchors.total_visits) errs.push(`monthly_visits sum=${visitSum}, expected ${DATA.anchors.total_visits}`);
+  // check('monthly_visits → total_visits', visitSum === DATA.anchors.total_visits, `sum=${visitSum}, expected ${DATA.anchors.total_visits}`);
 
   // 4. store revenue sum → total_revenue_wan
   // const storeSum = sum(DATA.store_revenue);
-  // if (storeSum !== DATA.anchors.total_revenue_wan) errs.push(`store_revenue sum=${storeSum}, expected ${DATA.anchors.total_revenue_wan}`);
+  // check('store_revenue → total_revenue_wan', storeSum === DATA.anchors.total_revenue_wan, `sum=${storeSum}, expected ${DATA.anchors.total_revenue_wan}`);
 
   // 5. dine+takeout = 100 each month
   // for (let i = 0; i < 12; i++) {
   //   const tot = DATA.dine_takeout.dine_in_pct[i] + DATA.dine_takeout.takeout_pct[i];
-  //   if (tot !== 100) errs.push(`dine+takeout month ${i+1}=${tot}, expected 100`);
+  //   check(`dine+takeout month ${i+1} = 100`, tot === 100, `got ${tot}`);
   // }
 
   // 6. scatter triangle: x × y × 12 / 10000 ≈ store_revenue[i] (±1%)
   // DATA.scatter_data.forEach((s, i) => {
   //   const derived = s.x * s.y * 12 / 10000;
   //   const pct = Math.abs(derived - DATA.store_revenue[i]) / DATA.store_revenue[i];
-  //   if (pct > 0.01) errs.push(`scatter[${i}] ${s.label}: derived=${derived.toFixed(1)}, actual=${DATA.store_revenue[i]}`);
+  //   check(`scatter[${i}] ${s.label} 封閉三角 ±1%`, pct <= 0.01, `derived=${derived.toFixed(1)}, actual=${DATA.store_revenue[i]}`);
   // });
 
-  if (errs.length === 0) {
-    console.log('✓ All data consistency checks passed');
+  if (errors.length === 0) {
+    console.log(`✓ All data consistency checks passed (${n} checks)`);
   } else {
-    errs.forEach(e => console.error('✗ Consistency error:', e));
+    errors.forEach(e => console.error('✗ Consistency error:', e));
   }
 }
 assertConsistency();
@@ -1222,12 +1226,23 @@ function c(key, alpha=1) {
   return map[key] || `rgba(59,130,246,${alpha})`;
 }
 
+/* mk() 合併契約（module-B 引用此處，不另抄一份）：
+   - legend：預設 { display:false }，與傳入的 legend 物件合併（傳入者覆蓋同名鍵）
+   - tooltip：以 TT 為底與傳入的 tooltip 合併（只寫 { mode:'nearest' } 或 callbacks 也保留 TT 樣式）
+   - datalabels：有傳入 → 先注入 display:true 再套傳入設定（傳入 display:false／函式仍可覆蓋）；
+                 未傳入 → display:false。原因：全域 Chart.defaults…datalabels.display=false，
+                 只寫 formatter 不寫 display 會靜默不顯示
+   - 其餘 plugin（annotation 等）原樣帶入 */
 function mk(id, type, labels, datasets, opts={}) {
   const ctx = document.getElementById(id)?.getContext('2d');
   if (!ctx) return;
-  const def = { legend: { display: false }, tooltip: TT, datalabels: { display: false } };
-  const mergedPlugins = opts.plugins ? { ...def, ...opts.plugins } : def;
-  const { plugins: _p, ...restOpts } = opts;
+  const { plugins: p = {}, ...restOpts } = opts;
+  const mergedPlugins = {
+    ...p,
+    legend: { display: false, ...(p.legend || {}) },
+    tooltip: { ...TT, ...(p.tooltip || {}) },
+    datalabels: p.datalabels ? { display: true, ...p.datalabels } : { display: false }
+  };
   return new Chart(ctx, {
     type,
     data: { labels, datasets },
@@ -1240,6 +1255,29 @@ function mk(id, type, labels, datasets, opts={}) {
     }
   });
 }
+
+/* 混合堆疊圖（堆疊 bar ＋ 總量線）的加總／佔比 helper：
+   只加總「與目前系列同 stack、非 line、目前可見」的組成系列——
+   排除總量線、比較線、被 legend 隱藏的系列；總量為 0 時佔比回傳 null（不顯示 %，避免 NaN／Infinity）。 */
+const isStackPart = (chart, ds, i, stack) =>
+  stack != null && ds.stack === stack && (ds.type || chart.config.type) !== 'line' && chart.isDatasetVisible(i);
+function stackTotal(chart, dataIndex, stack) {
+  return chart.data.datasets.reduce((s, ds, i) =>
+    isStackPart(chart, ds, i, stack) ? s + (Number(ds.data[dataIndex]) || 0) : s, 0);
+}
+function stackPct(ctx) {   // tooltip／datalabels 共用：本段佔同 stack 總量的 %（非組成系列或零總量 → null）
+  const { chart, dataset, datasetIndex, dataIndex, raw } = ctx;
+  if (!isStackPart(chart, dataset, datasetIndex, dataset.stack)) return null;
+  const tot = stackTotal(chart, dataIndex, dataset.stack);
+  return tot > 0 ? (Number(raw) || 0) / tot * 100 : null;
+}
+function isStackTop(ctx) { // datalabels.display 用：只在同 stack 最上層的可見組成系列顯示加總
+  const { chart, datasetIndex, dataset } = ctx;
+  for (let i = chart.data.datasets.length - 1; i >= 0; i--)
+    if (isStackPart(chart, chart.data.datasets[i], i, dataset.stack)) return i === datasetIndex;
+  return false;
+}
+// 頂端加總用法：datalabels: { display: isStackTop, formatter: (v, ctx) => stackTotal(ctx.chart, ctx.dataIndex, ctx.dataset.stack) + '万' }
 
 // ══════════════════════════════════════════════════
 // LAZY INIT
@@ -1337,7 +1375,11 @@ function drawOps() {
       animation: { duration: 480 },
       plugins: {
         legend: { display: true, labels: { color: '#8b949e', boxWidth: 10, font: { size: 11 } } },
-        tooltip: { ...TT, mode: 'index' },
+        // 各段佔比的分母＝同 stack 的可見組成系列（stackPct 排除「月度合計」線與被隱藏的品類）
+        tooltip: { ...TT, mode: 'index', callbacks: { label: ctx => {
+          const pct = stackPct(ctx);
+          return ` ${ctx.dataset.label}: ${ctx.raw}万` + (pct == null ? '' : `（${pct.toFixed(1)}%）`);
+        } } },
         datalabels: { display: false }
       },
       scales: {

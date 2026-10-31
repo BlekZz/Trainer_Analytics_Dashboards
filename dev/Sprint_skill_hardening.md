@@ -103,7 +103,25 @@
 
 ## 偏離紀錄 / 豁免表
 
-（執行中填寫：哪份成品、哪條規則、修了什麼或為何豁免）
+### M1（2026-11-01 完成）
+
+- **狀態判讀**：新增 QA-04／05／06 為 WARN，8 份因此顯示 `[WARN]` 而非 `[PASS]`。本 Sprint 的「8 份全 PASS」一律解讀為「**exit 0、無 FAIL**」。主線獨立重跑：`EXIT=0`、`9/9 份無 FAIL`、template `assert 0 條・回報`（AC-01 WARN）。
+- **機械修正 0 處**：FAIL 級命中修起來都要新增教學文字，全部列入 `audit-dashboards.mjs` 的 `EXEMPTIONS`（以題目 key 為範圍，同檔新增命中仍會報）：
+  - SaaS訂閱制 QA-03 × 7：page-mrr/Q6、page-churn/Q6、page-ltv/Q4、page-ltv/Q6、page-funnel/Q5、page-funnel/訓練題2、訓練題3——原稿無陷阱提示
+  - 零售便利商店 QA-03 × 4：page-p4/#17～#20（L3 決策應用訓練；key 為全域序號，前面插題會位移）——同上
+  - 電商DTC QA-02＋QA-03：page-cross/T4——開放式盤點題，答案是清單不是資料推論
+- **規則定義**：電商 page-cross/T1 以 `.ans-head.obs/.inf/.act` 呈現 F/I/A，視為 QA-02 合法變體（依 1.10「改呈現、語意必留」）。
+- **mutation 證據**（M1-A 實作者實測，新舊 audit 對照）：4 個 mutant（餐飲／SaaS／健身房空 assertion、SaaS 刪 page-mrr/Q4 trap）新 audit `EXIT=1`、HEAD 舊 audit `EXIT=0`；template 複製到 Skill/ 外 → AC-01 FAIL。
+- **刻意改變的既有呈現**：template cRevCat tooltip 加 `callbacks.label` 顯示佔比（module-B 堆疊 bar 必備）。
+
+### 移交給後續 milestone 的發現
+
+- → M2 2.2：template donut `cTierDonut` datalabels 未顯式 `display:true`（全域預設 false → 百分比靜默不顯示），formatter 寫死 `58320`
+- → M2 2.2：template 範例 QA 有 21 題缺 `.ev`、6 題 L3 缺 `.nav-hint`，新 dashboard 會繼承
+- → M2 2.5：`Skill/SKILL.md:101`「輸出 `DATA.json`」與新 E.5 不一致
+- → M2 新增 2.9：`SKILL.md` 稱 `Chart.defaults.set('plugins.datalabels',…)` 在 v4 會拋錯，E.1 #27 稱不報錯——實測後統一
+- → M3 3.5：module-E 的 E.2 audit 規則表對齊 AC-01、QA-01～06 與豁免機制
+- → M3 新增 3.8：QA 規則只掃 `.qa-item`，品牌 `.training-item`、健身房 `.train-item` 不在範圍；零售／電商題目列無 F/I/A 類型標記（標題型 0）→ 一般 A 題的 QA-03 抓不到
 
 ## 刻意不做
 
