@@ -1089,7 +1089,9 @@ async function main() {
     proc.kill();
     server.close();
     await new Promise(r => setTimeout(r, 300));
-    try { rmSync(profile, { recursive: true, force: true }); } catch { /* browser 可能仍持有檔案鎖 */ }
+    // Windows：瀏覽器子行程結束後仍可能短暫持有 profile 檔案鎖 → 重試；最後仍失敗就印出路徑，不靜默殘留
+    try { rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 300 }); }
+    catch (e) { console.error(`⚠ 瀏覽器 profile 暫存目錄未能刪除：${profile}（${e.code || e.message}）`); }
   }
   if (opt.summary) printSummary(all);
   if (opt.json) {
