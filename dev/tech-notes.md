@@ -228,7 +228,7 @@ const BASE_PLG = { ... };
 
 **解法：** 直接刪除這行。在每個不需要 label 的圖表中，逐一指定 `datalabels: { display: false }` 即可。每個需要 label 的圖表則顯式設定 `datalabels: { display: true, ... }`。
 
-> **2026-11-01 註：** 在 Chart.js 4.4.0＋datalabels 2.2.0（headless Chrome）實測**未重現**——`Chart.defaults.set('plugins.datalabels', { display: false })` 不拋錯、不讓雙軸 bar+line 或填色折線消失，與直接賦值逐像素相同，見 `dev/Sprint_skill_hardening.md` 2.9。上文保留為歷史紀錄；全專案仍統一用直接賦值 `Chart.defaults.plugins.datalabels.display = false`（register 之後），理由只是寫法一致。
+> **2026-11-01 註：** 在 Chart.js 4.4.0＋datalabels 2.2.0（headless Chrome）實測**未重現**——`Chart.defaults.set('plugins.datalabels', { display: false })` 不拋錯、不讓雙軸 bar+line 或填色折線消失，與直接賦值逐像素相同，見 `dev/Sprint_end_skill_hardening.md` 2.9。上文保留為歷史紀錄；全專案仍統一用直接賦值 `Chart.defaults.plugins.datalabels.display = false`（register 之後），理由只是寫法一致。
 
 ---
 
@@ -250,7 +250,7 @@ if (!initialized[name]) {
 }
 ```
 
-> **2026-11-01 註：** 固定 `setTimeout(60)` 與「先標記 `initialized[name] = true` 再畫」已由 `Skill/template.html` 的 lazy render 契約取代（Sprint_skill_hardening 2.8）：等容器尺寸有效（非 0×0）才畫、**draw 成功才標記**該頁完成、失敗時清掉已建的 Chart 實例讓下次切頁可重試。新 dashboard 沿用 template，不要改回上面的寫法；上文保留為既有 8 份的歷史脈絡。
+> **2026-11-01 註：** 固定 `setTimeout(60)` 與「先標記 `initialized[name] = true` 再畫」已由 `Skill/template.html` 的 lazy render 契約取代（Sprint_end_skill_hardening 2.8）：等容器尺寸有效（非 0×0）才畫、**draw 成功才標記**該頁完成、失敗時清掉已建的 Chart 實例讓下次切頁可重試。新 dashboard 沿用 template，不要改回上面的寫法；上文保留為既有 8 份的歷史脈絡。
 
 ---
 
@@ -652,4 +652,4 @@ plugins: {
 - 換量度前，先拿既有紀錄的「修正前／修正後」數值重算一次，確認新量度仍能把兩組分開。
 - 網紅 blue/purple 目前列豁免、**待人工確認**是否同圖出現；若同圖出現屬實際缺陷。
 
-來源：`dev/Sprint_skill_hardening.md` M2 偏離紀錄（2.7）；`Skill/ARCHIVE.md` 配色驗證紀錄。
+來源：`dev/Sprint_end_skill_hardening.md` M2 偏離紀錄（2.7）；`Skill/ARCHIVE.md` 配色驗證紀錄。
