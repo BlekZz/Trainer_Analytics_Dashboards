@@ -144,42 +144,7 @@
 - 側板有獨立捲動（`overflow-y: auto`，高度繼承 outer 的 `height: calc(100vh - var(--header-h))`）
 - 關閉時：清空搜尋欄 + 重置 filterDef + 呼叫 `Chart.instances` 全部 resize（修復圖表寬度）
 
-> **🔴 sticky 定位陷阱（2026-06 確認）**
->
-> `position: sticky` **必須加在 `#def-panel-outer`（flex child）上，不能加在 `#def-panel-inner` 上。**
->
-> 原因：`#def-panel-outer` 有 `overflow: hidden`（用於 width 過渡動畫）；任何具有 `overflow: hidden/auto/scroll` 的祖先都會讓子元素的 `position: sticky` 失效——子元素會被降級為 static 定位，導致面板出現在錯誤位置（通常是頁面頂部多出一段空白）。
->
-> **正確 CSS 規格：**
->
-> ```css
-> /* ✅ 正確：sticky 在 outer (flex child) 上 */
-> #def-panel-outer {
->   width: 0;
->   overflow: hidden;             /* 用於 width 過渡，不影響 outer 自身的 sticky */
->   transition: width .3s ease;
->   flex-shrink: 0;
->   position: sticky;             /* ← sticky 在 outer */
->   top: var(--header-h);
->   height: calc(100vh - var(--header-h));
->   align-self: flex-start;       /* ← 必要：防止 flex stretch 撐滿容器高度破壞 sticky */
-> }
-> #def-panel-inner {
->   width: 320px;
->   height: 100%;                 /* ← 繼承 outer 高度 */
->   padding: 18px 16px;
->   overflow-y: auto;             /* ← 面板內容自行捲動 */
->   background: var(--bg-card);
->   border-right: 1px solid var(--border);
-> }
->
-> /* ❌ 錯誤：sticky 在 overflow:hidden 的子元素上 → sticky 靜默失效 */
-> #def-panel-inner {
->   position: sticky;             /* 被 outer 的 overflow:hidden 阻斷，完全無效 */
->   top: var(--header-h);
->   height: calc(100vh - var(--header-h));
-> }
-> ```
+> **🔴 sticky 必須加在 `#def-panel-outer`（flex child，並設 `align-self: flex-start`），不能加在 `#def-panel-inner`**——outer 的 `overflow: hidden` 會讓子元素的 sticky 靜默失效。正確 CSS（outer 加 `position: sticky; top: var(--header-h); height: calc(100vh - var(--header-h))`，inner 改 `height: 100%; overflow-y: auto`）與錯誤寫法對照見 `dev/tech-notes.md` #16。⚠ 2026-11-01 註：`Skill/template.html` 目前仍是 sticky 在 inner 的錯誤寫法，沿用 template 時須依 #16 修正。
 
 ```html
 <!-- wrapper 結構 -->
@@ -245,9 +210,9 @@ Chart.register(ChartDataLabels);
 if (window.ChartAnnotation) Chart.register(window.ChartAnnotation);
 ```
 
-> **🔴 annotation plugin 全域名稱陷阱（2026-06 確認）**：CDN UMD bundle 的全域變數是 `window.ChartAnnotation`，**不是** `window['chartjs-plugin-annotation']`。用錯名稱時 `if(...)` 為 false，plugin 靜默未 register，所有 annotation（基準線、標籤、點）全部消失且不報錯。
+> **🔴 annotation 全域名稱是 `window.ChartAnnotation`，不是 `window['chartjs-plugin-annotation']`**——用錯時所有 annotation 靜默消失（`dev/tech-notes.md` #15）。
 
-**缺少第一行 = 所有 `datalabels: { display: true }` 為靜默死碼。** Chart.js 4 不再自動啟動 CDN 載入的 plugin，必須手動 register。
+**缺少第一行 = 所有 `datalabels: { display: true }` 為靜默死碼**（CDN UMD 不自動 register，`dev/tech-notes.md` #14-A）。
 
 ### mk() Chart Factory
 
@@ -492,7 +457,13 @@ KPI 值禁止截斷（🔴 紅線）：
 
 這節補的是「圖畫對了，但讀者會讀錯」的那一類問題。逐項列入 E.9（DQ-19 起）。
 
-1. **配色要跑驗證，不准目測。** 驗證已內建在 audit：`node dev/script/audit-dashboards.mjs <file>` 在執行期讀頁面實際使用的 `c()` 類別色（blue／teal／orange／purple／red，gray 是中性色不算）與 body 背景色，自行計算 CIEDE2000 色差並做色盲模擬——**PAL-01**（正常視力色差）與 **PAL-02**（色盲模擬色差），不需要任何外部 skill 或腳本。**門檻與實作見 `dev/script/audit-dashboards.mjs` 的 PAL 規則**（本檔不另寫數字，以腳本為準）。判讀：PAL FAIL 是硬傷，必須換色；PAL WARN 的色對，對應系列必須有直接數字標籤或紋理才合法；對比不足時，該色的系列必須有可見數字標籤。明度超出範圍屬美感問題，記錄即可。時機：SKILL Phase 1 選定 preset 後立即跑（建構前），交付前 audit 再跑一次。
+1. **配色要跑驗證，不准目測。** 驗證已內建在 audit：`node dev/script/audit-dashboards.mjs <file>` 在執行期讀頁面實際使用的 `c()` 類別色（blue／teal／orange／purple／red，gray 是中性色不算）與 body 背景色，不需要任何外部 skill 或腳本。實作見 `dev/script/audit-dashboards.mjs` 的 **PAL-01**／**PAL-02**：
+   - **量度**：OKLab 歐氏距離 ×100（以下稱 ΔE；與 ARCHIVE 配色驗證紀錄的數值同單位）＋Machado 2009 色盲模擬（protan／deutan）。不是 CIEDE2000——換用 CIEDE2000 會讓 ARCHIVE 的修正前後無法用同一門檻分開（dev/tech-notes.md #27）。
+   - **比全部色對**（5 色 = 10 對），不只相鄰色——非相鄰的同圖系列一樣會撞色。
+   - **門檻**：PAL-01 正常視力 ΔE <15 → FAIL；PAL-02 色盲模擬 ΔE <6 → FAIL、<8 → WARN。
+   - **判讀**：FAIL 是硬傷，必須換色；WARN 的色對，對應系列必須有直接數字標籤或紋理才合法。
+   - **audit 未檢查、須人工**：明度範圍、對色背景對比 <3:1——這兩項沒有本地化進 audit。對比不足時該色的系列必須有可見數字標籤；明度超出範圍屬美感問題，記錄即可。
+   - **時機**：SKILL Phase 1 選定 preset 後立即跑（建構前），交付前 audit 再跑一次。
 2. **一張圖一條值軸。** 兩個尺度差很多的量：拆兩張圖、small multiples，或以共同基期指數化（t0 = 100）。**雙 Y-axis 只允許當刻意教學陷阱**：該圖對應的 QA 必須有 `data-trap-stage="visualize" data-trap="雙軸假相關"` 的 trap-block，並在設計選擇揭露裡說明。
 3. **顏色跟著實體走，不跟名次走。** 同一個品類／通道在所有圖用同一色；篩選或排序後不可重新上色。
 4. **類別色不超過 6 個；donut／pie 不超過 6 塊，且不拿來比較接近的數值**（改 bar）。第 7 類以後併入「其他」。

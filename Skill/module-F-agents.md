@@ -13,8 +13,9 @@
 Phase 1 ─────────────────────────────────────────────────────
   [Analytics Reporter] → KPI 架構、資料維度、圖表選型
   [Corporate Training Designer] → F/I/A 問題矩陣、難度分佈、陷阱設計
+  [redesign-existing-projects] → 選 D.9 Visual Preset（P1–P7），只覆蓋工作檔 :root tokens + Google Fonts import
                     ↓
-             ▼ GATE 1：USER 確認規格
+             ▼ GATE 1：audit PAL-01／PAL-02 通過 ＋ USER 確認規格與 preset
                （結構 3–4 頁、圖表清單、問題難度分佈、資料錨點預告）
 
 Phase 2 ─────────────────────────────────────────────────────
@@ -37,11 +38,10 @@ Phase 3 ────────────────────────
                失敗 → [Minimal Change Engineer] 精確點修，不重跑整層
 
 Phase 4 ─────────────────────────────────────────────────────
-  [redesign-existing-projects]
-           → 套用 Visual Preset（P1–P7）
-           → 覆蓋 :root tokens + Google Fonts import
+  （視覺軸已在 Phase 1 定案，這裡不再換 preset）
+  主 Claude → 教學軸／結構軸差異化落地（D.3）＋差異化 changelog
                     ↓
-             ▼ GATE 4：色票 / 字型與前一份儀表板確認不同
+             ▼ GATE 4：D.5 不可妥協元素仍在；色票 / 字型與前一份儀表板不同（複核 Phase 1 的選擇）
 
 Phase 5 ─────────────────────────────────────────────────────
   [Evidence Collector] → 截圖驗收，跑 audit 腳本（E.2）＋ module-E E.1 其餘分組
@@ -66,7 +66,7 @@ Phase 5 ────────────────────────
 | Rapid Prototyper | `engineering-rapid-prototyper.md` | 骨架工程師：Layer 1，不寫 draw logic | Phase 3 Layer 1 | 否 |
 | full-output-enforcement | `output-skill.md` | 輸出守門員：防 Layer 2–4 截斷 | Phase 3 Layer 2–4 | 否 |
 | Frontend Developer | `engineering-frontend-developer.md` | 圖表工程師：Chart.js 實作、canvas 渲染 | Phase 3 Layer 2–4 | 否 |
-| redesign-existing-projects | `redesign-skill.md` | 視覺設計師：Preset 套用、跨儀表板差異化 | Phase 4 | 否 |
+| redesign-existing-projects | `redesign-skill.md` | 視覺設計師：Preset 套用、跨儀表板差異化 | Phase 1（選 preset＋PAL 驗證） | 否 |
 | Evidence Collector | `testing-evidence-collector.md` | QA 驗收員：截圖 + audit＋E.1 hard-check | Phase 5 | 否 |
 | Minimal Change Engineer | `engineering-minimal-change-engineer.md` | 點修工：gate 失敗時針對性修復 | Gate 3/5 失敗時 | ✓ |
 | Technical Writer | `engineering-technical-writer.md` | 知識整合：tech-notes.md 更新 | 交付後 | ✓ |
@@ -77,12 +77,14 @@ Phase 5 ────────────────────────
 
 ### GATE 1 — 規格確認（Phase 1 出口）
 
-使用者必須確認以下四項，缺一不進 Phase 2：
+先過配色驗證，再由使用者確認以下各項，缺一不進 Phase 2：
 
+0. **配色驗證**：套好 preset 的工作檔跑 `node dev/script/audit-dashboards.mjs Dashboard/<新檔>.html`，**PAL-01／PAL-02 無 FAIL**（此時只判讀這兩條，見 SKILL Phase 1 步驟 8、B.9-1）
 1. **頁數結構**：依 D.2 頁數規則（預設 3–4 頁），每頁有明確分析意圖
 2. **圖表清單**：每頁 3–6 張，標明圖表類型與教學作用
 3. **問題難度分佈**：L1/L2/L3 × F/I/A 二維矩陣有覆蓋
 4. **資料錨點預告**：總會員 / 總訂單 / 總營收等核心數字已列出
+5. **選定的 D.9 preset**：與上一份不同（GATE 4 規則）
 
 ### GATE 2 — 資料一致性（Phase 2 出口）
 

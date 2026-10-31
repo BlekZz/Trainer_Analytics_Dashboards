@@ -228,6 +228,8 @@ const BASE_PLG = { ... };
 
 **解法：** 直接刪除這行。在每個不需要 label 的圖表中，逐一指定 `datalabels: { display: false }` 即可。每個需要 label 的圖表則顯式設定 `datalabels: { display: true, ... }`。
 
+> **2026-11-01 註：** 在 Chart.js 4.4.0＋datalabels 2.2.0（headless Chrome）實測**未重現**——`Chart.defaults.set('plugins.datalabels', { display: false })` 不拋錯、不讓雙軸 bar+line 或填色折線消失，與直接賦值逐像素相同，見 `dev/Sprint_skill_hardening.md` 2.9。上文保留為歷史紀錄；全專案仍統一用直接賦值 `Chart.defaults.plugins.datalabels.display = false`（register 之後），理由只是寫法一致。
+
 ---
 
 ### 14-C：`switchPage` 必須用 `setTimeout(60ms)` 包住 draw 呼叫
@@ -247,6 +249,8 @@ if (!initialized[name]) {
   }, 60);
 }
 ```
+
+> **2026-11-01 註：** 固定 `setTimeout(60)` 與「先標記 `initialized[name] = true` 再畫」已由 `Skill/template.html` 的 lazy render 契約取代（Sprint_skill_hardening 2.8）：等容器尺寸有效（非 0×0）才畫、**draw 成功才標記**該頁完成、失敗時清掉已建的 Chart 實例讓下次切頁可重試。新 dashboard 沿用 template，不要改回上面的寫法；上文保留為既有 8 份的歷史脈絡。
 
 ---
 
@@ -634,3 +638,18 @@ plugins: {
 - 用瀏覽器驗修正時，網址加 `?v=<任意值>` 避開快取；本次第一次重截圖讀到的是快取舊版。
 
 **[global]** 方法已上行為 `<Hub>/technotes/verification-testing.md` verification-145；合成資料兩條（常數比率、交叉反推、同統計量離群點出界）上行為 `technotes/synthetic-data.md` synthetic-data-001／002。
+
+---
+
+## 27. 配色驗證：只比相鄰色對會漏掉非相鄰撞色；B.9-1 門檻是 OKLab×100 單位，不是 CIEDE2000（2026-11-01）
+
+**問題一（漏檢）：** 2026-10-14 的配色修正（commit `bc54ee0`，用 dataviz 的 `validate_palette.js`）只比相鄰色對。網紅個人品牌的 blue `#7C3AED` ↔ purple `#9333EA` 不相鄰，ARCHIVE 當時只記為「不相鄰但相近」，沒有列為硬傷；改由 audit 比全部 10 個色對後，正常視力 ΔE 僅 4.4，遠低於 FAIL 門檻 15。同一輪改比全部色對後，7 份冒出非相鄰色對命中（以色對為單位列入 `audit-dashboards.mjs` 的 `EXEMPTIONS` 共 12 筆）。template P2 baseline 的 blue `#3B82F6` ↔ purple `#7C4DFF` 也是非相鄰撞色：正常 ΔE 12.9、deutan 4.2。
+
+**問題二（量度單位）：** Sprint 原規格寫「CIEDE2000」，但用 OKLab 歐氏距離 ×100 可把 ARCHIVE 記錄的 9 個 ΔE 值逐一重現到小數一位（差距 0.0），可知 B.9-1 的 15／6／8 門檻本來就是 OKLab 單位。若換成 CIEDE2000：#8 醫美修正前色對 `#0891B2`↔`#059669` ΔE00=28.9，反而高於現行健身房 blue/teal 的 22.9，沒有任何單一門檻能同時讓「修正前 FAIL、修正後不 FAIL」。
+
+**做法：**
+- audit PAL-01／PAL-02 用 OKLab×100＋Machado 2009 色盲模擬（protan／deutan 取較小者），比全部色對；CIEDE2000 只在 `AUDIT_PAL_VERBOSE=1` 時列為參考。
+- 換量度前，先拿既有紀錄的「修正前／修正後」數值重算一次，確認新量度仍能把兩組分開。
+- 網紅 blue/purple 目前列豁免、**待人工確認**是否同圖出現；若同圖出現屬實際缺陷。
+
+來源：`dev/Sprint_skill_hardening.md` M2 偏離紀錄（2.7）；`Skill/ARCHIVE.md` 配色驗證紀錄。

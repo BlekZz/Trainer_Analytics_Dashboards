@@ -239,7 +239,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 | # | 名稱 | 底色 | 主色（--accent） | 正向（--accent2） | 字型組合 | 適合產業 |
 |---|---|---|---|---|---|---|
 | **P1** ⚠ | 深色財務型 | `#020617` | `#3B82F6` | `#22C55E`（使用前須調色，見 P1 註） | IBM Plex Sans × IBM Plex Sans | 金融、FinTech、證券 |
-| **P2** | 藍系分析型 *(預設)* | `#0d1117` | `#3b82f6` | `#2aab85` | Lora × Outfit | 電商、SaaS、通用分析 |
+| **P2** ⚠ | 藍系分析型 *(預設)* | `#0d1117` | `#3b82f6` | `#2aab85`（沿用須換 `--purple`，見 P2 註） | Lora × Outfit | 電商、SaaS、通用分析 |
 | **P3** | 輕色企業型 | `#F8FAFC` | `#2563EB` | `#059669` | Plus Jakarta Sans × Plus Jakarta Sans | B2B、CRM、供應鏈 |
 | **P4** | 暗色科技型 | `#0F172A` | `#22D3EE` | `#0D9488` | Space Grotesk × DM Sans | 製造、IoT、物流 |
 | **P5** | 醫療信任型 | `#ECFEFF` | `#0369A1` | `#059669` | Lexend × Source Sans 3 | 醫療、健康、公衛 |
@@ -273,7 +273,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 ### P2 藍系分析型（預設 baseline）
 
 ```css
-/* template 原始 :root，無需修改 */
+/* template 原始 :root；--purple 沿用前須換色（見下方 ⚠ 註） */
 :root {
   --bg: #0d1117; --bg-card: #161b27; --bg-finding: #1a2030;
   --accent: #3b82f6; --accent2: #2aab85; --warn: #d4870a; --danger: #d43a2f; --purple: #7c4dff;
@@ -287,6 +287,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 ```
 - **調性：** 中性專業，資料導向，適合多數分析情境
 - **注意：** 這是 baseline，不應連續兩份都用 P2
+- **⚠ 沿用 P2 必須換 `--purple` 並跑 audit PAL：** blue `#3b82f6` ↔ purple `#7c4dff` 在 audit 的 OKLab×100 量度下正常視力 ΔE 12.9、deutan 4.2，PAL-01／PAL-02 都會 FAIL（2026-11-01 M2 實測）。修正色尚未實測決定——選 P2 時自行換 purple，以本 preset 的 bg 與其他類別色重跑 audit PAL-01／PAL-02 通過後再回填本節
 
 ---
 
