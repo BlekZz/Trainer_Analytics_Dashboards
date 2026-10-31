@@ -124,6 +124,19 @@
 - **2.9 實測（Chart.js 4.4.0＋datalabels 2.2.0，2026-11-01）**：`Chart.defaults.set('plugins.datalabels',…)` 不拋錯、不讓雙軸／填色折線消失；與直接賦值逐像素相同。
 - **template baseline 外觀刻意變化**：tooltip 底色改讀 `--bg-finding`、grid 改讀 `--border`（0.08）、tooltip 內文改讀 `--text`；cTierAOV 軸改 `min:0`；散點中線標籤「中位來客」更正為「月均來客」（原算法即平均）；HHI 公式說明更正。
 
+### M3-A／M3-D（2026-11-01）
+
+- audit 新增 CH-01～10（圖表設定，讀 Chart 實例）、IX-01～04（真實點擊，`elementFromPoint` 命中測試後 `.click()`）、LY-01／02（960／1440 × 側板開關 × 每頁）、`--json`／`--summary`；逐題規則納入 `.training-item`／`.train-item`；零售以答案 `.tag-a` 判 A 題，電商無可靠 A 訊號不判。全量 `EXIT=0`、`9/9 份無 FAIL`，耗時 33 秒 → 63 秒。
+- mutation：14 個 FAIL 級 mutant 新版 `EXIT=1`、HEAD 舊版 `EXIT=0`（CH-01/02/03/04/08/09、IX-01/02/03/04、LY-01/02、QA-03 × 2）。
+- **既有成品新增豁免**（不改 Dashboard）：CH-01 × 6、CH-02 × 22、CH-03 × 2、CH-08 × 10、CH-09 × 12（共用理由：既有成品圖表設定，首次檢出，修正屬改 Dashboard）；SaaS 瀑布圖 CH-01（刻意）；健身房 T2/T4、零售 #3/#5/#10/#15/#16 QA-03；品牌訓練題 1～4 QA-02/03/IX-01（無收合設計）；醫美 quartet findings IX-02（veil 教學順序）。
+- **待決**：既有成品的 CH-02／08／09 是否機械修正（只改圖表 options，不改文字數字）——屬總原則 2 的「機械性結構修正」灰區，本 Sprint 不做，列入後續選項。
+
+### 移交（M3 收尾）
+
+- template cHourly 違反 CH-08／09（目前以豁免放行）、template 側板 sticky 為 tech-notes #16 的錯誤寫法 → 修 template 並移除該豁免
+- module-B B.4 donut `rotation:-90` 實測是 9 點鐘起畫（4.4.0：不設或 0 即 12 點鐘）→ 更正 B.4 與 DQ-5
+- module-B B.1 標準色 `#2d5be3` → `#3b82f6`；B.7 `.kpi-value` 範例改用 `--font-mono`；module-F Phase 3 Layer 描述對齊 SKILL；ARCHIVE 配色紀錄第 5 列補 ΔE 4.4；SKILL「47 項」引用對齊 3.5
+
 ### 移交給後續 milestone 的發現（M2 新增）
 
 - → M3 3.6：B.9-1 文字改為 OKLab×100、比全部色對、「明度範圍／對比 <3:1」未本地化須人工；Sprint 2.7 的「CIEDE2000」以本段為準
