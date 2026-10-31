@@ -11,4 +11,5 @@
   - [fact] `node dev/script/audit-mutation-test.mjs` → `EXIT=0`、30/30 轉紅、對照組 5/5（2026-11-01）；新增 FAIL 規則須在此加案例
   - [fact] 配色驗證已內建 audit PAL-01／02：OKLab×100＋Machado 色盲模擬，門檻 15／6／8，比全部色對；不再依賴 dataviz skill（`dev/tech-notes.md` #27）
   - [fact] 第 8 份資料流程：`python dev/script/gen_data_medaesthetic.py <out.json>` → `python dev/script/inject_data.py <out.json> <html>`；共用 `dev/script/datagen_lib.py`；輸出 sha256 `9d81d9b2…faf3a`
+  - [fact] 第 8 份獨立驗收殘留 ⚠（2026-10-14 判定不修）：donut 用 teal／orange 當類別色、部分 %軸 max 寫死（皆 ≥×1.2）、cNewRet 只有新客序列有直接標籤
   - [fact] repo 為 GitHub PUBLIC；日後吸收 tutor D/E/F（education-agent-skills，CC BY-SA 4.0）須署名＋同授權
