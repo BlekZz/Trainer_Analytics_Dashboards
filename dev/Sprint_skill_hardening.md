@@ -2,7 +2,7 @@
 
 - 建立：2026-11-01（claude）
 - 來源：Claude（Opus）與 Codex 兩份獨立審查的合併結論（本 session，主線抽查 7 條證據皆屬實）
-- 狀態：執行中；使用者 2026-11-01 指示「整理成 plan 然後全部做（3 批次）」
+- 狀態：**已完成**（2026-11-01 獨立驗收無 blocking）；使用者 2026-11-01 指示「整理成 plan 然後全部做（3 批次）」
 - 範圍：`Skill/`、`dev/script/`、`CLAUDE.md`、`dev/tech-notes.md`；`Dashboard/` 只允許**機械性結構修正**（不改文字與數字），且每處都要在本檔「偏離紀錄」寫明
 
 ## 總原則（每個 milestone 都適用）
@@ -42,11 +42,11 @@
 | 1.13 | CLAUDE.md 加一行：觸發 dashboard-training-factory 時一律讀本專案 `Skill/SKILL.md`，忽略同名全域 skill（`anthropic-skills:dashboard-training-factory`） | 本 session skill 清單可見同名全域版；專案無 `.claude/skills/` |
 
 ### M1 QA
-- [ ] 1.2 mutation：把某份成品的 assertConsistency 內容全註解 → audit FAIL；還原 → PASS
-- [ ] 1.3 mutation：刪掉某 A 題的 `.trap-block` → 對應規則 FAIL 並指出題號；還原 → PASS
-- [ ] template 在 audit 下為 WARN「未配置」而非 PASS 無聲通過，也非 FAIL
-- [ ] 8 份全 PASS（含豁免表，豁免逐條有理由）
-- [ ] `rg -n "errs\b" Skill/` 無殘留；`rg -n "9 項" Skill/module-F-agents.md` 無殘留
+- [x] 1.2 mutation：把某份成品的 assertConsistency 內容全註解 → audit FAIL；還原 → PASS
+- [x] 1.3 mutation：刪掉某 A 題的 `.trap-block` → 對應規則 FAIL 並指出題號；還原 → PASS
+- [x] template 在 audit 下為 WARN「未配置」而非 PASS 無聲通過，也非 FAIL
+- [x] 8 份全 PASS（含豁免表，豁免逐條有理由）
+- [x] `rg -n "errs\b" Skill/` 無殘留；`rg -n "9 項" Skill/module-F-agents.md` 無殘留
 
 ---
 
@@ -64,12 +64,12 @@
 | 2.8 | template lazy render 改為「繪製成功才標記完成、失敗清理實例可重試、以尺寸有效為前提而非固定 60ms」；SKILL.md 內的另一版片段同步或改引用 | `Skill/template.html:1666–1672`；`Skill/SKILL.md:150–152` |
 
 ### M2 QA
-- [ ] 2.1：template 改套一組淺色 preset tokens（暫時性實驗，不 commit），確認 tooltip／類別色／字型跟著變
-- [ ] 2.2 mutation：在一份成品副本插入佔位符 → FAIL
-- [ ] 2.3：`inject_data.py` 對 template 副本注入兩次結果相同；標記重複的副本 → 拒絕
-- [ ] 2.4：改前改後 `gen_data_medaesthetic.py` 輸出 sha256 相同（記錄雜湊與語意：JSON 檔全文）
-- [ ] 2.7 mutation：把某份副本的 accent2 改成與 accent 相近色 → FAIL；第 4 份舊色 `#22C55E` 情境 → 色盲 FAIL
-- [ ] 8 份全 PASS；template 依 M1 規則
+- [x] 2.1：template 改套一組淺色 preset tokens（暫時性實驗，不 commit），確認 tooltip／類別色／字型跟著變
+- [x] 2.2 mutation：在一份成品副本插入佔位符 → FAIL
+- [x] 2.3：`inject_data.py` 對 template 副本注入兩次結果相同；標記重複的副本 → 拒絕
+- [x] 2.4：改前改後 `gen_data_medaesthetic.py` 輸出 sha256 相同（記錄雜湊與語意：JSON 檔全文）
+- [x] 2.7 mutation：把某份副本的 accent2 改成與 accent 相近色 → FAIL；第 4 份舊色 `#22C55E` 情境 → 色盲 FAIL
+- [x] 8 份全 PASS；template 依 M1 規則
 
 ---
 
@@ -86,20 +86,20 @@
 | 3.7 | 回歸案例腳本 `dev/script/audit-mutation-test.mjs`：對成品副本自動注入 M1–M3 各 FAIL 規則的缺陷（空 assertion、刪 trap、錯頁引用、裸文字未收合、label 消失、多餘 `</div>`、佔位符殘留、撞色），斷言每個都轉紅、原檔轉綠；副本放暫存目錄、跑完清掉 | `dev/tech-notes.md:612–631` |
 
 ### M3 QA
-- [ ] 3.7 腳本本身 exit 0，且輸出逐案「mutation → 規則 ID → FAIL」
-- [ ] 3.1–3.3 新規則在 8 份上的命中全部已處理（修正或列入豁免）
-- [ ] `--summary` 輸出可讀、數字與 `--json` 一致
+- [x] 3.7 腳本本身 exit 0，且輸出逐案「mutation → 規則 ID → FAIL」
+- [x] 3.1–3.3 新規則在 8 份上的命中全部已處理（修正或列入豁免）
+- [x] `--summary` 輸出可讀、數字與 `--json` 一致
 
 ---
 
 ## 最終驗收 checklist
 
-- [ ] `node dev/script/audit-dashboards.mjs Dashboard/*.html Skill/template.html` → exit 0（實測 exit code 直接量，不經 pipe）
-- [ ] `node dev/script/audit-mutation-test.mjs` → exit 0，所有案例轉紅
-- [ ] `gen_data_medaesthetic.py` 輸出雜湊與改前相同
-- [ ] fresh-context 獨立驗收（非實作者）讀 diff＋實跑上面三項，回報無 blocking
-- [ ] tech-notes 新增本 Sprint 學到的坑；handoff lane 更新
-- [ ] 通過後本檔 rename 為 `Sprint_end_skill_hardening.md`
+- [x] `node dev/script/audit-dashboards.mjs Dashboard/*.html Skill/template.html` → exit 0（實測 exit code 直接量，不經 pipe）
+- [x] `node dev/script/audit-mutation-test.mjs` → exit 0，所有案例轉紅
+- [x] `gen_data_medaesthetic.py` 輸出雜湊與改前相同
+- [x] fresh-context 獨立驗收（非實作者）讀 diff＋實跑上面三項，回報無 blocking
+- [x] tech-notes 新增本 Sprint 學到的坑；handoff lane 更新
+- [x] 通過後本檔 rename 為 `Sprint_end_skill_hardening.md`
 
 ## 偏離紀錄 / 豁免表
 
@@ -153,6 +153,25 @@
 - → M2 新增 2.9：`SKILL.md` 稱 `Chart.defaults.set('plugins.datalabels',…)` 在 v4 會拋錯，E.1 #27 稱不報錯——實測後統一
 - → M3 3.5：module-E 的 E.2 audit 規則表對齊 AC-01、QA-01～06 與豁免機制
 - → M3 新增 3.8：QA 規則只掃 `.qa-item`，品牌 `.training-item`、健身房 `.train-item` 不在範圍；零售／電商題目列無 F/I/A 類型標記（標題型 0）→ 一般 A 題的 QA-03 抓不到
+
+## 最終驗收結果（2026-11-01，fresh-context 獨立驗收者，非實作者）
+
+- `node dev/script/audit-dashboards.mjs Dashboard/*.html Skill/template.html` → `EXIT=0`、`9/9 份無 FAIL（64 秒）`；template 只有預期 5 條 WARN（title、AC-01、PH-01、PAL-01、PAL-02）
+- `node dev/script/audit-mutation-test.mjs` → `EXIT=0`、`案例 30/30 轉紅、對照組 5/5 exit 0、fixture 失效 0`
+- 生成器：改前（`git show 5788ad4:…`）與現行輸出 sha256 皆 `9d81d9b2…faf3a`；inject 第 8 份副本與原檔 sha256 相同；重複標記 `INJDUP=1`、NaN `INJBAD=1`
+- `git diff 5788ad4^..HEAD -- Dashboard/` 為空（成品文字與數字未動）
+- 驗收者自設 mutant：空 assertion 寫死 N、錯頁 nav-hint、template 移出 Skill/ → 皆正確 FAIL
+- 文件與實作一致：E.2 規則表 ↔ audit `RULES`、B.9-1 門檻 ↔ `PAL_*` 常數、SKILL Phase 總表 ↔ 規則 ID
+- M2 QA 2.1 證據：M2-T 實作者以 Playwright 把 template `:root` 換成 P3 tokens，`c('blue')` `rgba(59,130,246,1)`→`rgba(37,99,235,1)`、`Chart.defaults.font.family` `'Outfit'`→`'Plus Jakarta Sans'`、tooltip 底色 `rgba(26,32,48,1)`→`rgba(241,245,253,1)`；原檔讀回原值
+
+## 後續選項（非 blocking，未排程）
+
+1. **真實無障礙缺陷待查**：SaaS blue/purple deutan ΔE 0.4、網紅 blue/purple 正常 4.4／protan 0.5、品牌 deutan 1.3——目前以豁免放行，需查是否同圖出現，出現即須換色（改 Dashboard 配色，需使用者同意）
+2. **既有成品圖表設定機械修正**：CH-02 × 22、CH-08 × 10、CH-09 × 12 等只改 options 不改文字數字，可逐張修後移除豁免
+3. **audit 盲點**（獨立驗收實證可繞過）：AC-01 會把死碼 `if (false) errors.push()` 計為 1 條（已在 E.2 註明）；電商 DTC 一般題 QA-03 不受保護（已在 ARCHIVE #2 註明）；空殼 `.trap-block` 可過 QA-03（可補 WARN）；EXEMPTIONS 仍支援省略 items 的整檔豁免路徑（目前無使用，可移除）；零售豁免 key 為全域序號，插題會位移
+4. **template P2 baseline 撞色**：blue `#3B82F6` ↔ purple `#7C4DFF`，沿用 P2 須換 purple（已在 D.9 加註）
+5. **B 組 #30 側板 sticky** audit 無法偵測（IX／LY 不量捲動），可新增 LY-03
+6. 第四批（等學員回饋）：無障礙、列印版、作答區
 
 ## 刻意不做
 

@@ -13,3 +13,6 @@ Claude Temp Files/
 # OS
 .DS_Store
 Thumbs.db
+
+# Python bytecode（跑生成器時產生）
+__pycache__/

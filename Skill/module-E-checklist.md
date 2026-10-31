@@ -105,7 +105,7 @@ node dev/script/audit-dashboards.mjs --summary             # 結尾印跨份報�
 
 | 規則 | 等級 | 意義 | 對應 |
 |---|---|---|---|
-| AC-01 | FAIL（template WARN「未配置」） | `assertConsistency` 有效檢查條數 N=0；新格式讀印出的 N，舊格式以原始碼估算 | E.1 #2 #36 |
+| AC-01 | FAIL（template WARN「未配置」） | `assertConsistency` 有效檢查條數 N=0；新格式讀印出的 N，舊格式以原始碼估算。**語法估算，不證明檢查真的會執行**：`if (false) errors.push(…)` 這類死碼、恆真 `check()` 仍會被計入（2026-11-01 獨立驗收實證），檢查內容是否有意義屬 C 組 #2 | E.1 #2 #36 |
 | QA-01 | FAIL | 題目列缺難度標記（`.badge`／`.qa-level` l1–l3） | E.1 #10 |
 | QA-02 | FAIL | 答案區缺 F/I/A 標註（含 `.ans-head.obs/.inf/.act` 改呈現變體） | E.1 #11、紅線 #2 |
 | QA-03 | FAIL | A 題或訓練題缺 `.trap-block` | E.1 #13、紅線 #3 |
