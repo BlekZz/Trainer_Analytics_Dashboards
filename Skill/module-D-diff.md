@@ -225,7 +225,8 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 
 > 從 UI UX Pro Max 資料庫萃取，針對 analytics/BI dashboard 情境整理成 7 個可直接套用的視覺套餐。
 > 每個 preset 提供完整的 CSS token override（含字型 token `--font-head/--font-body/--font-mono`）+ Google Fonts import。template 的 `c()`、Chart 預設色、TT 在執行期讀 CSS token，**選一個後只需覆蓋 template 的 `:root` 與 Google Fonts import**，不改 JS。
-> 選定時機是 SKILL Phase 1（建構前），選完立即跑 audit 看 PAL-01／PAL-02（B.9-1）。下列色值已回填 2026-10-14 驗證後的修正（見 ARCHIVE「配色驗證紀錄」），速查表與各 preset 詳細設定一致。
+> 選定時機是 SKILL Phase 1（建構前），選完立即跑 audit 看 PAL-01／PAL-02（B.9-1）。下列色值已回填 2026-10-14 驗證後的修正（見 ARCHIVE「配色驗證紀錄」），並於 2026-11-01 以 D.11 產生器（`gen_palette.mjs`，與 audit PAL 同一份計算）全部 10 色對重驗、回填修正色（各 preset 的「配色驗證」註記列舊→新與 ΔE）；速查表與各 preset 詳細設定一致。
+> 2026-11-01 重驗結果：P1–P7 全部過 PAL（正常 ≥15、色盲 ≥8，無 WARN）且五色對背景對比 ≥3:1。只換撞色的那幾色，preset 主色（`--accent`）除 P1（與第 3 份重複）、P7（對比 1.95 不足）外都保留。
 
 **使用規則：**
 - D2 目前預設是 P2（藍系分析型），這是 template 的基線，**每次產出需跟上一份使用不同 preset**
@@ -238,13 +239,13 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 
 | # | 名稱 | 底色 | 主色（--accent） | 正向（--accent2） | 字型組合 | 適合產業 |
 |---|---|---|---|---|---|---|
-| **P1** ⚠ | 深色財務型 | `#020617` | `#3B82F6` | `#22C55E`（使用前須調色，見 P1 註） | IBM Plex Sans × IBM Plex Sans | 金融、FinTech、證券 |
-| **P2** ⚠ | 藍系分析型 *(預設)* | `#0d1117` | `#3b82f6` | `#2aab85`（沿用須換 `--purple`，見 P2 註） | Lora × Outfit | 電商、SaaS、通用分析 |
-| **P3** | 輕色企業型 | `#F8FAFC` | `#2563EB` | `#059669` | Plus Jakarta Sans × Plus Jakarta Sans | B2B、CRM、供應鏈 |
+| **P1** | 深色財務型 | `#020617` | `#57A8FF` | `#39C699` | IBM Plex Sans × IBM Plex Sans | 金融、FinTech、證券 |
+| **P2** | 藍系分析型 *(預設)* | `#0d1117` | `#3b82f6` | `#2aab85` | Lora × Outfit | 電商、SaaS、通用分析 |
+| **P3** | 輕色企業型 | `#F8FAFC` | `#2563EB` | `#099A87` | Plus Jakarta Sans × Plus Jakarta Sans | B2B、CRM、供應鏈 |
 | **P4** | 暗色科技型 | `#0F172A` | `#22D3EE` | `#0D9488` | Space Grotesk × DM Sans | 製造、IoT、物流 |
-| **P5** | 醫療信任型 | `#ECFEFF` | `#0369A1` | `#059669` | Lexend × Source Sans 3 | 醫療、健康、公衛 |
+| **P5** | 醫療信任型 | `#ECFEFF` | `#0369A1` | `#049B84` | Lexend × Source Sans 3 | 醫療、健康、公衛 |
 | **P6** | 電商活力型 | `#ECFDF5` | `#059669` | `#0284C7` | Rubik × Nunito Sans | 零售、電商、DTC |
-| **P7** | 銀行深色型 | `#020617` | `#1E3A8A` | `#A16207` | IBM Plex Sans × IBM Plex Sans | 銀行、保險、傳統金融 |
+| **P7** | 銀行深色型 | `#020617` | `#006DA2` | `#FED420` | IBM Plex Sans × IBM Plex Sans | 銀行、保險、傳統金融 |
 
 ---
 
@@ -253,7 +254,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 ```css
 :root {
   --bg: #020617; --bg-card: #0E1223; --bg-finding: #131B2F;
-  --accent: #3B82F6; --accent2: #22C55E; --warn: #D97706; --danger: #EF4444; --purple: #8B5CF6;
+  --accent: #57A8FF; --accent2: #39C699; --warn: #F7931F; --danger: #EF4444; --purple: #8B5CF6;
   --text: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.07);
   --radius: 10px;
   --font-head: 'IBM Plex Sans', sans-serif; --font-body: 'IBM Plex Sans', sans-serif; --font-mono: 'IBM Plex Mono', monospace;
@@ -263,9 +264,10 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
 /* 標題與內文同字族，靠字重區分層級；數字用 IBM Plex Mono */
 ```
-- **⚠ 使用前須調色並跑 audit：** bg `#020617`／accent `#3B82F6` 與第 3 份（品牌訊息通道，P7 Modified）相同；accent2 `#22C55E` 正是第 4 份（健身房）色盲 ΔE 5.7 硬傷的來源色（ARCHIVE 配色驗證紀錄 #4）。選 P1 時先換 accent2（可參考 P4 的修正 `#0D9488`，但須以本 preset 的 bg 與其他類別色重驗），並至少換掉 bg 或 accent 之一以免與第 3 份雷同，再跑 audit 看 PAL-01／PAL-02
+- **配色驗證（D.11 產生器，2026-11-01）：** 原色組 FAIL——orange/red 正常 ΔE 11.8、blue/purple deutan 1.3、orange/teal／red/teal 色盲 7.1／7.4。改 accent `#3B82F6→#57A8FF`、accent2 `#22C55E→#39C699`、warn `#D97706→#F7931F`（保留 purple、danger）後：正常最小 17.0（orange/red）、protan 13.2、deutan 12.0（red/teal），對比最小 4.76（purple）。指令：`--bg '#020617' --anchor purple=#8B5CF6,red=#EF4444`
+- **與第 3 份的重複已解除（accent 換色）：** 原 bg `#020617`＋accent `#3B82F6` 與第 3 份（品牌訊息通道，P7 Modified）相同；現 accent 為 `#57A8FF`。bg 與字型（IBM Plex）仍與第 3 份相同——若下一份要和第 3 份並排展示，另換 bg（以新 bg 重跑 D.11）
 - **調性：** 嚴肅、資料密度高、信任感強
-- **圖表色建議：** 正向指標用 `--accent2`（調色後的值），負向用 `#EF4444`，中性資料用 `#3B82F6`
+- **圖表色建議：** 正向指標用 `--accent2`，負向用 `--danger`，中性資料用 `--accent`
 - **反模式：** 不可用淺色背景 / 不可用圓角 > 12px / 不可用裝飾性動畫
 
 ---
@@ -273,10 +275,10 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 ### P2 藍系分析型（預設 baseline）
 
 ```css
-/* template 原始 :root；--purple 沿用前須換色（見下方 ⚠ 註） */
+/* template 預設 :root（2026-11-01 起 --purple 已換色，與 template 同步） */
 :root {
   --bg: #0d1117; --bg-card: #161b27; --bg-finding: #1a2030;
-  --accent: #3b82f6; --accent2: #2aab85; --warn: #d4870a; --danger: #d43a2f; --purple: #7c4dff;
+  --accent: #3b82f6; --accent2: #2aab85; --warn: #d4870a; --danger: #d43a2f; --purple: #b89cf3;
   --text: #e6edf3; --text-muted: #8b949e; --border: rgba(255,255,255,0.08);
   --radius: 14px;
   --font-head: 'Lora', serif; --font-body: 'Outfit', sans-serif; --font-mono: 'JetBrains Mono', monospace;
@@ -287,7 +289,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 ```
 - **調性：** 中性專業，資料導向，適合多數分析情境
 - **注意：** 這是 baseline，不應連續兩份都用 P2
-- **⚠ 沿用 P2 必須換 `--purple` 並跑 audit PAL：** blue `#3b82f6` ↔ purple `#7c4dff` 在 audit 的 OKLab×100 量度下正常視力 ΔE 12.9、deutan 4.2，PAL-01／PAL-02 都會 FAIL（2026-11-01 M2 實測）。修正色尚未實測決定——選 P2 時自行換 purple，以本 preset 的 bg 與其他類別色重跑 audit PAL-01／PAL-02 通過後再回填本節
+- **配色驗證（D.11 產生器，2026-11-01）：** 原 blue `#3b82f6` ↔ purple `#7c4dff` 正常 ΔE 12.9、deutan 4.2（PAL-01／02 FAIL）。只換 purple `#7c4dff→#b89cf3`（淺紫，h 298）：正常最小 16.6（orange/red）、protan／deutan 最小 11.0，對比最小 4.01（red）。blue 與 purple 改靠明度分開（L 0.62 vs 0.75）。指令：`--bg '#0d1117' --anchor blue=#3b82f6,teal=#2aab85,orange=#d4870a,red=#d43a2f`。已用 P2 的既有成品（第 1、2 份）不在此修正範圍
 
 ---
 
@@ -296,7 +298,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 ```css
 :root {
   --bg: #F8FAFC; --bg-card: #FFFFFF; --bg-finding: #F1F5FD;
-  --accent: #2563EB; --accent2: #059669; --warn: #D97706; --danger: #DC2626; --purple: #7C3AED;
+  --accent: #2563EB; --accent2: #099A87; --warn: #D97706; --danger: #CD2023; --purple: #7A54A1;
   --text: #0F172A; --text-muted: #64748B; --border: rgba(0,0,0,0.08);
   --radius: 12px;
   --font-head: 'Plus Jakarta Sans', sans-serif; --font-body: 'Plus Jakarta Sans', sans-serif; --font-mono: 'JetBrains Mono', monospace;
@@ -311,6 +313,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 ```
 - **調性：** 明亮、親和、適合簡報式呈現給非技術決策者
 - **注意：** 淺色模式需確認 chart 資料顏色仍具足夠對比度（建議 `rgba()` alpha 提高至 0.9）
+- **配色驗證（D.11 產生器，2026-11-01）：** 原色組 FAIL——blue/purple 正常 12.4、deutan 0.4，orange/red 正常 14.4。改 accent2 `#059669→#099A87`、purple `#7C3AED→#7A54A1`、danger `#DC2626→#CD2023`（保留 accent、warn）：正常最小 15.2（blue/purple）、protan 12.1、deutan 12.0，對比最小 3.04（orange，淺底橘色的上限，見 D.11）。原色組即第 6 份（SaaS）所用，成品修正由 Sprint M2 處理
 
 ---
 
@@ -332,6 +335,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 - **調性：** 科技感、高密度、偏硬派（radius 8px 強調精確）
 - **適用場景：** 製造業 OEE 分析、物流追蹤、IoT 感測器 dashboard
 - **配色驗證（B.9-1，2026-10-14，第 4 份）：** 原 accent2 `#22C55E` 與 orange 色盲 ΔE 5.7（硬傷），改 `#0D9488` 後 ΔE 16.6；已回填上方 `:root` 與速查表
+- **2026-11-01 重驗（D.11，全部 10 色對）：** 不需改色——正常最小 19.8（orange/red）、protan 12.0、deutan 11.4（blue/purple），對比最小 4.74。accent `#22D3EE`（h 211）屬「青／天藍」，產生器以 `--map blue=cyan` 驗證
 
 ---
 
@@ -340,7 +344,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 ```css
 :root {
   --bg: #ECFEFF; --bg-card: #FFFFFF; --bg-finding: #E0F9FB;
-  --accent: #0369A1; --accent2: #059669; --warn: #D97706; --danger: #DC2626; --purple: #7C3AED;
+  --accent: #0369A1; --accent2: #049B84; --warn: #D97706; --danger: #D1121C; --purple: #7C3AED;
   --text: #164E63; --text-muted: #64748B; --border: rgba(0,0,0,0.07);
   --radius: 16px;
   --font-head: 'Lexend', sans-serif; --font-body: 'Source Sans 3', sans-serif; --font-mono: 'JetBrains Mono', monospace;
@@ -354,6 +358,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 - **調性：** 清晰、低刺激、符合 WCAG AA
 - **反模式：** 不可用高飽和紅色（用橘代替警示）/ 不可用暗色背景
 - **配色驗證（B.9-1，2026-10-14）：** 原 accent #0891B2 與 accent2 #059669 正常視力 ΔE 11.8（硬傷），改 #0369A1 後 ΔE 18.5（已回填上方 `:root` 與速查表）；orange↔accent2 色盲 ΔE 7.9（WARN），對應系列需保留數字標籤
+- **2026-11-01 重驗（D.11，全部 10 色對）：** 原色組 orange/red 正常 14.4（非相鄰色對，舊驗證器未比）→ FAIL。改 accent2 `#059669→#049B84`、danger `#DC2626→#D1121C`（保留 accent、warn、purple）：正常最小 16.6（orange/red）、protan／deutan 最小 11.6（原 WARN 7.9 一併解除），對比最小 3.06（orange）。第 8 份（醫美）的成品修正由 Sprint M2 處理
 
 ---
 
@@ -362,7 +367,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 ```css
 :root {
   --bg: #ECFDF5; --bg-card: #FFFFFF; --bg-finding: #E8F8F1;
-  --accent: #059669; --accent2: #0284C7; --warn: #D97706; --danger: #DC2626; --purple: #7C3AED;
+  --accent: #059669; --accent2: #0284C7; --warn: #C46D00; --danger: #C50A17; --purple: #7C3AED;
   --text: #064E3B; --text-muted: #64748B; --border: rgba(0,0,0,0.07);
   --radius: 14px;
   --font-head: 'Rubik', sans-serif; --font-body: 'Nunito Sans', sans-serif; --font-mono: 'JetBrains Mono', monospace;
@@ -375,6 +380,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 ```
 - **調性：** 積極、轉換導向、電商氣氛
 - **配色驗證（B.9-1，2026-10-14，第 7 份）：** 原 accent2 `#10B981` 與 accent `#059669` 同為綠系，正常視力 ΔE 10.2（硬傷）；改 `#0284C7` 後 ΔE 16.9，已回填上方 `:root` 與速查表。正向語意因此改由藍色承載，圖例與標籤需寫明
+- **2026-11-01 重驗（D.11，全部 10 色對，`--map blue=green,teal=blue`）：** 原色組 orange/red 正常 14.4 → FAIL、blue(綠)/orange 色盲 7.9 WARN。改 warn `#D97706→#C46D00`、danger `#DC2626→#C50A17`（保留 accent、accent2、purple）：正常最小 15.4（orange/red）、protan 9.3、deutan 9.2，對比最小 3.58。第 7 份（零售）的成品修正由 Sprint M2 處理
 
 ---
 
@@ -383,7 +389,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 ```css
 :root {
   --bg: #020617; --bg-card: #0A1628; --bg-finding: #0F1E35;
-  --accent: #1E3A8A; --accent2: #A16207; --warn: #D97706; --danger: #EF4444; --purple: #6366F1;
+  --accent: #006DA2; --accent2: #FED420; --warn: #EE9E55; --danger: #EF4444; --purple: #6366F1;
   --text: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.06);
   --radius: 8px;
   --font-head: 'IBM Plex Sans', sans-serif; --font-body: 'IBM Plex Sans', sans-serif; --font-mono: 'IBM Plex Mono', monospace;
@@ -393,6 +399,8 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
 ```
 - **調性：** 莊重、傳統、合規感強（金色 `--accent2` 作為正向/獲利指標）
+- **配色驗證（D.11 產生器，2026-11-01，`--map teal=gold`）：** 原色組 FAIL——orange/red 正常 11.8、deutan 4.4，red/teal protan 4.9；accent `#1E3A8A` 對背景對比僅 1.95（圖形元素看不見）；accent2 `#A16207` 實測 h 66 與 warn 同屬橘色區。改 accent `#1E3A8A→#006DA2`（保留深藍調，對比 3.56）、accent2 `#A16207→#FED420`（真正的金色 h 94）、warn `#D97706→#EE9E55`：正常最小 15.0（orange/teal）、protan 12.8、deutan 12.2。保留 danger、purple；purple `#6366F1`（h 277，靛）落在產生器紫色區間外，內文寫「紫」時讀者可能讀成藍紫，選 P7 時建議以 `--anchor` 其餘四色重跑換掉 purple
+- **與 P1 區隔：** 兩者 bg 同為 `#020617`、字型同為 IBM Plex；主色分別為深藍 `#006DA2`（P7）與亮藍 `#57A8FF`（P1）
 - **反模式：** 不可用亮色主視覺 / 不可用圓角 > 10px / 不可使用 AI 紫色系漸層
 
 ---
@@ -420,3 +428,53 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 | Pie 禁止在 a11y 優先情境使用 | 色盲者無法分辨扇形 — 必須提供 table 備案 |
 | 3D 圖表禁用 | 學術與業界已棄用；訓練 dashboard 中出現 3D 是反面教材 |
 | 折線 series > 6 條 → 拆頁或改其他呈現 | 顏色數量超限，視覺雜訊大於資訊量 |
+
+---
+
+## D.11 配色生成（gen_palette，2026-11-01）
+
+> 類別色（`c()` 的 blue／teal／orange／purple／red）不再手挑。產生器 `dev/script/gen_palette.mjs` 與 audit PAL-01／02 共用同一份計算（`dev/script/palette_lib.mjs`：OKLab×100、Machado 2009 色盲模擬、WCAG 對比），所以產生器說 PASS 的色組，audit 一定過 PAL。
+
+**何時用**
+- 選 preset（SKILL Phase 1 步驟 7–8）：先用 `--check` 驗該 preset 的五色；不過才換色。D.9 的 P1–P7 已於 2026-11-01 全部重驗通過。
+- 新背景色、品牌指定色（`--anchor`）、或要換掉某一兩個撞色時：用產生器求解，**只放開要換的那幾色**，其餘以 `--anchor` 固定，preset 的辨識度才保得住。
+
+**規則（每條都可重跑、可驗證）**
+
+| 規則 | 內容 | 理由 |
+|---|---|---|
+| 色名區間（OKLCH h°） | red 15–38｜orange 48–75｜green 142–190｜blue 228–268｜purple 282–328；另有 gold 75–100、cyan 195–225 只能用 `--map` 指定 | 內文寫「紫柱」「橘色虛線」，換色後色名必須仍成立；268–282（靛）刻意空出，介於藍紫之間兩邊都會被讀錯。區間以既有 preset／Tailwind 色實測 h 校準，各邊界的實例寫在產生器 `FAMILIES` 註解 |
+| 色名明度 | orange L 0.62–0.88、red L 0.45–0.70、gold L 0.70–0.92，其餘 0.42–0.88；彩度 C ≥ 0.09 | 同色相下，暗橘讀成「棕」、亮紅讀成「粉」（實測曾產出 `#7B3701`、`#F99998`）；彩度太低讀成灰 |
+| 背景對比 | 每色對背景 WCAG ≥ 3:1 | 非文字圖形元素（SC 1.4.11） |
+| PAL 門檻 | 10 色對正常 ΔE ≥ 15；protan／deutan ≥ 6 為硬限制，目標 ≥ 8（無 WARN） | 與 audit PAL-01／02 相同（B.9-1） |
+| 明度階梯 | 不硬寫，由目標函數自然產生 | 色盲下 blue/purple、orange/red、red/teal 的色相差會消失，只剩明度可分；輸出的 L 欄就是階梯 |
+| 目標函數 | 先求可達上界 t*（30 個 ΔE＝10 色對×三種視覺的最小值最大可到多少），門檻取 T＝min(t*, 12)，在 T 之上選「品質罰分」最低的組 | 12＝WARN 線 8 的 1.5 倍；再往上分離度看不出差別，純 max-min 反而把色推到限制邊緣（近白、剛好 3:1、色相貼邊）。罰分＝離典型色相、彩度 <0.13、離適讀明度帶（深底 0.72／淺底 0.58）、對比 <3.6 四項平方和。`--maxmin` 可改回純 max-min |
+| 決定性 | 格點取樣＋branch-and-bound，無亂數 | 同參數重跑得到同結果，D.9 的數字可複驗 |
+
+**指令**
+
+```bash
+node dev/script/gen_palette.mjs --bg '#0d1117'                                  # top 3 候選＋每組 10 色對 × 正常/protan/deutan 表
+node dev/script/gen_palette.mjs --bg '#0d1117' --anchor blue=#3b82f6,red=#d43a2f  # 固定部分色，只解其餘
+node dev/script/gen_palette.mjs --bg '#ECFDF5' --map blue=green,teal=blue         # 該 preset 的 --accent 是綠、--accent2 是藍
+node dev/script/gen_palette.mjs --bg '#F8FAFC' --check blue=#2563EB,teal=#059669,orange=#D97706,purple=#7C3AED,red=#DC2626
+node dev/script/gen_palette.mjs --benchmark                                      # 基準組評分
+```
+- 輸出的「綁定約束」＝目前最小的那個 ΔE（哪個色對、哪種視覺），也就是要再分開時該動的地方；「⚠區間外」＝該色（通常是 anchor）不在色名區間內。
+- 無解時直接說卡在哪：`hue-window+chroma+contrast`（某色族在這個背景下找不到任何可用色——通常是淺底的 orange，對比 3:1 與「不變棕」只剩很窄的一段）、`PAL-01`（anchor 組合讓正常 ΔE 到不了 15）、`PAL-02`（色盲 ΔE 到不了 6）。處理：少固定一色，或改 `--map`。
+- 執行時間：自由求解約 0.2–1.5 秒；`--top` 越大越久。exit 0＝首選候選無 FAIL。
+
+**基準組（sanity check，`--benchmark`）**：以同一計算評既有的色盲友善配色，確認量度合理。
+
+| 基準組（取 5 色對應 c() key） | 正常最小 | 色盲最小 | 判定 | 色名區間 |
+|---|---|---|---|---|
+| Okabe-Ito（blue `#0072B2`、teal `#009E73`、orange `#E69F00`、purple `#CC79A7`、red `#D55E00`） | 15.6（orange/red） | 7.6（purple/teal deutan） | 無 FAIL；WARN 7.6；白底 orange 對比 2.25 | orange 76.8、purple 346、red 47.5 都在區間外（橘偏黃、紫偏粉、紅偏橘） |
+| Paul Tol bright（blue `#4477AA`、teal `#228833`、yellow `#CCBB44` 代 orange、purple `#AA3377`、red `#EE6677`） | 18.0（purple/red） | 8.3（blue/purple deutan） | 無 FAIL、無 WARN；白底 yellow 對比 1.95 | yellow 101、purple 349 在區間外 |
+
+公認的色盲友善組在本量度下都落在「剛好過門檻」（色盲 7.6–8.3），可知 15／6／8 門檻與這套計算是合理的；但它們的色相不符本專案的色名語意，所以只作基準，不直接採用。產生器自由求解（不 anchor）在 P1–P7 各背景都能做到全部 30 個 ΔE ≥ 12。
+
+**何時開決策頁讓 Blake 挑**（用 `decision-page` skill，把 top-3 每組做成色票＋一張示範長條／折線圖，並列綁定約束與罰分）：
+- 新 preset、換 preset 主色（`--accent`），或品牌色 anchor 後其餘四色全放開——這是辨識度的主觀選擇；
+- top-3 罰分差距 < 0.5（數學上幾乎等價，只剩美感差異）。
+
+只換一兩個撞色、且首選罰分明顯最低時，直接採用首選，在 D.9 該 preset 註記舊→新與 ΔE 即可。換色後照常跑 audit 確認 PAL。

@@ -14,7 +14,7 @@
 | 正向綠 | `#2aab85` | 正向趨勢、穩定、高價值 | 活躍率、回購率、健康指標 |
 | 注意橘 | `#d4870a` | 季節性、中等強度、需注意 | 旺季、中間區段、警告但不嚴重 |
 | 警示紅 | `#d43a2f` | 流失、風險、衰退 | 流失曲線、超出門檻、急跌 |
-| 行為紫 | `#7c4dff` | 時間相關、用戶行為 | 時段圖、再購間隔、行為節律 |
+| 行為紫 | `#b89cf3`（2026-11-01 由 `#7c4dff` 改，見 D.9 P2） | 時間相關、用戶行為 | 時段圖、再購間隔、行為節律 |
 | 中性灰 | `rgba(100,110,135,X)` | 對照組、長尾、未分類 | 「其他」項、未轉換池 |
 
 頂部色彩語意條為必備元素（D7），讓讀者建立 mental model：
@@ -26,7 +26,7 @@
   <span class="cl-item"><span class="cl-dot" style="background:#2aab85"></span>正向/穩定</span>
   <span class="cl-item"><span class="cl-dot" style="background:#d4870a"></span>注意/季節性</span>
   <span class="cl-item"><span class="cl-dot" style="background:#d43a2f"></span>警示/流失</span>
-  <span class="cl-item"><span class="cl-dot" style="background:#7c4dff"></span>行為/時間</span>
+  <span class="cl-item"><span class="cl-dot" style="background:#b89cf3"></span>行為/時間</span>
 </div>
 ```
 
@@ -463,6 +463,7 @@ KPI 值禁止截斷（🔴 紅線）：
    - **門檻**：PAL-01 正常視力 ΔE <15 → FAIL；PAL-02 色盲模擬 ΔE <6 → FAIL、<8 → WARN。
    - **判讀**：FAIL 是硬傷，必須換色；WARN 的色對，對應系列必須有直接數字標籤或紋理才合法。
    - **audit 未檢查、須人工**：明度範圍、對色背景對比 <3:1——這兩項沒有本地化進 audit。對比不足時該色的系列必須有可見數字標籤；明度超出範圍屬美感問題，記錄即可。
+   - **換色／產色不要手挑**：用 D.11 配色生成（`dev/script/gen_palette.mjs`，與 audit 共用 `palette_lib.mjs`）。它同時檢查色名區間、色名明度與對比 ≥3:1，`--check` 可直接驗一組現有色；PAL FAIL 時以 `--anchor` 固定不撞的色、只放開撞色的那幾色求解。
    - **時機**：SKILL Phase 1 選定 preset 後立即跑（建構前），交付前 audit 再跑一次。
 2. **一張圖一條值軸。** 兩個尺度差很多的量：拆兩張圖、small multiples，或以共同基期指數化（t0 = 100）。**雙 Y-axis 只允許當刻意教學陷阱**：該圖對應的 QA 必須有 `data-trap-stage="visualize" data-trap="雙軸假相關"` 的 trap-block，並在設計選擇揭露裡說明。
 3. **顏色跟著實體走，不跟名次走。** 同一個品類／通道在所有圖用同一色；篩選或排序後不可重新上色。

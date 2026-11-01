@@ -91,7 +91,7 @@ CSS variables in `:root`. Key semantic mapping (values below are P2 baseline def
 | `--accent2` | Positive / teal | `#2aab85` |
 | `--warn` | Caution / orange | `#d4870a` |
 | `--danger` | Alert / churn | `#d43a2f` |
-| `--purple` | Behavioral / time | `#7c4dff` |
+| `--purple` | Behavioral / time | `#b89cf3` |
 
 **Visual Presets:** 7 complete `:root` override sets (P1–P7) are defined in `Skill/module-D-diff.md` D.9.
 Each preset covers bg colors, accent tokens, font imports, and industry fit. Select one per dashboard to ensure visual differentiation across the series.

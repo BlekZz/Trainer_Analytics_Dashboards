@@ -31,7 +31,7 @@
 - 產業：品牌行銷（訊息通道）
 - 訓練主題：多通道績效分析（LINE／Email 推播漏斗 vs WhatsApp／Meta／Chat 對話解決率）
 - 錨點：無 `anchors` 物件，DATA 以通道分組：`LINE.reach: 72000`、`LINE.open_rate: 0.38`、`LINE.ctr: 0.12`、`EMAIL.reach: 38000`、`WHATSAPP.conversations: 4200`、`META.FCR: 0.54`
-- 視覺 Preset：P7 Modified（檔內自述「P7 Modified 深色 Preset」）——bg #020617／accent #3B82F6／accent2 #D97706／字型 IBM Plex Sans+IBM Plex Mono；與 P7 表列 accent #1E3A8A 不同，accent 與 bg 實同 P1
+- 視覺 Preset：P7 Modified（檔內自述「P7 Modified 深色 Preset」）——bg #020617／accent #3B82F6／accent2 #D97706／字型 IBM Plex Sans+IBM Plex Mono；與 P7 表列 accent #1E3A8A 不同，accent 與 bg 實同 P1（當時 P1 的值；P1 已於 2026-11-01 改 accent `#57A8FF`）
 - 頁數／QA 數：4 頁／20 題
 - 差異化亮點：推播（漏斗型）與對話（解決率型）KPI 邏輯不同故拆兩頁；每頁埋「分母不一致」口徑陷阱；效率對比圖附「分母不同勿直接比較」警示；月度趨勢刻意只給 3 個月。
 - 陷阱主題：CTR 分母（觸達 vs 開封）口徑／高 FCR 加高棄單的偽象／轉換率恆定假設／Q4 節慶歸因／效率指標量質倒置
@@ -129,4 +129,4 @@
 | 7 | 零售便利商店 | light | 正常視力 ΔE 10.2（blue≈teal）→ `--accent2` #10B981 改 #0284C7，ΔE 16.9 | 無 |
 | 8 | 醫美連鎖 | light | 建構前即在 preset 層修正（P5 accent #0891B2→#0369A1，ΔE 11.8→18.5） | 色盲 ΔE 7.9（orange↔teal，相關圖皆有數字標籤） |
 
-新產的儀表板：preset 在 SKILL Phase 1 選定後立刻跑 audit 看 PAL-01／PAL-02，硬傷在建構前就換掉，不要等交付。上表的硬傷修正已回填 D.9（2026-11-01：P4 accent2 `#0D9488`、P5 accent `#0369A1`、P6 accent2 `#0284C7`；P1 加註須調色）。
+新產的儀表板：preset 在 SKILL Phase 1 選定後立刻跑 audit 看 PAL-01／PAL-02，硬傷在建構前就換掉，不要等交付。上表的硬傷修正已回填 D.9（2026-11-01：P4 accent2 `#0D9488`、P5 accent `#0369A1`、P6 accent2 `#0284C7`；P1 加註須調色）。2026-11-01 起 P1–P7 全部以 D.11 產生器（`gen_palette.mjs`）比全部 10 色對重驗並回填修正色（含 P1 換 accent `#3B82F6→#57A8FF`，解除與第 3 份的 bg＋accent 重複），新舊值見 D.9 各 preset 註記；換色一律用 D.11，不手挑。

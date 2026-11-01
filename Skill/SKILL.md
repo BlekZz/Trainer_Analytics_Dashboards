@@ -91,7 +91,7 @@ author: Blake
 
 | Phase | 必讀 | 用到時再查 |
 |---|---|---|
-| **1 規格鎖定** | 本檔 Phase 1；`ARCHIVE.md` 跨份總覽；D.2–D.5（三軸差異化、必須差異化／不可妥協元素）；D.9（選 preset，含各 preset 的 ⚠ 註）；B.9-1（配色驗證判讀）；C.1（二維難度標籤）；A.2（錨點） | B.2（圖表選型）；C.4c（陷阱覆蓋矩陣）；C.9（題目分佈）；D.7（同主題不同切角）；D.10（擴充圖表） |
+| **1 規格鎖定** | 本檔 Phase 1；`ARCHIVE.md` 跨份總覽；D.2–D.5（三軸差異化、必須差異化／不可妥協元素）；D.9（選 preset，含各 preset 的配色驗證註）；D.11（配色生成：換色／新背景／品牌色）；B.9-1（配色驗證判讀）；C.1（二維難度標籤）；A.2（錨點） | B.2（圖表選型）；C.4c（陷阱覆蓋矩陣）；C.9（題目分佈）；D.7（同主題不同切角）；D.10（擴充圖表） |
 | **2 資料生成** | 本檔 Phase 2；A.1–A.4（錨點、衍生資料、assertConsistency 契約）；E.3（生成器端數值 hard-check） | A.5（產業量級）；A.6（月度節律）；A.7（生成器範例）；A.8（反模式） |
 | **3 HTML 建構** | 本檔 Phase 3（含 template 行為契約與執行規則）；B.3–B.5（版面、mk() 合併契約、互動）；C.2–C.5、C.7–C.8（答案三段式、證據碼、陷阱、nav-hint、訓練題、設計選擇揭露） | B.6–B.9（字型、響應式、反模式、視覺驗收）；C.6（KPI 卡）；C.10（教學反模式）；`dev/tech-notes.md` #14–#26 |
 | **4 差異化落地** | D.3–D.6（套件、不可妥協元素、changelog 範例 3） | D.8（差異化反模式） |
@@ -107,7 +107,7 @@ author: Blake
 5. 提供「資料錨點預告」：總會員、總訂單、總營收等核心數字
 6. 定教學軸／結構軸差異化方向（D.3 抽 2–3 個元素，見 D.4／D.5）
 7. **選 preset**：從 D.9 選一個，不可與前一份相同，優先選 ARCHIVE 中尚未使用的；複製 `Skill/template.html` 到 `Dashboard/{產業}_{主題}_訓練儀表板教材.html`，**只覆蓋 `:root`（含 `--font-head/--font-body/--font-mono`）與 Google Fonts import**——template 的 `c()`、Chart 預設色、TT 在執行期讀 CSS token，不需改 JS
-8. **驗配色**：`node dev/script/audit-dashboards.mjs Dashboard/<新檔>.html`，只判讀 PAL-01／PAL-02（其餘規則此時本來就會 FAIL）；PAL FAIL → 換色重跑。門檻與實作見 B.9-1
+8. **驗配色**：`node dev/script/audit-dashboards.mjs Dashboard/<新檔>.html`，只判讀 PAL-01／PAL-02（其餘規則此時本來就會 FAIL）；PAL FAIL → 用 D.11 產生器（`node dev/script/gen_palette.mjs --bg <bg> --anchor <不撞的色>`）換色後重跑，不要手挑。改背景或主色、或 top-3 難分高下時，依 D.11 開決策頁給使用者挑。門檻與實作見 B.9-1
 9. **此時等待使用者確認**規格與 preset，不要直接開工
 
 ### Phase 2 — 資料生成（依模組 A）
