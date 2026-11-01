@@ -101,6 +101,18 @@
 - **配色修正（2026-11-01，Sprint_end_palette_system M2，D.11 產生器）**：red/danger `#DC2626→#E21720`（orange/red 正常 14.4）；設計揭露文字點名的 `#0369A1` 與「橘色與綠色 ΔE 7.9」兩色均未動；修正後最小 ΔE 正常 15.1／protan 7.9（orange/teal）／deutan 8.2
 - 使用反饋：未記錄
 
+## Dashboard #9 | 2026-11-01
+- 檔案：`Dashboard/數位廣告投放_ROAS與AB測試分析_訓練儀表板教材.html`
+- 產業：數位廣告投放（代理商替 DTC 保養品牌「澄研」操盤，6 通路：Meta 開發／再行銷、Google 搜尋、Google PMax、YouTube、LINE）
+- 訓練主題：ROAS 與 A/B 測試分析（平台自報 vs 後台去重、歸因模型、A/B 統計判讀、素材多重比較、邊際 ROAS、地理 holdout 增量、毛利 ROAS）
+- 錨點：`spend_wan: 1283`、`revenue_wan: 5147`、`orders: 41873`、`aov: 1229`、`blended_roas: 4.01`、`new_customers: 18529`、`new_cpa: 692`、`overclaim_ratio: 1.43`、`breakeven_roas: 1.61`
+- 視覺 Preset：P1 深色財務型色彩（bg #08141A／accent #57A8FF）＋自訂字型 Sora（標題）× Manrope（內文）× Fira Code（數字）——第一份用 P1，字型組合前 8 份皆未用
+- 頁數／QA 數：4 頁／19 題＋T1–T5（共 24 題）
+- 差異化亮點：決策鏈 4 頁（看成效 → 驗口徑 → 驗實驗 → 分預算）；訓練題拆到每頁末尾；新教學元素「知識領域 chip」（數據分析／行銷專業／產業知識 24 題各 8）；批判型難度分佈（無 L1·F）；定義面板每條附「業界常見替代定義」；T5 資料矛盾題＝同期同花費的歸因 ROAS 9.80 vs 增量 ROAS 1.58；文字數字全部 `data-v` 由 DATA 衍生並有敘事守門；統計採直覺推導（CI 色帶、逐日 p 值、檢定力／MDE）。資料由 `dev/script/gen_data_adroas.py` 生成、`inject_data.py` 注入。
+- 訓練題切角：T1 單一 ROAS 能否支撐「預算加倍」（成本、檔期、回購）；T2 上游通路（YouTube）在不同歸因模型下的取捨；T3 改寫不顯著的 A/B 週報（不確定性、新奇效應、檢定力）；T4 缺失維度盤點（回購／LTV、其他通路增量、自然流量基準）；T5 歸因 vs 增量的資料矛盾
+- 陷阱主題（11 名、15 個 trap-block、4 階段全滿）：重複歸因／平均數陷阱（平均 vs 邊際 ROAS、全年 CPA）／挑選期間（歸因窗口）／多重比較（素材贏家詛咒）／隱藏不確定性／提早偷看（peeking）／新奇效應／相關≠因果（再行銷撿現成）／基線缺失（品牌字、無對照 ROAS）／單指標決策（ROAS 高≠賺錢）／過度推論
+- 使用反饋：未記錄
+
 ---
 
 ## 跨份總覽
@@ -117,8 +129,9 @@
 | 6 | SaaS 訂閱制 | MRR 訂閱指標 | P3 | #2563EB |
 | 7 | 零售便利商店 | 商品庫存補貨 | P6 | #059669 |
 | 8 | 醫美連鎖 | 預約回診分析 | P5（accent 已校正） | #0369A1 |
+| 9 | 數位廣告投放 | ROAS 與 A/B 測試分析 | P1 色＋自訂字型（Sora／Manrope／Fira Code） | #57A8FF |
 
-重複：#1 與 #2 共用 Lora+Outfit 字型與 P2 基線；#2、#3、#6 主色皆為藍（#2d5be3／#3B82F6／#2563EB），#3 與 #1 的 accent 同為 #3B82F6；#5 與 #6 同用 Plus Jakarta Sans。尚未使用：P1。
+重複：#1 與 #2 共用 Lora+Outfit 字型與 P2 基線；#2、#3、#6 主色皆為藍（#2d5be3／#3B82F6／#2563EB），#3 與 #1 的 accent 同為 #3B82F6；#5 與 #6 同用 Plus Jakarta Sans。P1 已由 #9 使用（字型改自訂，未用 P1 的 IBM Plex，與 #3 不重複）；P1–P7 全數用過。
 
 ## 配色驗證紀錄（B.9-1，2026-10-14）
 
@@ -134,5 +147,6 @@
 | 6 | SaaS訂閱制 | light | 無 | 色盲 ΔE 7.9（orange↔teal，需保留標籤） |
 | 7 | 零售便利商店 | light | 正常視力 ΔE 10.2（blue≈teal）→ `--accent2` #10B981 改 #0284C7，ΔE 16.9 | 無 |
 | 8 | 醫美連鎖 | light | 建構前即在 preset 層修正（P5 accent #0891B2→#0369A1，ΔE 11.8→18.5） | 色盲 ΔE 7.9（orange↔teal，相關圖皆有數字標籤） |
+| 9 | 數位廣告投放 | dark | 無（Phase 1 直接用 D.11 已重驗的 P1 五色 `#57A8FF／#39C699／#F7931F／#EF4444／#8B5CF6`，bg `#08141A`；audit PAL：正常最小 ΔE 17.0〔orange/red〕、色盲 12.0〔red/teal, deutan〕） | 無；template 遺留的 P2 rgba 寫死色於 Phase 5 前改為 token（color-mix），非 PAL 範圍 |
 
 新產的儀表板：preset 在 SKILL Phase 1 選定後立刻跑 audit 看 PAL-01／PAL-02，硬傷在建構前就換掉，不要等交付。上表的硬傷修正已回填 D.9（2026-11-01：P4 accent2 `#0D9488`、P5 accent `#0369A1`、P6 accent2 `#0284C7`；P1 加註須調色）。2026-11-01 起 P1–P7 全部以 D.11 產生器（`gen_palette.mjs`）比全部 10 色對重驗並回填修正色（含 P1 換 accent `#3B82F6→#57A8FF`，解除與第 3 份的 bg＋accent 重複），新舊值見 D.9 各 preset 註記；換色一律用 D.11，不手挑。同日 M2 以 D.11 重配既有 7 份的撞色（audit 原 12 筆 PAL 豁免全數移除），每份的舊→新值與修正後 ΔE 記在各 Dashboard 段的「配色修正」行；同時 P1 改 bg `#08141A`、P7 purple `#6366F1→#B18EF6`。

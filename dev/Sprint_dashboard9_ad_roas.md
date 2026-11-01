@@ -110,3 +110,111 @@ A/B 資料設計：28 天、每組約 2.1 萬訪客；第 5 天 B 領先約 +30%
   - Q19 的 [A] 段用「其他變動成本再占營收 15%」假設值算出門檻 2.13（`V.otherPct`／`V.be2` 由 JS 從 DATA 衍生，文字明示為假設）；Q17、Q18 引用的保養品回購週期 60–90 天、7 天猶豫期為產業常識，放在 [A]／[I] 文字敘述、不帶 DATA 以外的計算。
   - Q18 題目原寫「AM」，改為「代理商業務窗口」避免新增未定義縮寫；定義面板新增 6 條：增量 ROAS／地理 holdout、邊際 ROAS、損益兩平 ROAS、毛利 ROAS（POAS）、LTV、MMM（各含業界常見替代定義）。另：ab 頁既有的「PM」未在定義面板（非本層範圍，留給 Phase 4／E.9 處理）。
   - `buildTextValues()` 新增 budget 區塊 11 條敘事守門（級距跨越損益兩平的位置、增量略低於損益兩平、只有 YouTube 低於損益兩平、YouTube 換模型後高於門檻等）；`assertConsistency()` 不變（131 條）。
+- 2026-11-01（claude，M3／Phase 4–4.5＋Phase 5 交付物）：只動 CSS／圖表 options／文字版面，DATA 與題目實質不變。
+  - 縮寫（C.4b 原則 2、E.1 C#19）：Q11、T3 的「PM」改「專案負責人」；素材標籤（DATA 字串、畫在圖軸上）的 KOL／UGC／ASMR 原本沒定義，定義面板加一條「素材類型縮寫」。抽出全文 innerText 與 DATA 字串掃大寫序列：其餘 ROAS／CPA／CPM／CTR／ATT／MDE／LTV／POAS／MMM／KPI／AOV／DTC／UTM／PMax／MER／CI 都已有定義；DDA 只出現在 console 的 check 名稱；Wald／SE 等方法字串不會顯示在畫面上。
+  - 色彩 protocol（C#6）：template 留下的 P2 色 rgba 寫死值（`59,130,246`／`96,165,250`／`212,135,10`／`42,171,133`／`184,156,243`／`212,67,47`／`13,17,23`，共 39 處）和陷阱文字 `#e8847a`（2 處）一律改成 `color-mix(…var(--token)…)`，header 與 active tab 的底色因此跟 P1 `--bg` 一致。第 8 份當時也做過同樣的清理。
+  - 版面（E.9 DQ-7）：視窗 960 寬、定義面板打開時，內容區只剩約 637px，兩欄圖卡每張約 280px，donut 的外部標籤（Meta 開發、Meta 再行銷）被截。`#content-area` 加 `container-type: inline-size`，並加 `@container (max-width:760px)` 讓內容區窄時改單欄（原本的 `@media(max-width:900px)` 只看視窗寬度）。
+  - 圖表 options：cCreCtr 的「第 1 名下緣」標籤原本壓在最後一列的 1.07% 數值上，改放到圖區上緣外，legend 移到圖下方；cAbCr（2 條實線、原本沒有直接標籤，B.9-5）在最後一天標「A 原版／B 新版＋終值」，往左上、左下放，並用 `clamp` 避免右緣截字。
+  - 資料期間（C#47、B.9-8）：12 張缺期間的圖卡標題補上 `data-v="year|abPeriod|hoPeriod"`。這兩張不補：cCreCtr 只寫「首週」，因為 DATA 沒有素材測試日期；cHoldRoas 的三根長條各自標了「測試期／全年」。T5［A］原本寫死的「6 週」改用 `hoPeriod` 綁定。
+
+## Phase 4 — 差異化落地核對（D.3／D.5）
+
+| 規劃元素 | 實際狀態 | 證據 |
+|---|---|---|
+| P1 色彩 | ✅ `:root` 五色＝D.9 P1（`#57A8FF／#39C699／#F7931F／#EF4444／#8B5CF6`，bg `#08141A`） | HTML `:root`；audit ΔE 正常 17.0／色盲 12.0 |
+| Sora × Manrope × Fira Code | ✅ Google Fonts import 與 `--font-head/body/mono` 一致 | HTML L11、L28–30 |
+| 批判型分佈（C.9） | ✅ 一般題 L1·I 2／L1·A 2／L2·F 2／L2·I 2／L2·A 4／L3·F 1／L3·I 2／L3·A 4（無 L1·F，A 題 10/19），訓練題 T1 L2·A、T2–T5 L3·A | 瀏覽器計數 `.badge` |
+| T5 資料矛盾題 | ✅ 歸因 9.80 vs 增量 1.58，有三段（各自讀／找矛盾／下判斷）＋監控指標＋trap | budget T5 |
+| 定義面板含業界常見替代定義 | ✅ 歸因模型、信賴區間、p 值、MDE、CTR、增量 ROAS、邊際、損益兩平、POAS、LTV、新客 CPA、混合 ROAS（MER）等 | def-panel（35 條） |
+| 知識領域 chip | ✅ 24 題 data／mkt／ind＝8／8／8，每頁 2／2／2；header legend 與定義面板都有說明 | `data-domain` 計數 |
+| 訓練題拆到每頁末尾 | ✅ 4 個 `.training-block`（ovw T1、attr T2、ab T3、budget T4＋T5） | |
+| D.5 不可妥協 | ✅ F/I/A（FIA 110）、assertConsistency 131 條全過、三段式、trap 15、定義面板、DEMO chip、📐 設計選擇揭露 8 項 | audit PASS |
+
+## 差異化 Changelog（對照第 8 份醫美連鎖／template 基準）
+
+### 視覺軸
+- Preset：P5 醫療信任型（淺色 `#ECFEFF`、accent `#0369A1`）→ **P1 深色財務型**（`#08141A`、accent `#57A8FF`），第一次使用 P1
+- 字型：Lexend＋Source Sans 3 → **Sora（標題）× Manrope（內文）× Fira Code（數字）**，前 8 份都沒用過
+- 色彩語意：通路是實體色（`CH_COLOR`），同一通路內的口徑、模型、客群用同色深淺區分；legend 以中性色深淺示意
+- 版面：內容區用 container query，打開定義面板時依內容區寬度改單欄
+
+### 教學軸
+- 難度分佈：採 C.9 **批判型**（L2·A／L3·A 為主、無 L1·F，A 題占一般題 10/19）
+- 新教學元素：**知識領域 chip**（📊 數據分析／📣 行銷專業／🏭 產業知識，24 題三類各 8 題）
+- 定義面板：口徑說明 → 加上「**業界常見替代定義**」與常見誤解（統計、歸因、增量、POAS 等）
+- T5 資料矛盾題：第 8 份（同統計量不同形狀＋矛盾）→ **歸因 ROAS 9.80 vs 增量 ROAS 1.58**（同一段期間、同一筆花費）
+- 陷阱：4 階段全滿、11 個名稱、15 個 trap-block；本份才有的：重複歸因、提早偷看、新奇效應、多重比較、隱藏不確定性、平均數陷阱（平均 vs 邊際 ROAS）
+
+### 結構軸
+- 分頁邏輯：族群／漏斗分頁 → **決策鏈 4 頁**（看成效 → 驗口徑 → 驗實驗 → 分預算），L3 題用 nav-hint 指回前面的頁面
+- 訓練題位置：集中在單一位置 → **拆到每頁末尾**（T1–T5 分在 4 頁）
+- 文字數字：全部用 `data-v` 從 DATA 衍生，並由 `buildTextValues()` 敘事守門
+
+### 資料軸
+- 錨點：48,000 預約／83.0% 出席／23,904 萬 → **花費 1,283 萬／後台營收 5,147 萬／訂單 41,873／混合 ROAS 4.01／新客 CPA 692**
+- 口徑差：平台自報加總＝後台 × 1.43（教學點）；A/B 第 5 天 +30.5% 且 p<0.05，終局 +5.8%、p 不顯著
+
+## Design QA 結果（Phase 4.5）
+
+瀏覽器：Playwright Chromium，http://localhost:8765/，1440 與 960 兩種寬度 × 定義面板開／關 × 4 頁，所有 QA 與 findings 都展開（16 種組合：canvas 19/19 都有 Chart 實例、沒有 0 尺寸、沒有水平溢出、console 0 error／0 guard）。截圖在 session scratchpad 的 `dq/`（`mont_1440_*`、`mont_960open_*`、`fix_*`）。
+
+| # | 項目 | 狀態 | 備註 |
+|---|---|---|---|
+| DQ-1 | Bar 軸 max（20% headroom） | ✅ | 全部用 `headroom()`＝ceil(max×1.2／step)；cSpendM 210／167、cClaimOrd 20,000／15,909、cCreCtr 3／2.15 |
+| DQ-2 | Stacked bar 動態 max | ✅ | 唯一的堆疊圖 cNewMix 是 100% 堆疊，max＝100 是定義值 |
+| DQ-3 | 折線圖 Y 軸 max | ✅ | cTier 折線有 datalabels，max 4.5／3.53；cCpaM、cAbP 用 headroom；cAbCr 只標終點，max 10／7.5 |
+| DQ-4 | 值域比例 <10x | ✅ | bar 最大 10.9x（cAbWeek +26.1% vs −2.4%，最小柱目視可辨）；cAbP 是 p 值折線 61x，接近 0 本身就是教學點（不可用對數） |
+| DQ-5 | Donut 12 點鐘起畫 | ✅ | cSpendMix 未設 `rotation`（0） |
+| DQ-6 | Donut 降序排列 | ✅ | `descIdx(CH.spend_pct)` 33／20／16／12／11／8 |
+| DQ-7 | Donut 全項目 datalabels | ✅（修後） | 960 寬＋面板開啟時兩欄太窄，標籤被截 → 加 container query 改單欄後全部完整 |
+| DQ-8 | Donut layout.padding≥32 | ✅ | padding 40、legend:false |
+| DQ-9 | Stacked bar 頂端加總 | N/A | 100% 堆疊，每根加總都是 100% |
+| DQ-10 | Stacked bar tooltip 佔比 | ✅ | cNewMix tooltip「新客 75.1%（n 筆）｜通路訂單 N 筆」 |
+| DQ-11 | 折線圖 hover mode:index | ✅ | cCpaM、cAbCr、cAbP、cTier 都是 index／intersect:false |
+| DQ-12 | pointHoverRadius≥10 | ✅ | 全部 10 |
+| DQ-13 | 非首頁渲染正確 | ✅ | attr／ab／budget 從 switchPage 到 initialized 分別 119／128／118 ms |
+| DQ-14 | 首頁不點擊即渲染 | ✅ | 載入後 ovw 5 張圖都有 Chart 實例（經 switchPage 契約） |
+| DQ-15 | syncHeaderHeight 位置正確 | ✅ | 綁在 window load／resize（主 script 末） |
+| DQ-16 | 製作時間 chip 格式 | ✅ | 🗓️ 製作時間：20261101 |
+| DQ-17 | DOMContentLoaded 不重複 | ✅ | 只有 1 個 handler（另一處是註解） |
+| DQ-18 | findings collapse 真正生效 | ✅ | 載入時 19/19 都是 collapsed |
+| DQ-19 | 配色驗證器 | ✅ | audit PAL：正常 ΔE 17.0（orange/red）／色盲 12.0（red/teal, deutan） |
+| DQ-20 | 單一值軸 | ✅ | 19 張圖都只有一條值軸，雙軸 0 張 |
+| DQ-21 | 標題／單位／期間 | ✅（修後） | 抽 cCpaM、cHoldRev、cMargin：標題有單位與期間；另外 12 張圖卡補上期間（cCreCtr、cHoldRoas 例外，原因見偏離紀錄） |
+| DQ-22 | 不只靠顏色 | ✅（修後） | ≥2 系列的圖都有 legend；cAbCr 補上終點直接標籤，其餘 ≤4 系列的圖都有數值標籤 |
+
+**通過 22/22（DQ-9 N/A）→ ✅ 可進 Phase 5**（修正：DQ-7 版面、DQ-21 期間、DQ-22 直接標籤，cCreCtr 的標籤重疊也一併修正）
+
+## Phase 5 — E.1 C 組人工判斷（claude 自跑，非獨立驗收）
+
+| # | 結果 | 備註 |
+|---|---|---|
+| 1 SSOT | ✅ | 文字數字全部用 `data-v`；寫死的只剩產業常識與建議參數（60–90 天、7 天猶豫期、28 天窗口、5–10% holdback）；T5 的「6 週」已改綁定。偷看日 `d5=4` 是規格設計常數（cAbCr 標註與 `buildTextValues` 兩處一致），沒有從 DATA 讀 |
+| 2 assert 覆蓋 | ✅ | 131 條：錨點、反推、分佈閉合、通路加總、歸因模型合計、A/B 統計重算、holdout、毛利 |
+| 3 量級 | ✅ | AOV 1,229、毛利率 62%、混合 ROAS 4.01、新客 CPA 692，符合保養品 DTC |
+| 4 月度節律 | ✅ | 5／6／10／11／12 月高峰、2 月最低、Q4 CPA 上升 |
+| 5 口徑差 | ✅ | 自報／後台 1.43 倍是刻意的教學點，Q4、Q10、KPI 都有解釋 |
+| 35 KPI 可驗算 | ✅ | 12 張 KPI 卡都有公式或可在圖上反推（tooltip 給分子分母） |
+| 37 層級一致 | ✅ | 通路層級資料對應通路層級 KPI |
+| 43／44 散點 | N/A | 本份沒有散點圖 |
+| 6 色彩語意 | ✅ | 已清除 template 寫死的顏色。軟性問題：YouTube 的通路色剛好是 red，在 cMargin 中它又剛好是唯一低於損益兩平的通路，兩種語意重疊（顏色跟著實體走，屬設計選擇） |
+| 7 字型 | ✅ | 標題、內文、數字三種角色都有，import 與 token 一致 |
+| 26 雙軸 | ✅ | 0 張 |
+| 34 new Chart 尺寸 | ✅ | donut：maintainAspectRatio:false＋h300 |
+| 47 單位／期間 | ✅ | 見 DQ-21（cCreCtr 沒有日期資料） |
+| 11 F/I/A 正確 | ✅（裁定後修） | 24 題逐段讀過；Q9 原［I］的「新客第一單金額較小」依 coordinator 裁定拆出為獨立［A］段，明說是待驗證假設（缺新舊客 AOV 拆分），保留推論訓練價值 |
+| 15 三段式 | ✅ | F 題（Q3／Q7／Q15）只有 F；I 題到 I 為止（Q12、Q17 附了說明資料缺口的［A］，沒有 🎯）；A 題都是 F→I→A→🎯 |
+| 16 訓練題位置 | ✅ | 拆在每頁末尾（差異化指定的位置） |
+| 18 定義面板 | ✅ | 所有 KPI 都有口徑；共 35 條 |
+| 19 縮寫 | ✅（修後） | PM 改寫；KOL／UGC／ASMR 補上定義 |
+| 20 只引用呈現數據 | ✅（裁定後修） | Q9 該子句已改［A］；其餘［I］中的產業常識（回購週期、猶豫期、行動流量結構）都是敘述，沒有拿來計算 |
+| 38 逆直覺三處同步 | ✅ | 歸因 vs 增量：DATA、T5／Q18 trap、揭露 #6；A/B 基準偏高：DATA、揭露 #5；早期顯著：DATA、Q11 trap |
+| 39 缺失維度兩處 | ✅（裁定後修） | 自然流量：T4＋揭露 #4。回購／LTV：T4 ①＋揭露 #4（改名「刻意省略的兩個維度」，理由：本份聚焦投放端口徑與實驗，LTV 留作 T4 缺失維度練習）。A/B 新舊訪客拆分在 Q11／Q13［A］說明缺口 |
+
+**C 組：21 列 ✅、2 列 N/A（#43、#44）**。#11／#20／#39 依 coordinator 裁定修正（Q9 拆［A］、揭露 #4 併入回購／LTV）；#6 的 YouTube 紅色依裁定維持。修後 audit rc=0（FIA 110→111）、console 只有 favicon 404、`data-v` 空值 0。
+
+## Phase 5 — 交付物
+
+- 生成器可重現：`python dev/script/gen_data_adroas.py <tmp>` 跑兩次，sha256 都是 `bed44e20e9d68d7bfd51f03a3a3b0459f714c41b3ab8b904c2f0a79328520fdc`；把該 JSON 用 `inject_data.py` 注入工作檔的副本，結果與工作檔逐位元組相同（cmp=0，裁定修正後重驗仍 cmp=0，最終工作檔 sha256 `321d66e0d65e54d68394a76ef01945bd6e27e24e2f46709ee359df17ead7172b`）
+- ARCHIVE：已新增 #9 條目，並補上跨份總覽列與配色驗證紀錄列
+- audit：`node dev/script/audit-dashboards.mjs Dashboard/*.html Skill/template.html` → rc=0（10/10 份無 FAIL；#9 PASS：圖表 19/19、QA 24、trap 15、FIA 110、assert 131）

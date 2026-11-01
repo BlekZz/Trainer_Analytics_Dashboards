@@ -49,7 +49,7 @@
 
     .site-header {
       position: sticky; top: 0; z-index: 200;
-      background: rgba(13,17,23,0.97); backdrop-filter: blur(12px);
+      background: color-mix(in srgb, var(--bg) 97%, transparent); backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
 
@@ -70,8 +70,8 @@
       border: 1px solid rgba(255,255,255,0.1); white-space: nowrap;
     }
     .meta-chip.demo {
-      background: rgba(212,135,10,0.15); color: var(--warn);
-      border-color: rgba(212,135,10,0.3); font-weight: 600;
+      background: color-mix(in srgb, var(--warn) 15%, transparent); color: var(--warn);
+      border-color: color-mix(in srgb, var(--warn) 30%, transparent); font-weight: 600;
     }
 
     /* Row 2: 指標定義 toggle + nav tabs */
@@ -82,17 +82,17 @@
     }
     .def-toggle-btn {
       display: flex; align-items: center; gap: 7px;
-      background: rgba(59,130,246,0.1);
-      border: 1px solid rgba(59,130,246,0.28); border-radius: 7px;
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent); border-radius: 7px;
       padding: 7px 13px; margin: 7px 16px 7px 0;
       color: var(--accent); font-family: var(--font-body);
       font-size: 0.79rem; font-weight: 600; cursor: pointer;
       transition: background 0.2s, border-color 0.2s;
       flex-shrink: 0; user-select: none; white-space: nowrap;
     }
-    .def-toggle-btn:hover { background: rgba(59,130,246,0.18); }
+    .def-toggle-btn:hover { background: color-mix(in srgb, var(--accent) 18%, transparent); }
     .def-toggle-btn.open {
-      background: rgba(59,130,246,0.2); border-color: rgba(59,130,246,0.5);
+      background: color-mix(in srgb, var(--accent) 20%, transparent); border-color: color-mix(in srgb, var(--accent) 50%, transparent);
     }
     .def-toggle-icon { font-size: 0.95rem; }
     .def-toggle-arrow {
@@ -111,8 +111,8 @@
     }
     .nav-tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
     .nav-tab.active {
-      color: var(--accent); background: rgba(13,17,23,0.97);
-      border-color: var(--border); border-bottom-color: rgba(13,17,23,0.97);
+      color: var(--accent); background: color-mix(in srgb, var(--bg) 97%, transparent);
+      border-color: var(--border); border-bottom-color: color-mix(in srgb, var(--bg) 97%, transparent);
     }
 
     /* Row 3: 色彩語意 + 難度 + F/I/A */
@@ -132,9 +132,9 @@
     .legend-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
     .legend-right > span { display: flex; align-items: center; gap: 5px; }
     .badge { display: inline-block; border-radius: 4px; padding: 1px 6px; font-size: 0.67rem; font-weight: 600; }
-    .badge.l1 { background: rgba(42,171,133,0.18); color: var(--accent2); border: 1px solid rgba(42,171,133,0.3); }
-    .badge.l2 { background: rgba(59,130,246,0.18); color: var(--accent); border: 1px solid rgba(59,130,246,0.3); }
-    .badge.l3 { background: rgba(184,156,243,0.18); color: var(--purple); border: 1px solid rgba(184,156,243,0.3); }
+    .badge.l1 { background: color-mix(in srgb, var(--accent2) 18%, transparent); color: var(--accent2); border: 1px solid color-mix(in srgb, var(--accent2) 30%, transparent); }
+    .badge.l2 { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); }
+    .badge.l3 { background: color-mix(in srgb, var(--purple) 18%, transparent); color: var(--purple); border: 1px solid color-mix(in srgb, var(--purple) 30%, transparent); }
 
     /* ── Side def panel ── */
     #main-wrapper { display: flex; align-items: flex-start; }
@@ -169,7 +169,7 @@
       outline: none; transition: border-color 0.2s;
     }
     .def-search-wrap input::placeholder { color: var(--text-muted); }
-    .def-search-wrap input:focus { border-color: rgba(59,130,246,0.5); background: rgba(59,130,246,0.05); }
+    .def-search-wrap input:focus { border-color: color-mix(in srgb, var(--accent) 50%, transparent); background: color-mix(in srgb, var(--accent) 5%, transparent); }
     .def-no-result { font-size: 0.76rem; color: var(--text-muted); padding: 10px 4px; text-align: center; display: none; }
     #def-panel-inner h3 {
       font-size: 0.72rem; color: var(--accent);
@@ -221,6 +221,11 @@
     @media(max-width:900px) {
       .chart-grid-2, .chart-grid-3, .chart-grid-wide { grid-template-columns: 1fr; }
     }
+    /* 定義面板展開時內容區變窄（如 960 寬 − 323 面板），依內容區寬度而非視窗寬度改單欄，避免 donut 外部標籤被截（E.9 DQ-7） */
+    #content-area { container-type: inline-size; }
+    @container (max-width: 760px) {
+      .chart-grid-2, .chart-grid-3, .chart-grid-wide { grid-template-columns: 1fr; }
+    }
 
     /* ── Chart card ── */
     .chart-card {
@@ -260,29 +265,29 @@
     .answer { display: none; padding: 0 18px 18px; font-size: 0.84rem; line-height: 1.7; }
     .answer.show { display: block; }
 
-    .tag-f { display: inline-block; background: rgba(42,171,133,0.18); color: var(--accent2); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
-    .tag-i { display: inline-block; background: rgba(59,130,246,0.18); color: var(--accent); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
-    .tag-a { display: inline-block; background: rgba(212,135,10,0.18); color: var(--warn); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
+    .tag-f { display: inline-block; background: color-mix(in srgb, var(--accent2) 18%, transparent); color: var(--accent2); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
+    .tag-i { display: inline-block; background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
+    .tag-a { display: inline-block; background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); border-radius: 4px; padding: 0 5px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
     .fia { display: inline-block; border-radius: 3px; padding: 0 4px; font-size: 0.68rem; font-weight: 700; }
-    .fia.f { background: rgba(42,171,133,0.18); color: var(--accent2); }
-    .fia.i { background: rgba(59,130,246,0.18); color: var(--accent); }
-    .fia.a { background: rgba(212,135,10,0.18); color: var(--warn); }
+    .fia.f { background: color-mix(in srgb, var(--accent2) 18%, transparent); color: var(--accent2); }
+    .fia.i { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); }
+    .fia.a { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
 
     .trap-block {
-      background: rgba(212,67,47,0.1); border: 1px solid rgba(212,67,47,0.3);
+      background: color-mix(in srgb, var(--danger) 10%, transparent); border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
       border-radius: 8px; padding: 10px 14px; margin-top: 10px;
-      font-size: 0.8rem; color: #e8847a; display: flex; gap: 8px; align-items: flex-start;
+      font-size: 0.8rem; color: color-mix(in srgb, var(--danger) 70%, var(--text)); display: flex; gap: 8px; align-items: flex-start;
     }
     .trap-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
 
     .nav-hint {
       display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(212,135,10,0.1); border: 1px solid rgba(212,135,10,0.3);
+      background: color-mix(in srgb, var(--warn) 10%, transparent); border: 1px solid color-mix(in srgb, var(--warn) 30%, transparent);
       border-radius: 8px; padding: 8px 14px; margin-top: 10px;
       font-size: 0.78rem; color: var(--warn); cursor: pointer;
       transition: background 0.2s;
     }
-    .nav-hint:hover { background: rgba(212,135,10,0.18); }
+    .nav-hint:hover { background: color-mix(in srgb, var(--warn) 18%, transparent); }
 
     .answer-block { margin-bottom: 6px; }
     .answer-block p { margin-top: 4px; }
@@ -299,7 +304,7 @@
 
     /* ── Training block ── */
     .training-block {
-      background: rgba(184,156,243,0.06); border: 1px solid rgba(184,156,243,0.25);
+      background: color-mix(in srgb, var(--purple) 6%, transparent); border: 1px solid color-mix(in srgb, var(--purple) 25%, transparent);
       border-radius: var(--radius); padding: 20px; margin-top: 28px;
     }
     .training-title { font-family: var(--font-head); font-size: 0.95rem; font-weight: 600; color: var(--purple); margin-bottom: 14px; }
@@ -313,19 +318,19 @@
     /* ── Chart flash animation ── */
     @keyframes chartFlash {
       0%,100% { box-shadow: none; border-color: var(--border); }
-      50% { box-shadow: 0 0 0 3px rgba(96,165,250,0.85), 0 0 20px rgba(96,165,250,0.35); border-color: rgba(96,165,250,0.9); }
+      50% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 85%, transparent), 0 0 20px color-mix(in srgb, var(--accent) 35%, transparent); border-color: color-mix(in srgb, var(--accent) 90%, transparent); }
     }
     .chart-flash { animation: chartFlash 0.55s ease-in-out 4; }
 
     /* ── Chart reference button ── */
     .chart-ref-btn {
       display: inline-flex; align-items: center; gap: 5px;
-      background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.28);
+      background: color-mix(in srgb, var(--accent) 7%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
       border-radius: 6px; padding: 5px 12px; margin-top: 8px;
       font-size: 0.76rem; color: var(--accent); cursor: pointer;
       font-family: var(--font-body); transition: background 0.2s;
     }
-    .chart-ref-btn:hover { background: rgba(59,130,246,0.14); }
+    .chart-ref-btn:hover { background: color-mix(in srgb, var(--accent) 14%, transparent); }
 
     /* ── Responsive ── */
     @media(max-width:600px) {
@@ -341,8 +346,8 @@
       .kpi-grid { grid-template-columns: 1fr; }
     }
       /* ── C.4c 陷阱分類 chip／E.1 #12 證據碼（2026-10-14） ── */
-    .trap-tag { display: inline-block; flex-shrink: 0; align-self: flex-start; white-space: nowrap; font-size: 0.7rem; font-weight: 600; padding: 1px 6px; border-radius: 4px; margin-left: 6px; background: rgba(212,67,47,0.12); color: #e8847a; opacity: 0.85; }
-    .ev { display: inline; background: rgba(59,130,246,0.14); border-radius: 4px; padding: 1px 5px; font-family: var(--font-mono); font-size: 0.71rem; color: var(--accent); font-weight: 500; }
+    .trap-tag { display: inline-block; flex-shrink: 0; align-self: flex-start; white-space: nowrap; font-size: 0.7rem; font-weight: 600; padding: 1px 6px; border-radius: 4px; margin-left: 6px; background: color-mix(in srgb, var(--danger) 12%, transparent); color: color-mix(in srgb, var(--danger) 70%, var(--text)); opacity: 0.85; }
+    .ev { display: inline; background: color-mix(in srgb, var(--accent) 14%, transparent); border-radius: 4px; padding: 1px 5px; font-family: var(--font-mono); font-size: 0.71rem; color: var(--accent); font-weight: 500; }
     /* ── Findings 預設坍縮（B.5 紅線，E.1 #33） ── */
     .findings-label { cursor: pointer; user-select: none; display: flex; align-items: center; justify-content: space-between; font-size: 0.74rem; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
     .findings-label::after { content: '▲'; font-size: 8px; transition: transform 0.22s; opacity: 0.65; }
@@ -522,6 +527,10 @@
     <p>點擊 ÷ 曝光，衡量素材吸不吸引人點，不代表點了會不會買。本頁以素材的點擊數 ÷ 曝光數計算。業界常見替代口徑：Meta 廣告管理員同時有「CTR（全部）」（含按讚、展開文字等所有點擊）與「連結點閱率」（只算點進連結），兩者數字差很多，比較時要用同一種。</p>
   </div>
   <div class="def-item">
+    <h4>素材類型縮寫：KOL／UGC／ASMR</h4>
+    <p><strong>KOL</strong>（Key Opinion Leader，關鍵意見領袖）：網紅或達人代言、開箱的素材。<strong>UGC</strong>（User-Generated Content，用戶生成內容）：一般使用者自己拍的心得、評價，品牌取得授權後拿來投放。<strong>ASMR</strong>（Autonomous Sensory Meridian Response，自發性知覺經絡反應）：以近距離收音呈現按壓、塗抹等質地聲音的影片風格。三者都是素材的呈現形式，不是投放通路。</p>
+  </div>
+  <div class="def-item">
     <h4>療效宣稱（化粧品廣告）</h4>
     <p>依《化粧品衛生安全管理法》，化粧品的標示、宣傳與廣告不得虛偽誇大，也不得涉及醫療效能（例如宣稱治療、改善皮膚病症）。保養品廣告用「使用前／使用後」的皮膚對比，容易被認定為暗示療效；Meta 廣告政策對健康與外觀類的前後對比圖片也有限制。</p>
   </div>
@@ -613,7 +622,7 @@
       <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>節律：</strong>全年月花費平均約 <span data-v="spAvg"></span> 萬；高於平均的月份是 <span data-v="spPeaks"></span>。最高 <span data-v="spMaxM"></span>（<span data-v="spMax"></span> 萬）是最低 <span data-v="spMinM"></span>（<span data-v="spMin"></span> 萬）的 <span data-v="spRatio"></span> 倍；10–12 月三個月占全年花費 <span data-v="q4SpPct"></span>%。</div></div>
     </div>
     <div class="chart-card" id="card-cRevM">
-      <div class="chart-card-title">月度後台營收（萬｜官網訂單去重）</div>
+      <div class="chart-card-title">月度後台營收（萬｜<span data-v="year"></span>｜官網訂單去重）</div>
       <div class="chart-block h280"><canvas id="cRevM"></canvas></div>
       <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>形狀：</strong>營收的高低月與花費圖大致同步；10–12 月占全年後台營收 <span data-v="q4RvPct"></span>%。<strong>口徑：</strong>這是官網後台的實際訂單營收（每筆只算一次），不是各廣告平台回報的數字。</div></div>
     </div>
@@ -622,12 +631,12 @@
   <div class="section-title">通路配置與平台回報</div>
   <div class="chart-grid chart-grid-2">
     <div class="chart-card" id="card-cSpendMix">
-      <div class="chart-card-title">通路花費占比（全年）</div>
+      <div class="chart-card-title">通路花費占比（<span data-v="year"></span> 全年）</div>
       <div class="chart-block h300"><canvas id="cSpendMix"></canvas></div>
       <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>集中度：</strong>Meta 兩條線（開發＋再行銷）合計 <span data-v="metaPct"></span>%；前兩大通路 <span data-v="top2"></span> 合計 <span data-v="top2Pct"></span>%。中心數字＝全年總花費。</div></div>
     </div>
     <div class="chart-card" id="card-cPlatRoas">
-      <div class="chart-card-title">各通路平台自報 ROAS（降序｜虛線＝混合 ROAS）</div>
+      <div class="chart-card-title">各通路平台自報 ROAS（<span data-v="year"></span> 全年｜降序｜虛線＝混合 ROAS）</div>
       <div class="chart-block h300"><canvas id="cPlatRoas"></canvas></div>
       <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>讀法：</strong>每條長條＝該平台後台回報的轉換營收 ÷ 該通路花費（滑過長條可看兩個數字）。最高 <span data-v="prTopN"></span> <span data-v="prTop"></span>，最低 <span data-v="prBotN"></span> <span data-v="prBot"></span>；<span data-v="nCh"></span> 個通路中有 <span data-v="prAbove"></span> 個落在虛線右側。</div></div>
     </div>
@@ -635,7 +644,7 @@
 
   <div class="section-title">新客取得成本</div>
   <div class="chart-card" id="card-cCpaM">
-    <div class="chart-card-title">月度新客 CPA（NT$｜虛線＝全年值）</div>
+    <div class="chart-card-title">月度新客 CPA（NT$｜<span data-v="year"></span>｜虛線＝全年值）</div>
     <div class="chart-block h280"><canvas id="cCpaM"></canvas></div>
     <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>走勢：</strong>1–9 月新客 CPA 落在 NT$<span data-v="cpaLo"></span>–<span data-v="cpaHi"></span>；<span data-v="novM"></span> NT$<span data-v="cpaNov"></span>、<span data-v="decM"></span> NT$<span data-v="cpaDec"></span>，<span data-v="decM"></span>比全年值 NT$<span data-v="cpa"></span> 高 <span data-v="cpaDecVs"></span>%。全年值是「整年花費 ÷ 整年新客」，不是 12 個月 CPA 的簡單平均。</div></div>
   </div>
@@ -823,7 +832,7 @@
 
   <div class="section-title">換一套歸因規則，功勞怎麼搬家</div>
   <div class="chart-card" id="card-cModelRoas">
-    <div class="chart-card-title">三種歸因模型下的各通路 ROAS（後台營收重新分配｜每個模型合計都是 <span data-v="rev"></span> 萬｜依最終點擊降序）</div>
+    <div class="chart-card-title">三種歸因模型下的各通路 ROAS（<span data-v="year"></span> 全年｜後台營收重新分配｜每個模型合計都是 <span data-v="rev"></span> 萬｜依最終點擊降序）</div>
     <div class="chart-block h300"><canvas id="cModelRoas"></canvas></div>
     <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>讀法：</strong>同一個通路的三根長條，由淺到深依序是最終點擊、7 日點擊＋1 日瀏覽、資料驅動。三個模型分的是同一份後台營收，只是規則不同：一個通路變高，必有別的通路變低。<strong>變動最大：</strong>YouTube 從 <span data-v="atYtLc"></span> 到 <span data-v="atYtV1"></span>（<span data-v="atYtX"></span> 倍）；Google 搜尋從 <span data-v="atSeLc"></span> 降到 <span data-v="atSeV1"></span>–<span data-v="atSeDda"></span>。</div></div>
   </div>
@@ -831,12 +840,12 @@
   <div class="section-title">新客 vs 舊客：誰帶來、多久才買</div>
   <div class="chart-grid chart-grid-2">
     <div class="chart-card" id="card-cNewMix">
-      <div class="chart-card-title">各通路後台訂單的新客／舊客占比（100%｜依新客占比降序）</div>
+      <div class="chart-card-title">各通路後台訂單的新客／舊客占比（<span data-v="year"></span> 全年｜100%｜依新客占比降序）</div>
       <div class="chart-block h300"><canvas id="cNewMix"></canvas></div>
       <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>兩端：</strong>新客占比最高 <span data-v="atNewTopN"></span> <span data-v="atNewTop"></span>%、最低 <span data-v="atNewBotN"></span> <span data-v="atNewBot"></span>%。新客＝首購；滑過長條可看訂單筆數。全站新客 <span data-v="newc"></span> 人，占後台訂單 <span data-v="atNewPctAll"></span>%。</div></div>
     </div>
     <div class="chart-card" id="card-cLag">
-      <div class="chart-card-title">轉換延遲分布：首次廣告互動 → 下單（占各自訂單 %）</div>
+      <div class="chart-card-title">轉換延遲分布：首次廣告互動 → 下單（<span data-v="year"></span> 全年｜占各自訂單 %）</div>
       <div class="chart-block h300"><canvas id="cLag"></canvas></div>
       <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>形狀：</strong>舊客 <span data-v="atLagRet0"></span>% 當天就買、8–28 天才買的只有 <span data-v="atLagRet3"></span>%；新客當天買 <span data-v="atLagNew0"></span>%，隔超過 1 天才買的合計 <span data-v="atNewLate"></span>%（舊客 <span data-v="atRetLate"></span>%）。最後一桶假設所有訂單都在 28 天內成交。</div></div>
     </div>
@@ -844,7 +853,7 @@
 
   <div class="section-title">Google 搜尋拆開看</div>
   <div class="chart-card" id="card-cBrand">
-    <div class="chart-card-title">品牌字 vs 非品牌字搜尋 ROAS：最終點擊 vs 資料驅動（Google 搜尋通路的子拆分）</div>
+    <div class="chart-card-title">品牌字 vs 非品牌字搜尋 ROAS：最終點擊 vs 資料驅動（<span data-v="year"></span> 全年｜Google 搜尋通路的子拆分）</div>
     <div class="chart-block h260"><canvas id="cBrand"></canvas></div>
     <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>對照：</strong>品牌字花費 <span data-v="atBrSp"></span> 萬、非品牌字 <span data-v="atNbSp"></span> 萬。最終點擊下品牌字 ROAS <span data-v="atBrRoas"></span>、非品牌字 <span data-v="atNbRoas"></span>；改用資料驅動後品牌字降到 <span data-v="atBrDda"></span>、非品牌字升到 <span data-v="atNbDda"></span>。滑過長條可看新客占比：品牌字 <span data-v="atBrNew"></span>%、非品牌字 <span data-v="atNbNew"></span>%。</div></div>
   </div>
@@ -927,7 +936,8 @@
         <div class="answer-block">
           <p><span class="tag-f">F:</span> 各通路花費取自<span class="ev">通路花費占比</span>（tooltip），新客訂單取自<span class="ev">各通路新客／舊客占比</span>（tooltip），相除得到每個新客的花費，由低到高：<span data-v="atNcList"></span>。全站平均是<span class="ev">KPI：新客 CPA</span> NT$<span data-v="cpa"></span>。</p>
           <p><span class="tag-f">F:</span> 對照<span class="ev">各通路平台自報 ROAS</span>：LINE 自報 <span data-v="atLnPr"></span>（第 <span data-v="atLnPrRank"></span>），新客成本卻排最後；Meta 開發自報 <span data-v="atMdPr"></span>（第 <span data-v="atMdPrRank"></span>），新客成本排第 <span data-v="atMdNcRank"></span>。</p>
-          <p><span class="tag-i">I:</span> ROAS 的分子是「全部營收」，不分新客舊客。LINE 的訂單只有 <span data-v="atLnNew"></span>% 是新客——它觸及的主要是已經買過的人（台灣品牌常用 LINE 官方帳號對好友推播優惠），舊客回購的營收讓它 ROAS 好看，但它幾乎不負責找新客。Meta 開發新客占 <span data-v="atMdNew"></span>%，ROAS 被「新客第一單金額較小、決策期長」拖低，用新客成本看卻排第 <span data-v="atMdNcRank"></span>。</p>
+          <p><span class="tag-i">I:</span> ROAS 的分子是「全部營收」，不分新客舊客。LINE 的訂單只有 <span data-v="atLnNew"></span>% 是新客——它觸及的主要是已經買過的人（台灣品牌常用 LINE 官方帳號對好友推播優惠），舊客回購的營收讓它 ROAS 好看，但它幾乎不負責找新客。Meta 開發新客占 <span data-v="atMdNew"></span>%，ROAS 偏低，用新客成本看卻排第 <span data-v="atMdNcRank"></span>。</p>
+          <p><span class="tag-a">A:</span> Meta 開發 ROAS 偏低，可能是因為新客第一單金額較小（常先買試用組或檔期優惠價）、決策期又長——本儀表板沒有新客與舊客的客單價拆分，這是待驗證的假設，要拉後台依新舊客分組的 AOV 才能確認。</p>
           <p><span class="tag-i">I:</span> 兩種排名在回答不同問題：ROAS 問「這筆錢帶回多少營收」，新客成本問「這筆錢買到多少新顧客」。同一份花費同時養舊客、找新客時，只看其中一個排名就會把找新客的通路看扁。另外，這裡的新客數也是最終點擊口徑，上游通路（YouTube）帶來、最後經由搜尋成交的新客，算在搜尋頭上，所以 YouTube 的新客成本是偏高估。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('attr','card-cNewMix')">📍 查看：各通路新客／舊客占比</button>
@@ -1039,7 +1049,7 @@
 
   <div class="section-title">每天偷看一次 p 值</div>
   <div class="chart-card" id="card-cAbP">
-    <div class="chart-card-title">逐日累積 p 值（每天用第 1 天到當天的累積資料重算｜虛線＝0.05 門檻）</div>
+    <div class="chart-card-title">逐日累積 p 值（<span data-v="abPeriod"></span>｜每天用第 1 天到當天的累積資料重算｜虛線＝0.05 門檻）</div>
     <div class="chart-block h280"><canvas id="cAbP"></canvas></div>
     <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>讀法：</strong>p 值＝「如果 A、B 其實一樣好，光靠運氣就看到這麼大（或更大）差距的機率」。第 <span data-v="abSig0"></span>–<span data-v="abSig1"></span> 天（共 <span data-v="abSigN"></span> 天）落在 0.05 虛線下方，最低是第 <span data-v="abPminDay"></span> 天的 <span data-v="abPmin"></span>；第 <span data-v="abSigEndDay"></span> 天回到 <span data-v="abSigEndP"></span>，第 <span data-v="abDays"></span> 天是 <span data-v="abP"></span>。</div></div>
   </div>
@@ -1047,12 +1057,12 @@
   <div class="section-title">拆開來看：時間與裝置</div>
   <div class="chart-grid chart-grid-2">
     <div class="chart-card" id="card-cAbWeek">
-      <div class="chart-card-title">逐週 lift：B 相對 A 的提升（%｜只用當週訪客｜虛線＝<span data-v="abDays"></span> 天整體）</div>
+      <div class="chart-card-title">逐週 lift：B 相對 A 的提升（%｜<span data-v="abPeriod"></span>｜只用當週訪客｜虛線＝<span data-v="abDays"></span> 天整體）</div>
       <div class="chart-block h280"><canvas id="cAbWeek"></canvas></div>
       <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>逐週：</strong><span data-v="abWList"></span>；第 3–4 週合併 <span data-v="abW34"></span>%。<strong>多出的訂單：</strong>以 A 的轉換率換算，B 第 1 週多出約 <span data-v="abW1Ex"></span> 筆訂單，比 <span data-v="abDays"></span> 天合計多出的 <span data-v="abTotEx"></span> 筆還多。</div></div>
     </div>
     <div class="chart-card" id="card-cAbDev">
-      <div class="chart-card-title">裝置別結帳轉換率 A vs B（%｜<span data-v="abDays"></span> 天合計｜依 A 組轉換率降序）</div>
+      <div class="chart-card-title">裝置別結帳轉換率 A vs B（%｜<span data-v="abPeriod"></span>，<span data-v="abDays"></span> 天合計｜依 A 組轉換率降序）</div>
       <div class="chart-block h280"><canvas id="cAbDev"></canvas></div>
       <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>拆裝置：</strong>手機占兩組訪客 <span data-v="abMobShare"></span>%。手機 A <span data-v="abMobCrA"></span>% → B <span data-v="abMobCrB"></span>%（<span data-v="abMobLift"></span>%，p＝<span data-v="abMobP"></span>）；桌機 A <span data-v="abDeskCrA"></span>% → B <span data-v="abDeskCrB"></span>%（<span data-v="abDeskLift"></span>%，p＝<span data-v="abDeskP"></span>）。桌機的轉換率本來就比手機高。滑過長條可看筆數。</div></div>
     </div>
@@ -1073,7 +1083,7 @@
     <div class="qa-item" data-domain="data">
       <div class="question" onclick="toggleQA(this)">
         <span class="badge l1">L1·A</span>
-        <span class="question-text">Q11：測試第 <span data-v="abD5"></span> 天，B 領先 <span data-v="abD5Lift"></span>%、p 值 <span data-v="abD5P"></span>。PM 想當天宣布 B 勝出、把流量全切到 B。看「逐日累積 p 值」這張圖，你會怎麼建議？</span>
+        <span class="question-text">Q11：測試第 <span data-v="abD5"></span> 天，B 領先 <span data-v="abD5Lift"></span>%、p 值 <span data-v="abD5P"></span>。專案負責人想當天宣布 B 勝出、把流量全切到 B。看「逐日累積 p 值」這張圖，你會怎麼建議？</span>
         <span class="domain-chip d-data">📊 數據分析</span>
         <span class="question-arrow">▶</span>
       </div>
@@ -1198,7 +1208,7 @@
       <div class="qa-item" data-domain="mkt">
         <div class="question" onclick="toggleQA(this)">
           <span class="badge l3">L3·A</span>
-          <span class="question-text">T3：PM 的週報寫：「新版落地頁 B 轉換率提升 <span data-v="abLift"></span>%（手機更達 <span data-v="abMobLift"></span>%），建議全站上線；同時把 CTR 最高的『前後對比』素材加碼到 Meta 開發。」用本頁與前兩頁的數據，改寫這段結論。</span>
+          <span class="question-text">T3：專案負責人的週報寫：「新版落地頁 B 轉換率提升 <span data-v="abLift"></span>%（手機更達 <span data-v="abMobLift"></span>%），建議全站上線；同時把 CTR 最高的『前後對比』素材加碼到 Meta 開發。」用本頁與前兩頁的數據，改寫這段結論。</span>
           <span class="domain-chip d-mkt">📣 行銷專業</span>
           <span class="question-arrow">▶</span>
         </div>
@@ -1259,7 +1269,7 @@
 
   <div class="section-title">下一塊錢：平均 ROAS vs 邊際 ROAS</div>
   <div class="chart-card" id="card-cTier">
-    <div class="chart-card-title">Meta 開發 每月花費級距 vs 平均／邊際 ROAS（後台最終點擊營收｜柱＝從前一級加到這一級的邊際｜紅虛線＝損益兩平）</div>
+    <div class="chart-card-title">Meta 開發 每月花費級距 vs 平均／邊際 ROAS（以 <span data-v="year"></span> 全年後台最終點擊營收估計｜柱＝從前一級加到這一級的邊際｜紅虛線＝損益兩平）</div>
     <div class="chart-block h300"><canvas id="cTier"></canvas></div>
     <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>讀法：</strong>折線是平均 ROAS（該級距的總營收 ÷ 總花費），柱是邊際 ROAS（從前一級加到這一級，多回來的營收 ÷ 多花的錢）。平均 ROAS 從 <span data-v="tiFirst"></span> 萬時的 <span data-v="tiAvgFirst"></span> 降到 <span data-v="tiMax"></span> 萬時的 <span data-v="tiMaxAvg"></span>，每一級都在損益兩平 <span data-v="be"></span> 以上；邊際 ROAS 從 <span data-v="tiMFirst"></span> 降到 <span data-v="tiMLast"></span>，<span data-v="tiBeLo"></span>→<span data-v="tiBeHi"></span> 萬這一段（<span data-v="tiBeM"></span>）開始跌破。滑過任一級距可看廣告後毛利：目前 <span data-v="tiCur"></span> 萬時每月 <span data-v="tiGpCur"></span> 萬。</div></div>
   </div>
@@ -1272,7 +1282,7 @@
       <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>同一個通路：</strong><span data-v="hoPeriod"></span> 測試期間花費 NT$<span data-v="hoSp"></span>，平台歸因 ROAS <span data-v="hoAtt"></span>、地理 holdout 算出的增量 ROAS <span data-v="hoInc"></span>，相差 <span data-v="hoX"></span> 倍；中間那根是全年後台最終點擊 ROAS <span data-v="rtBk"></span>（期間不同，僅供對照）。滑過長條可看每個 ROAS 的分子分母。</div></div>
     </div>
     <div class="chart-card" id="card-cHoldRev">
-      <div class="chart-card-title">地理 holdout 營收對照（萬｜測試區 vs 對照區｜橘短線＝測試區沒有增量時的預期）</div>
+      <div class="chart-card-title">地理 holdout 營收對照（萬｜<span data-v="hoPeriod"></span>｜測試區 vs 對照區｜橘短線＝測試區沒有增量時的預期）</div>
       <div class="chart-block h280"><canvas id="cHoldRev"></canvas></div>
       <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>算法：</strong>對照區暫停再行銷，前期 <span data-v="hoCpre"></span> 萬 → 活動期 <span data-v="hoCpost"></span> 萬（+<span data-v="hoCgr"></span>%，檔期帶來的自然成長）。測試區前期 <span data-v="hoTpre"></span> 萬，照同樣成長率應有 <span data-v="hoExp"></span> 萬，實際 <span data-v="hoTpost"></span> 萬（+<span data-v="hoTgr"></span>%）。多出的 <span data-v="hoIncW"></span> 萬才是再行銷帶來的增量營收；公式見定義面板「增量 ROAS」。</div></div>
     </div>
@@ -1446,7 +1456,7 @@
             <p><span class="tag-f">F:</span> <strong>① 各自讀。</strong>歸因：平台把測試期 NT$<span data-v="hoAttRev"></span> 的營收記給再行銷，÷ 花費 NT$<span data-v="hoSp"></span> ＝ <span data-v="hoAtt"></span>。增量：從<span class="ev">地理 holdout 營收對照</span>，對照區暫停再行銷，前期 <span data-v="hoCpre"></span> 萬 → 活動期 <span data-v="hoCpost"></span> 萬（+<span data-v="hoCgr"></span>%）；測試區前期 <span data-v="hoTpre"></span> 萬，照同樣成長率應有 <span data-v="hoExp"></span> 萬，實際 <span data-v="hoTpost"></span> 萬，多出 NT$<span data-v="hoIncRev"></span>，÷ 同一筆花費 ＝ <span data-v="hoInc"></span>。</p>
             <p><span class="tag-i">I:</span> <strong>② 找矛盾。</strong>兩個數字的分母相同，差在分子回答的問題不同：歸因營收是「被廣告碰過的人買了多少」，增量營收是「因為有廣告才多出多少」。兩者相差 NT$<span data-v="hoGap"></span>（歸因營收的 <span data-v="hoNonShare"></span>%），就是「看過再行銷廣告、但不投也會買」的訂單——再行銷名單本來就是購買意願最高的人，加上瀏覽歸因（只看到沒點也算），平台自然把它們都認領走。兩個數字都沒算錯，只是一個回答「誰碰過這筆訂單」，一個回答「沒投會少多少」；預算決策要的是後者。</p>
             <p><span class="tag-i">I:</span> 對照區同期自己成長了 <span data-v="hoCgr"></span>%（Q4 檔期）。若直接拿測試區活動期減前期，會把檔期成長也算成廣告效果；用對照區的成長率扣掉，才是 holdout 的關鍵。</p>
-            <p><span class="tag-a">A:</span> <strong>③ 下判斷。</strong>這是單次 6 週、兩組地區的測試，本頁沒有它的信賴區間；<span data-v="hoInc"></span> 和損益兩平 <span data-v="be"></span> 只差 <span data-v="hoBeGap"></span>，不能斷定「虧錢」，只能說「接近損益兩平、遠低於報表」。兩區的客群或當地活動若本來就不同，增量也可能被高估或低估。</p>
+            <p><span class="tag-a">A:</span> <strong>③ 下判斷。</strong>這是 <span data-v="hoPeriod"></span> 單次、兩組地區的測試，本頁沒有它的信賴區間；<span data-v="hoInc"></span> 和損益兩平 <span data-v="be"></span> 只差 <span data-v="hoBeGap"></span>，不能斷定「虧錢」，只能說「接近損益兩平、遠低於報表」。兩區的客群或當地活動若本來就不同，增量也可能被高估或低估。</p>
             <p><span class="tag-a">A:</span> 🎯 寫給老闆：「再行銷的平台報表 ROAS <span data-v="hoAtt"></span> 主要來自本來就會下單的舊客；地理對照測試顯示，真正因廣告多出的營收約為報表的 <span data-v="hoShare"></span>%，增量 ROAS 約 <span data-v="hoInc"></span>，與損益兩平 <span data-v="be"></span> 相當。建議下季不加碼、先縮減名單與頻次，並換一組地區、延長到 8 週重測。」要追加監控的指標：① 測試區與對照區的每週營收差（附信賴區間）；② 暫停區舊客的回購率有沒有下滑；③ 再行銷的觸及人數與每人頻次；④ 品牌字搜尋量。下一次測試的結果，才能判斷哪個故事比較接近真相。</p>
           </div>
           <div class="trap-block" data-trap-stage="read" data-trap="基線缺失">
@@ -1482,9 +1492,9 @@
       <strong>視覺設計邏輯：</strong>線一律用紅色虛線、標出數值；毛利 ROAS 圖同時畫 1.00 與營收口徑的門檻，讓讀者看出兩條線是同一個條件的兩種寫法。</p>
     </div>
     <div class="design-item">
-      <h4>4. 刻意不設「自然／直接流量」</h4>
-      <p><strong>分析資料選擇：</strong>合成資料把後台營收全數按最終點擊分給 <span data-v="nCh"></span> 個通路，讓「後台各通路合計＝後台總額」成立，三種歸因模型也都是同一份營收的重新分配。代價是忽略了不投廣告也會發生的營收。<br><br>
-      <strong>閱讀設計：</strong>這是簡化，不是真實世界的樣子；T4 要讀者自己指出這個缺口，以及它會讓所有 ROAS 一起被高估。</p>
+      <h4>4. 刻意省略的兩個維度：「自然／直接流量」與「回購／LTV」</h4>
+      <p><strong>分析資料選擇：</strong>合成資料把後台營收全數按最終點擊分給 <span data-v="nCh"></span> 個通路，讓「後台各通路合計＝後台總額」成立，三種歸因模型也都是同一份營收的重新分配。代價是忽略了不投廣告也會發生的營收。同樣刻意不放的是新客的回購與 LTV：本份聚焦投放端的口徑與實驗（歸因、A/B、增量），所有數字都只看 28 天內的訂單；加入回購資料會把重點轉向顧客價值分析，所以留作缺口。<br><br>
+      <strong>閱讀設計：</strong>這兩項都是簡化，不是真實世界的樣子；T4 要讀者自己指出這兩個缺口——沒有自然流量基準，所有 ROAS 會一起被高估；沒有回購與 LTV，以新客為主的 YouTube、Meta 開發會被低估。</p>
     </div>
     <div class="design-item">
       <h4>5. A/B 測試用「結帳轉換率」，基準刻意偏高</h4>
@@ -2428,11 +2438,14 @@ function drawAb() {
     { label: `${name} 95% 上緣`, data: hi, isBand: true, borderWidth: 0, pointRadius: 0, pointHoverRadius: 10,
       pointHoverBorderWidth: 0, pointHoverBackgroundColor: 'rgba(0,0,0,0)', backgroundColor: col(0.16), fill: '-1' }
   ];
-  const mainLine = (data, col, name) => ({ label: name, data, borderColor: col(0.95), backgroundColor: col(0.95),
-    borderWidth: 2, tension: 0.25, pointRadius: 2, pointHoverRadius: 10, fill: false });
+  // 直接標籤（B.9-5：≤4 系列不只靠顏色）：只在最後一天標系列名＋終值；B 在線左上、A 在線左下（往左放避免右緣截字）
+  const mainLine = (data, col, name, side) => ({ label: name, data, borderColor: col(0.95), backgroundColor: col(0.95),
+    borderWidth: 2, tension: 0.25, pointRadius: 2, pointHoverRadius: 10, fill: false,
+    datalabels: { display: ctx => ctx.dataIndex === ctx.dataset.data.length - 1, anchor: 'center', align: side === 'top' ? 225 : 135, offset: 6, clamp: true, textAlign: 'right',
+                  color: col(1), font: { size: 10, weight: '600', family: TH.fontMono }, formatter: v => `${name} ${v.toFixed(2)}%` } });
   mk('cAbCr', 'line', dayLab, [
-    ...band(AB.ci_a_lo, AB.ci_a_hi, colA, 'A'), mainLine(AB.cr_a, colA, 'A 原版'),
-    ...band(AB.ci_b_lo, AB.ci_b_hi, colB, 'B'), mainLine(AB.cr_b, colB, 'B 新版')
+    ...band(AB.ci_a_lo, AB.ci_a_hi, colA, 'A'), mainLine(AB.cr_a, colA, 'A 原版', 'bottom'),
+    ...band(AB.ci_b_lo, AB.ci_b_hi, colB, 'B'), mainLine(AB.cr_b, colB, 'B 新版', 'top')
   ], {
     interaction: { mode: 'index', intersect: false },
     plugins: {
@@ -2564,17 +2577,18 @@ function drawAb() {
   ], {
     indexAxis: 'y',
     plugins: {
-      legend: { ...legendTop, labels: { ...legendTop.labels, usePointStyle: true, generateLabels: chart => chart.data.datasets.map((ds, i) => ({
+      legend: { ...legendTop, position: 'bottom', labels: { ...legendTop.labels, usePointStyle: true, generateLabels: chart => chart.data.datasets.map((ds, i) => ({
         text: ds.label, fillStyle: i === 0 ? tokRGBA('--text', 0.3) : TH.label, strokeStyle: tokRGBA('--text', 0.9), lineWidth: 1,
         pointStyle: i === 0 ? 'rect' : 'rectRot', fontColor: TH.text, hidden: !chart.isDatasetVisible(i), datasetIndex: i })) } },
       tooltip: { mode: 'nearest', intersect: false, callbacks: { label: crTip } },
       datalabels: { ...outLabel((v, ctx) => CR.ctr[ctx.dataIndex].toFixed(2) + '%'), offset: 4 },   // 標在 CI 右端外側
       annotation: { clip: false, annotations: { topLo: {
         type: 'line', scaleID: 'x', value: CR.ci_lo[t], borderColor: c('orange', 0.8), borderWidth: 1.5, borderDash: [5, 4],
-        label: { display: true, content: `第 1 名下緣 ${CR.ci_lo[t].toFixed(2)}%`, position: 'end', yAdjust: -6,
+        label: { display: true, content: `第 1 名下緣 ${CR.ci_lo[t].toFixed(2)}%`, position: 'start', yAdjust: -16,   // 放在圖區上緣外（legend 移到下方讓出位置），避免壓到最後一列的數值標籤
                  backgroundColor: TT.backgroundColor, color: TH.label, font: { size: 10 }, padding: 4 }
       } } }
     },
+    layout: { padding: { top: 24 } },
     scales: {
       x: { min: 0, max: headroom(CR.ci_hi, 0.5), grid: { color: TH.grid }, ticks: { color: TH.text, callback: v => v + '%' } },
       y: { grid: { display: false }, ticks: { color: TH.text, font: { size: 11 } } }
