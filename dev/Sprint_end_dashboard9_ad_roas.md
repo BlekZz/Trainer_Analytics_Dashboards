@@ -128,7 +128,7 @@ A/B 資料設計：28 天、每組約 2.1 萬訪客；第 5 天 B 領先約 +30%
 | 定義面板含業界常見替代定義 | ✅ 歸因模型、信賴區間、p 值、MDE、CTR、增量 ROAS、邊際、損益兩平、POAS、LTV、新客 CPA、混合 ROAS（MER）等 | def-panel（35 條） |
 | 知識領域 chip | ✅ 24 題 data／mkt／ind＝8／8／8，每頁 2／2／2；header legend 與定義面板都有說明 | `data-domain` 計數 |
 | 訓練題拆到每頁末尾 | ✅ 4 個 `.training-block`（ovw T1、attr T2、ab T3、budget T4＋T5） | |
-| D.5 不可妥協 | ✅ F/I/A（FIA 110）、assertConsistency 131 條全過、三段式、trap 15、定義面板、DEMO chip、📐 設計選擇揭露 8 項 | audit PASS |
+| D.5 不可妥協 | ✅ F/I/A（FIA 111）、assertConsistency 131 條全過、三段式、trap 15、定義面板、DEMO chip、📐 設計選擇揭露 8 項 | audit PASS |
 
 ## 差異化 Changelog（對照第 8 份醫美連鎖／template 基準）
 
@@ -211,10 +211,26 @@ A/B 資料設計：28 天、每組約 2.1 萬訪客；第 5 天 B 領先約 +30%
 | 38 逆直覺三處同步 | ✅ | 歸因 vs 增量：DATA、T5／Q18 trap、揭露 #6；A/B 基準偏高：DATA、揭露 #5；早期顯著：DATA、Q11 trap |
 | 39 缺失維度兩處 | ✅（裁定後修） | 自然流量：T4＋揭露 #4。回購／LTV：T4 ①＋揭露 #4（改名「刻意省略的兩個維度」，理由：本份聚焦投放端口徑與實驗，LTV 留作 T4 缺失維度練習）。A/B 新舊訪客拆分在 Q11／Q13［A］說明缺口 |
 
-**C 組：21 列 ✅、2 列 N/A（#43、#44）**。#11／#20／#39 依 coordinator 裁定修正（Q9 拆［A］、揭露 #4 併入回購／LTV）；#6 的 YouTube 紅色依裁定維持。修後 audit rc=0（FIA 110→111）、console 只有 favicon 404、`data-v` 空值 0。
+**C 組：21 列 ✅、2 列 N/A（#43、#44）**。#11／#20／#39 依 coordinator 裁定修正（Q9 拆［A］、揭露 #4 併入回購／LTV）；#6 的 YouTube 紅色依裁定維持。修後 audit rc=0（FIA 111→111）、console 只有 favicon 404、`data-v` 空值 0。
 
 ## Phase 5 — 交付物
 
-- 生成器可重現：`python dev/script/gen_data_adroas.py <tmp>` 跑兩次，sha256 都是 `bed44e20e9d68d7bfd51f03a3a3b0459f714c41b3ab8b904c2f0a79328520fdc`；把該 JSON 用 `inject_data.py` 注入工作檔的副本，結果與工作檔逐位元組相同（cmp=0，裁定修正後重驗仍 cmp=0，最終工作檔 sha256 `321d66e0d65e54d68394a76ef01945bd6e27e24e2f46709ee359df17ead7172b`）
+- 生成器可重現：`python dev/script/gen_data_adroas.py <tmp>/d.json` 跑兩次，sha256 都是 `bed44e20e9d68d7bfd51f03a3a3b0459f714c41b3ab8b904c2f0a79328520fdc`；把該 JSON 用 `inject_data.py` 注入工作檔的副本，結果與工作檔逐位元組相同（cmp=0，裁定修正後重驗仍 cmp=0，最終工作檔 sha256 `321d66e0d65e54d68394a76ef01945bd6e27e24e2f46709ee359df17ead7172b`）
 - ARCHIVE：已新增 #9 條目，並補上跨份總覽列與配色驗證紀錄列
-- audit：`node dev/script/audit-dashboards.mjs Dashboard/*.html Skill/template.html` → rc=0（10/10 份無 FAIL；#9 PASS：圖表 19/19、QA 24、trap 15、FIA 110、assert 131）
+- audit：`node dev/script/audit-dashboards.mjs Dashboard/*.html Skill/template.html` → rc=0（10/10 份無 FAIL；#9 PASS：圖表 19/19、QA 24、trap 15、FIA 111、assert 131）
+
+## 最終驗收結果（2026-11-01，fresh-context 獨立驗收者，非實作者）
+
+判定：PASS with notes，無阻斷缺陷。
+
+- audit：本份 `rc=0`（`[PASS]` 圖表 19/19｜QA 24｜trap 15｜FIA 111｜assert 131）；全量 10 份 `rc=0`
+- 可重現：生成器兩次 sha256 `bed44e20…20fdc`；注入副本與交付檔 `cmp=0`（先改壞副本驗證比對會抓差異）
+- 數字：驗收者自寫重算 30 項頁面宣稱全部吻合（混合 ROAS、1.43×、A/B 第 5／28 天 lift 與 p、MDE／檢定力、holdout 1.58、損益兩平 1.61、邊際 ROAS、82% 測試期占比等）；所需樣本倍數頁面 ×3.9（等變異慣例）vs 不等變異 ×4.03，屬慣例差
+- 領域 8/8/8、每頁 2/2/2；難度與逐頁配額相符；15 個 trap-block 四階段全有、名稱 ≤2；紅線 1–5 皆在
+- 已修（主線，驗收後）：T3「++5.8%」雙加號；Q9 段落順序改為 F→F→I→I→A；本檔重現指令改 `<tmp>/d.json`、FIA 計數 110→111。修後 audit `EXIT=0`
+
+## 後續選項（非 blocking）
+
+1. cTier 邊際柱「1.31」標籤壓到損益兩平虛線、cMargin 門檻線標籤框蓋到 LINE／PMax 柱（可讀，屬美化）
+2. YouTube 通路色紅色與「警示」語意重疊（Blake 裁定前維持）
+3. 學員試用回饋

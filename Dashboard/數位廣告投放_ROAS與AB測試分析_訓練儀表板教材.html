@@ -937,8 +937,8 @@
           <p><span class="tag-f">F:</span> 各通路花費取自<span class="ev">通路花費占比</span>（tooltip），新客訂單取自<span class="ev">各通路新客／舊客占比</span>（tooltip），相除得到每個新客的花費，由低到高：<span data-v="atNcList"></span>。全站平均是<span class="ev">KPI：新客 CPA</span> NT$<span data-v="cpa"></span>。</p>
           <p><span class="tag-f">F:</span> 對照<span class="ev">各通路平台自報 ROAS</span>：LINE 自報 <span data-v="atLnPr"></span>（第 <span data-v="atLnPrRank"></span>），新客成本卻排最後；Meta 開發自報 <span data-v="atMdPr"></span>（第 <span data-v="atMdPrRank"></span>），新客成本排第 <span data-v="atMdNcRank"></span>。</p>
           <p><span class="tag-i">I:</span> ROAS 的分子是「全部營收」，不分新客舊客。LINE 的訂單只有 <span data-v="atLnNew"></span>% 是新客——它觸及的主要是已經買過的人（台灣品牌常用 LINE 官方帳號對好友推播優惠），舊客回購的營收讓它 ROAS 好看，但它幾乎不負責找新客。Meta 開發新客占 <span data-v="atMdNew"></span>%，ROAS 偏低，用新客成本看卻排第 <span data-v="atMdNcRank"></span>。</p>
-          <p><span class="tag-a">A:</span> Meta 開發 ROAS 偏低，可能是因為新客第一單金額較小（常先買試用組或檔期優惠價）、決策期又長——本儀表板沒有新客與舊客的客單價拆分，這是待驗證的假設，要拉後台依新舊客分組的 AOV 才能確認。</p>
           <p><span class="tag-i">I:</span> 兩種排名在回答不同問題：ROAS 問「這筆錢帶回多少營收」，新客成本問「這筆錢買到多少新顧客」。同一份花費同時養舊客、找新客時，只看其中一個排名就會把找新客的通路看扁。另外，這裡的新客數也是最終點擊口徑，上游通路（YouTube）帶來、最後經由搜尋成交的新客，算在搜尋頭上，所以 YouTube 的新客成本是偏高估。</p>
+          <p><span class="tag-a">A:</span> Meta 開發 ROAS 偏低，可能是因為新客第一單金額較小（常先買試用組或檔期優惠價）、決策期又長——本儀表板沒有新客與舊客的客單價拆分，這是待驗證的假設，要拉後台依新舊客分組的 AOV 才能確認。</p>
         </div>
         <button class="chart-ref-btn" onclick="goToChart('attr','card-cNewMix')">📍 查看：各通路新客／舊客占比</button>
         <button class="chart-ref-btn" onclick="goToChart('ovw','card-cPlatRoas')">📍 查看：各通路平台自報 ROAS</button>
@@ -1221,7 +1221,7 @@
             <p><span class="tag-i">I:</span> 逐週 lift 第 3–4 週轉為負值，整體的正數主要來自第 1 週，新奇效應的跡象明顯（Q13）。手機 <span data-v="abMobLift"></span>% 是拆子群之後的數字，p 也沒低於 0.05，不能當成另一個獨立的勝利。素材那一句則是另一個測試，而且第一名區間重疊、又有療效宣稱的合規風險（Q14），不該和落地頁結論綁在一起。</p>
             <p><span class="tag-a">A:</span> 估算（以業界慣用的雙尾 5%、檢定力 80% 計）：每組約 <span data-v="abNa"></span> 位訪客、基準轉換率 <span data-v="abCrA"></span>% 時，這個測試能穩定抓到的最小差距約 <span data-v="abMdePp"></span> 個百分點（相對 +<span data-v="abMdeRel"></span>%）。<span data-v="abLift"></span>% 比它小得多：就算 B 真的好 <span data-v="abLift"></span>%，本測試也只有約 <span data-v="abPower"></span>% 的機會判定顯著。要看清這麼小的差距，每組約需 <span data-v="abNNeed"></span> 位訪客，是現在的 <span data-v="abNNeedX"></span> 倍。不顯著不等於 B 沒用，而是這個測試看不清楚這麼小的差距。</p>
             <p><span class="tag-a">A:</span> 若 B 真有 <span data-v="abLift"></span>% 的提升、且流量與花費不變，經此落地頁的訂單約多同樣比例；若新客與舊客同比例提升，新客 CPA 約從 NT$<span data-v="cpa"></span> 降到 NT$<span data-v="cpaIfB"></span>——這是「效果為真、且新舊客同步提升」時的估算，本頁沒有新舊客拆分，不是預期值。</p>
-            <p><span class="tag-a">A:</span> 🎯 建議改寫：「新版落地頁 B 跑滿 <span data-v="abDays"></span> 天，轉換率 +<span data-v="abLift"></span>%，但 95% 範圍 <span data-v="abLiftLo"></span>%～<span data-v="abLiftHi"></span>%、未達顯著；增幅集中在第 1 週，第 3–4 週轉負，疑似新奇效應。建議：① 暫不全站切換；若手機的改動是結帳流程，拆成單一改動的新測試，事先用最小可偵測效果算好樣本數與天數，只判讀一次；② 若流量撐不起所需樣本，先決定『小於 +<span data-v="abMdeRel"></span>% 的改善不值得追』，把資源轉到預期效果更大的改動；③ 素材另案處理：『前後對比』先送法務審稿，前幾名以購買為指標、等量曝光重測。」</p>
+            <p><span class="tag-a">A:</span> 🎯 建議改寫：「新版落地頁 B 跑滿 <span data-v="abDays"></span> 天，轉換率 <span data-v="abLift"></span>%，但 95% 範圍 <span data-v="abLiftLo"></span>%～<span data-v="abLiftHi"></span>%、未達顯著；增幅集中在第 1 週，第 3–4 週轉負，疑似新奇效應。建議：① 暫不全站切換；若手機的改動是結帳流程，拆成單一改動的新測試，事先用最小可偵測效果算好樣本數與天數，只判讀一次；② 若流量撐不起所需樣本，先決定『小於 +<span data-v="abMdeRel"></span>% 的改善不值得追』，把資源轉到預期效果更大的改動；③ 素材另案處理：『前後對比』先送法務審稿，前幾名以購買為指標、等量曝光重測。」</p>
           </div>
           <div class="trap-block" data-trap-stage="visualize" data-trap="隱藏不確定性">
             <span class="trap-icon">⚠</span><span class="trap-tag">呈現｜隱藏不確定性</span>
