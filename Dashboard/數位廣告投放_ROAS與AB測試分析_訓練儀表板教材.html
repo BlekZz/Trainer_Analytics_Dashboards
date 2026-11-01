@@ -526,6 +526,34 @@
     <p>依《化粧品衛生安全管理法》，化粧品的標示、宣傳與廣告不得虛偽誇大，也不得涉及醫療效能（例如宣稱治療、改善皮膚病症）。保養品廣告用「使用前／使用後」的皮膚對比，容易被認定為暗示療效；Meta 廣告政策對健康與外觀類的前後對比圖片也有限制。</p>
   </div>
   <div class="def-item">
+    <h4>增量 ROAS 與地理 holdout（Incrementality／Geo Holdout）</h4>
+    <p>增量 ROAS ＝「因為有這筆廣告才多出來的營收」÷ 花費。地理 holdout：把地區分成測試區（照常投放）與對照區（暫停投放），用對照區的變化推算「測試區沒投放時應有多少營收」，實際減預期就是增量。本儀表板：<span data-v="hoPeriod"></span> 對 Meta 再行銷測試；增量營收 ＝ 測試區活動期營收 − 測試區前期營收 ×（對照區活動期 ÷ 對照區前期）。<br>
+    業界常見替代定義：使用者層級的轉換提升測試（Conversion Lift，平台隨機保留一部分受眾不看廣告）、時間上的開關測試（輪流暫停）、以行銷組合模型估計的增量。各方法的對照方式不同，數字不能直接互比。</p>
+  </div>
+  <div class="def-item">
+    <h4>邊際 ROAS（Marginal ROAS）</h4>
+    <p>花費從某個水準再多加一段時，多回來的營收 ÷ 多花的錢；平均 ROAS 則是總營收 ÷ 總花費。廣告有報酬遞減，所以邊際 ROAS 通常低於平均 ROAS，決定「要不要再多花」應看邊際。本儀表板的級距是 Meta 開發以後台最終點擊營收、依報酬遞減曲線估出的每月級距，柱上的數字是從前一級加到這一級的邊際。<br>
+    業界常見替代定義：以行銷組合模型的反應曲線斜率計算（連續的「多花 1 元多回多少」）；也有人用增量營收而非歸因營收計算，稱「邊際增量 ROAS」。</p>
+  </div>
+  <div class="def-item">
+    <h4>損益兩平 ROAS（Break-even ROAS）</h4>
+    <p>廣告帶回的毛利剛好付清廣告費時的 ROAS ＝ 1 ÷ 毛利率。本儀表板毛利率 ＝ 1 − 商品成本 <span data-v="cogsPct"></span>% − 退貨 <span data-v="retPct"></span>% ＝ <span data-v="mgPct"></span>%，損益兩平 ROAS ≈ <span data-v="be"></span>。只扣商品成本與退貨，未扣物流、金流、客服、代理商服務費與素材費，是偏寬鬆的門檻。<br>
+    業界常見替代定義：用「貢獻毛利率」（再扣物流、金流等所有隨訂單發生的變動成本）計算，門檻更高；以新客為目標時，也有人把首購後一段期間的回購毛利算進來，門檻更低。</p>
+  </div>
+  <div class="def-item">
+    <h4>毛利 ROAS（Gross-profit ROAS）</h4>
+    <p>營收 × 毛利率 ÷ 花費，等於營收 ROAS × <span data-v="mgPct"></span>%。高於 1 代表廣告帶回的毛利付得起廣告費。全年毛利 ROAS <span data-v="mgRoas"></span>；廣告後毛利 ＝ 營收 × 毛利率 − 花費（全年 NT$<span data-v="mgAfterAd"></span> 萬）。<br>
+    業界常見替代名稱與定義：POAS（Profit on Ad Spend），多數用「毛利 ÷ 花費」，也有人用「（毛利 − 花費）÷ 花費」，兩者差 1，比較前要先確認是哪一種。</p>
+  </div>
+  <div class="def-item">
+    <h4>LTV（Lifetime Value／顧客終身價值）</h4>
+    <p>一位顧客從首購起、在一段期間內帶來的總營收或總毛利。保養品是回購型商品，以新客為主的通路只看首購營收容易被低估。本儀表板沒有 LTV 資料。業界常見替代定義：固定期間（如 12 個月）的累計毛利，或以回購率推估的預測值。</p>
+  </div>
+  <div class="def-item">
+    <h4>MMM（Marketing Mix Modeling／行銷組合模型）</h4>
+    <p>用每週（或每日）的各通路花費、季節、促銷等資料，以統計模型估計各因素對總營收的貢獻與反應曲線。不依賴點擊追蹤，適合在平台歸因訊號流失後補位，但需要較長期的資料。本儀表板沒有做 MMM。</p>
+  </div>
+  <div class="def-item">
     <h4>KPI（Key Performance Indicators／關鍵績效指標）</h4>
     <p>衡量核心目標達成程度的量化指標。本儀表板的 KPI 卡位於每頁頂部，是進入圖表分析前的「快速定位」，而非最終結論——每張卡都值得先問「它的分子分母是什麼」。</p>
   </div>
@@ -1204,8 +1232,282 @@
      P4: 預算決策（budget）— Layer 5 建構（含收尾面板）
 ══════════════════════════════════════════ -->
 <div id="page-budget" class="page hidden">
-  <div class="section-title">預算決策</div>
-  <p style="font-size:0.82rem;color:var(--text-muted)">__TODO:Layer 5 — 預算決策頁：花費級距 vs 邊際 ROAS、地理 holdout 增量 vs 歸因 ROAS、營收 vs 毛利 ROAS；QA（L2·A、L3·I、L3·A、L3·A）＋ T4、T5；設計選擇揭露面板__</p>
+
+  <div class="section-title">預算決策 KPI</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--kpi-color:var(--danger)">
+      <div class="kpi-label">損益兩平 ROAS</div>
+      <div class="kpi-value"><span data-v="be"></span></div>
+      <div class="kpi-sub"><span class="kpi-neutral">毛利率 <span data-v="mgPct"></span>%（商品成本 <span data-v="cogsPct"></span>%、退貨 <span data-v="retPct"></span>%）｜還有哪些成本沒扣？</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--accent2)">
+      <div class="kpi-label">全年毛利 ROAS</div>
+      <div class="kpi-value"><span data-v="mgRoas"></span></div>
+      <div class="kpi-sub"><span class="kpi-neutral">混合 ROAS <span data-v="roas"></span> × <span data-v="mgPct"></span>%｜廣告後毛利 NT$<span data-v="mgAfterAd"></span> 萬，算賺很多嗎？</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--purple)">
+      <div class="kpi-label">Meta 再行銷 增量 ROAS</div>
+      <div class="kpi-value"><span data-v="hoInc"></span></div>
+      <div class="kpi-sub"><span class="kpi-neutral">同期平台歸因 <span data-v="hoAtt"></span>｜差 <span data-v="hoX"></span> 倍，哪個才是真的？</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--accent)">
+      <div class="kpi-label">Meta 開發 下一級距邊際 ROAS</div>
+      <div class="kpi-value"><span data-v="tiNextM"></span></div>
+      <div class="kpi-sub"><span class="kpi-neutral">目前每月 <span data-v="tiCur"></span> 萬、平均 ROAS <span data-v="tiCurAvg"></span>｜再加 <span data-v="tiStep"></span> 萬值得嗎？</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">下一塊錢：平均 ROAS vs 邊際 ROAS</div>
+  <div class="chart-card" id="card-cTier">
+    <div class="chart-card-title">Meta 開發 每月花費級距 vs 平均／邊際 ROAS（後台最終點擊營收｜柱＝從前一級加到這一級的邊際｜紅虛線＝損益兩平）</div>
+    <div class="chart-block h300"><canvas id="cTier"></canvas></div>
+    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>讀法：</strong>折線是平均 ROAS（該級距的總營收 ÷ 總花費），柱是邊際 ROAS（從前一級加到這一級，多回來的營收 ÷ 多花的錢）。平均 ROAS 從 <span data-v="tiFirst"></span> 萬時的 <span data-v="tiAvgFirst"></span> 降到 <span data-v="tiMax"></span> 萬時的 <span data-v="tiMaxAvg"></span>，每一級都在損益兩平 <span data-v="be"></span> 以上；邊際 ROAS 從 <span data-v="tiMFirst"></span> 降到 <span data-v="tiMLast"></span>，<span data-v="tiBeLo"></span>→<span data-v="tiBeHi"></span> 萬這一段（<span data-v="tiBeM"></span>）開始跌破。滑過任一級距可看廣告後毛利：目前 <span data-v="tiCur"></span> 萬時每月 <span data-v="tiGpCur"></span> 萬。</div></div>
+  </div>
+
+  <div class="section-title">再行銷：歸因說的 vs 實驗量到的</div>
+  <div class="chart-grid chart-grid-2">
+    <div class="chart-card" id="card-cHoldRoas">
+      <div class="chart-card-title">Meta 再行銷的三種 ROAS（依值降序｜紅虛線＝損益兩平）</div>
+      <div class="chart-block h280"><canvas id="cHoldRoas"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>同一個通路：</strong><span data-v="hoPeriod"></span> 測試期間花費 NT$<span data-v="hoSp"></span>，平台歸因 ROAS <span data-v="hoAtt"></span>、地理 holdout 算出的增量 ROAS <span data-v="hoInc"></span>，相差 <span data-v="hoX"></span> 倍；中間那根是全年後台最終點擊 ROAS <span data-v="rtBk"></span>（期間不同，僅供對照）。滑過長條可看每個 ROAS 的分子分母。</div></div>
+    </div>
+    <div class="chart-card" id="card-cHoldRev">
+      <div class="chart-card-title">地理 holdout 營收對照（萬｜測試區 vs 對照區｜橘短線＝測試區沒有增量時的預期）</div>
+      <div class="chart-block h280"><canvas id="cHoldRev"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>算法：</strong>對照區暫停再行銷，前期 <span data-v="hoCpre"></span> 萬 → 活動期 <span data-v="hoCpost"></span> 萬（+<span data-v="hoCgr"></span>%，檔期帶來的自然成長）。測試區前期 <span data-v="hoTpre"></span> 萬，照同樣成長率應有 <span data-v="hoExp"></span> 萬，實際 <span data-v="hoTpost"></span> 萬（+<span data-v="hoTgr"></span>%）。多出的 <span data-v="hoIncW"></span> 萬才是再行銷帶來的增量營收；公式見定義面板「增量 ROAS」。</div></div>
+    </div>
+  </div>
+
+  <div class="section-title">ROAS 高不等於賺錢</div>
+  <div class="chart-card" id="card-cMargin">
+    <div class="chart-card-title">各通路 營收 ROAS vs 毛利 ROAS（<span data-v="year"></span>｜依營收 ROAS 降序｜淺色＝營收、深色＝毛利｜兩條紅虛線是同一個損益兩平條件）</div>
+    <div class="chart-block h300"><canvas id="cMargin"></canvas></div>
+    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>讀法：</strong>毛利 ROAS＝營收 ROAS × 毛利率 <span data-v="mgPct"></span>%。營收 ROAS 要高於 <span data-v="be"></span>，等同毛利 ROAS 要高於 1：廣告帶回的毛利才付得起廣告費。毛利 ROAS 依序 <span data-v="mgList"></span>。滑過長條可看每個通路的廣告後毛利。</div></div>
+  </div>
+
+  <hr class="section-divider">
+  <div class="section-title">訓練題組 — 預算決策</div>
+  <div class="qa-section">
+
+    <!-- Q16 -->
+    <div class="qa-item" data-domain="data">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2·A</span>
+        <span class="question-text">Q16：Meta 開發目前每月花 <span data-v="tiCur"></span> 萬，平均 ROAS <span data-v="tiCurAvg"></span>。媒體企劃說：「花到每月 <span data-v="tiMax"></span> 萬，平均 ROAS 還有 <span data-v="tiMaxAvg"></span>，仍高於損益兩平 <span data-v="be"></span>，預算可以直接加倍。」你同意嗎？</span>
+        <span class="domain-chip d-data">📊 數據分析</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">花費級距 vs 平均／邊際 ROAS</span>，平均 ROAS 從 <span data-v="tiAvgFirst"></span> 一路降到 <span data-v="tiMaxAvg"></span>，每一級都在 <span data-v="be"></span> 以上；但邊際 ROAS 從 <span data-v="tiMFirst"></span> 降到 <span data-v="tiMLast"></span>：從目前 <span data-v="tiCur"></span> 萬加到 <span data-v="tiNext"></span> 萬，邊際 <span data-v="tiNextM"></span>，剛好在損益兩平線上方；再往上 <span data-v="tiBeLo"></span>→<span data-v="tiBeHi"></span> 萬只剩 <span data-v="tiBeM"></span>。</p>
+          <p><span class="tag-f">F:</span> 從 <span data-v="tiCur"></span> 萬加到 <span data-v="tiMax"></span> 萬：每月多花 <span data-v="tiDblDS"></span> 萬，營收只多 <span data-v="tiDblDR"></span> 萬，這一整段的 ROAS 是 <span data-v="tiDblRoas"></span>。滑過級距看廣告後毛利：<span data-v="tiCur"></span> 萬時每月 <span data-v="tiGpCur"></span> 萬、<span data-v="tiGpBestS"></span> 萬時最高 <span data-v="tiGpBest"></span> 萬、<span data-v="tiMax"></span> 萬時剩 <span data-v="tiGpMax"></span> 萬。</p>
+          <p><span class="tag-i">I:</span> 平均 ROAS 是「到目前為止所有花費」的平均，前面便宜、成效好的那一段把它撐高。決定要不要多花下一塊錢，要看那一塊錢帶回多少，也就是邊際 ROAS。平均高於損益兩平只代表「整體還沒虧」，不代表新加的錢有賺：加倍後每月廣告後毛利反而少約 <span data-v="tiDblLoss"></span> 萬。</p>
+          <p><span class="tag-i">I:</span> 報酬遞減是開發型廣告的常態：預算加大後，系統得把廣告送給興趣較弱、較貴的受眾，同一批人看到的次數也變多。</p>
+          <p><span class="tag-a">A:</span> 這條曲線是用後台最終點擊營收、依報酬遞減的曲線形狀估出來的級距，不是每一級都實際花過；真實的增量可能更低（再行銷的例子見 Q18、T5）。</p>
+          <p><span class="tag-a">A:</span> 🎯 行動：① 每月預算先加到約 <span data-v="tiNext"></span> 萬，跑 2–4 週看實際多回來多少；② 加碼的停損點用「邊際 ROAS ≥ <span data-v="be"></span>」，不是平均 ROAS；③ 加碼期間同步盯頻次與 CPM，頻次快速上升代表受眾快飽和了。</p>
+        </div>
+        <div class="trap-block" data-trap-stage="wrangle" data-trap="平均數陷阱">
+          <span class="trap-icon">⚠</span><span class="trap-tag">加工｜平均數陷阱</span>
+          <div><strong>常見陷阱：</strong>用平均 ROAS 決定要不要加碼。平均 ROAS 把最划算的第一塊錢和最貴的最後一塊錢混在一起，加碼時它下降得很慢，看起來永遠「還有空間」；真正該看的是新增那一段的邊際 ROAS。報表上只有平均數，就自己用相鄰兩個級距相減。</div>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('budget','card-cTier')">📍 查看：花費級距 vs 平均／邊際 ROAS</button>
+      </div>
+    </div>
+
+    <!-- Q17 -->
+    <div class="qa-item" data-domain="ind">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3·I</span>
+        <span class="question-text">Q17：YouTube 的營收 ROAS <span data-v="ytRev"></span>、毛利 ROAS <span data-v="ytMg"></span>，是唯一低於損益兩平的通路。財務主張明年整個砍掉。從保養品的購買行為和 YouTube 在投放組合裡的角色看，這個數字可能漏算了什麼？</span>
+        <span class="domain-chip d-ind">🏭 產業知識</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="nav-hint" onclick="goToChart('attr','card-cModelRoas')">👉 切到「🔀 歸因口徑」→「三種歸因模型 ROAS」：同一份後台營收換一種分法，YouTube 的 ROAS 變動最大</div>
+        <div class="nav-hint" onclick="goToChart('attr','card-cNewMix')">👉 對照「🔀 歸因口徑」→「各通路新客／舊客占比」：YouTube 帶來的訂單哪一種客人最多</div>
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">營收 ROAS vs 毛利 ROAS</span>，YouTube 營收 ROAS <span data-v="ytRev"></span>、毛利 ROAS <span data-v="ytMg"></span>，滑過長條：廣告後毛利 −<span data-v="ytLoss"></span> 萬。從<span class="ev">三種歸因模型 ROAS</span>，同一份後台營收換成「7 日點擊＋1 日瀏覽」是 <span data-v="atYtV1"></span>、資料驅動是 <span data-v="atYtDda"></span>，都高於 <span data-v="be"></span>。從<span class="ev">各通路新客／舊客占比</span>，YouTube 訂單 <span data-v="atYtNew"></span>% 是新客，全通路最高；<span class="ev">轉換延遲分布</span>顯示新客隔超過 1 天才下單的合計 <span data-v="atNewLate"></span>%。</p>
+          <p><span class="tag-i">I:</span> 毛利 ROAS 圖用的是最終點擊，只有「看完影片直接點連結下單」的訂單算給 YouTube。影片是上漏斗廣告：看完記住品牌，幾天後搜尋品牌字、或被再行銷廣告追到才下單，這筆功勞記到了 Google 搜尋或 Meta 再行銷。換成會分功勞的模型，YouTube 就跨過損益兩平線——最終點擊下的 <span data-v="ytRev"></span> 比較像是它自己能直接證明的下限。</p>
+          <p><span class="tag-i">I:</span> 保養品是用完會回購的商品，YouTube 帶來的又多半是新客；新客的價值有一大部分在之後的回購，而回購訂單通常經由 LINE 好友推播、再行銷或品牌字搜尋回來，不會記回 YouTube。所以新客占比越高的通路，只看當下訂單的 ROAS 越容易被低估。</p>
+          <p><span class="tag-a">A:</span> 保養品回購週期約 60–90 天是產業常識，不在本儀表板；YouTube 新客之後實際回購多少，要用「依取得通路分組的新客回購率」才算得出來。砍掉之後品牌字搜尋與再行銷會少多少，也只有暫停 YouTube 的增量測試能回答。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('budget','card-cMargin')">📍 查看：營收 ROAS vs 毛利 ROAS</button>
+        <button class="chart-ref-btn" onclick="goToChart('attr','card-cModelRoas')">📍 查看：三種歸因模型 ROAS</button>
+        <button class="chart-ref-btn" onclick="goToChart('attr','card-cLag')">📍 查看：轉換延遲分布</button>
+      </div>
+    </div>
+
+    <!-- Q18 -->
+    <div class="qa-item" data-domain="mkt">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3·A</span>
+        <span class="question-text">Q18：下季每月多出約 <span data-v="tiStep"></span> 萬預算。代理商業務窗口提案全加給 Meta 再行銷（廣告管理員 ROAS <span data-v="rtRoas"></span>，全通路最高）；社群組提案加給 Meta 開發。兩案的「下一塊錢」各能帶回多少？你支持哪一案？</span>
+        <span class="domain-chip d-mkt">📣 行銷專業</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="nav-hint" onclick="goToChart('ovw','card-cPlatRoas')">👉 切到「💰 投放總覽」→「各通路平台自報 ROAS」：業務窗口的依據是哪一種 ROAS</div>
+        <div class="nav-hint" onclick="goToChart('attr','card-cNewMix')">👉 對照「🔀 歸因口徑」→「各通路新客／舊客占比」：再行銷追到的多半是哪種客人</div>
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> ① <span class="ev">各通路平台自報 ROAS</span>：再行銷 <span data-v="rtRoas"></span>；<span class="ev">營收 ROAS vs 毛利 ROAS</span>：後台最終點擊 <span data-v="rtBk"></span>、毛利 ROAS <span data-v="rtMg"></span>。② <span class="ev">Meta 再行銷的三種 ROAS</span>：<span data-v="hoPeriod"></span> 同一筆花費，平台歸因 <span data-v="hoAtt"></span>、增量 <span data-v="hoInc"></span>，低於損益兩平 <span data-v="be"></span>。③ <span class="ev">花費級距</span>：開發從 <span data-v="tiCur"></span> 萬加到 <span data-v="tiNext"></span> 萬，邊際 ROAS <span data-v="tiNextM"></span>。④ <span class="ev">各通路新客／舊客占比</span>：再行銷新客 <span data-v="rtNew"></span>%、開發 <span data-v="atMdNew"></span>%。</p>
+          <p><span class="tag-i">I:</span> 再行銷的對象是來過官網、加過購物車、互動過的人，本來購買意願就高。平台把「看過或點過再行銷廣告後下單」都算進來；holdout 顯示暫停投放的地區只少了一小部分營收，真正因廣告多出來的只占歸因營收的 <span data-v="hoShare"></span>%。增量 ROAS <span data-v="hoInc"></span> × 毛利率 <span data-v="mgPct"></span>% ≈ <span data-v="hoIncMg"></span>：每花 1 元，換回的毛利不到 1 元。</p>
+          <p><span class="tag-i">I:</span> 而且 <span data-v="hoInc"></span> 是「目前花費下的平均」增量；再加碼時追的是同一份有限的名單，同一個人看到更多次，下一塊錢的增量只會更低。開發的 <span data-v="tiNextM"></span> 則是最終點擊口徑的邊際，同樣不是增量、也會高估，但開發的訂單 <span data-v="atMdNew"></span>% 是新客，「本來就會買」的比例遠低於再行銷。</p>
+          <p><span class="tag-a">A:</span> 推測開發被高估的幅度比再行銷小，但沒有開發的增量測試，這只是假設。兩案的下一塊錢都落在損益兩平附近，沒有一案明顯賺錢。</p>
+          <p><span class="tag-a">A:</span> 🎯 行動：① 不加碼再行銷，反而檢討現有花費：排除近期已購買者、縮短名單的回溯天數、設每人頻次上限；② 新增預算先給開發，但只加一級，並在加碼期間對開發也做一次地理 holdout；③ 之後所有通路都用同一把尺比較——增量營收 × 毛利率 ÷ 花費。</p>
+        </div>
+        <div class="trap-block" data-trap-stage="read" data-trap="相關≠因果">
+          <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜相關≠因果</span>
+          <div><strong>常見陷阱：</strong>看到「被再行銷廣告碰過的人很會買」，就以為是廣告讓他們買。再行銷挑的本來就是最可能下單的人，是「會買的人剛好被廣告追到」，不一定是「廣告讓人買」。兩者在歸因報表上長得一模一樣，只有對照組（holdout）分得開。</div>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('budget','card-cHoldRoas')">📍 查看：Meta 再行銷的三種 ROAS</button>
+        <button class="chart-ref-btn" onclick="goToChart('budget','card-cTier')">📍 查看：花費級距 vs 平均／邊際 ROAS</button>
+        <button class="chart-ref-btn" onclick="goToChart('ovw','card-cPlatRoas')">📍 查看：各通路平台自報 ROAS</button>
+      </div>
+    </div>
+
+    <!-- Q19 -->
+    <div class="qa-item" data-domain="ind">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3·A</span>
+        <span class="question-text">Q19：老闆看到混合 ROAS <span data-v="roas"></span>，說「花 1 塊回來 4 塊，今年投放大賺」。用保養品的成本結構重算：全年廣告實際留下多少毛利？各通路的 ROAS 門檻該怎麼訂？</span>
+        <span class="domain-chip d-ind">🏭 產業知識</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="nav-hint" onclick="goToChart('ovw','card-cPlatRoas')">👉 切到「💰 投放總覽」→「各通路平台自報 ROAS」：每個通路都高於 <span data-v="be"></span>，看起來全部賺錢</div>
+        <div class="nav-hint" onclick="goToChart('attr','card-cClaimOrd')">👉 對照「🔀 歸因口徑」→「平台自報 vs 後台訂單」：門檻要套在哪一種營收上</div>
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> <span class="ev">KPI：損益兩平 ROAS</span> <span data-v="be"></span>，毛利率 <span data-v="mgPct"></span>%（商品成本 <span data-v="cogsPct"></span>%、退貨 <span data-v="retPct"></span>%）；<span class="ev">KPI：全年毛利 ROAS</span> <span data-v="mgRoas"></span>。全年後台營收 <span data-v="rev"></span> 萬 × <span data-v="mgPct"></span>% ＝ 毛利 <span data-v="mgGross"></span> 萬，扣掉廣告花費 <span data-v="spend"></span> 萬，剩 <span data-v="mgAfterAd"></span> 萬。<span class="ev">營收 ROAS vs 毛利 ROAS</span>：毛利 ROAS 依序 <span data-v="mgList"></span>。</p>
+          <p><span class="tag-i">I:</span> ROAS 只算營收。每花 1 元帶回 <span data-v="roas"></span> 元營收，扣掉商品成本和退貨剩 <span data-v="mgRoas"></span> 元毛利，再扣那 1 元廣告費，淨留 <span data-v="mgRoasNet"></span> 元。損益兩平 ROAS＝1 ÷ 毛利率＝<span data-v="be"></span>：營收 ROAS 低於這條線，賣越多賠越多。各通路的門檻應該用同一條毛利線，而且套在後台營收上，不能套在平台自報營收上（全年平台自報營收約是後台的 <span data-v="overclaim"></span> 倍）。</p>
+          <p><span class="tag-i">I:</span> 保養品的商品成本占比低，所以門檻 <span data-v="be"></span> 看起來很寬鬆；但台灣網購有 7 天猶豫期（通訊交易解除權），退貨要預留，檔期大促的折扣也會壓低毛利率。門檻是成本結構算出來的，不是業界通用的固定數字：毛利率越低的品類，同樣的 ROAS 越可能是虧的。</p>
+          <p><span class="tag-a">A:</span> <span data-v="be"></span> 只扣了商品成本和退貨。物流、金流手續費、客服，以及定義面板註明「總花費」不含的代理商服務費與素材製作費都還沒扣。若這些合計再占營收 <span data-v="otherPct"></span>%（假設值），毛利率降到約 <span data-v="mgPct"></span>% − <span data-v="otherPct"></span>%，門檻就升到 <span data-v="be2"></span>，Meta 開發 <span data-v="mdBk"></span> 的餘裕會小很多。</p>
+          <p><span class="tag-a">A:</span> 🎯 行動：① 對老闆改報「廣告後毛利」而不是 ROAS，並列出還沒扣的成本；② 跟財務對齊完整的變動成本率，算出真正的損益兩平 ROAS，所有通路用同一條線；③ 加碼看邊際（Q16）、再行銷看增量（Q18）、YouTube 看較長的窗口與回購（Q17），而不是只看 ROAS 排名。</p>
+        </div>
+        <div class="trap-block" data-trap-stage="read" data-trap="單指標決策">
+          <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜單指標決策</span>
+          <div><strong>常見陷阱：</strong>ROAS 越高越好、越高就越賺。ROAS 沒有扣成本，不同毛利率的商品不能比；同一個 ROAS 在保養品可能大賺，在低毛利品類可能大賠。只看單一比率做預算決策，會把「營收多」誤當成「賺得多」。</div>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('budget','card-cMargin')">📍 查看：營收 ROAS vs 毛利 ROAS</button>
+        <button class="chart-ref-btn" onclick="goToChart('ovw','card-cPlatRoas')">📍 查看：各通路平台自報 ROAS</button>
+      </div>
+    </div>
+
+  </div><!-- end qa-section -->
+
+  <!-- ── 本頁訓練題（訓練題拆到每頁末尾） ── -->
+  <div class="training-block">
+    <div class="training-title">★ 本頁訓練題 T4、T5 — 交出預算建議之前</div>
+    <div class="qa-section">
+
+      <!-- T4 -->
+      <div class="qa-item" data-domain="mkt">
+        <div class="question" onclick="toggleQA(this)">
+          <span class="badge l3">L3·A</span>
+          <span class="question-text">T4（缺失維度題）：明年要用這份儀表板分配 <span data-v="spend"></span> 萬預算。它還缺哪些分析視角？至少提 3 個，並說明每個缺口會讓哪個結論可能出錯。</span>
+          <span class="domain-chip d-mkt">📣 行銷專業</span>
+          <span class="question-arrow">▶</span>
+        </div>
+        <div class="answer">
+          <div class="nav-hint" onclick="goToChart('ovw','card-cRevM')">👉 切到「💰 投放總覽」→「月度後台營收」：這些營收全部被分給了 <span data-v="nCh"></span> 個廣告通路——沒有任何一筆來自自然流量</div>
+          <div class="nav-hint" onclick="goToChart('attr','card-cLag')">👉 對照「🔀 歸因口徑」→「轉換延遲分布」：最長只看到 28 天，之後的回購不在畫面上</div>
+          <div class="answer-block">
+            <p><span class="tag-f">F:</span> 本儀表板現有的邊界：① <span class="ev">花費級距</span>只有 <span data-v="tiCh"></span> 一條報酬遞減曲線；② <span class="ev">Meta 再行銷的三種 ROAS</span>：增量測試只做過再行銷一個通路、一次（<span data-v="hoPeriod"></span>）；③ <span class="ev">月度後台營收</span>：後台營收 <span data-v="rev"></span> 萬全部按最終點擊分給 <span data-v="nCh"></span> 個通路；④ <span class="ev">轉換延遲分布</span>最長到 28 天。</p>
+            <p><span class="tag-i">I:</span> 這些邊界都會讓「該把錢放哪」的答案偏掉：只有一條邊際曲線，就無法比較「錢從 A 移到 B」；只有一個增量數字，其他通路的 ROAS 都還是歸因口徑；營收全部記給廣告，等於假設不投廣告就沒有營收。</p>
+            <p><span class="tag-a">A:</span> 建議補的 5 個視角（前 3 個明顯、後 2 個進階）：<br>
+            ① <strong>依取得通路分組的新客回購與 LTV</strong>：沒有它，帶新客的 YouTube、Meta 開發被低估，以舊客為主的再行銷、LINE 被高估（Q17）。<br>
+            ② <strong>其他通路的增量測試</strong>：目前只知道再行銷的真實增量，Google 搜尋（尤其品牌字）的 ROAS 可能同樣含大量「本來就會買」的訂單。<br>
+            ③ <strong>自然／直接流量的基準</strong>：廣告全停還剩多少營收？沒有這條基準，所有 ROAS 的分子都含本來就會發生的營收，混合 ROAS 也一起被高估。<br>
+            ④ <strong>（進階）每個通路的邊際曲線＋季節 CPM</strong>：預算分配的目標是讓各通路的邊際 ROAS 接近；Q4 CPM 上漲時整條曲線會往下移，同樣的花費在 11 月和 3 月的邊際不同。<br>
+            ⑤ <strong>（進階）行銷組合模型（MMM）</strong>：用週資料拆出各通路、季節、促銷對營收的貢獻，不依賴點擊追蹤，ATT 讓平台訊號流失後更重要；可以和 holdout 的結果互相校正。</p>
+            <p><span class="tag-a">A:</span> 🎯 行動：先補 ①、③——資料都在官網後台，成本最低；② 每季輪流對一個通路做地理 holdout；④、⑤ 等累積 2 年以上的週資料再做。</p>
+          </div>
+          <div class="trap-block" data-trap-stage="read" data-trap="過度推論">
+            <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜過度推論</span>
+            <div><strong>常見陷阱：</strong>把儀表板上沒畫的東西當作不存在。畫面上的 ROAS 看起來完整、每一塊營收都有歸屬，就以為能直接排出預算優先順序；但它沒有回購、沒有自然流量、只有一個通路做過增量測試——結論能推到多遠，取決於缺了什麼。</div>
+          </div>
+          <button class="chart-ref-btn" onclick="goToChart('budget','card-cTier')">📍 查看：花費級距 vs 平均／邊際 ROAS</button>
+          <button class="chart-ref-btn" onclick="goToChart('budget','card-cHoldRoas')">📍 查看：Meta 再行銷的三種 ROAS</button>
+          <button class="chart-ref-btn" onclick="goToChart('ovw','card-cRevM')">📍 查看：月度後台營收</button>
+        </div>
+      </div>
+
+      <!-- T5 -->
+      <div class="qa-item" data-domain="data">
+        <div class="question" onclick="toggleQA(this)">
+          <span class="badge l3">L3·A</span>
+          <span class="question-text">T5（資料矛盾題）：同一段 <span data-v="hoPeriod"></span>、同一筆 Meta 再行銷花費 NT$<span data-v="hoSp"></span>，平台歸因 ROAS <span data-v="hoAtt"></span>，地理 holdout 算出的增量 ROAS 只有 <span data-v="hoInc"></span>。一個說這是最賺的通路，一個說它連損益兩平都不到。誰對？你會怎麼寫給老闆？</span>
+          <span class="domain-chip d-data">📊 數據分析</span>
+          <span class="question-arrow">▶</span>
+        </div>
+        <div class="answer">
+          <div class="nav-hint" onclick="goToChart('ovw','card-cPlatRoas')">👉 切到「💰 投放總覽」→「各通路平台自報 ROAS」：再行銷全年自報 <span data-v="rtRoas"></span>，是哪一種故事的來源</div>
+          <div class="nav-hint" onclick="goToChart('attr','card-cClaimOrd')">👉 對照「🔀 歸因口徑」→「平台自報 vs 後台訂單」：平台認領的訂單本來就比實際多</div>
+          <div class="answer-block">
+            <p><span class="tag-f">F:</span> <strong>① 各自讀。</strong>歸因：平台把測試期 NT$<span data-v="hoAttRev"></span> 的營收記給再行銷，÷ 花費 NT$<span data-v="hoSp"></span> ＝ <span data-v="hoAtt"></span>。增量：從<span class="ev">地理 holdout 營收對照</span>，對照區暫停再行銷，前期 <span data-v="hoCpre"></span> 萬 → 活動期 <span data-v="hoCpost"></span> 萬（+<span data-v="hoCgr"></span>%）；測試區前期 <span data-v="hoTpre"></span> 萬，照同樣成長率應有 <span data-v="hoExp"></span> 萬，實際 <span data-v="hoTpost"></span> 萬，多出 NT$<span data-v="hoIncRev"></span>，÷ 同一筆花費 ＝ <span data-v="hoInc"></span>。</p>
+            <p><span class="tag-i">I:</span> <strong>② 找矛盾。</strong>兩個數字的分母相同，差在分子回答的問題不同：歸因營收是「被廣告碰過的人買了多少」，增量營收是「因為有廣告才多出多少」。兩者相差 NT$<span data-v="hoGap"></span>（歸因營收的 <span data-v="hoNonShare"></span>%），就是「看過再行銷廣告、但不投也會買」的訂單——再行銷名單本來就是購買意願最高的人，加上瀏覽歸因（只看到沒點也算），平台自然把它們都認領走。兩個數字都沒算錯，只是一個回答「誰碰過這筆訂單」，一個回答「沒投會少多少」；預算決策要的是後者。</p>
+            <p><span class="tag-i">I:</span> 對照區同期自己成長了 <span data-v="hoCgr"></span>%（Q4 檔期）。若直接拿測試區活動期減前期，會把檔期成長也算成廣告效果；用對照區的成長率扣掉，才是 holdout 的關鍵。</p>
+            <p><span class="tag-a">A:</span> <strong>③ 下判斷。</strong>這是單次 6 週、兩組地區的測試，本頁沒有它的信賴區間；<span data-v="hoInc"></span> 和損益兩平 <span data-v="be"></span> 只差 <span data-v="hoBeGap"></span>，不能斷定「虧錢」，只能說「接近損益兩平、遠低於報表」。兩區的客群或當地活動若本來就不同，增量也可能被高估或低估。</p>
+            <p><span class="tag-a">A:</span> 🎯 寫給老闆：「再行銷的平台報表 ROAS <span data-v="hoAtt"></span> 主要來自本來就會下單的舊客；地理對照測試顯示，真正因廣告多出的營收約為報表的 <span data-v="hoShare"></span>%，增量 ROAS 約 <span data-v="hoInc"></span>，與損益兩平 <span data-v="be"></span> 相當。建議下季不加碼、先縮減名單與頻次，並換一組地區、延長到 8 週重測。」要追加監控的指標：① 測試區與對照區的每週營收差（附信賴區間）；② 暫停區舊客的回購率有沒有下滑；③ 再行銷的觸及人數與每人頻次；④ 品牌字搜尋量。下一次測試的結果，才能判斷哪個故事比較接近真相。</p>
+          </div>
+          <div class="trap-block" data-trap-stage="read" data-trap="基線缺失">
+            <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜基線缺失</span>
+            <div><strong>常見陷阱：</strong>拿沒有對照組的數字回答「廣告有沒有效」。歸因 ROAS 只知道「誰買了、他看過什麼廣告」，不知道「沒看廣告的話他會不會買」——少了這條基線，ROAS 再高也無法證明廣告帶來了任何一筆額外訂單。反過來，沒有扣掉對照區自然成長的「前後比較」，也同樣缺基線。</div>
+          </div>
+          <button class="chart-ref-btn" onclick="goToChart('budget','card-cHoldRev')">📍 查看：地理 holdout 營收對照</button>
+          <button class="chart-ref-btn" onclick="goToChart('budget','card-cHoldRoas')">📍 查看：Meta 再行銷的三種 ROAS</button>
+        </div>
+      </div>
+
+    </div><!-- end training qa-section -->
+  </div><!-- end training-block -->
+
+  <!-- ── 設計選擇揭露（C.8） ── -->
+  <hr class="section-divider">
+  <div class="section-title">📐 設計選擇揭露</div>
+  <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px">每一個圖表與儀表板設計背後都有三個問題：用哪些指標回答什麼商業問題？這個視覺形式為什麼適合這份資料？讀者應該看到什麼、帶走什麼判斷？以下逐一說明本儀表板的 8 個關鍵設計決策。</p>
+  <div class="design-grid">
+    <div class="design-item">
+      <h4>1. 四頁是一條決策鏈：看成效 → 驗口徑 → 驗實驗 → 分預算</h4>
+      <p><strong>分析資料選擇：</strong>投放分析最常見的錯，是看完第一頁的 ROAS 就直接分預算。四頁依序回答「錢花在哪」「這些數字可信嗎」「實驗結論可信嗎」「下一塊錢放哪」，前三頁都是第四頁的前提。<br><br>
+      <strong>閱讀設計：</strong>每頁的 L3 題都用 nav-hint 指回前面的頁面，讀者在預算頁做決定時，會被迫重新檢查前面的口徑與實驗。</p>
+    </div>
+    <div class="design-item">
+      <h4>2. 全部單一值軸：ROAS、營收、花費從不同框</h4>
+      <p><strong>視覺設計邏輯：</strong>花費與營收拆成兩張月度圖；邊際與平均 ROAS、營收與毛利 ROAS 放同一張圖，是因為它們單位相同、本來就該直接比高低。不用雙軸，是為了不讓刻度選擇製造出「兩條線很相關」的假象。<br><br>
+      <strong>閱讀設計：</strong>讀者看到兩個東西在同一張圖，就可以放心直接比較；要比較不同單位的指標，得自己動手換算，這個摩擦是刻意的。</p>
+    </div>
+    <div class="design-item">
+      <h4>3. 損益兩平線畫在每一張預算 ROAS 圖上</h4>
+      <p><strong>分析資料選擇：</strong>ROAS 本身沒有「好壞」，只有和成本結構比才有意義。損益兩平 ROAS（1 ÷ 毛利率）把商品成本與退貨轉成一條線，三張預算圖都用同一條。<br><br>
+      <strong>視覺設計邏輯：</strong>線一律用紅色虛線、標出數值；毛利 ROAS 圖同時畫 1.00 與營收口徑的門檻，讓讀者看出兩條線是同一個條件的兩種寫法。</p>
+    </div>
+    <div class="design-item">
+      <h4>4. 刻意不設「自然／直接流量」</h4>
+      <p><strong>分析資料選擇：</strong>合成資料把後台營收全數按最終點擊分給 <span data-v="nCh"></span> 個通路，讓「後台各通路合計＝後台總額」成立，三種歸因模型也都是同一份營收的重新分配。代價是忽略了不投廣告也會發生的營收。<br><br>
+      <strong>閱讀設計：</strong>這是簡化，不是真實世界的樣子；T4 要讀者自己指出這個缺口，以及它會讓所有 ROAS 一起被高估。</p>
+    </div>
+    <div class="design-item">
+      <h4>5. A/B 測試用「結帳轉換率」，基準刻意偏高</h4>
+      <p><strong>分析資料選擇：</strong>指標定義為落地頁訪客中完成任一筆訂單的比例（新舊客都算），因為測試期間的轉換數必須能放進同期後台訂單裡；只算首購會比同期全站新客還多，兩份資料對不起來。基準約 <span data-v="abCrA"></span>%，高於一般電商落地頁，是為了在每組約 <span data-v="abNa"></span> 位訪客下，讓終局結果剛好落在「有差、但不顯著」的灰色地帶。<br><br>
+      <strong>閱讀設計：</strong>讀者要學的不是某個轉換率水準，而是「樣本量決定你看得多清楚」。</p>
+    </div>
+    <div class="design-item">
+      <h4>6. 刻意設計的矛盾：歸因 <span data-v="hoAtt"></span> vs 增量 <span data-v="hoInc"></span></h4>
+      <p><strong>分析資料選擇：</strong>T5 的兩個數字來自同一段期間、同一筆花費，只差在分子回答的問題；增量 ROAS 刻意設在損益兩平 <span data-v="be"></span> 的正下方，讓「虧不虧」本身也帶有不確定性。<br><br>
+      <strong>閱讀設計：</strong>讀者應帶走的判斷是：兩個指標講相反的故事時，先問它們各自回答什麼問題，再決定哪一個能用在眼前的決策，並承認還不能下定論的部分。</p>
+    </div>
+    <div class="design-item">
+      <h4>7. 每題三種標記：難度 × F/I/A × 知識領域</h4>
+      <p><strong>閱讀設計：</strong>L1/L2/L3 標的是要跨幾張圖、幾頁；F/I/A 標的是每一句話的論述強度——事實、推論、還是需要驗證的假設。本份新增知識領域 chip（📊 數據分析／📣 行銷專業／🏭 產業知識），24 題三類各 8 題：投放分析同時需要統計、平台機制和產業常識，讀者可以看出自己卡在哪一類。<br><br>
+      <strong>視覺設計邏輯：</strong>chip 放在題目列右側、用既有語意色，不搶題目本身的注意力。</p>
+    </div>
+    <div class="design-item">
+      <h4>8. 文字裡的數字全部綁定資料</h4>
+      <p><strong>分析資料選擇：</strong>KPI、圖表解讀、題目與答案中的每個資料數字，都在開啟時從同一份資料物件計算後填入，不手打；題目若依賴某個資料形狀（例如「只有 YouTube 低於損益兩平」），會有一道檢查在資料改變時報錯。<br><br>
+      <strong>閱讀設計：</strong>讀者在答案裡看到的數字一定能在圖上找到出處；這也是分析報告該有的習慣——結論要能追溯到資料，資料一改，結論要被重新檢查。</p>
+    </div>
+  </div>
+
 </div><!-- end page-budget -->
 
 <div class="page-footer">
@@ -1767,6 +2069,58 @@ function buildTextValues() {
   V.abConvTot = fmt(cca[z] + ccb[z]); V.abMonOrd = fmt(M.orders[abMi]); V.abMonOrd28 = fmt(mo28);
   V.abConvShare = ((cca[z] + ccb[z]) / mo28 * 100).toFixed(0);
   guard(cca[z] + ccb[z] <= mo28 && cca[z] + ccb[z] >= 0.6 * mo28, 'Q15 假設測試轉換合計 ≤ 同期後台訂單、且占大部分');
+
+  // ── budget 預算決策（KPI、findings、Q16–Q19、T4、T5、定義面板）──
+  const TI = DATA.tiers, HO = DATA.holdout, MG = DATA.margin, be = A.breakeven_roas, mRate = A.margin_pct / 100;
+  V.be = be.toFixed(2); V.mgPct = fmt(A.margin_pct); V.cogsPct = fmt(A.cogs_pct); V.retPct = fmt(A.return_pct);
+  V.mgRoas = A.margin_roas.toFixed(2); V.mgRoasNet = (A.margin_roas - 1).toFixed(2);
+  V.mgGross = fmt(A.revenue_wan * mRate); V.mgAfterAd = fmt(A.revenue_wan * mRate - A.spend_wan);
+  guard(Math.abs(be - 1 / mRate) < 0.01, '定義面板假設損益兩平 ROAS＝1 ÷ 毛利率');
+  // 假設情境：其他變動成本（物流、金流、代理費…）若再占營收 15%（[A] 段明示為假設值）
+  V.otherPct = 15; V.be2 = (100 / (A.margin_pct - V.otherPct)).toFixed(2);
+  // 花費級距（Q16、Q18、KPI、findings）：marginal_roas[i]＝級距 i → i+1
+  const ts = TI.spend_wan, tr = TI.revenue_wan, ta = TI.avg_roas, tm = TI.marginal_roas, ci = TI.current_index, tl = ts.length - 1;
+  const gp = tr.map((r, i) => r * mRate - ts[i]), gpBest = argMax(gp);
+  V.tiCh = TI.channel; V.tiFirst = ts[0]; V.tiCur = ts[ci]; V.tiNext = ts[ci + 1]; V.tiMax = ts[tl];
+  V.tiStep = (ts[ci + 1] - ts[ci]).toFixed(1);
+  V.tiAvgFirst = ta[0].toFixed(2); V.tiCurAvg = ta[ci].toFixed(2); V.tiMaxAvg = ta[tl].toFixed(2);
+  V.tiMFirst = tm[0].toFixed(2); V.tiMLast = tm[tm.length - 1].toFixed(2); V.tiNextM = tm[ci].toFixed(2);
+  const kBe = tm.findIndex(v => v < be);
+  V.tiBeLo = ts[kBe]; V.tiBeHi = ts[kBe + 1]; V.tiBeM = tm[kBe].toFixed(2);
+  const dS = ts[tl] - ts[ci], dR = tr[tl] - tr[ci];
+  V.tiDblDS = dS.toFixed(1); V.tiDblDR = dR.toFixed(1); V.tiDblRoas = (dR / dS).toFixed(2); V.tiDblLoss = (gp[ci] - gp[tl]).toFixed(1);
+  V.tiGpCur = gp[ci].toFixed(1); V.tiGpBest = gp[gpBest].toFixed(1); V.tiGpBestS = ts[gpBest]; V.tiGpMax = gp[tl].toFixed(1);
+  guard(ta.every(v => v > be), 'Q16 假設每個級距的平均 ROAS 都高於損益兩平');
+  guard(kBe === ci + 1 && tm[ci] > be, 'Q16 假設目前級距再加一級的邊際 ROAS 仍略高於損益兩平、再下一級跌破');
+  guard(gpBest === ci + 1 && dR * mRate < dS, 'Q16 假設廣告後毛利在下一級距最高、加倍到最高級距會變少');
+  guard(Math.abs(ta[ci] - CH.backend_roas[md]) < 0.02, 'Q16 假設目前級距的平均 ROAS＝Meta 開發全年後台 ROAS');
+  // holdout（Q18、T5、KPI、findings）
+  const w1 = v => (v / 10000).toFixed(1);
+  V.hoPeriod = HO.period; V.hoSp = fmt(HO.spend); V.hoAttRev = fmt(HO.attributed_revenue); V.hoIncRev = fmt(HO.incremental_revenue);
+  V.hoAtt = HO.attributed_roas.toFixed(2); V.hoInc = HO.incremental_roas.toFixed(2);
+  V.hoX = (HO.attributed_roas / HO.incremental_roas).toFixed(1);
+  V.hoShare = (HO.incremental_revenue / HO.attributed_revenue * 100).toFixed(0);
+  V.hoGap = fmt(HO.attributed_revenue - HO.incremental_revenue); V.hoNonShare = (100 - HO.incremental_revenue / HO.attributed_revenue * 100).toFixed(0);
+  V.hoTpre = w1(HO.test_pre); V.hoTpost = w1(HO.test_post); V.hoCpre = w1(HO.control_pre); V.hoCpost = w1(HO.control_post);
+  V.hoExp = w1(HO.expected_test_post); V.hoIncW = w1(HO.incremental_revenue);
+  V.hoCgr = ((HO.control_post / HO.control_pre - 1) * 100).toFixed(1); V.hoTgr = ((HO.test_post / HO.test_pre - 1) * 100).toFixed(1);
+  V.hoIncMg = (HO.incremental_roas * mRate).toFixed(2); V.hoBeGap = (be - HO.incremental_roas).toFixed(2);
+  V.rtBk = CH.backend_roas[rt].toFixed(2); V.rtMg = MG.margin_roas[rt].toFixed(2); V.rtNew = np[rt].toFixed(1);
+  guard(HO.incremental_roas < be && be - HO.incremental_roas < 0.1, 'Q18/T5 假設增量 ROAS 略低於損益兩平（差距很小）');
+  guard(HO.attributed_roas > 5 * HO.incremental_roas && HO.attributed_roas > CH.backend_roas[rt] && CH.backend_roas[rt] > HO.incremental_roas,
+    'cHoldRoas 假設 歸因 > 後台最終點擊 > 增量（降序）且歸因是增量的 5 倍以上');
+  guard(HO.control_post > HO.control_pre && HO.test_post > HO.expected_test_post, 'T5 假設對照區活動期自然成長、測試區實際 > 預期');
+  guard(Math.abs(tm[ci] - HO.incremental_roas) < 0.15, 'Q18 假設兩案的下一塊錢都落在損益兩平附近');
+  guard(np[rt] < np[md], 'Q18 假設再行銷新客占比低於開發');
+  // 營收 vs 毛利 ROAS（Q17、Q19、KPI、findings）
+  const mgOrd = descIdx(MG.margin_roas), mgBelow = MG.margin_roas.map((v, i) => i).filter(i => MG.margin_roas[i] < MG.breakeven_margin_roas);
+  V.mgList = mgOrd.map(i => `${L[i]} ${MG.margin_roas[i].toFixed(2)}`).join('、');
+  V.ytRev = MG.revenue_roas[yt].toFixed(2); V.ytMg = MG.margin_roas[yt].toFixed(2);
+  V.ytLoss = (CH.spend_wan[yt] - CH.backend_revenue_wan[yt] * mRate).toFixed(1);
+  V.mdBk = CH.backend_roas[md].toFixed(2);
+  guard(mgBelow.length === 1 && mgBelow[0] === yt && MG.revenue_roas[yt] < be, 'Q17/Q19 假設只有 YouTube 低於損益兩平');
+  guard(R.click7_view1[yt] > be && R.dda[yt] > be, 'Q17 假設 YouTube 換成另兩種歸因模型後高於損益兩平');
+  guard(CH.backend_roas[md] > Number(V.be2), 'Q19 假設 Meta 開發在假設情境門檻下仍高於門檻');
   return V;
 }
 
@@ -2227,7 +2581,163 @@ function drawAb() {
     }
   });
 }
-function drawBudget() { applyChartTheme(); }
+// DRAW P4: budget 預算決策
+// 配色：通路沿用 CH_COLOR；同一通路內的口徑（平均／邊際、歸因／增量、營收／毛利）用深淺區分；損益兩平線一律 red 虛線、單一值軸
+function drawBudget() {
+  applyChartTheme();
+  const A = DATA.anchors, CH = DATA.channels, TI = DATA.tiers, HO = DATA.holdout, MG = DATA.margin, L = CH.labels;
+  const be = A.breakeven_roas, mRate = A.margin_pct / 100;
+  const outLabel = formatter => ({ anchor: 'end', align: 'end', offset: 2, color: TH.label, font: { size: 10, family: TH.fontMono }, formatter });
+  const headroom = (arr, step) => Math.ceil(Math.max(...arr) * 1.2 / step) * step;   // ≥1.2× 最大值（B.2-4）
+  const shadeLegend = alphas => ({
+    display: true, position: 'top',
+    labels: {
+      color: TH.text, boxWidth: 12, boxHeight: 12,
+      generateLabels: chart => chart.data.datasets.map((ds, i) => ({
+        text: ds.label, fillStyle: tokRGBA('--text', alphas[i]), strokeStyle: tokRGBA('--text', 0.9), lineWidth: 1,
+        fontColor: TH.text, hidden: !chart.isDatasetVisible(i), datasetIndex: i
+      }))
+    }
+  });
+  const guideLabel = (content, position, extra = {}) => ({ display: true, content, position,
+    backgroundColor: TT.backgroundColor, color: TH.label, font: { size: 10 }, padding: 4, ...extra });
+  const beLine = (scaleID, value, content, position, extra) => ({ type: 'line', scaleID, value,
+    borderColor: c('red', 0.75), borderWidth: 1.5, borderDash: [5, 4], label: guideLabel(content, position, extra) });
+
+  // cTier：Meta 開發花費級距 vs 平均 ROAS（線）與邊際 ROAS（柱）；x＝每月花費（有序級距）；單一值軸
+  const ts = TI.spend_wan, tr = TI.revenue_wan, ci = TI.current_index;
+  const tLab = ts.map(v => v.toFixed(1));
+  const mData = [null, ...TI.marginal_roas];          // 柱 i＝從級距 i−1 加到 i 的邊際 ROAS
+  const gp = tr.map((r, i) => r * mRate - ts[i]);      // 廣告後毛利（萬／月）
+  const mdCol = a => chColor(TI.channel, a);
+  mk('cTier', 'bar', tLab, [
+    { type: 'line', label: '平均 ROAS（累計營收 ÷ 累計花費）', data: TI.avg_roas, order: 0,
+      borderColor: mdCol(0.95), backgroundColor: mdCol(0.95), borderWidth: 2, tension: 0.25, fill: false,
+      pointRadius: 4, pointHoverRadius: 10,
+      datalabels: { anchor: 'end', align: 'top', offset: 4, color: TH.label, font: { size: 10, family: TH.fontMono }, formatter: v => v.toFixed(2) } },
+    { label: '邊際 ROAS（多回的營收 ÷ 多花的錢）', data: mData, order: 1,
+      backgroundColor: mData.map(v => v != null && v < be ? c('red', 0.5) : mdCol(0.35)),
+      borderColor: mData.map(v => v != null && v < be ? c('red', 0.9) : mdCol(0.9)), borderWidth: 1, borderRadius: 3,
+      datalabels: { display: ctx => ctx.dataset.data[ctx.dataIndex] != null } }
+  ], {
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: true, position: 'top', labels: { color: TH.text, boxWidth: 12, boxHeight: 12,
+        generateLabels: chart => chart.data.datasets.map((ds, i) => ({
+          text: ds.label, fillStyle: i === 0 ? mdCol(0.95) : mdCol(0.35), strokeStyle: mdCol(0.95), lineWidth: 1,
+          fontColor: TH.text, hidden: !chart.isDatasetVisible(i), datasetIndex: i })) } },
+      tooltip: {
+        filter: it => it.raw != null,
+        callbacks: {
+          title: items => `${TI.channel} 每月花費 ${items[0].label} 萬`,
+          label: ctx => {
+            const i = ctx.dataIndex;
+            if (ctx.datasetIndex === 0) return ` 平均 ROAS ${ctx.raw.toFixed(2)}＝營收 ${tr[i]} 萬 ÷ 花費 ${ts[i]} 萬`;
+            const dR = tr[i] - tr[i - 1], dS = ts[i] - ts[i - 1];
+            return ` 邊際 ROAS ${ctx.raw.toFixed(2)}＝從 ${ts[i - 1]} 萬加到 ${ts[i]} 萬：多回 ${dR.toFixed(1)} 萬 ÷ 多花 ${dS.toFixed(1)} 萬`;
+          },
+          footer: items => `廣告後毛利 ${gp[items[0].dataIndex].toFixed(1)} 萬／月（營收 × ${A.margin_pct}% − 花費）`
+        }
+      },
+      datalabels: outLabel(v => v == null ? '' : v.toFixed(2)),
+      annotation: { annotations: {
+        be: beLine('y', be, `損益兩平 ROAS ${be.toFixed(2)}`, 'end'),
+        cur: { type: 'line', scaleID: 'x', value: ci, borderColor: TH.guide, borderWidth: 1.5, borderDash: [5, 4],
+               label: guideLabel(`目前 ${ts[ci]} 萬／月`, 'start') }
+      } }
+    },
+    scales: {
+      y: { min: 0, max: headroom(TI.avg_roas, 0.5), grid: { color: TH.grid }, ticks: { color: TH.text } },
+      x: { grid: { display: false }, ticks: { color: TH.text }, title: { display: true, text: `${TI.channel} 每月花費（萬）`, color: TH.text, font: { size: 11 } } }
+    }
+  });
+
+  // cHoldRoas：同一個再行銷，三種 ROAS（水平 bar 降序；再行銷色深淺；紅虛線＝損益兩平）
+  const rt = L.indexOf(HO.channel);
+  const hr = [
+    { label: '平台歸因 ROAS（測試期）', v: HO.attributed_roas, tip: `平台歸因營收 NT$${fmt(HO.attributed_revenue)} ÷ 花費 NT$${fmt(HO.spend)}` },
+    { label: '後台最終點擊 ROAS（全年）', v: CH.backend_roas[rt], tip: `後台營收 ${fmt(CH.backend_revenue_wan[rt])} 萬 ÷ 花費 ${fmt(CH.spend_wan[rt])} 萬（全年，非測試期）` },
+    { label: '增量 ROAS（地理 holdout）', v: HO.incremental_roas, tip: `增量營收 NT$${fmt(HO.incremental_revenue)} ÷ 花費 NT$${fmt(HO.spend)}` }
+  ].sort((a, b) => b.v - a.v);
+  const hrAlpha = [0.3, 0.6, 0.95];
+  mk('cHoldRoas', 'bar', hr.map(d => d.label), [{
+    label: 'ROAS', data: hr.map(d => d.v),
+    backgroundColor: hr.map((_, i) => chColor(HO.channel, hrAlpha[i])), borderColor: hr.map(() => chColor(HO.channel, 1)),
+    borderWidth: 1, borderRadius: 3, borderSkipped: false
+  }], {
+    indexAxis: 'y',
+    plugins: {
+      tooltip: { mode: 'nearest', intersect: false, callbacks: { label: ctx => [` ROAS ${ctx.raw.toFixed(2)}`, ` ${hr[ctx.dataIndex].tip}`] } },
+      datalabels: { ...outLabel(v => v.toFixed(2)), offset: 4 },
+      annotation: { clip: false, annotations: { be: beLine('x', be, `損益兩平 ${be.toFixed(2)}`, 'start', { yAdjust: -20 }) } }
+    },
+    layout: { padding: { top: 24 } },
+    scales: {
+      x: { min: 0, max: headroom(hr.map(d => d.v), 2), grid: { color: TH.grid }, ticks: { color: TH.text } },
+      y: { grid: { display: false }, ticks: { color: TH.text, font: { size: 11 } } }
+    }
+  });
+
+  // cHoldRev：holdout 營收對照（萬；測試區 vs 對照區 × 前期／活動期；依活動期降序；短橫線＝測試區「沒有增量時的預期」）
+  const w1 = v => Math.round(v / 1000) / 10;
+  const hvLab = ['測試區（照常投放）', '對照區（暫停再行銷）'];
+  const hvCol = [(a) => chColor(HO.channel, a), (a) => tokRGBA('--text', a)];
+  const hvPre = [w1(HO.test_pre), w1(HO.control_pre)], hvPost = [w1(HO.test_post), w1(HO.control_post)];
+  const hvAlpha = [0.3, 0.85];
+  mk('cHoldRev', 'bar', hvLab, [
+    { label: '前期（測試開始前）', data: hvPre, backgroundColor: hvCol.map(f => f(hvAlpha[0])), borderColor: hvCol.map(f => f(0.9)), borderWidth: 1, borderRadius: 3 },
+    { label: `活動期（${HO.period}）`, data: hvPost, backgroundColor: hvCol.map(f => f(hvAlpha[1])), borderColor: hvCol.map(f => f(1)), borderWidth: 1, borderRadius: 3 }
+  ], {
+    plugins: {
+      legend: shadeLegend(hvAlpha),
+      tooltip: { mode: 'nearest', intersect: false, callbacks: {
+        label: ctx => ` ${ctx.dataset.label}：${ctx.raw.toFixed(1)} 萬`,
+        footer: items => {
+          const i = items[0].dataIndex;
+          if (i === 1) return `對照區成長 ${((HO.control_post / HO.control_pre - 1) * 100).toFixed(1)}%（沒有再行銷時的自然成長）`;
+          return `預期 ${w1(HO.expected_test_post)} 萬（前期 × 對照區成長率）→ 增量 ${w1(HO.incremental_revenue)} 萬`;
+        }
+      } },
+      datalabels: outLabel(v => v.toFixed(1)),
+      annotation: { annotations: { exp: {
+        type: 'line', yMin: w1(HO.expected_test_post), yMax: w1(HO.expected_test_post), xMin: 0.02, xMax: 0.42,   // 只橫跨測試區「活動期」那根柱；標籤放在柱內、線的下方
+        borderColor: c('orange', 0.95), borderWidth: 2, borderDash: [4, 3],
+        label: guideLabel(['無增量時預期', `${w1(HO.expected_test_post)} 萬`], 'center', { yAdjust: 22, font: { size: 9 } })
+      } } }
+    },
+    scales: {
+      y: { min: 0, max: headroom(hvPost.concat(hvPre), 50), grid: { color: TH.grid }, ticks: { color: TH.text, callback: v => v + ' 萬' } },
+      x: { grid: { display: false }, ticks: { color: TH.text, font: { size: 11 } } }
+    }
+  });
+
+  // cMargin：各通路營收 ROAS vs 毛利 ROAS（grouped bar；依營收 ROAS 降序；兩條損益兩平線同一條件的兩種寫法）
+  const mOrd = descIdx(MG.revenue_roas), mLab = mOrd.map(i => L[i]), mAlpha = [0.3, 0.85];
+  mk('cMargin', 'bar', mLab, [
+    { label: '營收 ROAS（後台最終點擊）', data: mOrd.map(i => MG.revenue_roas[i]),
+      backgroundColor: mLab.map(l => chColor(l, mAlpha[0])), borderColor: mLab.map(l => chColor(l, 0.9)), borderWidth: 1, borderRadius: 3 },
+    { label: `毛利 ROAS（營收 × ${A.margin_pct}% ÷ 花費）`, data: mOrd.map(i => MG.margin_roas[i]),
+      backgroundColor: mLab.map(l => chColor(l, mAlpha[1])), borderColor: mLab.map(l => chColor(l, 1)), borderWidth: 1, borderRadius: 3 }
+  ], {
+    plugins: {
+      legend: shadeLegend(mAlpha),
+      tooltip: { mode: 'nearest', intersect: false, callbacks: { label: ctx => {
+        const i = mOrd[ctx.dataIndex], rev = CH.backend_revenue_wan[i], sp = CH.spend_wan[i];
+        return [` ${ctx.dataset.label}：${ctx.raw.toFixed(2)}`,
+                ` 廣告後毛利 ${(rev * mRate - sp).toFixed(1)} 萬（營收 ${fmt(rev)} 萬 × ${A.margin_pct}% − 花費 ${fmt(sp)} 萬）`];
+      } } },
+      datalabels: { ...outLabel(v => v.toFixed(2)), font: { size: 9, family: TH.fontMono } },
+      annotation: { annotations: {
+        beRev: beLine('y', MG.breakeven_revenue_roas, `營收 ROAS 損益兩平 ${MG.breakeven_revenue_roas.toFixed(2)}`, 'center', { yAdjust: -9 }),
+        beMg: beLine('y', MG.breakeven_margin_roas, `毛利 ROAS 損益兩平 ${MG.breakeven_margin_roas.toFixed(2)}`, 'center', { yAdjust: 9 })
+      } }
+    },
+    scales: {
+      y: { min: 0, max: headroom(MG.revenue_roas, 1), grid: { color: TH.grid }, ticks: { color: TH.text } },
+      x: { grid: { display: false }, ticks: { color: TH.text, font: { size: 11 } } }
+    }
+  });
+}
 
 // ══════════════════════════════════════════════════
 // PAGE SWITCHING
