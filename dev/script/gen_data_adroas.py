@@ -177,7 +177,9 @@ def wald(c, n):
     return round(p * 100, 3), round((p - h) * 100, 3), round((p + h) * 100, 3)
 
 
-ab = {"metric": "首購結帳率", "days": list(range(1, DAYS + 1)),
+AB_MONTH = 8          # 2025-09-01（週一）～09-28：day 1 = Monday 與 dow 一致
+ab = {"metric": "結帳轉換率", "metric_def": "落地頁訪客中完成任一筆訂單的比例（新舊客都算）",
+      "period": "2025-09-01～2025-09-28", "month_index": AB_MONTH, "days": list(range(1, DAYS + 1)),
       "visitors_a": va, "visitors_b": vb, "conv_a": ca, "conv_b": cb,
       "cum_visitors_a": cva, "cum_visitors_b": cvb, "cum_conv_a": cca, "cum_conv_b": ccb,
       "cr_a": [], "ci_a_lo": [], "ci_a_hi": [], "cr_b": [], "ci_b_lo": [], "ci_b_hi": [],
@@ -379,6 +381,11 @@ eq(sum(device["visitors_a"]), TA, "device A visitors")
 eq(sum(device["conv_b"]), TCB, "device B conversions")
 ok(device["lift_pct"][0] > ab["lift_pct"][-1] > device["lift_pct"][1], "device: mobile > overall > desktop")
 ok(device["cr_a"][1] > device["cr_a"][0], "desktop converts higher than mobile")
+# 測試期間兩組轉換合計 ≤ 所在月份後台訂單 × 28/30（按天數比例）——
+# 合計約占該期間後台訂單的八成，代表大部分廣告流量經過此落地頁（情境設定，非錯誤）
+ab_month_orders_28d = orders_m[AB_MONTH] * DAYS / 30
+ok(TCA + TCB <= ab_month_orders_28d, f"A/B conversions {TCA + TCB} ≤ Sep backend orders pro-rated {ab_month_orders_28d:.0f}")
+ok(TCA + TCB >= 0.6 * ab_month_orders_28d, "A/B conversions ≥ 60% of period orders (landing page carries most ad traffic)")
 # creatives
 ok(top == 0 and cr_imp[top] == min(cr_imp), "top CTR creative has the smallest sample (winner's curse)")
 ok(creatives["overlap_with_top"] >= 5, f"top CTR CI overlaps ≥5 of 7 (got {creatives['overlap_with_top']})")

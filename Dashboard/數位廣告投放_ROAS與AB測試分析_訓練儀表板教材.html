@@ -494,6 +494,38 @@
     <p>品牌字：搜尋字含品牌名（如「澄研 精華」），搜尋者已經認識品牌。非品牌字：品類或需求詞（如「保濕精華推薦」），搜尋者還沒決定品牌，較常帶來新客。本儀表板兩者合計＝Google 搜尋通路。</p>
   </div>
   <div class="def-item">
+    <h4>A/B 測試、lift 與百分點</h4>
+    <p>把訪客隨機分成兩組、同時間分別看原版（A）與新版（B），比較同一個指標。本頁指標是落地頁的<strong>結帳轉換率</strong>（落地頁訪客中完成任一筆訂單的比例，新客、舊客都算）；測試期間 <span data-v="abPeriod"></span>。<strong>lift</strong>（提升幅度）＝ B ÷ A − 1，是相對差距；<strong>B − A</strong> 是絕對差距，單位是「百分點」（本頁 A <span data-v="abCrA"></span>% → B <span data-v="abCrB"></span>% 是 <span data-v="abDiff"></span> 個百分點、lift <span data-v="abLift"></span>%）。<strong>holdback</strong>：新版上線後保留一小部分流量繼續看原版，追蹤效果有沒有消失。</p>
+  </div>
+  <div class="def-item">
+    <h4>信賴區間（95% CI）</h4>
+    <p>用手上的樣本估計「真實數字合理會落在哪個範圍」。樣本越多，範圍越窄，但不是等比例變窄：樣本要多 4 倍，範圍才窄一半。直覺：同樣的實驗重做很多次、每次各算一個區間，約 95% 的區間會包住真實值。本頁以常態近似計算（每組轉換率、B−A 差距、素材 CTR 皆同）。<br>
+    常見誤解：①「兩組的區間有重疊，就代表沒差」——不一定，要看 <strong>B−A 差距本身的區間</strong>有沒有跨過 0；②「真實值有 95% 機率在這個區間內」——嚴格說不對，但工作上常這樣口語化。業界常見替代：貝氏方法的 A/B 測試工具回報「可信區間」，解讀方式不同，不能和本頁的信賴區間直接混用。</p>
+  </div>
+  <div class="def-item">
+    <h4>p 值與統計顯著</h4>
+    <p>如果 A、B 其實一樣好，只靠運氣就看到這麼大（或更大）差距的機率。越小，代表「純屬運氣」越說不過去；慣例以 0.05 為門檻，低於就稱「統計顯著」。這個門檻是設計給「事先決定樣本數、最後只看一次」的情況；需要中途查看時，業界用<strong>序貫檢定（Sequential testing）</strong>，每次查看的門檻更嚴格。本頁用雙尾雙比例 z 檢定，每天以累積資料重算一次（模擬「每天偷看」）。<br>
+    常見誤解：①「p＝0.03 代表 B 比較好的機率是 97%」——錯，p 值不是 B 勝出的機率；②「p > 0.05 代表 A、B 一樣」——錯，可能只是樣本不夠、看不出來。業界常見替代：貝氏 A/B 工具直接回報「B 勝過 A 的機率」，和 p 值不能互相換算。</p>
+  </div>
+  <div class="def-item">
+    <h4>檢定力（Statistical Power）</h4>
+    <p>如果 B 真的比 A 好某個幅度，這個測試能把它判定為「顯著」的機率。業界慣用 80%。樣本越多、真實差距越大、基準轉換率越高，檢定力越高。<br>
+    常見誤解：「測試不顯著＝新版沒效果」——檢定力不足時，真的有效果也常測不出來；不顯著只代表「這個測試看不清楚」。</p>
+  </div>
+  <div class="def-item">
+    <h4>最小可偵測效果（MDE, Minimum Detectable Effect）</h4>
+    <p>在既定樣本數、5% 顯著門檻與 80% 檢定力下，測試能穩定抓到的最小差距。應在測試<strong>開始前</strong>算好，用來決定要跑多少樣本與天數。本頁測試每組約 <span data-v="abNa"></span> 位訪客，MDE 約 <span data-v="abMdePp"></span> 個百分點（相對 +<span data-v="abMdeRel"></span>%）。<br>
+    業界常見替代：有的工具以相對 %、有的以絕對百分點表示 MDE，比較前要先確認是哪一種。常見誤解：測試結束後才回頭算，或把觀察到的 lift 當成 MDE。</p>
+  </div>
+  <div class="def-item">
+    <h4>CTR（Click-Through Rate／點擊率）</h4>
+    <p>點擊 ÷ 曝光，衡量素材吸不吸引人點，不代表點了會不會買。本頁以素材的點擊數 ÷ 曝光數計算。業界常見替代口徑：Meta 廣告管理員同時有「CTR（全部）」（含按讚、展開文字等所有點擊）與「連結點閱率」（只算點進連結），兩者數字差很多，比較時要用同一種。</p>
+  </div>
+  <div class="def-item">
+    <h4>療效宣稱（化粧品廣告）</h4>
+    <p>依《化粧品衛生安全管理法》，化粧品的標示、宣傳與廣告不得虛偽誇大，也不得涉及醫療效能（例如宣稱治療、改善皮膚病症）。保養品廣告用「使用前／使用後」的皮膚對比，容易被認定為暗示療效；Meta 廣告政策對健康與外觀類的前後對比圖片也有限制。</p>
+  </div>
+  <div class="def-item">
     <h4>KPI（Key Performance Indicators／關鍵績效指標）</h4>
     <p>衡量核心目標達成程度的量化指標。本儀表板的 KPI 卡位於每頁頂部，是進入圖表分析前的「快速定位」，而非最終結論——每張卡都值得先問「它的分子分母是什麼」。</p>
   </div>
@@ -945,8 +977,227 @@
      P3: A/B 測試（ab）— Layer 4 建構
 ══════════════════════════════════════════ -->
 <div id="page-ab" class="page hidden">
-  <div class="section-title">A/B 測試</div>
-  <p style="font-size:0.82rem;color:var(--text-muted)">__TODO:Layer 4 — A/B 測試頁：累積轉換率＋95% CI、逐日累積 p 值、逐週 lift、8 支素材 CTR＋CI、裝置別結果；QA（L1·A、L2·I、L2·A、L3·A、L3·F）＋ T3__</p>
+
+  <div class="section-title">實驗結果 KPI</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--kpi-color:var(--purple)">
+      <div class="kpi-label"><span data-v="abDays"></span> 天終局 lift（B vs A）</div>
+      <div class="kpi-value"><span data-v="abLift"></span>%</div>
+      <div class="kpi-sub"><span class="kpi-neutral">p＝<span data-v="abP"></span>｜差距範圍 <span data-v="abDiffLo"></span>～<span data-v="abDiffHi"></span> 個百分點｜B 真的贏了嗎？</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--danger)">
+      <div class="kpi-label">第 <span data-v="abD5"></span> 天的 lift</div>
+      <div class="kpi-value"><span data-v="abD5Lift"></span>%</div>
+      <div class="kpi-sub"><span class="kpi-neutral">p＝<span data-v="abD5P"></span>｜那天就停下來宣布，會怎樣？</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--accent)">
+      <div class="kpi-label">A 組訪客（<span data-v="abDays"></span> 天）</div>
+      <div class="kpi-value"><span data-v="abNa"></span></div>
+      <div class="kpi-sub"><span class="kpi-neutral">B 組 <span data-v="abNb"></span>｜這個樣本抓得到 <span data-v="abLift"></span>% 的差距嗎？</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--warn)">
+      <div class="kpi-label">素材 CTR 第一名</div>
+      <div class="kpi-value"><span data-v="crTop"></span>%</div>
+      <div class="kpi-sub"><span class="kpi-neutral"><span data-v="crTopN"></span>｜曝光 <span data-v="crTopImp"></span>，<span data-v="crN"></span> 支中最少｜第一名可信嗎？</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">落地頁 A/B：差距隨樣本累積而縮小</div>
+  <div class="chart-card" id="card-cAbCr">
+    <div class="chart-card-title">每日累積結帳轉換率 A vs B（%｜色帶＝95% 信賴區間｜<span data-v="abPeriod"></span>）</div>
+    <div class="chart-block h300"><canvas id="cAbCr"></canvas></div>
+    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>讀法：</strong>兩條實線是 A（原版）與 B（新版）從第 1 天累積到當天的結帳轉換率（新舊客的訂單都算）；色帶是 95% 信賴區間——資料只有這麼多時，真實轉換率「合理會落在哪裡」的範圍。第 1 天 A 的色帶寬 <span data-v="abCiW1"></span> 個百分點，第 <span data-v="abDays"></span> 天縮到 <span data-v="abCiWz"></span>（樣本多了 <span data-v="abNx"></span> 倍，色帶只窄了 <span data-v="abCiWx"></span> 倍）。<strong>終局：</strong>A <span data-v="abCrA"></span>%（<span data-v="abCiA"></span>）、B <span data-v="abCrB"></span>%（<span data-v="abCiB"></span>），兩條色帶重疊。滑過任一天可看 B−A 差距與它的 95% 範圍。</div></div>
+  </div>
+
+  <div class="section-title">每天偷看一次 p 值</div>
+  <div class="chart-card" id="card-cAbP">
+    <div class="chart-card-title">逐日累積 p 值（每天用第 1 天到當天的累積資料重算｜虛線＝0.05 門檻）</div>
+    <div class="chart-block h280"><canvas id="cAbP"></canvas></div>
+    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>讀法：</strong>p 值＝「如果 A、B 其實一樣好，光靠運氣就看到這麼大（或更大）差距的機率」。第 <span data-v="abSig0"></span>–<span data-v="abSig1"></span> 天（共 <span data-v="abSigN"></span> 天）落在 0.05 虛線下方，最低是第 <span data-v="abPminDay"></span> 天的 <span data-v="abPmin"></span>；第 <span data-v="abSigEndDay"></span> 天回到 <span data-v="abSigEndP"></span>，第 <span data-v="abDays"></span> 天是 <span data-v="abP"></span>。</div></div>
+  </div>
+
+  <div class="section-title">拆開來看：時間與裝置</div>
+  <div class="chart-grid chart-grid-2">
+    <div class="chart-card" id="card-cAbWeek">
+      <div class="chart-card-title">逐週 lift：B 相對 A 的提升（%｜只用當週訪客｜虛線＝<span data-v="abDays"></span> 天整體）</div>
+      <div class="chart-block h280"><canvas id="cAbWeek"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>逐週：</strong><span data-v="abWList"></span>；第 3–4 週合併 <span data-v="abW34"></span>%。<strong>多出的訂單：</strong>以 A 的轉換率換算，B 第 1 週多出約 <span data-v="abW1Ex"></span> 筆訂單，比 <span data-v="abDays"></span> 天合計多出的 <span data-v="abTotEx"></span> 筆還多。</div></div>
+    </div>
+    <div class="chart-card" id="card-cAbDev">
+      <div class="chart-card-title">裝置別結帳轉換率 A vs B（%｜<span data-v="abDays"></span> 天合計｜依 A 組轉換率降序）</div>
+      <div class="chart-block h280"><canvas id="cAbDev"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>拆裝置：</strong>手機占兩組訪客 <span data-v="abMobShare"></span>%。手機 A <span data-v="abMobCrA"></span>% → B <span data-v="abMobCrB"></span>%（<span data-v="abMobLift"></span>%，p＝<span data-v="abMobP"></span>）；桌機 A <span data-v="abDeskCrA"></span>% → B <span data-v="abDeskCrB"></span>%（<span data-v="abDeskLift"></span>%，p＝<span data-v="abDeskP"></span>）。桌機的轉換率本來就比手機高。滑過長條可看筆數。</div></div>
+    </div>
+  </div>
+
+  <div class="section-title">素材測試：第一名有多可信</div>
+  <div class="chart-card" id="card-cCreCtr">
+    <div class="chart-card-title"><span data-v="crN"></span> 支 Meta 素材首週 CTR 與 95% 信賴區間（%｜依 CTR 降序｜虛線＝第 1 名區間下緣）</div>
+    <div class="chart-block h300"><canvas id="cCreCtr"></canvas></div>
+    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>讀法：</strong>菱形是 CTR（點擊 ÷ 曝光），橫條是 95% 信賴區間。第 1 名「<span data-v="crTopN"></span>」<span data-v="crTop"></span>%，曝光只有 <span data-v="crTopImp"></span> 次（<span data-v="crN"></span> 支最少；最多的 <span data-v="crImpMaxN"></span> 有 <span data-v="crImpMax"></span> 次），區間也最寬。其餘 <span data-v="crOthers"></span> 支中有 <span data-v="crOverlap"></span> 支的區間越過虛線、和第 1 名重疊，只有 <span data-v="crNoOvN"></span> 完全落在虛線左側。</div></div>
+  </div>
+
+  <hr class="section-divider">
+  <div class="section-title">訓練題組 — A/B 測試</div>
+  <div class="qa-section">
+
+    <!-- Q11 -->
+    <div class="qa-item" data-domain="data">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1·A</span>
+        <span class="question-text">Q11：測試第 <span data-v="abD5"></span> 天，B 領先 <span data-v="abD5Lift"></span>%、p 值 <span data-v="abD5P"></span>。PM 想當天宣布 B 勝出、把流量全切到 B。看「逐日累積 p 值」這張圖，你會怎麼建議？</span>
+        <span class="domain-chip d-data">📊 數據分析</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">逐日累積 p 值</span>，第 <span data-v="abSig0"></span> 到第 <span data-v="abSig1"></span> 天 p 值都低於 0.05（共 <span data-v="abSigN"></span> 天），最低是第 <span data-v="abPminDay"></span> 天的 <span data-v="abPmin"></span>；之後一路回升，第 <span data-v="abSigEndDay"></span> 天 <span data-v="abSigEndP"></span>，第 <span data-v="abDays"></span> 天 <span data-v="abP"></span>。同一個測試，哪一天停下來看，結論就不同。</p>
+          <p><span class="tag-i">I:</span> p 值回答的是「如果 A、B 其實一樣好，只靠運氣就看到這麼大差距的機率」。0.05 這條線是設計給「事先決定好樣本數、最後只看一次」的情況；每天看一次、哪天跌破就停，等於給運氣 <span data-v="abDays"></span> 次機會——就算 A、B 完全一樣，途中至少有一天跌破 0.05 的機率也遠高於 5%。</p>
+          <p><span class="tag-i">I:</span> 第 <span data-v="abD5"></span> 天每組只有約 <span data-v="abD5Na"></span> 位訪客、轉換 A <span data-v="abD5Ca"></span> 筆 vs B <span data-v="abD5Cb"></span> 筆，幾十筆的差距就足以把 p 值壓得很低；資料量越少，數字晃得越厲害。</p>
+          <p><span class="tag-a">A:</span> 若早期 B 的優勢來自新版的新鮮感，或那幾天剛好有特別的流量組成（例如某次 LINE 推播帶回一批舊客），第 <span data-v="abD5"></span> 天的結果就不代表上線後的長期表現——本頁的逐週 lift 支持這個方向，但沒有新舊訪客拆分可以證實。</p>
+          <p><span class="tag-a">A:</span> 🎯 行動：① 測試開始前就寫下要跑的樣本數與天數（至少跑滿完整的週，抵消週一到週日的流量差異），到期才判讀輸贏；② 業務上真的需要中途查看，事先改用允許多次查看的「序貫檢定」，每次查看的門檻會比 0.05 嚴格；③ 中途只檢查有沒有壞掉（追蹤碼漏記、分流比例跑掉），不看輸贏。</p>
+        </div>
+        <div class="trap-block" data-trap-stage="read" data-trap="提早偷看">
+          <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜提早偷看</span>
+          <div><strong>常見陷阱：</strong>每天打開報表，看到 p&lt;0.05 就宣布勝利。p 值會隨著資料進來上下漂移，看得夠多次，遲早會碰到一次「顯著」。本份資料在第 <span data-v="abSig0"></span>–<span data-v="abSig1"></span> 天任何一天停下來都會宣布 B 獲勝，跑滿 <span data-v="abDays"></span> 天卻不顯著。</div>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('ab','card-cAbP')">📍 查看：逐日累積 p 值</button>
+      </div>
+    </div>
+
+    <!-- Q12 -->
+    <div class="qa-item" data-domain="ind">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2·I</span>
+        <span class="question-text">Q12：手機占這次測試訪客的多少？B 在手機、桌機各表現如何？以台灣保養品電商的流量結構，為什麼會是這個樣子？</span>
+        <span class="domain-chip d-ind">🏭 產業知識</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">裝置別結帳轉換率</span>，手機占兩組訪客 <span data-v="abMobShare"></span>%；手機 A <span data-v="abMobCrA"></span>% → B <span data-v="abMobCrB"></span>%（<span data-v="abMobLift"></span>%，p＝<span data-v="abMobP"></span>），桌機 A <span data-v="abDeskCrA"></span>% → B <span data-v="abDeskCrB"></span>%（<span data-v="abDeskLift"></span>%，p＝<span data-v="abDeskP"></span>）。對照<span class="ev">KPI：終局 lift</span>，整體 <span data-v="abLift"></span>%。</p>
+          <p><span class="tag-i">I:</span> 台灣保養品 DTC 的廣告流量主要來自 Meta、LINE、YouTube 的手機 App：使用者在 App 內建瀏覽器點進落地頁，在小螢幕上決定要不要結帳，所以手機占了約四分之三的訪客。但手機轉換率反而比桌機低——小螢幕看成分表、比價、填地址都比較麻煩，滑到一半被訊息打斷的人也多。桌機訪客多半是已經有購買意圖、回來仔細比較或下單的人，轉換率本來就高。</p>
+          <p><span class="tag-i">I:</span> B 的提升集中在手機、桌機幾乎沒變，方向上符合「新版改善了手機的結帳摩擦」；整體 lift 主要是被占四分之三的手機拉動的。但手機的 p＝<span data-v="abMobP"></span> 也沒低於 0.05——拆成子群後每群樣本更少、雜訊更大，只能當線索，不能當結論。</p>
+          <p><span class="tag-a">A:</span> B 版具體改了什麼（例如手機上縮短表單、加入 LINE Pay 或 Apple Pay 一鍵付款），本頁沒有資料；要對照設計稿，才能確認「手機變好」是哪一個改動造成的。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('ab','card-cAbDev')">📍 查看：裝置別結帳轉換率</button>
+      </div>
+    </div>
+
+    <!-- Q13 -->
+    <div class="qa-item" data-domain="mkt">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2·A</span>
+        <span class="question-text">Q13：逐週 lift 從第 1 週的 <span data-v="abW1"></span>% 一路掉到第 4 週的 <span data-v="abW4"></span>%。設計師說：「B 第一週就贏了，後面只是流量品質變差，B 還是比較好。」你同意嗎？要怎麼驗證？</span>
+        <span class="domain-chip d-mkt">📣 行銷專業</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">逐週 lift</span>：<span data-v="abWList"></span>；第 3–4 週合併 <span data-v="abW34"></span>%。以 A 的轉換率換算，B 第 1 週多出約 <span data-v="abW1Ex"></span> 筆訂單，比 <span data-v="abDays"></span> 天合計多出的 <span data-v="abTotEx"></span> 筆還多——第 2 週以後 B 並沒有再多贏。從<span class="ev">每日累積結帳轉換率</span>，B 的累積線在第 <span data-v="abD5"></span> 天後一路往下，A 大致持平。</p>
+          <p><span class="tag-i">I:</span> 「流量品質變差」應該兩組一起受影響：A、B 是同時隨機分流，同一天進站的訪客品質相同。只有 B 一路下滑、A 持平，指向 B 本身的效果隨時間變弱。最常見的原因是新奇效應：看過舊版的回訪者看到新版，會多看幾眼、多點幾下，新鮮感一過就回到原本的習慣。</p>
+          <p><span class="tag-i">I:</span> 這對保養品品牌特別要緊：回購週期約 60–90 天，再行銷廣告與 LINE 推播會持續把看過舊版的舊客帶回落地頁，新奇效應正好發生在這群人身上；而上線之後要長期面對的，是習慣了新版的訪客。</p>
+          <p><span class="tag-a">A:</span> 也可能第 1 週剛好有特殊流量（例如只發給部分好友的 LINE 推播、檔期前預熱）。要驗證需要本頁沒有的資料：把訪客拆成「新訪客 vs 回訪者」各自看逐週 lift——新訪客的 lift 穩定、回訪者一路下滑，就是新奇效應。</p>
+          <p><span class="tag-a">A:</span> 🎯 行動：① 判讀時排除前 1–2 週，或只看新訪客的結果；② 若決定上線，保留一小部分流量（如 5–10%）繼續看原版（holdback），追蹤 4–8 週確認效果沒有消失；③ 之後的測試事先約定至少跑滿 2–4 個完整週。</p>
+        </div>
+        <div class="trap-block" data-trap-stage="read" data-trap="新奇效應">
+          <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜新奇效應</span>
+          <div><strong>常見陷阱：</strong>把剛上線的興奮期當成長期效果。新版一推出，回訪者會因為新鮮多點幾下；等他們習慣後，效果會縮水甚至反轉。只看前幾天，或只看被第一週拉高的累積總數，都會高估新版。</div>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('ab','card-cAbWeek')">📍 查看：逐週 lift</button>
+        <button class="chart-ref-btn" onclick="goToChart('ab','card-cAbCr')">📍 查看：每日累積結帳轉換率</button>
+      </div>
+    </div>
+
+    <!-- Q14 -->
+    <div class="qa-item" data-domain="ind">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3·A</span>
+        <span class="question-text">Q14：<span data-v="crN"></span> 支 Meta 素材首週小額測試，「<span data-v="crTopN"></span>」CTR <span data-v="crTop"></span>% 拿第一。社群小編建議下季 Meta 開發的預算全部改用這支。從統計和法規兩個角度，你怎麼回應？</span>
+        <span class="domain-chip d-ind">🏭 產業知識</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="nav-hint" onclick="goToChart('ovw','card-cSpendMix')">👉 切到「💰 投放總覽」→「通路花費占比」：Meta 開發是全年花費最大的通路，押錯素材的代價有多大</div>
+        <div class="nav-hint" onclick="goToChart('attr','card-cNewMix')">👉 對照「🔀 歸因口徑」→「各通路新客／舊客占比」：Meta 開發的訂單以新客為主——這支素材面對的是還不認識品牌的人</div>
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev"><span data-v="crN"></span> 支素材 CTR</span>，第 1 名 <span data-v="crTop"></span>%（95% 範圍 <span data-v="crTopCi"></span>），曝光 <span data-v="crTopImp"></span> 次、點擊 <span data-v="crTopClk"></span> 次，是曝光最少的一支；第 2 名 <span data-v="cr2N"></span> <span data-v="cr2"></span>%（<span data-v="cr2Ci"></span>）。其餘 <span data-v="crOthers"></span> 支有 <span data-v="crOverlap"></span> 支的區間與第 1 名重疊，只有 <span data-v="crNoOvN"></span> 完全低於它。從<span class="ev">通路花費占比</span>，Meta 開發全年 <span data-v="mdSp"></span> 萬（<span data-v="mdPct"></span>%）；從<span class="ev">各通路新客／舊客占比</span>，Meta 開發的訂單 <span data-v="atMdNew"></span>% 是新客。</p>
+          <p><span class="tag-i">I:</span> <strong>統計面：</strong>① 區間大量重疊，代表「第 1 名比第 2、3 名好」很可能只是運氣。② <span data-v="crN"></span> 支一起比，第 1 名天生容易是「運氣最好的那支」；曝光最少的素材數字晃動最大，最容易衝上第一（也最容易墊底）。放大預算後 CTR 通常會往平均回落，這叫贏家詛咒。③ CTR 只是點擊，不是購買。</p>
+          <p><span class="tag-i">I:</span> <strong>法規面：</strong>素材本身標著「療效暗示」。《化粧品衛生安全管理法》規定化粧品的廣告不得涉及醫療效能，保養品用「使用前／使用後」的皮膚對比，很容易被認定為暗示改善皮膚病症的療效。Meta 廣告政策對個人健康與外觀的前後對比圖片也有限制，容易被拒登、拖累廣告帳號的品質。它的 CTR 高，有一部分可能正是因為說了別人不能說的話。</p>
+          <p><span class="tag-a">A:</span> 這支素材的購買轉換、被檢舉與拒登紀錄，本頁都沒有。涉及醫療效能是該法罰則最重的一級（罰鍰最高可達新臺幣數百萬元），和多出來的點擊相比明顯不划算——具體是否違規須由法務認定。</p>
+          <p><span class="tag-a">A:</span> 🎯 行動：① 不全押；第 1 名先送法務審稿，改成不涉療效的版本（呈現質地、成分、使用情境，而不是皮膚改善對比）；② 從區間重疊的前幾名挑 2–3 支，給每支相同的曝光量再測一輪，事先約定以「購買」而非 CTR 判定；③ 新一輪的結論才拿來分配 Meta 開發的預算。</p>
+        </div>
+        <div class="trap-block" data-trap-stage="wrangle" data-trap="多重比較">
+          <span class="trap-icon">⚠</span><span class="trap-tag">加工｜多重比較</span>
+          <div><strong>常見陷阱：</strong>一次比 <span data-v="crN"></span> 支素材，等於做了 <span data-v="crPairs"></span> 組兩兩比較。就算每支其實一樣，每組都用 5% 當門檻，粗估至少有一組看起來「顯著不同」的機率約 <span data-v="crFwer"></span>%。從一堆結果裡挑出最好的再宣布它贏，就是把雜訊當成發現；比較的組數越多，判定「贏」的門檻要越嚴，或用新一輪測試確認。</div>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('ab','card-cCreCtr')">📍 查看：素材 CTR 與信賴區間</button>
+        <button class="chart-ref-btn" onclick="goToChart('ovw','card-cSpendMix')">📍 查看：通路花費占比</button>
+      </div>
+    </div>
+
+    <!-- Q15 -->
+    <div class="qa-item" data-domain="data">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3·F</span>
+        <span class="question-text">Q15：如果在第 <span data-v="abD5"></span> 天就停止測試，手上的資料有多少？從本頁與「歸因口徑」頁找出：① 第 <span data-v="abD5"></span> 天兩組各累積多少訪客、占全程的幾成；② 第 <span data-v="abD5"></span> 天與第 <span data-v="abDays"></span> 天，B−A 差距的 95% 範圍各是多少；③ 新客有多少比例不是在首次廣告互動的當天下單；④ 測試期間兩組合計的轉換數，相當於同期全站後台訂單的幾成。</span>
+        <span class="domain-chip d-data">📊 數據分析</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="nav-hint" onclick="goToChart('attr','card-cLag')">👉 切到「🔀 歸因口徑」→「轉換延遲分布」：讀新客「當天」以外三桶的合計</div>
+        <div class="nav-hint" onclick="goToChart('ovw','card-cRevM')">👉 切到「💰 投放總覽」→「月度後台營收」：滑過 <span data-v="abMonth"></span>的長條讀出當月後台訂單筆數</div>
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> ① 從<span class="ev">每日累積結帳轉換率</span>（滑過第 <span data-v="abD5"></span> 天），A 累積 <span data-v="abD5Na"></span> 位訪客、B <span data-v="abD5Nb"></span> 位，合計占 <span data-v="abDays"></span> 天總訪客 <span data-v="abNtot"></span> 位的 <span data-v="abD5Pct"></span>%；轉換 A <span data-v="abD5Ca"></span> 筆、B <span data-v="abD5Cb"></span> 筆。</p>
+          <p><span class="tag-f">F:</span> ② 第 <span data-v="abD5"></span> 天 B−A 差距 <span data-v="abD5Diff"></span> 個百分點，95% 範圍 <span data-v="abD5DiffLo"></span>～<span data-v="abD5DiffHi"></span>，整段在 0 以上；第 <span data-v="abDays"></span> 天差距 <span data-v="abDiff"></span>，範圍 <span data-v="abDiffLo"></span>～<span data-v="abDiffHi"></span>，跨過 0。</p>
+          <p><span class="tag-f">F:</span> ③ 從<span class="ev">轉換延遲分布</span>，新客在首次廣告互動當天下單占 <span data-v="atLagNew0"></span>%，其餘 <span data-v="abNewNotSame"></span>% 隔 1 天以上才下單。</p>
+          <p><span class="tag-f">F:</span> ④ 測試期間 <span data-v="abPeriod"></span>，兩組轉換合計 <span data-v="abConvTot"></span> 筆；從<span class="ev">月度後台營收</span>，<span data-v="abMonth"></span>後台訂單 <span data-v="abMonOrd"></span> 筆，按 <span data-v="abDays"></span>／<span data-v="abMonDays"></span> 天折算約 <span data-v="abMonOrd28"></span> 筆，測試轉換約占 <span data-v="abConvShare"></span>%——同期大部分訂單都經過這個落地頁。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('ab','card-cAbCr')">📍 查看：每日累積結帳轉換率</button>
+        <button class="chart-ref-btn" onclick="goToChart('attr','card-cLag')">📍 查看：轉換延遲分布</button>
+        <button class="chart-ref-btn" onclick="goToChart('ovw','card-cRevM')">📍 查看：月度後台營收</button>
+      </div>
+    </div>
+
+  </div><!-- end qa-section -->
+
+  <!-- ── 本頁訓練題（訓練題拆到每頁末尾） ── -->
+  <div class="training-block">
+    <div class="training-title">★ 本頁訓練題 T3 — 改寫實驗週報</div>
+    <div class="qa-section">
+
+      <!-- T3 -->
+      <div class="qa-item" data-domain="mkt">
+        <div class="question" onclick="toggleQA(this)">
+          <span class="badge l3">L3·A</span>
+          <span class="question-text">T3：PM 的週報寫：「新版落地頁 B 轉換率提升 <span data-v="abLift"></span>%（手機更達 <span data-v="abMobLift"></span>%），建議全站上線；同時把 CTR 最高的『前後對比』素材加碼到 Meta 開發。」用本頁與前兩頁的數據，改寫這段結論。</span>
+          <span class="domain-chip d-mkt">📣 行銷專業</span>
+          <span class="question-arrow">▶</span>
+        </div>
+        <div class="answer">
+          <div class="nav-hint" onclick="goToChart('ovw','card-cCpaM')">👉 切到「💰 投放總覽」→「月度新客 CPA」：落地頁轉換率若真的提升，最直接改善的是新客取得成本</div>
+          <div class="nav-hint" onclick="goToChart('attr','card-cNewMix')">👉 對照「🔀 歸因口徑」→「各通路新客／舊客占比」：Meta 開發以新客為主，素材加碼影響的是找新客的效率</div>
+          <div class="answer-block">
+            <p><span class="tag-f">F:</span> ① <span class="ev">KPI：終局 lift</span> <span data-v="abLift"></span>%，p＝<span data-v="abP"></span>；B−A 差距 <span data-v="abDiff"></span> 個百分點，95% 範圍 <span data-v="abDiffLo"></span>～<span data-v="abDiffHi"></span>，換算成相對提升約 <span data-v="abLiftLo"></span>%～<span data-v="abLiftHi"></span>%。② <span class="ev">逐週 lift</span>：<span data-v="abWList"></span>。③ <span class="ev">裝置別結帳轉換率</span>：手機 <span data-v="abMobLift"></span>%（p＝<span data-v="abMobP"></span>）、桌機 <span data-v="abDeskLift"></span>%。④ <span class="ev"><span data-v="crN"></span> 支素材 CTR</span>：第 1 名曝光最少，區間與其他 <span data-v="crOverlap"></span> 支重疊。⑤ <span class="ev">KPI：新客 CPA</span> NT$<span data-v="cpa"></span>；<span class="ev">各通路新客／舊客占比</span>：Meta 開發新客占 <span data-v="atMdNew"></span>%。</p>
+            <p><span class="tag-i">I:</span> 「提升 <span data-v="abLift"></span>%」只是點估計，真實效果可能落在 <span data-v="abLiftLo"></span>% 到 <span data-v="abLiftHi"></span>% 之間——包含「沒差」，也包含「B 比較差」。p＝<span data-v="abP"></span> 表示：如果 A、B 其實一樣，光靠運氣看到這麼大差距的機率並不小。</p>
+            <p><span class="tag-i">I:</span> 逐週 lift 第 3–4 週轉為負值，整體的正數主要來自第 1 週，新奇效應的跡象明顯（Q13）。手機 <span data-v="abMobLift"></span>% 是拆子群之後的數字，p 也沒低於 0.05，不能當成另一個獨立的勝利。素材那一句則是另一個測試，而且第一名區間重疊、又有療效宣稱的合規風險（Q14），不該和落地頁結論綁在一起。</p>
+            <p><span class="tag-a">A:</span> 估算（以業界慣用的雙尾 5%、檢定力 80% 計）：每組約 <span data-v="abNa"></span> 位訪客、基準轉換率 <span data-v="abCrA"></span>% 時，這個測試能穩定抓到的最小差距約 <span data-v="abMdePp"></span> 個百分點（相對 +<span data-v="abMdeRel"></span>%）。<span data-v="abLift"></span>% 比它小得多：就算 B 真的好 <span data-v="abLift"></span>%，本測試也只有約 <span data-v="abPower"></span>% 的機會判定顯著。要看清這麼小的差距，每組約需 <span data-v="abNNeed"></span> 位訪客，是現在的 <span data-v="abNNeedX"></span> 倍。不顯著不等於 B 沒用，而是這個測試看不清楚這麼小的差距。</p>
+            <p><span class="tag-a">A:</span> 若 B 真有 <span data-v="abLift"></span>% 的提升、且流量與花費不變，經此落地頁的訂單約多同樣比例；若新客與舊客同比例提升，新客 CPA 約從 NT$<span data-v="cpa"></span> 降到 NT$<span data-v="cpaIfB"></span>——這是「效果為真、且新舊客同步提升」時的估算，本頁沒有新舊客拆分，不是預期值。</p>
+            <p><span class="tag-a">A:</span> 🎯 建議改寫：「新版落地頁 B 跑滿 <span data-v="abDays"></span> 天，轉換率 +<span data-v="abLift"></span>%，但 95% 範圍 <span data-v="abLiftLo"></span>%～<span data-v="abLiftHi"></span>%、未達顯著；增幅集中在第 1 週，第 3–4 週轉負，疑似新奇效應。建議：① 暫不全站切換；若手機的改動是結帳流程，拆成單一改動的新測試，事先用最小可偵測效果算好樣本數與天數，只判讀一次；② 若流量撐不起所需樣本，先決定『小於 +<span data-v="abMdeRel"></span>% 的改善不值得追』，把資源轉到預期效果更大的改動；③ 素材另案處理：『前後對比』先送法務審稿，前幾名以購買為指標、等量曝光重測。」</p>
+          </div>
+          <div class="trap-block" data-trap-stage="visualize" data-trap="隱藏不確定性">
+            <span class="trap-icon">⚠</span><span class="trap-tag">呈現｜隱藏不確定性</span>
+            <div><strong>常見陷阱：</strong>報告只寫「提升 <span data-v="abLift"></span>%」，不寫範圍、p 值與樣本數，讀者就會把一個點估計當成確定的事實。同一份資料寫成「<span data-v="abLiftLo"></span>%～<span data-v="abLiftHi"></span>%，未顯著」，決策會完全不同。圖表也一樣：只畫兩條轉換率線、不畫信賴區間色帶，差距看起來比實際更確定。</div>
+          </div>
+          <button class="chart-ref-btn" onclick="goToChart('ab','card-cAbCr')">📍 查看：每日累積結帳轉換率</button>
+          <button class="chart-ref-btn" onclick="goToChart('ab','card-cAbWeek')">📍 查看：逐週 lift</button>
+          <button class="chart-ref-btn" onclick="goToChart('ab','card-cAbDev')">📍 查看：裝置別結帳轉換率</button>
+        </div>
+      </div>
+
+    </div><!-- end training qa-section -->
+  </div><!-- end training-block -->
+
 </div><!-- end page-ab -->
 
 <!-- ══════════════════════════════════════════
@@ -995,7 +1246,7 @@ const DATA = /*__DATA__*/{
   "attribution": {"models":["最終點擊","7 日點擊＋1 日瀏覽","資料驅動"],"keys":["last_click","click7_view1","dda"],"revenue_wan":{"last_click":[1228,863,1646,697,198,515],"click7_view1":[1384,939,1343,657,394,430],"dda":[1435,778,1350,764,329,491]},"roas":{"last_click":[2.9,5.6,6.4,3.4,1.4,5.0],"click7_view1":[3.27,6.1,5.23,3.2,2.79,4.17],"dda":[3.39,5.05,5.25,3.73,2.33,4.77]}},
   "lag": {"labels":["當天","1 天","2–7 天","8–28 天"],"new":[5818,2538,5670,4503],"returning":[12793,4015,4575,1961],"all":[18611,6553,10245,6464],"new_pct":[31.4,13.7,30.6,24.3],"returning_pct":[54.8,17.2,19.6,8.4],"all_pct":[44.4,15.7,24.5,15.4]},
   "search": {"labels":["品牌字","非品牌字"],"spend_wan":[61,196],"revenue_wan":[953,693],"orders":[7282,5780],"new_orders":[1348,3903],"new_pct":[18.5,67.5],"roas":[15.62,3.54],"dda_revenue_wan":[558,792],"dda_roas":[9.15,4.04]},
-  "ab": {"metric":"首購結帳率","days":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28],"visitors_a":[809,772,731,758,696,717,770,776,806,770,729,684,720,790,806,732,746,739,690,711,763,779,817,779,709,729,706,749],"visitors_b":[782,742,745,728,684,708,783,834,734,748,770,676,738,763,813,754,776,753,673,699,793,838,798,777,709,695,681,833],"conv_a":[47,42,41,38,39,35,39,40,41,37,39,33,40,42,48,38,44,39,40,37,41,42,42,45,40,43,38,43],"conv_b":[59,53,54,48,50,40,45,45,39,38,43,35,43,42,47,38,44,39,38,36,42,43,39,43,38,39,35,46],"cum_visitors_a":[809,1581,2312,3070,3766,4483,5253,6029,6835,7605,8334,9018,9738,10528,11334,12066,12812,13551,14241,14952,15715,16494,17311,18090,18799,19528,20234,20983],"cum_visitors_b":[782,1524,2269,2997,3681,4389,5172,6006,6740,7488,8258,8934,9672,10435,11248,12002,12778,13531,14204,14903,15696,16534,17332,18109,18818,19513,20194,21027],"cum_conv_a":[47,89,130,168,207,242,281,321,362,399,438,471,511,553,601,639,683,722,762,799,840,882,924,969,1009,1052,1090,1133],"cum_conv_b":[59,112,166,214,264,304,349,394,433,471,514,549,592,634,681,719,763,802,840,876,918,961,1000,1043,1081,1120,1155,1201],"cr_a":[5.81,5.629,5.623,5.472,5.497,5.398,5.349,5.324,5.296,5.247,5.256,5.223,5.247,5.253,5.303,5.296,5.331,5.328,5.351,5.344,5.345,5.347,5.338,5.357,5.367,5.387,5.387,5.4],"ci_a_lo":[4.198,4.493,4.684,4.668,4.769,4.737,4.741,4.758,4.765,4.745,4.776,4.764,4.805,4.827,4.89,4.896,4.942,4.95,4.981,4.983,4.994,5.004,5.003,5.028,5.045,5.07,5.076,5.094],"ci_a_hi":[7.422,6.765,6.562,6.277,6.224,6.06,5.958,5.891,5.827,5.748,5.735,5.682,5.69,5.679,5.715,5.695,5.72,5.706,5.72,5.704,5.697,5.691,5.672,5.685,5.689,5.704,5.698,5.705],"cr_b":[7.545,7.349,7.316,7.14,7.172,6.926,6.748,6.56,6.424,6.29,6.224,6.145,6.121,6.076,6.054,5.991,5.971,5.927,5.914,5.878,5.849,5.812,5.77,5.76,5.744,5.74,5.72,5.712],"ci_b_lo":[5.694,6.039,6.245,6.219,6.338,6.175,6.064,5.934,5.839,5.74,5.703,5.647,5.643,5.617,5.614,5.566,5.56,5.529,5.526,5.5,5.482,5.456,5.423,5.42,5.412,5.413,5.399,5.398],"ci_b_hi":[9.396,8.659,8.387,8.062,8.005,7.678,7.432,7.186,7.01,6.84,6.745,6.643,6.598,6.534,6.495,6.415,6.382,6.325,6.302,6.256,6.216,6.169,6.117,6.099,6.077,6.066,6.04,6.025],"lift_pct":[29.9,30.5,30.1,30.5,30.5,28.3,26.1,23.2,21.3,19.9,18.4,17.7,16.6,15.7,14.2,13.1,12.0,11.2,10.5,10.0,9.4,8.7,8.1,7.5,7.0,6.5,6.2,5.8],"diff_pp":[1.735,1.72,1.693,1.668,1.675,1.528,1.399,1.236,1.128,1.044,0.969,0.922,0.873,0.823,0.752,0.695,0.64,0.599,0.563,0.534,0.503,0.465,0.432,0.403,0.377,0.353,0.333,0.312],"diff_ci_lo":[-0.719,-0.014,0.268,0.445,0.569,0.527,0.483,0.391,0.338,0.3,0.261,0.245,0.222,0.197,0.148,0.112,0.074,0.05,0.027,0.012,-0.005,-0.03,-0.05,-0.069,-0.086,-0.102,-0.114,-0.126],"diff_ci_hi":[4.19,3.454,3.118,2.892,2.782,2.529,2.314,2.08,1.918,1.787,1.677,1.6,1.525,1.449,1.355,1.278,1.206,1.148,1.099,1.056,1.012,0.96,0.914,0.875,0.84,0.807,0.779,0.75],"z":[1.387,1.947,2.331,2.674,2.97,2.995,2.996,2.868,2.799,2.75,2.683,2.669,2.628,2.578,2.441,2.336,2.218,2.139,2.06,2.006,1.941,1.84,1.756,1.673,1.597,1.52,1.46,1.396],"p_value":[0.1653,0.0515,0.0198,0.0075,0.003,0.0027,0.0027,0.0041,0.0051,0.006,0.0073,0.0076,0.0086,0.0099,0.0146,0.0195,0.0266,0.0324,0.0394,0.0449,0.0523,0.0657,0.0792,0.0943,0.1103,0.1285,0.1443,0.1626],"method":{"ci_arm":"Wald 常態近似（每組累積轉換率）","ci_diff":"未合併 SE 的常態近似（B−A，百分點）","test":"雙尾雙比例 z 檢定（合併 SE），每日以累積數重算","alpha":0.05},"weekly":{"labels":["第 1 週","第 2 週","第 3 週","第 4 週"],"visitors_a":[5253,5275,5187,5268],"conv_a":[281,272,287,293],"visitors_b":[5172,5263,5261,5331],"conv_b":[349,285,284,283],"lift_pct":[26.1,5.0,-2.4,-4.6]},"device":{"labels":["手機","桌機"],"visitors_a":[15989,4994],"conv_a":[804,329],"visitors_b":[15938,5089],"conv_b":[868,333],"cr_a":[5.03,6.59],"cr_b":[5.45,6.54],"lift_pct":[8.3,-0.7],"p_value":[0.0939,0.9283]}},
+  "ab": {"metric":"結帳轉換率","metric_def":"落地頁訪客中完成任一筆訂單的比例（新舊客都算）","period":"2025-09-01～2025-09-28","month_index":8,"days":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28],"visitors_a":[809,772,731,758,696,717,770,776,806,770,729,684,720,790,806,732,746,739,690,711,763,779,817,779,709,729,706,749],"visitors_b":[782,742,745,728,684,708,783,834,734,748,770,676,738,763,813,754,776,753,673,699,793,838,798,777,709,695,681,833],"conv_a":[47,42,41,38,39,35,39,40,41,37,39,33,40,42,48,38,44,39,40,37,41,42,42,45,40,43,38,43],"conv_b":[59,53,54,48,50,40,45,45,39,38,43,35,43,42,47,38,44,39,38,36,42,43,39,43,38,39,35,46],"cum_visitors_a":[809,1581,2312,3070,3766,4483,5253,6029,6835,7605,8334,9018,9738,10528,11334,12066,12812,13551,14241,14952,15715,16494,17311,18090,18799,19528,20234,20983],"cum_visitors_b":[782,1524,2269,2997,3681,4389,5172,6006,6740,7488,8258,8934,9672,10435,11248,12002,12778,13531,14204,14903,15696,16534,17332,18109,18818,19513,20194,21027],"cum_conv_a":[47,89,130,168,207,242,281,321,362,399,438,471,511,553,601,639,683,722,762,799,840,882,924,969,1009,1052,1090,1133],"cum_conv_b":[59,112,166,214,264,304,349,394,433,471,514,549,592,634,681,719,763,802,840,876,918,961,1000,1043,1081,1120,1155,1201],"cr_a":[5.81,5.629,5.623,5.472,5.497,5.398,5.349,5.324,5.296,5.247,5.256,5.223,5.247,5.253,5.303,5.296,5.331,5.328,5.351,5.344,5.345,5.347,5.338,5.357,5.367,5.387,5.387,5.4],"ci_a_lo":[4.198,4.493,4.684,4.668,4.769,4.737,4.741,4.758,4.765,4.745,4.776,4.764,4.805,4.827,4.89,4.896,4.942,4.95,4.981,4.983,4.994,5.004,5.003,5.028,5.045,5.07,5.076,5.094],"ci_a_hi":[7.422,6.765,6.562,6.277,6.224,6.06,5.958,5.891,5.827,5.748,5.735,5.682,5.69,5.679,5.715,5.695,5.72,5.706,5.72,5.704,5.697,5.691,5.672,5.685,5.689,5.704,5.698,5.705],"cr_b":[7.545,7.349,7.316,7.14,7.172,6.926,6.748,6.56,6.424,6.29,6.224,6.145,6.121,6.076,6.054,5.991,5.971,5.927,5.914,5.878,5.849,5.812,5.77,5.76,5.744,5.74,5.72,5.712],"ci_b_lo":[5.694,6.039,6.245,6.219,6.338,6.175,6.064,5.934,5.839,5.74,5.703,5.647,5.643,5.617,5.614,5.566,5.56,5.529,5.526,5.5,5.482,5.456,5.423,5.42,5.412,5.413,5.399,5.398],"ci_b_hi":[9.396,8.659,8.387,8.062,8.005,7.678,7.432,7.186,7.01,6.84,6.745,6.643,6.598,6.534,6.495,6.415,6.382,6.325,6.302,6.256,6.216,6.169,6.117,6.099,6.077,6.066,6.04,6.025],"lift_pct":[29.9,30.5,30.1,30.5,30.5,28.3,26.1,23.2,21.3,19.9,18.4,17.7,16.6,15.7,14.2,13.1,12.0,11.2,10.5,10.0,9.4,8.7,8.1,7.5,7.0,6.5,6.2,5.8],"diff_pp":[1.735,1.72,1.693,1.668,1.675,1.528,1.399,1.236,1.128,1.044,0.969,0.922,0.873,0.823,0.752,0.695,0.64,0.599,0.563,0.534,0.503,0.465,0.432,0.403,0.377,0.353,0.333,0.312],"diff_ci_lo":[-0.719,-0.014,0.268,0.445,0.569,0.527,0.483,0.391,0.338,0.3,0.261,0.245,0.222,0.197,0.148,0.112,0.074,0.05,0.027,0.012,-0.005,-0.03,-0.05,-0.069,-0.086,-0.102,-0.114,-0.126],"diff_ci_hi":[4.19,3.454,3.118,2.892,2.782,2.529,2.314,2.08,1.918,1.787,1.677,1.6,1.525,1.449,1.355,1.278,1.206,1.148,1.099,1.056,1.012,0.96,0.914,0.875,0.84,0.807,0.779,0.75],"z":[1.387,1.947,2.331,2.674,2.97,2.995,2.996,2.868,2.799,2.75,2.683,2.669,2.628,2.578,2.441,2.336,2.218,2.139,2.06,2.006,1.941,1.84,1.756,1.673,1.597,1.52,1.46,1.396],"p_value":[0.1653,0.0515,0.0198,0.0075,0.003,0.0027,0.0027,0.0041,0.0051,0.006,0.0073,0.0076,0.0086,0.0099,0.0146,0.0195,0.0266,0.0324,0.0394,0.0449,0.0523,0.0657,0.0792,0.0943,0.1103,0.1285,0.1443,0.1626],"method":{"ci_arm":"Wald 常態近似（每組累積轉換率）","ci_diff":"未合併 SE 的常態近似（B−A，百分點）","test":"雙尾雙比例 z 檢定（合併 SE），每日以累積數重算","alpha":0.05},"weekly":{"labels":["第 1 週","第 2 週","第 3 週","第 4 週"],"visitors_a":[5253,5275,5187,5268],"conv_a":[281,272,287,293],"visitors_b":[5172,5263,5261,5331],"conv_b":[349,285,284,283],"lift_pct":[26.1,5.0,-2.4,-4.6]},"device":{"labels":["手機","桌機"],"visitors_a":[15989,4994],"conv_a":[804,329],"visitors_b":[15938,5089],"conv_b":[868,333],"cr_a":[5.03,6.59],"cr_b":[5.45,6.54],"lift_pct":[8.3,-0.7],"p_value":[0.0939,0.9283]}},
   "creatives": {"labels":["前後對比（療效暗示）","KOL 開箱","成分特寫","質地 ASMR","用戶 UGC 心得","實驗室幕後","週年慶倒數","限時優惠"],"impressions":[6213,21436,18921,24683,16352,15718,17465,26039],"clicks":[113,324,278,348,224,209,208,279],"compliance_risk":[true,false,false,false,false,false,false,false],"ctr":[1.819,1.511,1.469,1.41,1.37,1.33,1.191,1.071],"ci_lo":[1.486,1.348,1.298,1.263,1.192,1.151,1.03,0.946],"ci_hi":[2.151,1.675,1.641,1.557,1.548,1.509,1.352,1.197],"method":"Wald 常態近似 95% CI","top_index":0,"overlap_with_top":5},
   "tiers": {"channel":"Meta 開發","unit":"萬／月","current_index":2,"spend_wan":[17.6,26.4,35.2,44.1,52.9,61.7,70.5],"revenue_wan":[62.2,84.4,102.2,116.7,128.2,137.3,144.7],"avg_roas":[3.53,3.2,2.9,2.65,2.42,2.23,2.05],"marginal_labels":["17.6→26.4","26.4→35.2","35.2→44.1","44.1→52.9","52.9→61.7","61.7→70.5"],"marginal_roas":[2.52,2.02,1.63,1.31,1.03,0.84]},
   "holdout": {"channel":"Meta 再行銷","period":"2025 Q4（6 週）","unit":"元","spend":136420,"attributed_revenue":1336916,"test_pre":3897460,"test_post":4509895,"control_pre":3718230,"control_post":4096870,"expected_test_post":4294352,"incremental_revenue":215543,"attributed_roas":9.8,"incremental_roas":1.58,"method":"增量營收 = 測試區活動期營收 − 測試區前期營收 ×（對照區活動期 ÷ 對照區前期）"},
@@ -1108,6 +1359,11 @@ function assertConsistency() {
   check('ab 第 5 天 B 領先 ≈+30% 且 p<0.05', B.lift_pct[4] >= 27 && B.p_value[4] < 0.05, `lift=${B.lift_pct[4]}, p=${B.p_value[4]}`);
   check('ab 終局 lift 4–6% 且 0.05<p<0.2', B.lift_pct[D - 1] >= 4 && B.lift_pct[D - 1] <= 6 && B.p_value[D - 1] > 0.05 && B.p_value[D - 1] < 0.2, `lift=${B.lift_pct[D - 1]}, p=${B.p_value[D - 1]}`);
   check('ab 終局差異 CI 跨 0', B.diff_ci_lo[D - 1] < 0 && B.diff_ci_hi[D - 1] > 0);
+  {  // 測試轉換合計 ≤ 所在月份後台訂單 × 天數比例（落地頁承接大部分廣告流量，但不可超過全站）
+    const mi = B.month_index, md = new Date(A.year, mi + 1, 0).getDate(), lim = DATA.monthly.orders[mi] * D / md;
+    const tot = B.cum_conv_a[D - 1] + B.cum_conv_b[D - 1];
+    check('ab 測試轉換合計 ≤ 同期後台訂單（按天數折算）', tot <= lim && tot >= 0.6 * lim, `轉換 ${tot}，${DATA.months[mi]} 折算 ${Math.round(lim)}`);
+  }
   const W = B.weekly;
   check('ab weekly 訪客／轉換合計 = 28 天', sum(W.visitors_a) === va && sum(W.visitors_b) === vb && sum(W.conv_a) === ca && sum(W.conv_b) === cb);
   check('ab weekly lift 反推', W.lift_pct.every((v, w) => near((W.conv_b[w] / W.visitors_b[w]) / (W.conv_a[w] / W.visitors_a[w]) * 100 - 100, v, 0.051)));
@@ -1294,6 +1550,12 @@ const argMax = arr => arr.reduce((b, v, i) => v > arr[b] ? i : b, 0);
 const argMin = arr => arr.reduce((b, v, i) => v < arr[b] ? i : b, 0);
 const sumArr = arr => arr.reduce((a, b) => a + b, 0);
 const descIdx = arr => arr.map((_, i) => i).sort((a, b) => arr[b] - arr[a]);
+const sgn = (v, d = 1) => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(d);   // 帶正負號（差距、lift）
+function normCdf(x) {   // 標準常態累積機率（Abramowitz–Stegun 7.1.26 近似 erf）；ab 的檢定力估算用
+  const u = Math.abs(x) / Math.SQRT2, t = 1 / (1 + 0.3275911 * u);
+  const erf = 1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-u * u);
+  return x >= 0 ? (1 + erf) / 2 : (1 - erf) / 2;
+}
 // 通路 → 語意色 key（全頁共用，同一通路在每張圖同色）
 const CH_COLOR = { 'Meta 開發': 'blue', 'Meta 再行銷': 'purple', 'Google 搜尋': 'teal', 'Google PMax': 'orange', 'YouTube': 'red', 'LINE': 'gray' };
 const chColor = (label, alpha = 1) => c(CH_COLOR[label] || 'gray', alpha);
@@ -1420,6 +1682,91 @@ function buildTextValues() {
   V.atBrX = (S.roas[0] / S.roas[1]).toFixed(1);
   guard(S.roas[0] > S.roas[1] && S.dda_roas[0] < S.roas[0] && S.dda_roas[1] > S.roas[1] && S.new_pct[0] < S.new_pct[1],
     'Q8 假設品牌字 ROAS 較高、改資料驅動後品牌字降／非品牌字升、品牌字新客占比較低');
+
+  // ── ab A/B 測試（KPI、findings、Q11–Q15、T3、定義面板）──
+  const AB = DATA.ab, W = AB.weekly, DV = AB.device, CR = DATA.creatives;
+  const nD = AB.days.length, z = nD - 1, d5 = 4;
+  const cva = AB.cum_visitors_a, cvb = AB.cum_visitors_b, cca = AB.cum_conv_a, ccb = AB.cum_conv_b;
+  const nTot = cva[z] + cvb[z];
+  V.abDays = nD; V.abD5 = d5 + 1;
+  V.abNa = fmt(cva[z]); V.abNb = fmt(cvb[z]); V.abNtot = fmt(nTot);
+  V.abCrA = AB.cr_a[z].toFixed(2); V.abCrB = AB.cr_b[z].toFixed(2);
+  const ciTxt = (lo, hi, i) => `${lo[i].toFixed(2)}%–${hi[i].toFixed(2)}%`;
+  V.abCiA = ciTxt(AB.ci_a_lo, AB.ci_a_hi, z); V.abCiB = ciTxt(AB.ci_b_lo, AB.ci_b_hi, z);
+  V.abLift = sgn(AB.lift_pct[z]); V.abP = AB.p_value[z].toFixed(3);
+  V.abDiff = sgn(AB.diff_pp[z], 2); V.abDiffLo = sgn(AB.diff_ci_lo[z], 2); V.abDiffHi = sgn(AB.diff_ci_hi[z], 2);
+  V.abLiftLo = sgn(AB.diff_ci_lo[z] / AB.cr_a[z] * 100); V.abLiftHi = sgn(AB.diff_ci_hi[z] / AB.cr_a[z] * 100);
+  guard(AB.diff_ci_lo[z] < 0 && AB.diff_ci_hi[z] > 0 && AB.p_value[z] > 0.05 && AB.p_value[z] < 0.2,
+    'ab 假設終局 B−A 差距範圍跨 0、p 介於 0.05–0.2（不顯著）');
+  guard(AB.ci_a_hi[z] > AB.ci_b_lo[z], 'ab findings 假設終局兩組色帶重疊');
+  // 第 5 天（KPI、Q11、Q15）
+  V.abD5Lift = sgn(AB.lift_pct[d5]); V.abD5P = AB.p_value[d5].toFixed(3);
+  V.abD5Na = fmt(cva[d5]); V.abD5Nb = fmt(cvb[d5]); V.abD5Ca = fmt(cca[d5]); V.abD5Cb = fmt(ccb[d5]);
+  V.abD5Pct = ((cva[d5] + cvb[d5]) / nTot * 100).toFixed(1);
+  V.abD5Diff = sgn(AB.diff_pp[d5], 2); V.abD5DiffLo = sgn(AB.diff_ci_lo[d5], 2); V.abD5DiffHi = sgn(AB.diff_ci_hi[d5], 2);
+  guard(AB.lift_pct[d5] >= 25 && AB.p_value[d5] < 0.05 && AB.diff_ci_lo[d5] > 0, 'Q11/Q15 假設第 5 天 B 領先約 3 成、p<0.05、差距範圍整段 > 0');
+  // 偷看：p<0.05 的連續區段（Q11、findings）
+  const sig = AB.p_value.map(p => p < AB.method.alpha), s0 = sig.indexOf(true), s1 = sig.lastIndexOf(true);
+  V.abSig0 = s0 + 1; V.abSig1 = s1 + 1; V.abSigN = sig.filter(Boolean).length;
+  V.abSigEndDay = s1 + 2; V.abSigEndP = AB.p_value[Math.min(s1 + 1, z)].toFixed(3);
+  const pMin = argMin(AB.p_value); V.abPminDay = pMin + 1; V.abPmin = AB.p_value[pMin].toFixed(4);
+  guard(s0 > 0 && s0 <= d5 && s1 >= 13 && s1 < z && sig.slice(s0, s1 + 1).every(Boolean),
+    'Q11 假設 p<0.05 是一段連續區間：第 1 天之後、第 5 天以前開始，延續過第 2 週，終局前結束');
+  // 色帶寬度（findings）
+  const wA = i => AB.ci_a_hi[i] - AB.ci_a_lo[i];
+  V.abCiW1 = wA(0).toFixed(2); V.abCiWz = wA(z).toFixed(2); V.abCiWx = (wA(0) / wA(z)).toFixed(1); V.abNx = (cva[z] / cva[0]).toFixed(0);
+  // 檢定力／MDE（業界慣用：雙尾 5%、檢定力 80%；T3、定義面板）
+  const ZA = 1.96, ZP = 0.8416, p0 = AB.cr_a[z] / 100, nArm = Math.min(cva[z], cvb[z]);
+  const se2 = Math.sqrt(2 * p0 * (1 - p0) / nArm), mde = (ZA + ZP) * se2, obs = AB.diff_pp[z] / 100;
+  V.abMdePp = (mde * 100).toFixed(2); V.abMdeRel = (mde / p0 * 100).toFixed(0);
+  V.abPower = (normCdf(obs / se2 - ZA) * 100).toFixed(0);
+  const nNeed = (ZA + ZP) ** 2 * 2 * p0 * (1 - p0) / (obs * obs);
+  V.abNNeed = fmt(Math.round(nNeed / 1000) * 1000); V.abNNeedX = (nNeed / nArm).toFixed(1);
+  guard(AB.lift_pct[z] < mde / p0 * 100 && nNeed > 2 * nArm, 'T3 假設終局 lift 小於 MDE、所需樣本遠大於現有');
+  // 逐週（Q13、findings）
+  const wl = W.lift_pct;
+  V.abW1 = sgn(wl[0]); V.abW4 = sgn(wl[3]);
+  V.abWList = W.labels.map((l, i) => `${l} ${sgn(wl[i])}%`).join('、');
+  const crOf = (cs, vs) => sumArr(cs) / sumArr(vs);
+  V.abW34 = sgn((crOf(W.conv_b.slice(2), W.visitors_b.slice(2)) / crOf(W.conv_a.slice(2), W.visitors_a.slice(2)) - 1) * 100);
+  const excess = (cb, vb, ca, va) => cb - ca / va * vb;   // 以 A 的轉換率換算，B 多出的訂單
+  V.abW1Ex = fmt(excess(W.conv_b[0], W.visitors_b[0], W.conv_a[0], W.visitors_a[0]));
+  V.abTotEx = fmt(excess(ccb[z], cvb[z], cca[z], cva[z]));
+  guard(wl.every((v, i) => i === 0 || v < wl[i - 1]) && wl[0] > 20 && wl[2] < 0 && wl[3] < 0, 'Q13 假設逐週 lift 嚴格遞減、第 1 週 >20%、第 3–4 週為負');
+  guard(excess(W.conv_b[0], W.visitors_b[0], W.conv_a[0], W.visitors_a[0]) > excess(ccb[z], cvb[z], cca[z], cva[z]), 'Q13 假設第 1 週多出的訂單 > 28 天合計多出的');
+  guard(AB.cr_b[d5] > AB.cr_b[z] && Math.abs(AB.cr_a[d5] - AB.cr_a[z]) < 0.3, 'Q13 假設 B 累積線第 5 天後下滑、A 大致持平');
+  // 裝置（Q12、T3、findings）
+  V.abMobShare = ((DV.visitors_a[0] + DV.visitors_b[0]) / nTot * 100).toFixed(1);
+  V.abMobCrA = DV.cr_a[0].toFixed(2); V.abMobCrB = DV.cr_b[0].toFixed(2); V.abMobLift = sgn(DV.lift_pct[0]); V.abMobP = DV.p_value[0].toFixed(3);
+  V.abDeskCrA = DV.cr_a[1].toFixed(2); V.abDeskCrB = DV.cr_b[1].toFixed(2); V.abDeskLift = sgn(DV.lift_pct[1]); V.abDeskP = DV.p_value[1].toFixed(3);
+  guard(DV.labels[0] === '手機' && DV.lift_pct[0] > AB.lift_pct[z] && AB.lift_pct[z] > DV.lift_pct[1] && DV.cr_a[1] > DV.cr_a[0] && DV.p_value[0] > 0.05,
+    'Q12 假設手機 lift > 整體 > 桌機、桌機轉換率較高、手機 p 仍 > 0.05');
+  guard(V.abMobShare > 70 && V.abMobShare < 80, 'Q12 假設手機約占四分之三訪客');
+  // 素材（Q14、KPI、findings）
+  const t = CR.top_index, nCr = CR.labels.length;
+  V.crN = nCr; V.crOthers = nCr - 1;
+  V.crTopN = CR.labels[t]; V.crTop = CR.ctr[t].toFixed(2); V.crTopCi = ciTxt(CR.ci_lo, CR.ci_hi, t);
+  V.crTopLo = CR.ci_lo[t].toFixed(2); V.crTopImp = fmt(CR.impressions[t]); V.crTopClk = fmt(CR.clicks[t]);
+  const iImpMax = argMax(CR.impressions); V.crImpMaxN = CR.labels[iImpMax]; V.crImpMax = fmt(CR.impressions[iImpMax]);
+  V.cr2N = CR.labels[1]; V.cr2 = CR.ctr[1].toFixed(2); V.cr2Ci = ciTxt(CR.ci_lo, CR.ci_hi, 1);
+  V.crOverlap = CR.overlap_with_top;
+  const noOv = CR.labels.filter((_, j) => j !== t && CR.ci_hi[j] < CR.ci_lo[t]);
+  V.crNoOvN = noOv.map(l => `「${l}」`).join('、');
+  const pairs = nCr * (nCr - 1) / 2; V.crPairs = pairs; V.crFwer = ((1 - 0.95 ** pairs) * 100).toFixed(0);
+  guard(t === 0 && CR.compliance_risk[t] && CR.compliance_risk.filter(Boolean).length === 1 && CR.impressions[t] === Math.min(...CR.impressions),
+    'Q14 假設 CTR 第一名＝唯一有療效暗示風險、曝光最少的素材');
+  guard(CR.overlap_with_top >= 5 && noOv.length === nCr - 1 - CR.overlap_with_top && CR.labels[t].includes('前後對比'), 'Q14 假設第 1 名區間與多數重疊、名稱含「前後對比」');
+  // 跨頁（Q14、Q15、T3）
+  V.mdSp = fmt(CH.spend_wan[md]); V.mdPct = fmt(CH.spend_pct[md]);
+  guard(argMax(CH.spend_wan) === md, 'Q14 假設 Meta 開發是花費最大的通路');
+  V.abNewNotSame = (100 - LG.new_pct[0]).toFixed(1);
+  V.cpaIfB = fmt(A.new_cpa / (1 + AB.lift_pct[z] / 100));
+  // 測試期間 vs 所在月份後台訂單（Q15、定義面板）
+  const abMi = AB.month_index, monDays = new Date(A.year, abMi + 1, 0).getDate(), mo28 = M.orders[abMi] * nD / monDays;
+  V.abPeriod = AB.period; V.abMonth = mon[abMi]; V.abMonDays = monDays;
+  V.abConvTot = fmt(cca[z] + ccb[z]); V.abMonOrd = fmt(M.orders[abMi]); V.abMonOrd28 = fmt(mo28);
+  V.abConvShare = ((cca[z] + ccb[z]) / mo28 * 100).toFixed(0);
+  guard(cca[z] + ccb[z] <= mo28 && cca[z] + ccb[z] >= 0.6 * mo28, 'Q15 假設測試轉換合計 ≤ 同期後台訂單、且占大部分');
   return V;
 }
 
@@ -1708,7 +2055,178 @@ function drawAttr() {
     }
   });
 }
-function drawAb() { applyChartTheme(); }
+// DRAW P3: ab A/B 測試
+// 配色：A/B 不是通路實體——A（原版／對照）用中性色、B（新版）用 purple；素材都是 Meta 開發廣告 → 沿用 CH_COLOR，合規風險那支改 orange
+function drawAb() {
+  applyChartTheme();
+  const AB = DATA.ab, W = AB.weekly, DV = AB.device, CR = DATA.creatives;
+  const outLabel = formatter => ({ anchor: 'end', align: 'end', offset: 2, color: TH.label, font: { size: 10, family: TH.fontMono }, formatter });
+  const headroom = (arr, step) => Math.ceil(Math.max(...arr) * 1.2 / step) * step;   // ≥1.2× 最大值（B.2-4）
+  const colA = a => tokRGBA('--text', a), colB = a => c('purple', a);
+  const dayLab = AB.days.map(String);
+  const xDay = { grid: { display: false }, ticks: { color: TH.text, autoSkip: true, maxTicksLimit: 14 }, title: { display: true, text: '測試第幾天', color: TH.text, font: { size: 11 } } };
+  const legendTop = { display: true, position: 'top', labels: { color: TH.text, boxWidth: 12, boxHeight: 12 } };
+
+  // cAbCr：每日累積轉換率 A/B ＋ 95% CI 色帶（色帶＝下緣線＋上緣線 fill:'-1'；單一值軸）
+  const band = (lo, hi, col, name) => [
+    { label: `${name} 95% 下緣`, data: lo, isBand: true, borderWidth: 0, pointRadius: 0, pointHoverRadius: 10,
+      pointHoverBorderWidth: 0, pointHoverBackgroundColor: 'rgba(0,0,0,0)', fill: false },
+    { label: `${name} 95% 上緣`, data: hi, isBand: true, borderWidth: 0, pointRadius: 0, pointHoverRadius: 10,
+      pointHoverBorderWidth: 0, pointHoverBackgroundColor: 'rgba(0,0,0,0)', backgroundColor: col(0.16), fill: '-1' }
+  ];
+  const mainLine = (data, col, name) => ({ label: name, data, borderColor: col(0.95), backgroundColor: col(0.95),
+    borderWidth: 2, tension: 0.25, pointRadius: 2, pointHoverRadius: 10, fill: false });
+  mk('cAbCr', 'line', dayLab, [
+    ...band(AB.ci_a_lo, AB.ci_a_hi, colA, 'A'), mainLine(AB.cr_a, colA, 'A 原版'),
+    ...band(AB.ci_b_lo, AB.ci_b_hi, colB, 'B'), mainLine(AB.cr_b, colB, 'B 新版')
+  ], {
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { ...legendTop, labels: { ...legendTop.labels, filter: (it, data) => !data.datasets[it.datasetIndex].isBand } },
+      tooltip: {
+        filter: it => !it.dataset.isBand,
+        callbacks: {
+          title: items => `第 ${items[0].label} 天（累積）`,
+          label: ctx => {
+            const i = ctx.dataIndex, isA = ctx.dataset.label.startsWith('A');
+            const lo = (isA ? AB.ci_a_lo : AB.ci_b_lo)[i], hi = (isA ? AB.ci_a_hi : AB.ci_b_hi)[i];
+            const cv = (isA ? AB.cum_conv_a : AB.cum_conv_b)[i], vs = (isA ? AB.cum_visitors_a : AB.cum_visitors_b)[i];
+            return ` ${ctx.dataset.label} ${ctx.raw.toFixed(2)}%（95% ${lo.toFixed(2)}–${hi.toFixed(2)}）｜${fmt(cv)} ÷ ${fmt(vs)}`;
+          },
+          footer: items => {
+            const i = items[0].dataIndex;
+            return `B−A ${sgn(AB.diff_pp[i], 2)} 個百分點（95% ${sgn(AB.diff_ci_lo[i], 2)}～${sgn(AB.diff_ci_hi[i], 2)}）｜lift ${sgn(AB.lift_pct[i])}%｜p＝${AB.p_value[i].toFixed(3)}`;
+          }
+        }
+      },
+      annotation: { annotations: { d5: {
+        type: 'line', scaleID: 'x', value: 4, borderColor: TH.guide, borderWidth: 1.5, borderDash: [5, 4],
+        label: { display: true, content: `第 5 天 B ${sgn(AB.lift_pct[4])}%`, position: 'start',
+                 backgroundColor: TT.backgroundColor, color: TH.label, font: { size: 10 }, padding: 4 }
+      } } }
+    },
+    scales: {
+      y: { min: 0, max: Math.ceil(Math.max(...AB.ci_b_hi, ...AB.ci_a_hi)), grid: { color: TH.grid }, ticks: { color: TH.text, callback: v => v + '%' } },
+      x: xDay
+    }
+  });
+
+  // cAbP：逐日累積 p 值（0.05 參考線；p<0.05 的點標紅；低於門檻的區段用淡色底）
+  const sig = AB.p_value.map(p => p < AB.method.alpha), s0 = sig.indexOf(true), s1 = sig.lastIndexOf(true);
+  mk('cAbP', 'line', dayLab, [{
+    label: '累積 p 值', data: AB.p_value,
+    borderColor: colA(0.8), backgroundColor: colA(0.8), borderWidth: 2, tension: 0.2, fill: false,
+    pointRadius: 3.5, pointHoverRadius: 10,
+    pointBackgroundColor: sig.map(s => s ? c('red', 0.95) : colA(0.8)), pointBorderColor: sig.map(s => s ? c('red', 1) : colA(0.9))
+  }], {
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      tooltip: { callbacks: {
+        title: items => `第 ${items[0].label} 天（累積）`,
+        label: ctx => ` p＝${ctx.raw.toFixed(4)}${ctx.raw < AB.method.alpha ? '（< 0.05，此時停下會宣布 B 獲勝）' : ''}｜lift ${sgn(AB.lift_pct[ctx.dataIndex])}%`
+      } },
+      annotation: { annotations: {
+        sigZone: { type: 'box', xMin: s0 - 0.5, xMax: s1 + 0.5, backgroundColor: c('red', 0.07), borderWidth: 0,
+                   label: { display: true, content: `第 ${s0 + 1}–${s1 + 1} 天 p < 0.05`, position: { x: 'center', y: 'start' },
+                            color: TH.label, font: { size: 10 } } },
+        alpha: { type: 'line', scaleID: 'y', value: AB.method.alpha, borderColor: c('red', 0.7), borderWidth: 1.5, borderDash: [5, 4],
+                 label: { display: true, content: '門檻 0.05', position: 'end',
+                          backgroundColor: TT.backgroundColor, color: TH.label, font: { size: 10 }, padding: 4 } }
+      } }
+    },
+    scales: {
+      y: { min: 0, max: headroom(AB.p_value, 0.05), grid: { color: TH.grid }, ticks: { color: TH.text, callback: v => v.toFixed(2) } },
+      x: xDay
+    }
+  });
+
+  // cAbWeek：逐週 lift（時間順序固定；正值 B 色、負值 red；虛線＝整體 lift）
+  const wl = W.lift_pct, zEnd = AB.days.length - 1;
+  mk('cAbWeek', 'bar', W.labels, [{
+    label: 'B 相對 A 的提升', data: wl,
+    backgroundColor: wl.map(v => v >= 0 ? colB(0.7) : c('red', 0.6)), borderColor: wl.map(v => v >= 0 ? colB(0.95) : c('red', 0.9)),
+    borderWidth: 1, borderRadius: 3
+  }], {
+    plugins: {
+      tooltip: { mode: 'nearest', intersect: false, callbacks: { label: ctx => {
+        const i = ctx.dataIndex, ra = W.conv_a[i] / W.visitors_a[i] * 100, rb = W.conv_b[i] / W.visitors_b[i] * 100;
+        return [` lift ${sgn(ctx.raw)}%｜B ${rb.toFixed(2)}% vs A ${ra.toFixed(2)}%`,
+                ` A ${fmt(W.conv_a[i])} ÷ ${fmt(W.visitors_a[i])}｜B ${fmt(W.conv_b[i])} ÷ ${fmt(W.visitors_b[i])}`];
+      } } },
+      datalabels: outLabel(v => sgn(v) + '%'),
+      annotation: { annotations: { overall: {
+        type: 'line', scaleID: 'y', value: AB.lift_pct[zEnd], borderColor: TH.guide, borderWidth: 1.5, borderDash: [5, 4],
+        label: { display: true, content: `整體 ${sgn(AB.lift_pct[zEnd])}%`, position: 'end',
+                 backgroundColor: TT.backgroundColor, color: TH.label, font: { size: 10 }, padding: 4 }
+      } } }
+    },
+    scales: {
+      y: { min: -headroom(wl.map(v => -v), 5), max: headroom(wl, 5), grid: { color: TH.grid }, ticks: { color: TH.text, callback: v => v + '%' } },
+      x: { grid: { display: false }, ticks: { color: TH.text } }
+    }
+  });
+
+  // cAbDev：裝置別 A vs B 轉換率（grouped bar；依 A 組轉換率降序）
+  const dOrd = descIdx(DV.cr_a), dLab = dOrd.map(i => DV.labels[i]), dTot = sumArr(DV.visitors_a) + sumArr(DV.visitors_b);
+  mk('cAbDev', 'bar', dLab, [
+    { label: 'A 原版', data: dOrd.map(i => DV.cr_a[i]), backgroundColor: colA(0.4), borderColor: colA(0.9), borderWidth: 1, borderRadius: 3 },
+    { label: 'B 新版', data: dOrd.map(i => DV.cr_b[i]), backgroundColor: colB(0.75), borderColor: colB(1), borderWidth: 1, borderRadius: 3 }
+  ], {
+    plugins: {
+      legend: legendTop,
+      tooltip: { mode: 'nearest', intersect: false, callbacks: { label: ctx => {
+        const i = dOrd[ctx.dataIndex], isA = ctx.datasetIndex === 0;
+        const cv = (isA ? DV.conv_a : DV.conv_b)[i], vs = (isA ? DV.visitors_a : DV.visitors_b)[i];
+        const share = (DV.visitors_a[i] + DV.visitors_b[i]) / dTot * 100;
+        return [` ${ctx.dataset.label}：${ctx.raw.toFixed(2)}%（${fmt(cv)} ÷ ${fmt(vs)}）`,
+                ` ${DV.labels[i]}：lift ${sgn(DV.lift_pct[i])}%、p＝${DV.p_value[i].toFixed(3)}｜占訪客 ${share.toFixed(1)}%`];
+      } } },
+      datalabels: outLabel(v => v.toFixed(2) + '%')
+    },
+    scales: {
+      y: { min: 0, max: headroom(DV.cr_a.concat(DV.cr_b), 1), grid: { color: TH.grid }, ticks: { color: TH.text, callback: v => v + '%' } },
+      x: { grid: { display: false }, ticks: { color: TH.text, font: { size: 12 } } }
+    }
+  });
+
+  // cCreCtr：素材 CTR 與 95% CI（橫向 floating bar＝CI、菱形＝點估計；DATA 已依 CTR 降序；單一值軸）
+  const t = CR.top_index, meta = 'Meta 開發';
+  const crCol = (i, a) => CR.compliance_risk[i] ? c('orange', a) : chColor(meta, a);
+  const crTip = ctx => {
+    const i = ctx.dataIndex;
+    const lines = [` CTR ${CR.ctr[i].toFixed(2)}%（95% ${CR.ci_lo[i].toFixed(2)}–${CR.ci_hi[i].toFixed(2)}）`,
+                   ` 點擊 ${fmt(CR.clicks[i])} ÷ 曝光 ${fmt(CR.impressions[i])}`];
+    if (CR.compliance_risk[i]) lines.push(' ⚠ 療效暗示：化粧品廣告合規風險');
+    return lines;
+  };
+  mk('cCreCtr', 'bar', CR.labels, [
+    { label: '95% 信賴區間', data: CR.ci_lo.map((lo, i) => [lo, CR.ci_hi[i]]),
+      backgroundColor: CR.labels.map((_, i) => crCol(i, 0.3)), borderColor: CR.labels.map((_, i) => crCol(i, 0.9)),
+      borderWidth: 1, borderRadius: 3, borderSkipped: false, barPercentage: 0.55 },
+    { type: 'line', label: 'CTR 點估計', data: CR.ctr, indexAxis: 'y', showLine: false,
+      pointStyle: 'rectRot', pointRadius: 6, pointHoverRadius: 10,
+      pointBackgroundColor: CR.labels.map((_, i) => crCol(i, 1)), pointBorderColor: TH.label, pointBorderWidth: 1,
+      datalabels: { display: false } }
+  ], {
+    indexAxis: 'y',
+    plugins: {
+      legend: { ...legendTop, labels: { ...legendTop.labels, usePointStyle: true, generateLabels: chart => chart.data.datasets.map((ds, i) => ({
+        text: ds.label, fillStyle: i === 0 ? tokRGBA('--text', 0.3) : TH.label, strokeStyle: tokRGBA('--text', 0.9), lineWidth: 1,
+        pointStyle: i === 0 ? 'rect' : 'rectRot', fontColor: TH.text, hidden: !chart.isDatasetVisible(i), datasetIndex: i })) } },
+      tooltip: { mode: 'nearest', intersect: false, callbacks: { label: crTip } },
+      datalabels: { ...outLabel((v, ctx) => CR.ctr[ctx.dataIndex].toFixed(2) + '%'), offset: 4 },   // 標在 CI 右端外側
+      annotation: { clip: false, annotations: { topLo: {
+        type: 'line', scaleID: 'x', value: CR.ci_lo[t], borderColor: c('orange', 0.8), borderWidth: 1.5, borderDash: [5, 4],
+        label: { display: true, content: `第 1 名下緣 ${CR.ci_lo[t].toFixed(2)}%`, position: 'end', yAdjust: -6,
+                 backgroundColor: TT.backgroundColor, color: TH.label, font: { size: 10 }, padding: 4 }
+      } } }
+    },
+    scales: {
+      x: { min: 0, max: headroom(CR.ci_hi, 0.5), grid: { color: TH.grid }, ticks: { color: TH.text, callback: v => v + '%' } },
+      y: { grid: { display: false }, ticks: { color: TH.text, font: { size: 11 } } }
+    }
+  });
+}
 function drawBudget() { applyChartTheme(); }
 
 // ══════════════════════════════════════════════════
