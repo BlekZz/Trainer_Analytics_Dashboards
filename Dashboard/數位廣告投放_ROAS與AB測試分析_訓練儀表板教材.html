@@ -470,6 +470,30 @@
     <p>品牌透過自營官網直接賣給消費者，不經百貨或電商平台通路商；能拿到完整的顧客與訂單資料，但流量要靠自己買。</p>
   </div>
   <div class="def-item">
+    <h4>歸因模型（最終點擊／7 日點擊＋1 日瀏覽／資料驅動）</h4>
+    <p>決定「一筆訂單的功勞分給哪些廣告」的規則。本儀表板三個模型都是把同一份後台營收重新分配（每個模型合計＝後台營收）：<br>
+    <strong>最終點擊</strong>：整筆訂單記給下單前最後一次點擊的通路（官網後台 UTM 口徑）。<br>
+    <strong>7 日點擊＋1 日瀏覽</strong>：點擊後 7 天內、或只看過廣告沒點擊而在 1 天內下單，都算給該廣告（Meta 廣告預設的歸因設定）。<br>
+    <strong>資料驅動</strong>：依實際觸點路徑，用統計模型估計每個觸點的貢獻並分攤功勞（Google Ads 現行預設模型）。<br>
+    業界常見替代定義：首次點擊、線性（平均分給每個觸點）、時間衰減（越接近下單分越多）；各平台自報數字則是各自用自己的窗口與模型，彼此不去重。</p>
+  </div>
+  <div class="def-item">
+    <h4>歸因窗口與瀏覽歸因（View-through）</h4>
+    <p>歸因窗口：廣告互動後多少天內的訂單可以算給該廣告，窗口越長算到的訂單越多。瀏覽歸因：使用者只看到廣告、沒有點擊，之後下單也算廣告的功勞——對影片與上漏斗廣告有利，但容易把「本來就會買的人」算進去。</p>
+  </div>
+  <div class="def-item">
+    <h4>模擬轉換（Modeled Conversions）</h4>
+    <p>iOS ATT 等隱私限制讓平台追不到部分使用者的站外購買，平台改用統計模型推估「應該有多少轉換」補進報表。平台自報數字因此有一部分不是逐筆對得到的訂單。</p>
+  </div>
+  <div class="def-item">
+    <h4>轉換延遲</h4>
+    <p>從首次廣告互動到下單相隔的天數。本儀表板分當天／1 天／2–7 天／8–28 天四桶，假設所有歸因訂單都在 28 天內成交。</p>
+  </div>
+  <div class="def-item">
+    <h4>品牌字 vs 非品牌字搜尋</h4>
+    <p>品牌字：搜尋字含品牌名（如「澄研 精華」），搜尋者已經認識品牌。非品牌字：品類或需求詞（如「保濕精華推薦」），搜尋者還沒決定品牌，較常帶來新客。本儀表板兩者合計＝Google 搜尋通路。</p>
+  </div>
+  <div class="def-item">
     <h4>KPI（Key Performance Indicators／關鍵績效指標）</h4>
     <p>衡量核心目標達成程度的量化指標。本儀表板的 KPI 卡位於每頁頂部，是進入圖表分析前的「快速定位」，而非最終結論——每張卡都值得先問「它的分子分母是什麼」。</p>
   </div>
@@ -705,8 +729,216 @@
      P2: 歸因口徑（attr）— Layer 3 建構
 ══════════════════════════════════════════ -->
 <div id="page-attr" class="page hidden">
-  <div class="section-title">歸因口徑</div>
-  <p style="font-size:0.82rem;color:var(--text-muted)">__TODO:Layer 3 — 歸因口徑頁：平台自報 vs 後台訂單、三種歸因模型 ROAS、轉換延遲分布、各通路新舊客占比、品牌字 vs 非品牌字；QA（L1·I、L2·F、L2·A、L3·I、L3·A）＋ T2__</p>
+
+  <div class="section-title">口徑對照 KPI</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--kpi-color:var(--danger)">
+      <div class="kpi-label">平台自報營收加總（6 通路）</div>
+      <div class="kpi-value">NT$<span data-v="platRev"></span> 萬</div>
+      <div class="kpi-sub"><span class="kpi-neutral">＝後台營收 <span data-v="rev"></span> 萬的 <span data-v="overclaim"></span> 倍｜多出來的錢在哪？</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--accent)">
+      <div class="kpi-label">平台自報訂單加總</div>
+      <div class="kpi-value"><span data-v="atPlatOrd"></span> 筆</div>
+      <div class="kpi-sub"><span class="kpi-neutral">後台去重 <span data-v="orders"></span> 筆｜多出 <span data-v="atOrdGap"></span> 筆（<span data-v="atOrdRatio"></span> 倍）</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--purple)">
+      <div class="kpi-label">首次廣告互動當天就下單</div>
+      <div class="kpi-value"><span data-v="atSameDay"></span>%</div>
+      <div class="kpi-sub"><span class="kpi-neutral">全部後台訂單｜另外一半多久才下單？</span></div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--accent2)">
+      <div class="kpi-label">品牌字搜尋 ROAS（最終點擊）</div>
+      <div class="kpi-value"><span data-v="atBrRoas"></span></div>
+      <div class="kpi-sub"><span class="kpi-neutral">只占 Google 搜尋花費 <span data-v="atBrSpPct"></span>%｜這些人本來就在找誰？</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">同一筆訂單，被幾個平台認領</div>
+  <div class="chart-card" id="card-cClaimOrd">
+    <div class="chart-card-title">各通路訂單：平台自報 vs 後台去重（筆｜<span data-v="year"></span>｜淺色＝平台自報、深色＝後台最終點擊）</div>
+    <div class="chart-block h300"><canvas id="cClaimOrd"></canvas></div>
+    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>讀法：</strong>每個通路兩根長條，淺色是該平台廣告後台回報的轉換訂單，深色是官網後台用 UTM 最終點擊分給該通路的訂單（每筆只算一次）。<span data-v="nCh"></span> 個通路淺色全部比深色高；滑過長條可看倍數，最高 <span data-v="atOrdTopN"></span> <span data-v="atOrdTop"></span> 倍、最低 <span data-v="atOrdBotN"></span> <span data-v="atOrdBot"></span> 倍。</div></div>
+  </div>
+
+  <div class="section-title">換一套歸因規則，功勞怎麼搬家</div>
+  <div class="chart-card" id="card-cModelRoas">
+    <div class="chart-card-title">三種歸因模型下的各通路 ROAS（後台營收重新分配｜每個模型合計都是 <span data-v="rev"></span> 萬｜依最終點擊降序）</div>
+    <div class="chart-block h300"><canvas id="cModelRoas"></canvas></div>
+    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>讀法：</strong>同一個通路的三根長條，由淺到深依序是最終點擊、7 日點擊＋1 日瀏覽、資料驅動。三個模型分的是同一份後台營收，只是規則不同：一個通路變高，必有別的通路變低。<strong>變動最大：</strong>YouTube 從 <span data-v="atYtLc"></span> 到 <span data-v="atYtV1"></span>（<span data-v="atYtX"></span> 倍）；Google 搜尋從 <span data-v="atSeLc"></span> 降到 <span data-v="atSeV1"></span>–<span data-v="atSeDda"></span>。</div></div>
+  </div>
+
+  <div class="section-title">新客 vs 舊客：誰帶來、多久才買</div>
+  <div class="chart-grid chart-grid-2">
+    <div class="chart-card" id="card-cNewMix">
+      <div class="chart-card-title">各通路後台訂單的新客／舊客占比（100%｜依新客占比降序）</div>
+      <div class="chart-block h300"><canvas id="cNewMix"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>兩端：</strong>新客占比最高 <span data-v="atNewTopN"></span> <span data-v="atNewTop"></span>%、最低 <span data-v="atNewBotN"></span> <span data-v="atNewBot"></span>%。新客＝首購；滑過長條可看訂單筆數。全站新客 <span data-v="newc"></span> 人，占後台訂單 <span data-v="atNewPctAll"></span>%。</div></div>
+    </div>
+    <div class="chart-card" id="card-cLag">
+      <div class="chart-card-title">轉換延遲分布：首次廣告互動 → 下單（占各自訂單 %）</div>
+      <div class="chart-block h300"><canvas id="cLag"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>形狀：</strong>舊客 <span data-v="atLagRet0"></span>% 當天就買、8–28 天才買的只有 <span data-v="atLagRet3"></span>%；新客當天買 <span data-v="atLagNew0"></span>%，隔超過 1 天才買的合計 <span data-v="atNewLate"></span>%（舊客 <span data-v="atRetLate"></span>%）。最後一桶假設所有訂單都在 28 天內成交。</div></div>
+    </div>
+  </div>
+
+  <div class="section-title">Google 搜尋拆開看</div>
+  <div class="chart-card" id="card-cBrand">
+    <div class="chart-card-title">品牌字 vs 非品牌字搜尋 ROAS：最終點擊 vs 資料驅動（Google 搜尋通路的子拆分）</div>
+    <div class="chart-block h260"><canvas id="cBrand"></canvas></div>
+    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>對照：</strong>品牌字花費 <span data-v="atBrSp"></span> 萬、非品牌字 <span data-v="atNbSp"></span> 萬。最終點擊下品牌字 ROAS <span data-v="atBrRoas"></span>、非品牌字 <span data-v="atNbRoas"></span>；改用資料驅動後品牌字降到 <span data-v="atBrDda"></span>、非品牌字升到 <span data-v="atNbDda"></span>。滑過長條可看新客占比：品牌字 <span data-v="atBrNew"></span>%、非品牌字 <span data-v="atNbNew"></span>%。</div></div>
+  </div>
+
+  <hr class="section-divider">
+  <div class="section-title">訓練題組 — 歸因口徑</div>
+  <div class="qa-section">
+
+    <!-- Q6 -->
+    <div class="qa-item" data-domain="ind">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l1">L1·I</span>
+        <span class="question-text">Q6：轉換延遲圖上，新客和舊客的形狀差很多。以保養品的購買行為，為什麼新客「想比較久」？這對歸因窗口的設定有什麼含義？</span>
+        <span class="domain-chip d-ind">🏭 產業知識</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">轉換延遲分布</span>，舊客 <span data-v="atLagRet0"></span>% 在首次廣告互動當天下單、8–28 天才下單只有 <span data-v="atLagRet3"></span>%；新客當天 <span data-v="atLagNew0"></span>%、2–7 天 <span data-v="atLagNew2"></span>%、8–28 天 <span data-v="atLagNew3"></span>%，隔超過 1 天才買的合計 <span data-v="atNewLate"></span>%。</p>
+          <p><span class="tag-i">I:</span> 舊客已經用過、知道適不適合自己的膚質，保養品用完約 60–90 天就要補貨，看到提醒或優惠就直接下單，所以集中在當天。新客買的是「擦在臉上的東西」：會先查成分、看網路心得和比價、擔心過敏，常常先買試用組或等檔期折扣，決策期自然拉長。</p>
+          <p><span class="tag-i">I:</span> 含義：歸因窗口越短，越看不到新客那條長尾。Meta 預設的「7 日點擊＋1 日瀏覽」只算點擊後 7 天內的訂單，新客 8–28 天下單的那 <span data-v="atLagNew3"></span>% 就不會算給當初的廣告——負責找新客的開發型廣告會被系統性低估，負責收割舊客的通路相對被高估。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('attr','card-cLag')">📍 查看：轉換延遲分布</button>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="qa-item" data-domain="data">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2·F</span>
+        <span class="question-text">Q7：對照 KPI 卡與「平台自報 vs 後台去重」圖：各平台加總比後台多出幾筆訂單？哪個通路自報膨脹得最多、哪個最少？</span>
+        <span class="domain-chip d-data">📊 數據分析</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">KPI：平台自報訂單加總</span>，<span data-v="nCh"></span> 個平台合計 <span data-v="atPlatOrd"></span> 筆，後台去重 <span data-v="orders"></span> 筆，多出 <span data-v="atOrdGap"></span> 筆（<span data-v="atOrdRatio"></span> 倍）；營收口徑是 <span data-v="platRev"></span> 萬 vs <span data-v="rev"></span> 萬（<span data-v="overclaim"></span> 倍）。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">各通路訂單：平台自報 vs 後台去重</span>，自報 ÷ 後台的倍數由高到低：<span data-v="atOrdList"></span>。最高 <span data-v="atOrdTopN"></span>（自報 <span data-v="atYtPo"></span> 筆 vs 後台 <span data-v="atYtBo"></span> 筆），最低 <span data-v="atOrdBotN"></span>（<span data-v="atSePo"></span> 筆 vs <span data-v="atSeBo"></span> 筆）。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('attr','card-cClaimOrd')">📍 查看：平台自報 vs 後台去重</button>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="qa-item" data-domain="mkt">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l2">L2·A</span>
+        <span class="question-text">Q8：品牌字搜尋 ROAS <span data-v="atBrRoas"></span>，是非品牌字的 <span data-v="atBrX"></span> 倍。有人提議「把非品牌字的預算全部移到品牌字」。你怎麼看？</span>
+        <span class="domain-chip d-mkt">📣 行銷專業</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 從<span class="ev">品牌字 vs 非品牌字搜尋 ROAS</span>，品牌字花 <span data-v="atBrSp"></span> 萬、最終點擊 ROAS <span data-v="atBrRoas"></span>，非品牌字花 <span data-v="atNbSp"></span> 萬、ROAS <span data-v="atNbRoas"></span>；新客占比品牌字 <span data-v="atBrNew"></span>%、非品牌字 <span data-v="atNbNew"></span>%。改用資料驅動後，品牌字降到 <span data-v="atBrDda"></span>、非品牌字升到 <span data-v="atNbDda"></span>。</p>
+          <p><span class="tag-i">I:</span> 會搜尋「澄研」的人，已經知道這個品牌——多半是舊客回購，或是先被 Meta、YouTube 廣告或朋友推薦種草的人。品牌字廣告站在購買路徑的最後一步，最終點擊把整筆訂單都記給它；資料驅動模型把一部分功勞還給前面的觸點，品牌字 ROAS 就掉了，非品牌字（搜「保濕精華推薦」這類需求詞、帶來較多新客）反而上升。</p>
+          <p><span class="tag-i">I:</span> 品牌字的需求是被別的通路「製造」出來的，它本身很難放大：預算加再多，每天搜尋品牌名的人數也不會變多，多出來的錢只會推高點擊單價。</p>
+          <p><span class="tag-a">A:</span> 品牌字廣告多少是「多花的錢」，取決於沒有廣告時這些人會不會點自然搜尋結果進官網——若品牌官網在自然搜尋排第一、又沒有競品或通路賣家（電商平台上的賣場）買你的品牌字，暫停廣告後大部分訂單仍會經由自然結果進來；反之，若競品在搶你的品牌字，品牌字廣告就有防守價值。本頁沒有自然搜尋流量與競價對手資料，兩種情況都要驗證。</p>
+          <p><span class="tag-a">A:</span> 🎯 行動：① 做品牌字暫停測試（部分地區或時段關閉品牌字廣告 2–4 週，比較品牌字＋自然搜尋的總訂單掉多少）；② 監控品牌字的搜尋曝光占有率與是否有競品出價；③ 非品牌字用「新客成本」而不是最終點擊 ROAS 評估，因為它的任務是找新客。</p>
+        </div>
+        <div class="trap-block" data-trap-stage="read" data-trap="基線缺失">
+          <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜基線缺失</span>
+          <div><strong>常見陷阱：</strong>ROAS 是「有廣告時」的營收除以花費，沒有回答「沒廣告時會少多少」。品牌字的基線（不投也會來的訂單）特別高，ROAS 越漂亮，常常只代表它越靠近終點線，不代表它越有效。沒有對照的 ROAS，不能拿來比較誰更值得加碼。</div>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('attr','card-cBrand')">📍 查看：品牌字 vs 非品牌字搜尋 ROAS</button>
+        <button class="chart-ref-btn" onclick="goToChart('attr','card-cNewMix')">📍 查看：各通路新客／舊客占比</button>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="qa-item" data-domain="data">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3·I</span>
+        <span class="question-text">Q9：「投放總覽」頁的平台自報 ROAS，LINE 排第 <span data-v="atLnPrRank"></span>、Meta 開發排第 <span data-v="atMdPrRank"></span>。如果改用「每取得一個新客花多少錢」來排，順序會變成怎樣？為什麼兩種排法差這麼多？</span>
+        <span class="domain-chip d-data">📊 數據分析</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="nav-hint" onclick="goToChart('ovw','card-cSpendMix')">👉 切到「💰 投放總覽」→「通路花費占比」：滑過切片讀出各通路全年花費（萬），才能除以本頁的新客訂單數</div>
+        <div class="nav-hint" onclick="goToChart('ovw','card-cPlatRoas')">👉 對照「💰 投放總覽」→「各通路平台自報 ROAS」：拿原本的排名和新客成本排名並排比較</div>
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 各通路花費取自<span class="ev">通路花費占比</span>（tooltip），新客訂單取自<span class="ev">各通路新客／舊客占比</span>（tooltip），相除得到每個新客的花費，由低到高：<span data-v="atNcList"></span>。全站平均是<span class="ev">KPI：新客 CPA</span> NT$<span data-v="cpa"></span>。</p>
+          <p><span class="tag-f">F:</span> 對照<span class="ev">各通路平台自報 ROAS</span>：LINE 自報 <span data-v="atLnPr"></span>（第 <span data-v="atLnPrRank"></span>），新客成本卻排最後；Meta 開發自報 <span data-v="atMdPr"></span>（第 <span data-v="atMdPrRank"></span>），新客成本排第 <span data-v="atMdNcRank"></span>。</p>
+          <p><span class="tag-i">I:</span> ROAS 的分子是「全部營收」，不分新客舊客。LINE 的訂單只有 <span data-v="atLnNew"></span>% 是新客——它觸及的主要是已經買過的人（台灣品牌常用 LINE 官方帳號對好友推播優惠），舊客回購的營收讓它 ROAS 好看，但它幾乎不負責找新客。Meta 開發新客占 <span data-v="atMdNew"></span>%，ROAS 被「新客第一單金額較小、決策期長」拖低，用新客成本看卻排第 <span data-v="atMdNcRank"></span>。</p>
+          <p><span class="tag-i">I:</span> 兩種排名在回答不同問題：ROAS 問「這筆錢帶回多少營收」，新客成本問「這筆錢買到多少新顧客」。同一份花費同時養舊客、找新客時，只看其中一個排名就會把找新客的通路看扁。另外，這裡的新客數也是最終點擊口徑，上游通路（YouTube）帶來、最後經由搜尋成交的新客，算在搜尋頭上，所以 YouTube 的新客成本是偏高估。</p>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('attr','card-cNewMix')">📍 查看：各通路新客／舊客占比</button>
+        <button class="chart-ref-btn" onclick="goToChart('ovw','card-cPlatRoas')">📍 查看：各通路平台自報 ROAS</button>
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="qa-item" data-domain="mkt">
+      <div class="question" onclick="toggleQA(this)">
+        <span class="badge l3">L3·A</span>
+        <span class="question-text">Q10：明年月報要定一個「各通路成效」口徑。三個方案：① 直接用各平台後台的自報數字；② 官網後台最終點擊；③ 資料驅動模型。你推薦哪個？各有什麼風險？</span>
+        <span class="domain-chip d-mkt">📣 行銷專業</span>
+        <span class="question-arrow">▶</span>
+      </div>
+      <div class="answer">
+        <div class="nav-hint" onclick="goToChart('ovw','card-cPlatRoas')">👉 切到「💰 投放總覽」→「各通路平台自報 ROAS」：方案①就是那張圖的口徑，和本頁三種模型對照才看得出差多少</div>
+        <div class="answer-block">
+          <p><span class="tag-f">F:</span> 方案①：從<span class="ev">KPI：平台自報營收加總</span>，<span data-v="nCh"></span> 個平台合計 <span data-v="platRev"></span> 萬，是後台 <span data-v="rev"></span> 萬的 <span data-v="overclaim"></span> 倍（<span class="ev">各通路平台自報 ROAS</span> 就是這個口徑）。方案②③：從<span class="ev">三種歸因模型 ROAS</span>，每個模型合計都等於後台 <span data-v="rev"></span> 萬，但通路排名會變：最終點擊第一是 <span data-v="atLcTopN"></span>（<span data-v="atLcTop"></span>），7 日點擊＋1 日瀏覽第一是 <span data-v="atV1TopN"></span>（<span data-v="atV1Top"></span>），YouTube 在三個模型間差到 <span data-v="atYtX"></span> 倍。</p>
+          <p><span class="tag-i">I:</span> ① 平台自報的問題不是「誰說謊」，而是每個平台只看得到自己的觸點、各用各的窗口：消費者滑到 Meta 廣告沒點（Meta 照「看過 1 天內購買」記一筆）、隔天搜尋品牌名點 Google 廣告下單（Google 也記一筆），同一筆訂單被認領兩次。iOS 的 ATT 之後，Meta 追不到大部分 iPhone 使用者的站外行為，報表裡還有一部分是平台用統計模型推估的「模擬轉換」，並不是逐筆對得到的訂單。</p>
+          <p><span class="tag-i">I:</span> ② 最終點擊每筆只算一次、總數對得上財務，但把功勞全給最後一步，系統性偏向品牌字搜尋、再行銷、LINE 這類「收割」通路。③ 資料驅動依實際的觸點路徑分配功勞，比較公平，但它只看得到有被追蹤到的點擊，純曝光（看了影片沒點）看不到，規則也是黑盒子、模型更新後歷史數字會變。</p>
+          <p><span class="tag-a">A:</span> 建議（需與主管對齊）：總成效一律用後台去重營收；通路拆分固定用一個模型（例如資料驅動，並在報表註明），整年不換，月對月才能比；平台自報數字只用在「同一平台內」比較素材與受眾。這三種都只是「分配功勞」的規則，沒有一種回答「關掉這個通路會少多少營收」——那要靠增量實驗（「預算決策」頁的地理 holdout）。</p>
+          <p><span class="tag-a">A:</span> 🎯 行動：① 月報首頁寫清楚「營收口徑＝後台去重、通路拆分＝資料驅動、窗口＝28 天」；② 附一張平台自報 vs 後台的對照表，讓各平台窗口提出的數字有地方對帳；③ 每年至少挑一個花費最大的通路做增量測試，校正模型。</p>
+        </div>
+        <div class="trap-block" data-trap-stage="curate" data-trap="重複歸因">
+          <span class="trap-icon">⚠</span><span class="trap-tag">整理｜重複歸因</span>
+          <div><strong>常見陷阱：</strong>把 Meta、Google、LINE 各自後台的轉換營收加起來當「廣告帶來的總營收」。每個平台都把同一筆訂單算成自己的，加總必然比實際多——本份資料多了 <span data-v="overclaim"></span> 倍。整理資料時要先問「這個數字是誰的口徑、會不會和別的來源重疊」，再決定能不能相加。</div>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('attr','card-cModelRoas')">📍 查看：三種歸因模型 ROAS</button>
+        <button class="chart-ref-btn" onclick="goToChart('attr','card-cClaimOrd')">📍 查看：平台自報 vs 後台去重</button>
+      </div>
+    </div>
+
+  </div><!-- end qa-section -->
+
+  <!-- ── 本頁訓練題（訓練題拆到每頁末尾） ── -->
+  <div class="training-block">
+    <div class="training-title">★ 本頁訓練題 T2 — 上游通路的取捨</div>
+    <div class="qa-section">
+
+      <!-- T2 -->
+      <div class="qa-item" data-domain="ind">
+        <div class="question" onclick="toggleQA(this)">
+          <span class="badge l3">L3·A</span>
+          <span class="question-text">T2：財務看到 YouTube 最終點擊 ROAS 只有 <span data-v="atYtLc"></span>，要求明年停掉 YouTube。代理商則拿 7 日點擊＋1 日瀏覽的 <span data-v="atYtV1"></span> 說它值得加碼。用投放總覽與本頁的數據，加上你對保養品顧客的理解，寫一段給雙方的回覆。</span>
+          <span class="domain-chip d-ind">🏭 產業知識</span>
+          <span class="question-arrow">▶</span>
+        </div>
+        <div class="answer">
+          <div class="nav-hint" onclick="goToChart('ovw','card-cSpendMix')">👉 切到「💰 投放總覽」→「通路花費占比」：先確認 YouTube 花了多少、占全年預算幾成，才知道這個決定的份量</div>
+          <div class="answer-block">
+            <p><span class="tag-f">F:</span> ① <span class="ev">通路花費占比</span>：YouTube <span data-v="ytSp"></span> 萬，占 <span data-v="ytPct"></span>%；<span class="ev">各通路平台自報 ROAS</span>：<span data-v="ytRoas"></span>。② <span class="ev">三種歸因模型 ROAS</span>：最終點擊 <span data-v="atYtLc"></span>、7 日點擊＋1 日瀏覽 <span data-v="atYtV1"></span>、資料驅動 <span data-v="atYtDda"></span>。③ <span class="ev">各通路新客／舊客占比</span>：YouTube 新客占 <span data-v="atYtNew"></span>%，<span data-v="nCh"></span> 個通路最高。④ <span class="ev">轉換延遲分布</span>：新客 8–28 天才下單的占 <span data-v="atLagNew3"></span>%。</p>
+            <p><span class="tag-i">I:</span> <strong>對財務：</strong>最終點擊是對 YouTube 最不利的規則——它的角色是讓還不認識品牌的人第一次看到，這些人之後多半搜尋品牌名或被再行銷廣告接住才下單，功勞記到下游。資料驅動把部分功勞還回來後是 <span data-v="atYtDda"></span>，是最終點擊的 <span data-v="atYtDdaX"></span> 倍；而且它帶來的訂單有 <span data-v="atYtNew"></span>% 是新客，新客決策期長，超過窗口的那段完全沒算進去。</p>
+            <p><span class="tag-i">I:</span> <strong>對代理商：</strong><span data-v="atYtV1"></span> 也不能照單全收。「1 日瀏覽」把看過影片廣告、隔天剛好下單的人都算進來，其中不少人本來就會買；三個模型對 YouTube 的估計差到 <span data-v="atYtX"></span> 倍，代表沒有一個模型對它特別有把握。</p>
+            <p><span class="tag-i">I:</span> <strong>產業面：</strong>保養品回購週期約 60–90 天，新客第一單常是試用組或檔期優惠價，價值主要在之後的回購；三種模型都只看 28 天內的第一筆訂單，對「專門找新客」的通路都是低估。反過來說，若 YouTube 帶來的新客不回購，它就真的不划算——停或留取決於新客後續價值，不取決於選哪個模型。</p>
+            <p><span class="tag-a">A:</span> 新客回購率、YouTube 帶來的新客與其他通路新客的回購差異，本儀表板都沒有，是待驗證的假設；停掉 YouTube 後品牌字搜尋與再行銷名單會萎縮多少，也是假設，需實驗驗證。</p>
+            <p><span class="tag-a">A:</span> 🎯 建議回覆：「先不停也不加碼。① 下一季挑幾個地區暫停 YouTube 6 週，比較暫停區與對照區的總訂單、新客數與品牌字搜尋量（做法同『預算決策』頁的地理 holdout）；② 拉出 YouTube 首觸新客的 90 天回購率，和其他通路的新客比；③ 實驗出來前維持現有預算，評估指標改成『新客成本＋90 天回購』，而不是任何一種 ROAS。」</p>
+          </div>
+          <div class="trap-block" data-trap-stage="wrangle" data-trap="挑選期間">
+            <span class="trap-icon">⚠</span><span class="trap-tag">加工｜挑選期間</span>
+            <div><strong>常見陷阱：</strong>歸因窗口本身就是一種「挑期間」：選 1 天、7 天還是 28 天，決定了哪些訂單算得到、哪個通路會贏。雙方都各自挑了對自己有利的口徑。先約定好窗口與模型、再看數字，而不是看完數字才挑對自己有利的那一個。</div>
+          </div>
+          <button class="chart-ref-btn" onclick="goToChart('attr','card-cModelRoas')">📍 查看：三種歸因模型 ROAS</button>
+          <button class="chart-ref-btn" onclick="goToChart('attr','card-cNewMix')">📍 查看：各通路新客／舊客占比</button>
+          <button class="chart-ref-btn" onclick="goToChart('attr','card-cLag')">📍 查看：轉換延遲分布</button>
+        </div>
+      </div>
+
+    </div><!-- end training qa-section -->
+  </div><!-- end training-block -->
+
 </div><!-- end page-attr -->
 
 <!-- ══════════════════════════════════════════
@@ -1126,6 +1358,68 @@ function buildTextValues() {
   V.metaPct = fmt(CH.spend_pct[md] + CH.spend_pct[rt]);
   const spOrd = descIdx(CH.spend_pct);
   V.top2 = `${L[spOrd[0]]}＋${L[spOrd[1]]}`; V.top2Pct = fmt(CH.spend_pct[spOrd[0]] + CH.spend_pct[spOrd[1]]);
+
+  // ── attr 歸因口徑（KPI、findings、Q6–Q10、T2）──
+  const AT = DATA.attribution, LG = DATA.lag, S = DATA.search, se = idx('Google 搜尋'), ln = idx('LINE');
+  const po = CH.platform_orders, bo = CH.backend_orders;
+  const platOrd = sumArr(po);
+  V.atPlatOrd = fmt(platOrd); V.atOrdGap = fmt(platOrd - A.orders); V.atOrdRatio = (platOrd / A.orders).toFixed(2);
+  guard(po.every((v, i) => v > bo[i]), 'attr 假設每個通路平台自報訂單 > 後台訂單');
+  const oRatio = po.map((v, i) => v / bo[i]), oOrd = descIdx(oRatio);
+  V.atOrdList = oOrd.map(i => `${L[i]} ${oRatio[i].toFixed(2)} 倍`).join('、');
+  V.atOrdTopN = L[oOrd[0]]; V.atOrdTop = oRatio[oOrd[0]].toFixed(2);
+  V.atOrdBotN = L[oOrd[oOrd.length - 1]]; V.atOrdBot = oRatio[oOrd[oOrd.length - 1]].toFixed(2);
+  guard(oOrd[0] === yt && oOrd[oOrd.length - 1] === se, 'Q7 假設自報膨脹最多＝YouTube、最少＝Google 搜尋');
+  V.atYtPo = fmt(po[yt]); V.atYtBo = fmt(bo[yt]); V.atSePo = fmt(po[se]); V.atSeBo = fmt(bo[se]);
+
+  // 三種歸因模型
+  const R = AT.roas, f2 = v => v.toFixed(2);
+  V.atYtLc = f2(R.last_click[yt]); V.atYtV1 = f2(R.click7_view1[yt]); V.atYtDda = f2(R.dda[yt]);
+  const ytAll = AT.keys.map(k => R[k][yt]);
+  V.atYtX = (Math.max(...ytAll) / Math.min(...ytAll)).toFixed(1);
+  V.atYtDdaX = (R.dda[yt] / R.last_click[yt]).toFixed(1);
+  V.atSeLc = f2(R.last_click[se]); V.atSeV1 = f2(R.click7_view1[se]); V.atSeDda = f2(R.dda[se]);
+  guard(R.click7_view1[yt] > R.dda[yt] && R.dda[yt] > R.last_click[yt], 'attr 假設 YouTube：7日點擊＋1日瀏覽 > 資料驅動 > 最終點擊');
+  guard(R.last_click[se] > R.dda[se] && R.click7_view1[se] <= R.dda[se], 'attr findings 假設 Google 搜尋最終點擊最高、7日點擊＋1日瀏覽 ≤ 資料驅動');
+  const lcTop = argMax(R.last_click), v1Top = argMax(R.click7_view1);
+  V.atLcTopN = L[lcTop]; V.atLcTop = f2(R.last_click[lcTop]); V.atV1TopN = L[v1Top]; V.atV1Top = f2(R.click7_view1[v1Top]);
+  guard(lcTop !== v1Top, 'Q10 假設最終點擊與 7日點擊＋1日瀏覽的第一名不同');
+
+  // 新客／舊客占比
+  const np = CH.new_pct, nOrd = descIdx(np);
+  V.atNewTopN = L[nOrd[0]]; V.atNewTop = np[nOrd[0]].toFixed(1);
+  V.atNewBotN = L[nOrd[nOrd.length - 1]]; V.atNewBot = np[nOrd[nOrd.length - 1]].toFixed(1);
+  V.atNewPctAll = (A.new_customers / A.orders * 100).toFixed(1);
+  V.atYtNew = np[yt].toFixed(1); V.atLnNew = np[ln].toFixed(1); V.atMdNew = np[md].toFixed(1);
+  guard(nOrd[0] === yt && np[yt] >= 70, 'T2 假設 YouTube 新客占比最高且約四分之三');
+  guard(nOrd[nOrd.length - 1] === ln, 'Q9 假設 LINE 新客占比最低');
+  guard(np[md] > 50, 'Q9 假設 Meta 開發以新客為主');
+
+  // 每個新客的花費（Q9）：通路花費 ÷ 通路新客訂單（最終點擊口徑）
+  const nc = CH.spend_wan.map((s, i) => s * 10000 / CH.new_orders[i]), ncAsc = nc.map((_, i) => i).sort((a, b) => nc[a] - nc[b]);
+  V.atNcList = ncAsc.map(i => `${L[i]} NT$${fmt(nc[i])}`).join('、');
+  V.atMdNcRank = 1 + ncAsc.indexOf(md);
+  V.atLnPr = f2(pr[ln]); V.atMdPr = f2(pr[md]);
+  V.atLnPrRank = 1 + pr.filter(v => v > pr[ln]).length; V.atMdPrRank = 1 + pr.filter(v => v > pr[md]).length;
+  guard(ncAsc[ncAsc.length - 1] === ln, 'Q9 假設 LINE 新客成本最高');
+  guard(V.atMdNcRank < V.atMdPrRank && V.atLnPrRank <= 3, 'Q9 假設兩種排名翻轉：Meta 開發新客成本排名優於其自報 ROAS 排名、LINE 自報 ROAS 在前三');
+
+  // 轉換延遲（Q6、KPI、T2）
+  V.atSameDay = LG.all_pct[0].toFixed(1);
+  V.atLagNew0 = LG.new_pct[0].toFixed(1); V.atLagNew2 = LG.new_pct[2].toFixed(1); V.atLagNew3 = LG.new_pct[3].toFixed(1);
+  V.atLagRet0 = LG.returning_pct[0].toFixed(1); V.atLagRet3 = LG.returning_pct[3].toFixed(1);
+  const late = arr => arr[2] + arr[3];
+  V.atNewLate = late(LG.new_pct).toFixed(1); V.atRetLate = late(LG.returning_pct).toFixed(1);
+  guard(LG.returning_pct[0] > LG.new_pct[0] && late(LG.new_pct) > late(LG.returning_pct) && LG.new_pct[3] > 2 * LG.returning_pct[3],
+    'Q6 假設舊客多當天下單、新客長尾明顯較長');
+
+  // 品牌字 vs 非品牌字（Q8、KPI）
+  V.atBrSp = S.spend_wan[0]; V.atNbSp = S.spend_wan[1]; V.atBrSpPct = (S.spend_wan[0] / CH.spend_wan[se] * 100).toFixed(1);
+  V.atBrRoas = f2(S.roas[0]); V.atNbRoas = f2(S.roas[1]); V.atBrDda = f2(S.dda_roas[0]); V.atNbDda = f2(S.dda_roas[1]);
+  V.atBrNew = S.new_pct[0].toFixed(1); V.atNbNew = S.new_pct[1].toFixed(1);
+  V.atBrX = (S.roas[0] / S.roas[1]).toFixed(1);
+  guard(S.roas[0] > S.roas[1] && S.dda_roas[0] < S.roas[0] && S.dda_roas[1] > S.roas[1] && S.new_pct[0] < S.new_pct[1],
+    'Q8 假設品牌字 ROAS 較高、改資料驅動後品牌字降／非品牌字升、品牌字新客占比較低');
   return V;
 }
 
@@ -1283,7 +1577,137 @@ function drawOvw() {
 // ══════════════════════════════════════════════════
 // DRAW P2–P4：attr／ab／budget（Layer 3–5 實作；目前為空殼）
 // ══════════════════════════════════════════════════
-function drawAttr() { applyChartTheme(); }
+// DRAW P2: attr 歸因口徑
+// 配色：通路仍用 CH_COLOR（顏色跟著實體走）；同一通路內的口徑／模型／客群用深淺區分，legend 以中性色深淺示意
+function drawAttr() {
+  applyChartTheme();
+  const A = DATA.anchors, CH = DATA.channels, AT = DATA.attribution, LG = DATA.lag, S = DATA.search, L = CH.labels;
+  const outLabel = formatter => ({ anchor: 'end', align: 'end', offset: 2, color: TH.label, font: { size: 9, family: TH.fontMono }, formatter });
+  const headroom = (arr, step) => Math.ceil(Math.max(...arr) * 1.2 / step) * step;   // ≥1.2× 最大值（B.2-4）
+  // 深淺 legend：每個 dataset 一個中性色塊（alpha 對應圖上的深淺）
+  const shadeLegend = alphas => ({
+    display: true, position: 'top',
+    labels: {
+      color: TH.text, boxWidth: 12, boxHeight: 12,
+      generateLabels: chart => chart.data.datasets.map((ds, i) => ({
+        text: ds.label, fillStyle: tokRGBA('--text', alphas[i]), strokeStyle: tokRGBA('--text', 0.9), lineWidth: 1,
+        fontColor: TH.text, hidden: !chart.isDatasetVisible(i), datasetIndex: i
+      }))
+    }
+  });
+  const xAxis = { grid: { display: false }, ticks: { color: TH.text, font: { size: 11 } } };
+
+  // cClaimOrd：平台自報 vs 後台去重訂單（依自報訂單降序；單一值軸＝筆）
+  const coOrd = descIdx(CH.platform_orders), coLab = coOrd.map(i => L[i]);
+  const coTip = ctx => {
+    const i = coOrd[ctx.dataIndex];
+    return ` 平台自報 ${fmt(CH.platform_orders[i])} 筆｜後台 ${fmt(CH.backend_orders[i])} 筆（自報＝後台的 ${(CH.platform_orders[i] / CH.backend_orders[i]).toFixed(2)} 倍）`;
+  };
+  mk('cClaimOrd', 'bar', coLab, [
+    { label: '平台自報訂單', data: coOrd.map(i => CH.platform_orders[i]),
+      backgroundColor: coLab.map(l => chColor(l, 0.3)), borderColor: coLab.map(l => chColor(l, 0.9)), borderWidth: 1, borderRadius: 3 },
+    { label: '後台去重訂單（最終點擊）', data: coOrd.map(i => CH.backend_orders[i]),
+      backgroundColor: coLab.map(l => chColor(l, 0.85)), borderColor: coLab.map(l => chColor(l, 1)), borderWidth: 1, borderRadius: 3 }
+  ], {
+    plugins: {
+      legend: shadeLegend([0.3, 0.85]),
+      tooltip: { mode: 'nearest', intersect: false, callbacks: { label: coTip } },
+      datalabels: outLabel(v => fmt(v))
+    },
+    scales: {
+      y: { min: 0, max: headroom(CH.platform_orders, 1000), grid: { color: TH.grid }, ticks: { color: TH.text, callback: v => fmt(v) + ' 筆' } },
+      x: xAxis
+    }
+  });
+
+  // cModelRoas：三種歸因模型 ROAS（grouped bar；依最終點擊降序）
+  const mOrd = descIdx(AT.roas.last_click), mLab = mOrd.map(i => L[i]), mAlpha = [0.3, 0.6, 0.95];
+  const allRoas = AT.keys.flatMap(k => AT.roas[k]);
+  mk('cModelRoas', 'bar', mLab, AT.keys.map((k, m) => ({
+    label: AT.models[m], data: mOrd.map(i => AT.roas[k][i]),
+    backgroundColor: mLab.map(l => chColor(l, mAlpha[m])), borderColor: mLab.map(l => chColor(l, 1)), borderWidth: 1, borderRadius: 3
+  })), {
+    plugins: {
+      legend: shadeLegend(mAlpha),
+      tooltip: { mode: 'nearest', intersect: false, callbacks: { label: ctx => {
+        const i = mOrd[ctx.dataIndex], k = AT.keys[ctx.datasetIndex];
+        return ` ${AT.models[ctx.datasetIndex]}：ROAS ${ctx.raw.toFixed(2)}＝營收 ${fmt(AT.revenue_wan[k][i])} 萬 ÷ 花費 ${fmt(CH.spend_wan[i])} 萬`;
+      } } },
+      datalabels: outLabel(v => v.toFixed(2))
+    },
+    scales: {
+      y: { min: 0, max: headroom(allRoas, 1), grid: { color: TH.grid }, ticks: { color: TH.text } },
+      x: xAxis
+    }
+  });
+
+  // cNewMix：各通路新客／舊客占比（100% 堆疊橫條；依新客占比降序；標籤在段內）
+  const nOrd = descIdx(CH.new_pct), nLab = nOrd.map(i => L[i]);
+  const r1 = v => Math.round(v * 10) / 10;
+  mk('cNewMix', 'bar', nLab, [
+    { label: '新客（首購）', stack: 'mix', data: nOrd.map(i => CH.new_pct[i]),
+      backgroundColor: nLab.map(l => chColor(l, 0.85)), borderColor: nLab.map(l => chColor(l, 1)), borderWidth: 1 },
+    { label: '舊客（回購）', stack: 'mix', data: nOrd.map(i => r1(100 - CH.new_pct[i])),
+      backgroundColor: nLab.map(l => chColor(l, 0.25)), borderColor: nLab.map(l => chColor(l, 0.8)), borderWidth: 1 }
+  ], {
+    indexAxis: 'y',
+    plugins: {
+      legend: shadeLegend([0.85, 0.25]),
+      tooltip: { mode: 'nearest', intersect: false, callbacks: { label: ctx => {
+        const i = nOrd[ctx.dataIndex], n = ctx.datasetIndex === 0 ? CH.new_orders[i] : CH.returning_orders[i];
+        return ` ${ctx.dataset.label} ${ctx.raw.toFixed(1)}%（${fmt(n)} 筆）｜通路訂單 ${fmt(CH.backend_orders[i])} 筆`;
+      } } },
+      datalabels: { anchor: 'center', align: 'center', color: TH.label, font: { size: 10, family: TH.fontMono },
+                    formatter: v => v.toFixed(1) + '%' }
+    },
+    scales: {
+      x: { stacked: true, min: 0, max: 100, grid: { color: TH.grid }, ticks: { color: TH.text, callback: v => v + '%' } },
+      y: { stacked: true, grid: { display: false }, ticks: { color: TH.text, font: { size: 11 } } }
+    }
+  });
+
+  // cLag：轉換延遲分布（新客 vs 舊客；占各自訂單 %；時間順序固定）
+  const lagAlpha = [0.85, 0.3];
+  mk('cLag', 'bar', LG.labels, [
+    { label: '新客', data: LG.new_pct, backgroundColor: tokRGBA('--text', lagAlpha[0]), borderColor: tokRGBA('--text', 0.95), borderWidth: 1, borderRadius: 3 },
+    { label: '舊客', data: LG.returning_pct, backgroundColor: tokRGBA('--text', lagAlpha[1]), borderColor: tokRGBA('--text', 0.8), borderWidth: 1, borderRadius: 3 }
+  ], {
+    plugins: {
+      legend: shadeLegend(lagAlpha),
+      tooltip: { mode: 'nearest', intersect: false, callbacks: { label: ctx => {
+        const n = (ctx.datasetIndex === 0 ? LG.new : LG.returning)[ctx.dataIndex];
+        return ` ${ctx.dataset.label} ${ctx.raw.toFixed(1)}%（${fmt(n)} 筆）`;
+      } } },
+      datalabels: outLabel(v => v.toFixed(1) + '%')
+    },
+    scales: {
+      y: { min: 0, max: headroom(LG.new_pct.concat(LG.returning_pct), 10), grid: { color: TH.grid }, ticks: { color: TH.text, callback: v => v + '%' } },
+      x: xAxis
+    }
+  });
+
+  // cBrand：品牌字 vs 非品牌字 ROAS（最終點擊 vs 資料驅動；Google 搜尋色深淺；橫條）
+  const se = L.indexOf('Google 搜尋'), bAlpha = [mAlpha[0], mAlpha[2]];
+  mk('cBrand', 'bar', S.labels, [
+    { label: AT.models[0], data: S.roas, backgroundColor: chColor(L[se], bAlpha[0]), borderColor: chColor(L[se], 1), borderWidth: 1, borderRadius: 3 },
+    { label: AT.models[2], data: S.dda_roas, backgroundColor: chColor(L[se], bAlpha[1]), borderColor: chColor(L[se], 1), borderWidth: 1, borderRadius: 3 }
+  ], {
+    indexAxis: 'y',
+    plugins: {
+      legend: shadeLegend(bAlpha),
+      tooltip: { mode: 'nearest', intersect: false, callbacks: { label: ctx => {
+        const i = ctx.dataIndex, rev = ctx.datasetIndex === 0 ? S.revenue_wan[i] : S.dda_revenue_wan[i];
+        return [` ${ctx.dataset.label}：ROAS ${ctx.raw.toFixed(2)}＝營收 ${fmt(rev)} 萬 ÷ 花費 ${S.spend_wan[i]} 萬`,
+                ` 訂單 ${fmt(S.orders[i])} 筆，新客占 ${S.new_pct[i].toFixed(1)}%`];
+      } } },
+      datalabels: { ...outLabel(v => v.toFixed(2)), offset: 4 }
+    },
+    scales: {
+      x: { min: 0, max: headroom(S.roas.concat(S.dda_roas), 2), grid: { color: TH.grid }, ticks: { color: TH.text } },
+      y: { grid: { display: false }, ticks: { color: TH.text, font: { size: 12 } } }
+    }
+  });
+}
 function drawAb() { applyChartTheme(); }
 function drawBudget() { applyChartTheme(); }
 
