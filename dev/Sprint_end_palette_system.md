@@ -44,12 +44,12 @@
 - 全量 audit exit 0、mutation-test 全綠、EXEMPTIONS 已無 PAL 與已修 CH 項目、`git diff 2f84f1d -- Dashboard/` 不含文字或數字變動（以剝除 style/script options 後比對文字節點驗證）、產生器實跑一個新背景。
 
 ## 最終驗收 checklist
-- [ ] audit 全量 `EXIT=0`
-- [ ] mutation-test 全綠
-- [ ] EXEMPTIONS 無 PAL-01／02 條目；CH 條目僅剩經判定為刻意設計者（附理由）
-- [ ] 成品文字節點與數字零變動（M4 實證）
-- [ ] P1–P7 全部過 PAL；D.9 記錄新值
-- [ ] module-D 配色生成段＋產生器可用
+- [x] audit 全量 `EXIT=0`
+- [x] mutation-test 全綠
+- [x] EXEMPTIONS 無 PAL-01／02 條目；CH 條目僅剩經判定為刻意設計者（附理由）
+- [x] 成品文字節點與數字零變動（M4 實證）
+- [x] P1–P7 全部過 PAL；D.9 記錄新值
+- [x] module-D 配色生成段＋產生器可用
 
 ## 偏離紀錄
 - **M1 目標函數（2026-11-01，claude）：** 設計寫「最大化 30 個 ΔE 的最小值」。實作改為兩段：先求可達上界 t*，門檻取 T＝min(t*, 12)，T 之上挑品質罰分最低者；`--maxmin` 保留純 max-min。理由：純 max-min 實測把色推到限制邊緣（P2 背景 teal L 0.94 近白、blue 對比剛好 3.00、色相貼區間邊），分離度遠超門檻卻不好看（dev/tech-notes.md #28）。
@@ -64,3 +64,24 @@
 - **M2 未處理（既有、非豁免）：** SaaS／網紅／醫美 orange/teal、零售 blue/orange 的 protan 7.9 PAL-02 WARN 原本就不在豁免表；要消除須換 orange（醫美被揭露文字鎖定），依「只換撞色、改最少色」保留。電商 teal `#2aab85` 對白卡對比 2.89 為既有值未動。網紅 `PC.youtube` 與舊 red 同為 `#DC2626`，屬平台品牌色，未跟著換。
 - **M2 發現的既有內容問題（未修，屬改內容）：** 網紅 p4「各平台互動率」副標寫「橘色虛線 = 業界中位數」，實際業界基準是灰色長條（`rgba(107,114,128,0.25)`），沒有橘色虛線；電商 `.badge.l3`／`.qa-level.l3` 用 `var(--purple)`，但該檔 `:root` 沒有定義 `--purple`（文字色退回繼承值）。
 - **M2 範圍外的同步修改：** 主 session 指定的 D.9 兩項：P1 換 bg `#020617→#08141A`（卡片／finding 同步）、P7 purple `#6366F1→#B18EF6`；另更新 D.9 P2 註記、ARCHIVE（7 份「配色修正」行、網紅待確認項結案、#3 的 P1 註記）、tech-notes #27 的「網紅待人工確認」句。
+
+## 最終驗收結果（2026-11-01，fresh-context 獨立驗收者，非實作者）
+
+判定：PASS（附註），無 blocking。commits `b1a499d`（M3）、`c0bcb0f`（M1）、`7f28537`（M2）。
+
+- audit 全量：直接量得 `EXIT=0`、`9/9 份無 FAIL（64 秒）`；剩 WARN：QA-04×8、CH-10×8、QA-06×7、PAL-02×4（orange/teal 或 blue/orange protan 7.9，既有）、QA-05×2、CH-05×2、CH-04×1、template 的 AC-01／PH-01
+- mutation-test：`EXIT=0`、30/30 轉紅、對照組 5/5（首次與其他 headless Chrome 並行時 LY-02 逾時 exit=2，閒置重跑通過——並行開瀏覽器時偶發不穩）
+- EXEMPTIONS：無 PAL 條目；CH 只剩 SaaS `chart-waterfall` CH-01（浮動 bar 瀑布圖，附理由）
+- 文字／數字不變：驗收者自寫比對（渲染後 DOM 文字、原始文字節點、可見屬性、DATA 數字、script 非色值字串）8 份 -0/+0；一字元 mutation 可抓出（exit 1）
+- P1–P7：`gen_palette.mjs --check` 對 bg／bg-card 各跑，14 次 PASS；P2 舊 purple 反例 `EXIT=1`
+- 產生器：新背景 `#FFF8F0`、`#101418` 各 3 組 PASS、兩次輸出相同；驗收者獨立 OKLCH 重算 30 色皆落在宣稱色族
+- 色名完整性：電商紅色柱／藍色區塊／紅色虛線、餐飲藍柱／橘線／紅虛線、品牌紫柱／橘柱 均對應同色族
+
+## 後續選項（非 blocking，未排程）
+
+1. **內容錯誤（改內文，需 Blake 同意）**：網紅 p4 副標「橘色虛線 = 業界中位數」實為灰色長條；電商使用 `var(--purple)` 但 `:root` 未定義
+2. **PAL-02 WARN 7.9**（SaaS／網紅／醫美 orange/teal、零售 blue/orange）：要消除須換 orange；醫美揭露文字鎖定 orange
+3. **電商 teal `#2aab85` 對白卡對比 2.89**（既有，<3:1）
+4. M3 的部分 `suggestedMax` 以常數寫成 `資料最大值*1.2`（健身房、品牌：品牌的資料本身寫在圖表設定裡，非 DATA）——日後若改資料需同步
+5. SaaS `chart-feature-adopt` 軸到 105%、網紅 `chart-p3-decay` 自動刻度到 180%（既有）
+6. 品牌 danger `#DF3555` 在 red 區間下緣（偏莓紅）；品牌橘柱 `#FDBA74` 0.7 透明度在深底偏淺褐（既有）

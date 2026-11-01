@@ -264,8 +264,8 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
 /* 標題與內文同字族，靠字重區分層級；數字用 IBM Plex Mono */
 ```
-- **配色驗證（D.11 產生器，2026-11-01）：** 原色組 FAIL——orange/red 正常 ΔE 11.8、blue/purple deutan 1.3、orange/teal／red/teal 色盲 7.1／7.4。改 accent `#3B82F6→#57A8FF`、accent2 `#22C55E→#39C699`、warn `#D97706→#F7931F`（保留 purple、danger）後：正常最小 17.0（orange/red）、protan 13.2、deutan 12.0（red/teal），對比最小 4.76（purple）。指令：`--bg '#020617' --anchor purple=#8B5CF6,red=#EF4444`
-- **與第 3 份的重複已解除（accent＋bg 換色）：** 原 bg `#020617`＋accent `#3B82F6` 與第 3 份（品牌訊息通道，P7 Modified）相同，P7 也用同一 bg。2026-11-01 先換 accent `#57A8FF`，同日（Sprint_palette_system M2）再換 bg `#020617→#08141A`（深石油藍，h≈220，與 P2 `#0d1117`、P4 `#0F172A`、P7 `#020617` 都不同）、bg-card `#0E1223→#0F1E25`、bg-finding `#131B2F→#14262F`。五色不變，新背景下 `--check` 重驗 PASS：正常最小 17.0（orange/red）、protan 13.2、deutan 12.0（red/teal），對比最小 4.02（purple，對 bg-card）／4.41（對 bg）。指令：`--bg '#0F1E25' --check blue=#57A8FF,teal=#39C699,orange=#F7931F,purple=#8B5CF6,red=#EF4444`。字型（IBM Plex）仍與第 3 份相同
+- **配色驗證（D.11 產生器，2026-11-01）：** 原色組 FAIL——orange/red 正常 ΔE 11.8、blue/purple deutan 1.3、orange/teal／red/teal 色盲 7.1／7.4。改 accent `#3B82F6→#57A8FF`、accent2 `#22C55E→#39C699`、warn `#D97706→#F7931F`（保留 purple、danger）後：正常最小 17.0（orange/red）、protan 13.2、deutan 12.0（red/teal），對比最小 4.76（purple，此為換 bg 前的數字；現行值見下一條）。當時指令：`--bg '#020617' --anchor purple=#8B5CF6,red=#EF4444`
+- **與第 3 份的重複已解除（accent＋bg 換色）：** 原 bg `#020617`＋accent `#3B82F6` 與第 3 份（品牌訊息通道，P7 Modified）相同，P7 也用同一 bg。2026-11-01 先換 accent `#57A8FF`，同日（Sprint_end_palette_system M2）再換 bg `#020617→#08141A`（深石油藍，h≈220，與 P2 `#0d1117`、P4 `#0F172A`、P7 `#020617` 都不同）、bg-card `#0E1223→#0F1E25`、bg-finding `#131B2F→#14262F`。五色不變，新背景下 `--check` 重驗 PASS：正常最小 17.0（orange/red）、protan 13.2、deutan 12.0（red/teal），對比最小 4.02（purple，對 bg-card）／4.41（對 bg）。指令：`--bg '#0F1E25' --check blue=#57A8FF,teal=#39C699,orange=#F7931F,purple=#8B5CF6,red=#EF4444`。字型（IBM Plex）仍與第 3 份相同
 - **調性：** 嚴肅、資料密度高、信任感強
 - **圖表色建議：** 正向指標用 `--accent2`，負向用 `--danger`，中性資料用 `--accent`
 - **反模式：** 不可用淺色背景 / 不可用圓角 > 12px / 不可用裝飾性動畫
@@ -289,7 +289,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 ```
 - **調性：** 中性專業，資料導向，適合多數分析情境
 - **注意：** 這是 baseline，不應連續兩份都用 P2
-- **配色驗證（D.11 產生器，2026-11-01）：** 原 blue `#3b82f6` ↔ purple `#7c4dff` 正常 ΔE 12.9、deutan 4.2（PAL-01／02 FAIL）。只換 purple `#7c4dff→#b89cf3`（淺紫，h 298）：正常最小 16.6（orange/red）、protan／deutan 最小 11.0，對比最小 4.01（red）。blue 與 purple 改靠明度分開（L 0.62 vs 0.75）。指令：`--bg '#0d1117' --anchor blue=#3b82f6,teal=#2aab85,orange=#d4870a,red=#d43a2f`。已用 P2 的既有成品（第 1、2 份）由 Sprint_palette_system M2 另行重配（第 1 份 purple 同為 `#b89cf3`；第 2 份淺底改 `#7c519d`，見 ARCHIVE）
+- **配色驗證（D.11 產生器，2026-11-01）：** 原 blue `#3b82f6` ↔ purple `#7c4dff` 正常 ΔE 12.9、deutan 4.2（PAL-01／02 FAIL）。只換 purple `#7c4dff→#b89cf3`（淺紫，h 298）：正常最小 16.6（orange/red）、protan／deutan 最小 11.0，對比最小 4.01（red）。blue 與 purple 改靠明度分開（L 0.62 vs 0.75）。指令：`--bg '#0d1117' --anchor blue=#3b82f6,teal=#2aab85,orange=#d4870a,red=#d43a2f`。已用 P2 的既有成品（第 1、2 份）由 Sprint_end_palette_system M2 另行重配（第 1 份 purple 同為 `#b89cf3`；第 2 份淺底改 `#7c519d`，見 ARCHIVE）
 
 ---
 
@@ -399,7 +399,7 @@ P4: 訓練題 + 設計選擇揭露（獨立教學頁）
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
 ```
 - **調性：** 莊重、傳統、合規感強（金色 `--accent2` 作為正向/獲利指標）
-- **配色驗證（D.11 產生器，2026-11-01，`--map teal=gold`）：** 原色組 FAIL——orange/red 正常 11.8、deutan 4.4，red/teal protan 4.9；accent `#1E3A8A` 對背景對比僅 1.95（圖形元素看不見）；accent2 `#A16207` 實測 h 66 與 warn 同屬橘色區。改 accent `#1E3A8A→#006DA2`（保留深藍調，對比 3.56）、accent2 `#A16207→#FED420`（真正的金色 h 94）、warn `#D97706→#EE9E55`：正常最小 15.0（orange/teal）、protan 12.8、deutan 12.2。保留 danger。purple 原 `#6366F1`（h 277，靛）過 PAL 但落在產生器紫色區間（282–328）外，內文寫「紫」時讀者可能讀成藍紫——同日（Sprint_palette_system M2）以其餘四色 anchor 重跑換成 `#B18EF6`（h 298，罰分最低的首選）：正常最小 15.0（orange/teal）、protan 15.2、deutan 12.3（orange/red），purple 對 bg-card 對比 6.97，blue/purple 正常 24.9。指令：`--bg '#0A1628' --map teal=gold --anchor blue=#006DA2,teal=#FED420,orange=#EE9E55,red=#EF4444`
+- **配色驗證（D.11 產生器，2026-11-01，`--map teal=gold`）：** 原色組 FAIL——orange/red 正常 11.8、deutan 4.4，red/teal protan 4.9；accent `#1E3A8A` 對背景對比僅 1.95（圖形元素看不見）；accent2 `#A16207` 實測 h 66 與 warn 同屬橘色區。改 accent `#1E3A8A→#006DA2`（保留深藍調，對比 3.56）、accent2 `#A16207→#FED420`（真正的金色 h 94）、warn `#D97706→#EE9E55`：正常最小 15.0（orange/teal）、protan 12.8、deutan 12.2。保留 danger。purple 原 `#6366F1`（h 277，靛）過 PAL 但落在產生器紫色區間（282–328）外，內文寫「紫」時讀者可能讀成藍紫——同日（Sprint_end_palette_system M2）以其餘四色 anchor 重跑換成 `#B18EF6`（h 298，罰分最低的首選）：正常最小 15.0（orange/teal）、protan 15.2、deutan 12.3（orange/red），purple 對 bg-card 對比 6.97，blue/purple 正常 24.9。指令：`--bg '#0A1628' --map teal=gold --anchor blue=#006DA2,teal=#FED420,orange=#EE9E55,red=#EF4444`
 - **與 P1 區隔：** P1 已於 2026-11-01 改 bg `#08141A`，兩者不再同底；字型同為 IBM Plex；主色分別為深藍 `#006DA2`（P7）與亮藍 `#57A8FF`（P1）。P7 的 bg `#020617` 仍與第 3 份（品牌訊息通道，P7 Modified）相同——該份即自述為 P7 變體
 - **反模式：** 不可用亮色主視覺 / 不可用圓角 > 10px / 不可使用 AI 紫色系漸層
 

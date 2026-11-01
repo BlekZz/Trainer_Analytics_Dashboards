@@ -650,7 +650,7 @@ plugins: {
 **做法：**
 - audit PAL-01／PAL-02 用 OKLab×100＋Machado 2009 色盲模擬（protan／deutan 取較小者），比全部色對；CIEDE2000 只在 `AUDIT_PAL_VERBOSE=1` 時列為參考。
 - 換量度前，先拿既有紀錄的「修正前／修正後」數值重算一次，確認新量度仍能把兩組分開。
-- 網紅 blue/purple（及其餘 6 份的非相鄰撞色）原列豁免；2026-11-01 Sprint_palette_system M2 已用 D.11 產生器換色，PAL 豁免全數移除（各份舊→新值見 `Skill/ARCHIVE.md`「配色修正」行）。
+- 網紅 blue/purple（及其餘 6 份的非相鄰撞色）原列豁免；2026-11-01 Sprint_end_palette_system M2 已用 D.11 產生器換色，PAL 豁免全數移除（各份舊→新值見 `Skill/ARCHIVE.md`「配色修正」行）。
 
 來源：`dev/Sprint_end_skill_hardening.md` M2 偏離紀錄（2.7）；`Skill/ARCHIVE.md` 配色驗證紀錄。
 
@@ -668,4 +668,4 @@ plugins: {
 - 多組候選的多樣性要在微調後仍成立：微調若不受限，會把 top-3 拉回同一個最佳解（實測 P7 前 4 組只差 1 個 hex 位）。
 - 附帶發現：P5、P6 的 orange/red 正常 ΔE 14.4（非相鄰色對，2026-10-14 舊驗證器未比），與 #27 同一類漏檢。
 
-來源：`dev/Sprint_palette_system.md` M1 偏離紀錄；`Skill/module-D-diff.md` D.11。
+來源：`dev/Sprint_end_palette_system.md` M1 偏離紀錄；`Skill/module-D-diff.md` D.11。
