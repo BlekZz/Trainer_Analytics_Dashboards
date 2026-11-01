@@ -14,7 +14,7 @@
     /* ── P6 電商活力型 Preset ── */
     :root {
       --bg: #ECFDF5; --bg-card: #FFFFFF; --bg-finding: #E8F8F1;
-      --accent: #059669; --accent2: #0284C7; --warn: #D97706; --danger: #DC2626; --purple: #7C3AED;
+      --accent: #059669; --accent2: #0284C7; --warn: #D97706; --danger: #E21720; --purple: #7C3AED;
       --text: #064E3B; --text-muted: #64748B; --border: rgba(0,0,0,0.07);
       --radius: 14px;
     }
@@ -222,12 +222,12 @@
     .fia.a { background: rgba(212,135,10,0.15); color: var(--warn); }
 
     .trap-block {
-      background: rgba(220,38,38,0.07); border: 1px solid rgba(220,38,38,0.25);
+      background: rgba(226,23,32,0.07); border: 1px solid rgba(226,23,32,0.25);
       border-radius: 8px; padding: 10px 14px; margin-top: 10px;
       font-size: 0.8rem; color: #b91c1c; display: flex; gap: 8px; align-items: flex-start;
     }
     .trap-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
-.trap-tag{display:inline-block;flex-shrink:0;align-self:flex-start;white-space:nowrap;font-size:0.7rem;font-weight:600;padding:1px 6px;border-radius:4px;margin-left:6px;background:rgba(220,38,38,0.1);color:#b91c1c;opacity:0.85}
+.trap-tag{display:inline-block;flex-shrink:0;align-self:flex-start;white-space:nowrap;font-size:0.7rem;font-weight:600;padding:1px 6px;border-radius:4px;margin-left:6px;background:rgba(226,23,32,0.1);color:#b91c1c;opacity:0.85}
     .nav-hint {
       display: inline-flex; align-items: center; gap: 6px;
       background: rgba(212,135,10,0.08); border: 1px solid rgba(212,135,10,0.25);
@@ -1103,7 +1103,7 @@ function c(key, alpha=1) {
     green:  `rgba(5,150,105,${alpha})`,
     teal:   `rgba(2,132,199,${alpha})`,
     orange: `rgba(217,119,6,${alpha})`,
-    red:    `rgba(220,38,38,${alpha})`,
+    red:    `rgba(226,23,32,${alpha})`,
     purple: `rgba(124,58,237,${alpha})`,
     gray:   `rgba(100,116,139,${alpha})`
   };
@@ -1644,7 +1644,7 @@ function draw_p4() {
     t+=`<tr><th style="text-align:left;background:var(--bg-finding)">${st}</th>`;
     DATA.heatmap_stockout[r].forEach(v=>{
       const a=soA(v);
-      t+=`<td style="background:rgba(220,38,38,${a.toFixed(2)});color:${a>0.45?'#fff':'#7f1d1d'};font-weight:600">${v}%</td>`;
+      t+=`<td style="background:rgba(226,23,32,${a.toFixed(2)});color:${a>0.45?'#fff':'#7f1d1d'};font-weight:600">${v}%</td>`;
     });
     t+='</tr>';
   });

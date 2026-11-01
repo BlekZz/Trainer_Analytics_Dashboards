@@ -26,7 +26,7 @@
   --accent-2: #e8503a;     /* 紅警示 */
   --accent-3: #2aab85;     /* 綠正向 */
   --accent-4: #d4870a;     /* 橘注意 */
-  --accent-5: #7c4dff;     /* 紫行為 */
+  --accent-5: #7c519d;     /* 紫行為 */
   --success: #1a9e72;
   --warning: #c97c10;
   --danger: #d43a2f;
@@ -62,7 +62,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
 .header-row-2 { display:flex; align-items:center; padding:0 24px; border-bottom:1px solid var(--border); }
 .def-toggle-btn { display:flex; align-items:center; gap:7px; background:var(--def-bg); border:1px solid var(--def-border); border-radius:7px; padding:7px 13px; margin:7px 16px 7px 0; color:var(--accent-5); font-family:'Outfit',sans-serif; font-size:0.79rem; font-weight:600; cursor:pointer; transition:background 0.2s; flex-shrink:0; user-select:none; white-space:nowrap; }
 .def-toggle-btn:hover { background:#ebe1ff; }
-.def-toggle-btn.open { background:#ebe1ff; border-color:rgba(124,77,255,0.5); }
+.def-toggle-btn.open { background:#ebe1ff; border-color:rgba(124,81,157,0.5); }
 .def-toggle-icon { font-size:0.95rem; }
 .def-toggle-arrow { font-size:0.85rem; display:inline-block; transition:transform 0.25s ease; opacity:0.65; }
 .def-toggle-btn.open .def-toggle-arrow { transform:rotate(90deg); }
@@ -295,7 +295,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
       <span><span class="dot" style="background:#2aab85"></span>正向/穩定</span>
       <span><span class="dot" style="background:#d4870a"></span>注意/季節性</span>
       <span><span class="dot" style="background:#d43a2f"></span>警示/流失</span>
-      <span><span class="dot" style="background:#7c4dff"></span>行為/時間</span>
+      <span><span class="dot" style="background:#7c519d"></span>行為/時間</span>
     </div>
     <span class="legend-vdivider"></span>
     <div class="legend-right">
@@ -553,7 +553,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Outfit',sans-serif;fo
       <div class="kpi-value">NT$499</div>
       <div class="kpi-footer"><span class="kpi-delta up">↑ +3.8% YoY</span><span class="kpi-note">vs NT$481 (2023)</span></div>
     </div>
-    <div class="kpi-card" style="--card-color:#7c4dff">
+    <div class="kpi-card" style="--card-color:#7c519d">
       <div class="kpi-label">回購率（二次以上）</div>
       <div class="kpi-value">54.2<span class="unit">%</span></div>
       <div class="kpi-footer"><span class="kpi-delta up">↑ +4.6pp</span><span class="kpi-note">去年 49.6%</span></div>
@@ -1237,7 +1237,7 @@ const TT = {
 const PALETTES = {
   blue:'rgba(45,91,227,ALPHA)', teal:'rgba(42,171,133,ALPHA)',
   orange:'rgba(212,135,10,ALPHA)', red:'rgba(212,58,47,ALPHA)',
-  purple:'rgba(124,77,255,ALPHA)', gray:'rgba(100,110,135,ALPHA)'
+  purple:'rgba(124,81,157,ALPHA)', gray:'rgba(100,110,135,ALPHA)'
 };
 const c = (k,a=1) => PALETTES[k].replace('ALPHA',a);
 
@@ -1488,15 +1488,15 @@ function drawTx(){
         peak:{
           type:'point',
           xValue:20, yValue:78,
-          backgroundColor:'rgba(124,77,255,0.18)',
-          borderColor:'#7c4dff', borderWidth:2.5, radius:14
+          backgroundColor:'rgba(124,81,157,0.18)',
+          borderColor:'#7c519d', borderWidth:2.5, radius:14
         },
         peakLabel:{
           type:'label',
           xValue:18.2, yValue:78,
           xAdjust:0, yAdjust:-30,
           content:['晚間黃金 1 小時','→ 推播最佳時機'],
-          backgroundColor:'#7c4dff',
+          backgroundColor:'#7c519d',
           color:'#fff',
           font:{family:'Outfit',weight:'600',size:11},
           padding:7,
@@ -1516,7 +1516,7 @@ function drawTx(){
       options:{responsive:true,
         interaction:{mode:'index',intersect:false},
         plugins:{legend:{display:false}, tooltip:{...TT, mode:'index', intersect:false},
-                 datalabels:{display:true,color:'#7c4dff',font:{family:'JetBrains Mono',size:9,weight:'700'},
+                 datalabels:{display:true,color:'#7c519d',font:{family:'JetBrains Mono',size:9,weight:'700'},
                              formatter:(v,ctx)=>{const d=ctx.chart.data.datasets[0].data;const max=Math.max(...d);return v===max?v+'筆':'';},
                              anchor:'top',align:'top',padding:{bottom:2}},
                  ...(ann ? {annotation: ann} : {})},
@@ -1597,7 +1597,7 @@ function drawCross(){
        scales:{x:{grid:{display:false},ticks:{color:'#9898a8'}},
                y:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v.toLocaleString()},suggestedMax:3300}},
        plugins:{tooltip:{...TT, callbacks:{label:ctx2=>` ${ctx2.parsed.y.toLocaleString()} 人`}},
-                datalabels:{display:true,anchor:'end',align:'end',color:'#7c4dff',font:{family:'JetBrains Mono',size:10,weight:'700'},
+                datalabels:{display:true,anchor:'end',align:'end',color:'#7c519d',font:{family:'JetBrains Mono',size:10,weight:'700'},
                             formatter:v=>v.toLocaleString()+'人',padding:{bottom:2}}}});
 }
 

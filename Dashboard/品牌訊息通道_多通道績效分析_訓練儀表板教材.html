@@ -20,8 +20,8 @@
       --accent:    #3B82F6;
       --accent2:   #D97706;
       --warn:      #FDBA74;
-      --danger:    #EF4444;
-      --purple:    #8B5CF6;
+      --danger:    #DF3555;
+      --purple:    #B196EE;
       --text:      #F1F5F9;
       --text2:     #94A3B8;
       --border:    rgba(148,163,184,0.12);
@@ -105,7 +105,7 @@
     .badge { display: inline-block; border-radius: 4px; padding: 1px 6px; font-size: 0.67rem; font-weight: 600; }
     .badge.l1 { background: rgba(217,119,6,0.18); color: var(--accent2); border: 1px solid rgba(217,119,6,0.3); }
     .badge.l2 { background: rgba(59,130,246,0.18); color: var(--accent); border: 1px solid rgba(59,130,246,0.3); }
-    .badge.l3 { background: rgba(139,92,246,0.18); color: var(--purple); border: 1px solid rgba(139,92,246,0.3); }
+    .badge.l3 { background: rgba(177,150,238,0.18); color: var(--purple); border: 1px solid rgba(177,150,238,0.3); }
 
     /* ── Side def panel ── */
     #main-wrapper { display: flex; align-items: flex-start; }
@@ -234,12 +234,12 @@
     .fia.a { background: rgba(253,186,116,0.18); color: var(--warn); }
 
     .trap-block {
-      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.28);
+      background: rgba(223,53,85,0.08); border: 1px solid rgba(223,53,85,0.28);
       border-radius: 8px; padding: 10px 14px; margin-top: 10px;
       font-size: 0.8rem; color: #FCA5A5; display: flex; gap: 8px; align-items: flex-start;
     }
     .trap-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
-.trap-tag{display:inline-block;flex-shrink:0;align-self:flex-start;white-space:nowrap;font-size:0.7rem;font-weight:600;padding:1px 6px;border-radius:4px;margin-left:6px;background:rgba(239,68,68,0.12);color:#FCA5A5;opacity:0.85}
+.trap-tag{display:inline-block;flex-shrink:0;align-self:flex-start;white-space:nowrap;font-size:0.7rem;font-weight:600;padding:1px 6px;border-radius:4px;margin-left:6px;background:rgba(223,53,85,0.12);color:#FCA5A5;opacity:0.85}
     .nav-hint {
       display: inline-flex; align-items: center; gap: 6px;
       background: rgba(253,186,116,0.08); border: 1px solid rgba(253,186,116,0.28);
@@ -263,11 +263,11 @@
 
     /* ── Training block ── */
     .training-block {
-      background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.22);
+      background: rgba(177,150,238,0.06); border: 1px solid rgba(177,150,238,0.22);
       border-radius: var(--radius); padding: 20px; margin-top: 28px;
     }
     .training-title { font-family: var(--font-head); font-size: 0.95rem; font-weight: 600; color: var(--purple); margin-bottom: 14px; }
-    .training-item { background: var(--bg-finding); border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; border: 1px solid rgba(139,92,246,0.15); }
+    .training-item { background: var(--bg-finding); border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; border: 1px solid rgba(177,150,238,0.15); }
     .training-item:last-child { margin-bottom: 0; }
     .training-item h4 { font-size: 0.83rem; color: var(--purple); margin-bottom: 6px; font-weight: 600; }
     .training-item p { font-size: 0.8rem; color: var(--text2); line-height: 1.6; }
@@ -1201,8 +1201,8 @@ function c(key, alpha) {
     blue:   `rgba(59,130,246,${alpha})`,
     teal:   `rgba(217,119,6,${alpha})`,
     orange: `rgba(253,186,116,${alpha})`,
-    red:    `rgba(239,68,68,${alpha})`,
-    purple: `rgba(139,92,246,${alpha})`,
+    red:    `rgba(223,53,85,${alpha})`,
+    purple: `rgba(177,150,238,${alpha})`,
     gray:   `rgba(100,110,135,${alpha})`
   };
   return map[key] || `rgba(100,110,135,${alpha})`;
@@ -1636,9 +1636,9 @@ function drawPage3() {
         x: { grid: { display: false }, ticks: { color: '#F1F5F9', font: { size: 11 } } },
         y: {
           position: 'left',
-          title: { display: true, text: '平均輪數', color: '#8B5CF6', font: { size: 10 } },
+          title: { display: true, text: '平均輪數', color: '#B196EE', font: { size: 10 } },
           grid: { color: 'rgba(148,163,184,0.08)' },
-          ticks: { color: '#8B5CF6', font: { family: "'IBM Plex Mono', monospace", size: 9 } },
+          ticks: { color: '#B196EE', font: { family: "'IBM Plex Mono', monospace", size: 9 } },
           suggestedMax: 10
         },
         y2: {

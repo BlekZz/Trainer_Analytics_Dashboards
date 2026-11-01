@@ -14,7 +14,7 @@
     /* P5 醫療信任型（accent 依 B.9-1 驗證改 #0369A1） */
     :root {
       --bg: #ECFEFF; --bg-card: #FFFFFF; --bg-finding: #E0F9FB;
-      --accent: #0369A1; --accent2: #059669; --warn: #D97706; --danger: #DC2626; --purple: #7C3AED;
+      --accent: #0369A1; --accent2: #059669; --warn: #D97706; --danger: #E21720; --purple: #7C3AED;
       --text: #164E63; --text-muted: #64748B; --border: rgba(0,0,0,0.07);
       --radius: 16px;
       --header-h: 138px;
@@ -792,7 +792,7 @@ Chart.defaults.font.family = "'Source Sans 3', sans-serif";
 const TT = { mode: 'index', intersect: false, backgroundColor: '#164E63', titleColor: '#FFFFFF', bodyColor: '#E0F2FE', borderWidth: 0, padding: 10, cornerRadius: 8 };
 
 function c(key, alpha = 1) {
-  const map = { blue: '3,105,161', teal: '5,150,105', orange: '217,119,6', purple: '124,58,237', red: '220,38,38', gray: '100,116,139' };
+  const map = { blue: '3,105,161', teal: '5,150,105', orange: '217,119,6', purple: '124,58,237', red: '226,23,32', gray: '100,116,139' };
   return `rgba(${map[key] || map.blue},${alpha})`;
 }
 

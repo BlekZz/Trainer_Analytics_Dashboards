@@ -12,6 +12,7 @@
 - 頁數／QA 數：3 頁／21 題
 - 差異化亮點：來客×客單雙軸同圖、右軸刻意縮窄放大客單微變；VIP AOV(287→241)低於全體的逆直覺數字直接呈現，要學員自己發現「AOV ≠ LTV」；外帶口徑未拆外送/自取，刻意留盲點。
 - 陷阱主題：比例上升不等於絕對量下降／低業績門市不一定最需協助／AOV 不等於 LTV／提升高頻貢獻不等於只服務高頻／統一 KPI 衡量異質門市
+- **配色修正（2026-11-01，Sprint_palette_system M2，D.11 產生器）**：purple `#7c4dff→#b89cf3`（blue/purple 正常 12.9、deutan 4.2）；修正後最小 ΔE 正常 16.6／protan 11.0／deutan 11.0
 - 使用反饋：未記錄
 
 ## Dashboard #2 | 2026-05-21
@@ -24,6 +25,7 @@
 - 差異化亮點：三頁分頁（會員／交易／跨域交叉）讓切換即切換分析視角；KPI 卡置頂只給方向不給原因；頻次圖排除「從未購買」32,915 人避免壓縮其他 bucket；免運門檻標在訂單分佈圖上。
 - 陷阱主題：KPI 與圖表小差距不要改數字／人均消費×流失人數直接相乘／品類第一不等於過度集中／未首購與只買一次混為一池／只看 LTV 不看 CAC
 - ⚠ audit 盲點：本份題目列無 F/I/A 類型標記、答案區 `.ans-head.act` 幾乎每題都有（含 L1），audit 無法可靠判定 A 題 → **一般題的 QA-03（A 題須有陷阱）不受保護**，只有訓練題受檢。改本份時陷阱增刪須人工核對（2026-11-01 獨立驗收：刪一般題 trap 後 audit 仍 exit 0）。
+- **配色修正（2026-11-01，Sprint_palette_system M2，D.11 產生器）**：purple `#7c4dff→#7c519d`（blue/purple 正常 11.1、protan 3.8；選深紫保 L3 徽章文字對比 5.96）；修正後最小 ΔE 正常 15.0／protan 11.1／deutan 11.0（teal `#2aab85` 對白卡對比 2.89 為既有值，未動）
 - 使用反饋：未記錄
 
 ## Dashboard #3 | 2026-05-25
@@ -31,10 +33,11 @@
 - 產業：品牌行銷（訊息通道）
 - 訓練主題：多通道績效分析（LINE／Email 推播漏斗 vs WhatsApp／Meta／Chat 對話解決率）
 - 錨點：無 `anchors` 物件，DATA 以通道分組：`LINE.reach: 72000`、`LINE.open_rate: 0.38`、`LINE.ctr: 0.12`、`EMAIL.reach: 38000`、`WHATSAPP.conversations: 4200`、`META.FCR: 0.54`
-- 視覺 Preset：P7 Modified（檔內自述「P7 Modified 深色 Preset」）——bg #020617／accent #3B82F6／accent2 #D97706／字型 IBM Plex Sans+IBM Plex Mono；與 P7 表列 accent #1E3A8A 不同，accent 與 bg 實同 P1（當時 P1 的值；P1 已於 2026-11-01 改 accent `#57A8FF`）
+- 視覺 Preset：P7 Modified（檔內自述「P7 Modified 深色 Preset」）——bg #020617／accent #3B82F6／accent2 #D97706／字型 IBM Plex Sans+IBM Plex Mono；與 P7 表列 accent #1E3A8A 不同，accent 與 bg 實同 P1（當時 P1 的值；P1 已於 2026-11-01 改 accent `#57A8FF`、bg `#08141A`，不再與本份同底）
 - 頁數／QA 數：4 頁／20 題
 - 差異化亮點：推播（漏斗型）與對話（解決率型）KPI 邏輯不同故拆兩頁；每頁埋「分母不一致」口徑陷阱；效率對比圖附「分母不同勿直接比較」警示；月度趨勢刻意只給 3 個月。
 - 陷阱主題：CTR 分母（觸達 vs 開封）口徑／高 FCR 加高棄單的偽象／轉換率恆定假設／Q4 節慶歸因／效率指標量質倒置
+- **配色修正（2026-11-01，Sprint_palette_system M2，D.11 產生器）**：purple `#8B5CF6→#B196EE`（blue/purple 正常 12.0、deutan 1.3）、red/danger `#EF4444→#DF3555`（red/teal 正常 11.8、deutan 4.4）；blue `#3B82F6` 因設計揭露文字點名而固定；修正後最小 ΔE 正常 15.3／protan 9.3／deutan 9.3
 - 使用反饋：未記錄
 
 ## Dashboard #4 | 2026-06-11
@@ -57,7 +60,7 @@
 - 頁數／QA 數：4 頁／16 題
 - 差異化亮點：5 平台同框比較；個人品牌 B2B 銷售漏斗（洽詢→回款）；P4 新增評論深度指數與存儲率；刻意埋跨象限矛盾（TikTok 增速放緩但活躍率維穩、保險互動率最低但收入最高、Blog 最小但評論最深）。
 - 陷阱主題：增速放緩不等於平台走弱／追蹤數暴漲誤判為正訊號／高互動不等於高收入／單次收入不等於業配決策標準／CPM 最低不等於最值得投
-- **待人工確認（2026-11-01）**：blue `#7C3AED` ↔ purple `#9333EA` 正常視力 ΔE 4.4（audit PAL-01，目前列豁免），若兩色在同一張圖出現屬缺陷
+- **配色修正（2026-11-01，Sprint_palette_system M2，D.11 產生器）**：purple `#9333EA→#72478F`（blue〔實為紫 `#7C3AED`〕/purple 正常 4.4）、red/danger `#DC2626→#E21720`（orange/red 正常 14.4）；YouTube 平台色 `PC.youtube` 同為 `#DC2626` 但屬平台品牌色，未動；修正後最小 ΔE 正常 15.0／protan 7.9（orange/teal，既有 WARN）／deutan 8.2
 - 使用反饋：未記錄
 
 ## Dashboard #6 | 2026-06-12
@@ -69,6 +72,7 @@
 - 頁數／QA 數：4 頁／27 題
 - 差異化亮點：Waterfall 強制 MRR=加法結構；Cohort 用 HTML 表格而非圖表；12 月刻意設為 MRR 下滑月（反直覺查因）；NRR 作外部輸入不從月度推算；試用轉換率口徑（÷申請數 38.2% vs ÷活躍試用 63.7%）刻意揭露。
 - 陷阱主題：MRR 下滑不能直接歸因 Contraction／NRR 健康可能被新客掩蓋／先看 Cohort 再定優先客群／流失原因問卷的選擇性偏誤／LTV 簡化公式未扣 COGS
+- **配色修正（2026-11-01，Sprint_palette_system M2，D.11 產生器）**：purple `#7C3AED→#8E48BB`（blue/purple 正常 12.4、deutan 0.4）、red/danger `#DC2626→#E21720`（orange/red 正常 14.4）；修正後最小 ΔE 正常 15.1／protan 7.9（orange/teal，既有 WARN）／deutan 8.1
 - 使用反饋：未記錄
 
 ## Dashboard #7 | 2026-06-14
@@ -80,6 +84,7 @@
 - 頁數／QA 數：4 頁／20 題
 - 差異化亮點：ABC 分組使補貨策略可操作化（帕累托 25 點可看折點）；營收+毛利率雙軸同框揭示旺季讓利；補貨優先矩陣用 scatter 呈現象限；門市型態×品類雙熱力圖；Findings 預設收合（先問後答）。
 - 陷阱主題：帕累托「前 20% SKU」錯答（16% 已達 78.9%）／銷量增不等於毛利率降／毛利率高不等於毛利額大（共 4 個 `.trap-block`，其餘陷阱走其他形式；2026-11-01 依 audit 統計更正，原手抄為 3）
+- **配色修正（2026-11-01，Sprint_palette_system M2，D.11 產生器）**：red/danger `#DC2626→#E21720`（orange/red 正常 14.4）；修正後最小 ΔE 正常 15.1／protan 7.9（blue〔綠〕/orange，既有 WARN）／deutan 8.2
 - 使用反饋：未記錄
 
 ---
@@ -93,6 +98,7 @@
 - 頁數／QA 數：4 頁／18 題＋T1–T5（共 23 題）
 - 差異化亮點：第一份依 2026-10-14 新規則從零建構的儀表板——全部單一值軸、刻意截斷軸當陷阱、Simpson 悖論內建於資料（分群回診率皆升、整體降 5.0 pp）、cohort 空白格（觀察期不足）、P4 揭示式設計（先給統計量、模糊遮罩後再開 4 張小散點圖）、T5 資料矛盾題、KPI 全部由 DATA 計算。資料由 `dev/script/gen_data_medaesthetic.py` 生成、`inject_data.py` 注入。
 - 陷阱主題：截斷軸／分母錯置／口徑定義不一致（遲到算爽約）／觀察期不足／Simpson 悖論／同統計量不同形狀／離群值未處理／倖存者偏誤（只有填問卷的人）／重複紀錄（取消後重約）——19 個 trap-block 涵蓋 4 階段
+- **配色修正（2026-11-01，Sprint_palette_system M2，D.11 產生器）**：red/danger `#DC2626→#E21720`（orange/red 正常 14.4）；設計揭露文字點名的 `#0369A1` 與「橘色與綠色 ΔE 7.9」兩色均未動；修正後最小 ΔE 正常 15.1／protan 7.9（orange/teal）／deutan 8.2
 - 使用反饋：未記錄
 
 ---
@@ -124,9 +130,9 @@
 | 2 | 電商DTC | light | 無 | 對比 < 3:1：teal、orange（需保留數字標籤） |
 | 3 | 品牌訊息通道 | dark | 正常視力 ΔE 10.8（teal≈orange）→ `--warn` #F59E0B 改 #FDBA74，ΔE 17.7 | 明度：#fdba74 超出範圍 |
 | 4 | 健身房 | dark | 色盲 ΔE 5.7（orange↔teal）→ `--accent2` #22C55E 改 #0D9488，ΔE 16.6 | 明度：blue、orange、purple 超出範圍 |
-| 5 | 網紅個人品牌 | light | 無 | 色盲 ΔE 7.9（orange↔teal，需保留標籤）；blue #7c3aed 與 purple #9333ea 不相鄰但相近：正常視力 blue/purple ΔE 4.4（2026-11-01 audit 全部色對比對，列入 PAL-01／02 豁免；若同圖並列屬實際缺陷，待人工確認） |
+| 5 | 網紅個人品牌 | light | 無 | 色盲 ΔE 7.9（orange↔teal，需保留標籤）；blue #7c3aed 與 purple #9333ea 不相鄰但相近：正常視力 blue/purple ΔE 4.4（2026-11-01 audit 全部色對比對後檢出；同日 M2 換 purple 為 #72478F 解決，見 #5 配色修正） |
 | 6 | SaaS訂閱制 | light | 無 | 色盲 ΔE 7.9（orange↔teal，需保留標籤） |
 | 7 | 零售便利商店 | light | 正常視力 ΔE 10.2（blue≈teal）→ `--accent2` #10B981 改 #0284C7，ΔE 16.9 | 無 |
 | 8 | 醫美連鎖 | light | 建構前即在 preset 層修正（P5 accent #0891B2→#0369A1，ΔE 11.8→18.5） | 色盲 ΔE 7.9（orange↔teal，相關圖皆有數字標籤） |
 
-新產的儀表板：preset 在 SKILL Phase 1 選定後立刻跑 audit 看 PAL-01／PAL-02，硬傷在建構前就換掉，不要等交付。上表的硬傷修正已回填 D.9（2026-11-01：P4 accent2 `#0D9488`、P5 accent `#0369A1`、P6 accent2 `#0284C7`；P1 加註須調色）。2026-11-01 起 P1–P7 全部以 D.11 產生器（`gen_palette.mjs`）比全部 10 色對重驗並回填修正色（含 P1 換 accent `#3B82F6→#57A8FF`，解除與第 3 份的 bg＋accent 重複），新舊值見 D.9 各 preset 註記；換色一律用 D.11，不手挑。
+新產的儀表板：preset 在 SKILL Phase 1 選定後立刻跑 audit 看 PAL-01／PAL-02，硬傷在建構前就換掉，不要等交付。上表的硬傷修正已回填 D.9（2026-11-01：P4 accent2 `#0D9488`、P5 accent `#0369A1`、P6 accent2 `#0284C7`；P1 加註須調色）。2026-11-01 起 P1–P7 全部以 D.11 產生器（`gen_palette.mjs`）比全部 10 色對重驗並回填修正色（含 P1 換 accent `#3B82F6→#57A8FF`，解除與第 3 份的 bg＋accent 重複），新舊值見 D.9 各 preset 註記；換色一律用 D.11，不手挑。同日 M2 以 D.11 重配既有 7 份的撞色（audit 原 12 筆 PAL 豁免全數移除），每份的舊→新值與修正後 ΔE 記在各 Dashboard 段的「配色修正」行；同時 P1 改 bg `#08141A`、P7 purple `#6366F1→#B18EF6`。

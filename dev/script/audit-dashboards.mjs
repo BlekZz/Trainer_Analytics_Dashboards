@@ -164,24 +164,6 @@ const EXEMPTIONS = [
     reason: '開放式「還缺哪些分析視角」盤點題，答案為清單而非資料推論，無 F/I/A 可標' },
   { file: '電商DTC_會員交易分析_訓練儀表板教材.html', rule: 'QA-03', items: ['page-cross/T4'],
     reason: '同上；開放式盤點題無對應陷阱，補寫需新增教學內容' },
-  // PAL（2.7）：舊 dataviz 驗證器只比「相鄰」色（blue→teal→orange→purple→red 順序），ARCHIVE 只記到相鄰色對；
-  // 本 audit 比全部色對，以下為既有成品的非相鄰命中。換色屬改配色（總原則 2：既有 8 份不改配色）→ 逐色對豁免，新色對仍會報。
-  // 未查證這些色對是否實際同圖出現；若同圖並列，系列需直接標籤。
-  ...[['SaaS訂閱制_MRR訂閱指標分析_訓練儀表板教材.html', 'PAL-01', ['blue/purple', 'orange/red']],
-    ['SaaS訂閱制_MRR訂閱指標分析_訓練儀表板教材.html', 'PAL-02', ['blue/purple']],
-    ['品牌訊息通道_多通道績效分析_訓練儀表板教材.html', 'PAL-01', ['blue/purple', 'red/teal']],
-    ['品牌訊息通道_多通道績效分析_訓練儀表板教材.html', 'PAL-02', ['blue/purple', 'red/teal']],
-    ['網紅個人品牌_旅遊生活風格創作者_訓練儀表板教材.html', 'PAL-01', ['blue/purple', 'orange/red']],
-    ['網紅個人品牌_旅遊生活風格創作者_訓練儀表板教材.html', 'PAL-02', ['blue/purple']],
-    ['醫美連鎖_預約回診分析_訓練儀表板教材.html', 'PAL-01', ['orange/red']],
-    ['零售便利商店_商品庫存補貨分析_訓練儀表板教材.html', 'PAL-01', ['orange/red']],
-    ['電商DTC_會員交易分析_訓練儀表板教材.html', 'PAL-01', ['blue/purple']],
-    ['電商DTC_會員交易分析_訓練儀表板教材.html', 'PAL-02', ['blue/purple']],
-    ['餐飲連鎖_門市營運分析_訓練儀表板教材.html', 'PAL-01', ['blue/purple']],
-    ['餐飲連鎖_門市營運分析_訓練儀表板教材.html', 'PAL-02', ['blue/purple']],
-  ].map(([file, rule, items]) => ({ file, rule, items,
-    reason: '非相鄰色對，2026-10-14 舊驗證器（只比相鄰色）未檢出；換色屬改配色（總原則 2），保留現狀' })),
-
   { file: 'SaaS訂閱制_MRR訂閱指標分析_訓練儀表板教材.html', rule: 'CH-01', items: ['chart-waterfall'],
     reason: '浮動 bar 瀑布圖（data 為 [起,迄]），自 4.6M 起畫以放大月變動；從 0 起畫各段會壓成細線，屬圖型設計而非一般 bar' },
   // 3.8 擴大逐題容器後的命中：補 F/I/A／trap／收合都需新增教學內容或改互動設計（總原則 2）

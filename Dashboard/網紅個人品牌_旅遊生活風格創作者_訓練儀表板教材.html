@@ -25,8 +25,8 @@
   --accent-light: rgba(124,58,237,0.1);
   --accent2: #059669;
   --warn: #D97706;
-  --danger: #DC2626;
-  --purple: #9333EA;
+  --danger: #E21720;
+  --purple: #72478F;
   --text: #1E1B4B;
   --text-b: #312E6E;
   --text-s: #6B7280;
@@ -53,9 +53,9 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
 /* ── Header (3-row sticky) ── */
 .site-header{position:sticky;top:0;z-index:200;background:rgba(253,252,255,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);box-shadow:0 2px 12px rgba(124,58,237,0.08);}
 .header-row-1{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 24px 9px;border-bottom:1px solid var(--border);}
-.header-title{font-size:1.05rem;font-weight:800;color:var(--text);letter-spacing:-0.02em;white-space:nowrap;background:linear-gradient(135deg,#7C3AED,#9333EA);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.header-title{font-size:1.05rem;font-weight:800;color:var(--text);letter-spacing:-0.02em;white-space:nowrap;background:linear-gradient(135deg,#7C3AED,#72478F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .meta-chip{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:2px 10px;font-size:0.68rem;background:var(--bg-alt);color:var(--text-s);border:1px solid var(--border);white-space:nowrap;}
-.meta-chip.demo{background:linear-gradient(135deg,rgba(124,58,237,0.12),rgba(147,51,234,0.08));color:var(--accent);border-color:var(--border-strong);font-weight:700;}
+.meta-chip.demo{background:linear-gradient(135deg,rgba(124,58,237,0.12),rgba(114,71,143,0.08));color:var(--accent);border-color:var(--border-strong);font-weight:700;}
 .header-row-2{display:flex;align-items:center;padding:0 24px;border-bottom:1px solid var(--border);}
 .def-toggle-btn{display:flex;align-items:center;gap:7px;background:var(--def-bg);border:1px solid var(--def-border);border-radius:7px;padding:7px 13px;margin:7px 16px 7px 0;color:var(--accent);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.79rem;font-weight:700;cursor:pointer;transition:background 0.2s;flex-shrink:0;user-select:none;white-space:nowrap;}
 .def-toggle-btn:hover{background:#EDE9FF;}
@@ -76,7 +76,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
 .badge{display:inline-block;border-radius:4px;padding:1px 6px;font-size:0.67rem;font-weight:600;}
 .badge.l1{background:rgba(5,150,105,0.15);color:var(--accent2);border:1px solid rgba(5,150,105,0.3);}
 .badge.l2{background:rgba(124,58,237,0.12);color:var(--accent);border:1px solid rgba(124,58,237,0.3);}
-.badge.l3{background:rgba(147,51,234,0.12);color:var(--purple);border:1px solid rgba(147,51,234,0.3);}
+.badge.l3{background:rgba(114,71,143,0.12);color:var(--purple);border:1px solid rgba(114,71,143,0.3);}
 
 /* ── Def panel (sticky on outer, not inner — 2026-06 fix) ── */
 #main-wrapper{display:flex;align-items:flex-start;}
@@ -166,11 +166,11 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
 .qa-level{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:4px;margin-right:4px;letter-spacing:0.4px;vertical-align:middle;position:relative;top:-1px;}
 .qa-level.l1{background:rgba(5,150,105,0.15);color:var(--accent2);border:1px solid rgba(5,150,105,0.3);}
 .qa-level.l2{background:rgba(124,58,237,0.12);color:var(--accent);border:1px solid rgba(124,58,237,0.3);}
-.qa-level.l3{background:rgba(147,51,234,0.12);color:var(--purple);border:1px solid rgba(147,51,234,0.3);}
+.qa-level.l3{background:rgba(114,71,143,0.12);color:var(--purple);border:1px solid rgba(114,71,143,0.3);}
 .qa-depth{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:4px;margin-right:4px;letter-spacing:0.4px;vertical-align:middle;position:relative;top:-1px;}
 .qa-depth.f{background:rgba(5,150,105,0.15);color:var(--accent2);}
 .qa-depth.i{background:rgba(215,119,6,0.15);color:var(--warn);}
-.qa-depth.a{background:rgba(220,38,38,0.12);color:var(--danger);}
+.qa-depth.a{background:rgba(226,23,32,0.12);color:var(--danger);}
 .qa-chevron{flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text-s);transition:transform 0.22s,background 0.15s;margin-top:3px;}
 .qa-item.open .qa-chevron{transform:rotate(180deg);background:var(--a-border);color:var(--accent2);}
 .qa-answer{display:none;border-top:1px solid var(--border);background:var(--a-bg);}
@@ -193,7 +193,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
 .trap-block{background:var(--trap-bg);border:1px solid var(--trap-border);border-left:3px solid var(--danger);border-radius:6px;padding:10px 13px;margin:10px 0;font-size:12.5px;color:#7a3c1a;line-height:1.6;}
 .trap-block strong{color:var(--danger);font-weight:700;}
 .trap-label{display:inline-block;font-family:monospace;font-size:10px;font-weight:700;background:var(--danger);color:#fff;padding:1px 6px;border-radius:3px;margin-right:6px;letter-spacing:0.4px;}
-.trap-tag{display:inline-block;flex-shrink:0;align-self:flex-start;white-space:nowrap;font-size:0.7rem;font-weight:600;padding:1px 6px;border-radius:4px;margin-left:6px;background:rgba(220,38,38,0.1);color:var(--danger);opacity:0.85}
+.trap-tag{display:inline-block;flex-shrink:0;align-self:flex-start;white-space:nowrap;font-size:0.7rem;font-weight:600;padding:1px 6px;border-radius:4px;margin-left:6px;background:rgba(226,23,32,0.1);color:var(--danger);opacity:0.85}
 .qa-item.training{border-left-color:#DDD6FE;}
 .qa-item.training.open{border-left-color:var(--purple);}
 .qa-item.training .qa-question:hover{background:#F5F3FF;}
@@ -320,8 +320,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
       <span><span class="dot" style="background:#7C3AED"></span>主資料/事實</span>
       <span><span class="dot" style="background:#059669"></span>正向/成長</span>
       <span><span class="dot" style="background:#D97706"></span>注意/季節性</span>
-      <span><span class="dot" style="background:#DC2626"></span>警示/風險</span>
-      <span><span class="dot" style="background:#9333EA"></span>行為/時間</span>
+      <span><span class="dot" style="background:#E21720"></span>警示/風險</span>
+      <span><span class="dot" style="background:#72478F"></span>行為/時間</span>
     </div>
     <span class="legend-vdivider"></span>
     <div class="legend-right">
@@ -384,7 +384,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
               <span class="kpi-note">活躍率 71% 🏆</span>
             </div>
           </div>
-          <div class="kpi-card" style="--card-color:rgba(220,38,38,1);--card-color2:rgba(220,38,38,0.5)">
+          <div class="kpi-card" style="--card-color:rgba(226,23,32,1);--card-color2:rgba(226,23,32,0.5)">
             <div class="kpi-label">▶️ YouTube</div>
             <div class="kpi-value">8.95<span class="unit"> 萬</span></div>
             <div class="kpi-footer">
@@ -653,7 +653,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
       <div class="container">
         <div class="section-label">💰 本月品牌合作業務健康度</div>
         <div class="kpi-grid c4" id="p2-kpis">
-          <div class="kpi-card" style="--card-color:#7C3AED;--card-color2:#9333EA">
+          <div class="kpi-card" style="--card-color:#7C3AED;--card-color2:#72478F">
             <div class="kpi-label">本月合作件數</div>
             <div class="kpi-value">10 <span class="kpi-unit">件</span></div>
             <div class="kpi-delta positive">↑ +3 vs 上月（7 件）</div>
@@ -671,7 +671,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
             <div class="kpi-delta neutral">→ 年均 $31,933</div>
             <div class="kpi-sub">最高：實體活動 $45K / 件</div>
           </div>
-          <div class="kpi-card" style="--card-color:#DC2626;--card-color2:#EF4444">
+          <div class="kpi-card" style="--card-color:#E21720;--card-color2:#EF4444">
             <div class="kpi-label">回頭客率</div>
             <div class="kpi-value">42 <span class="kpi-unit">%</span></div>
             <div class="kpi-delta neutral">→ 健康門檻 40%+</div>
@@ -763,7 +763,7 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                 <div class="funnel-bar"><span class="funnel-label">報價</span><span class="funnel-count">147</span></div>
                 <div class="funnel-rate">轉換 64.5%　流失 −81</div>
               </div>
-              <div class="funnel-stage" style="--fw:39.0%;--fc:#9333EA">
+              <div class="funnel-stage" style="--fw:39.0%;--fc:#72478F">
                 <div class="funnel-bar"><span class="funnel-label">簽約</span><span class="funnel-count">89</span></div>
                 <div class="funnel-rate">轉換 60.5%　流失 −58 ⚠ 最大漏斗</div>
               </div>
@@ -1178,8 +1178,8 @@ body{background:var(--bg);color:var(--text-b);font-family:'Plus Jakarta Sans',sa
                 <span style="font-size:12px;color:var(--text-m)">TikTok 30日活躍率</span>
                 <span style="font-size:11px;background:#FEF3C7;color:#92400E;padding:2px 7px;border-radius:4px;font-weight:600">五平台最高</span>
               </div>
-              <div style="display:flex;align-items:baseline;gap:8px;border-left:3px solid #DC2626;padding-left:10px;">
-                <span style="font-size:22px;font-weight:800;color:#DC2626">1.2%</span>
+              <div style="display:flex;align-items:baseline;gap:8px;border-left:3px solid #E21720;padding-left:10px;">
+                <span style="font-size:22px;font-weight:800;color:#E21720">1.2%</span>
                 <span style="font-size:12px;color:var(--text-m)">Facebook 互動率</span>
                 <span style="font-size:11px;background:#FEE2E2;color:#991B1B;padding:2px 7px;border-radius:4px;font-weight:600">低於業界 1.5%</span>
               </div>
@@ -1555,8 +1555,8 @@ function c(key, a=1) {
     blue:   `rgba(124,58,237,${a})`,
     teal:   `rgba(5,150,105,${a})`,
     orange: `rgba(217,119,6,${a})`,
-    purple: `rgba(147,51,234,${a})`,
-    red:    `rgba(220,38,38,${a})`,
+    purple: `rgba(114,71,143,${a})`,
+    red:    `rgba(226,23,32,${a})`,
     gray:   `rgba(107,114,128,${a})`
   };
   return m[key];

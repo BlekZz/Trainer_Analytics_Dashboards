@@ -650,7 +650,7 @@ plugins: {
 **做法：**
 - audit PAL-01／PAL-02 用 OKLab×100＋Machado 2009 色盲模擬（protan／deutan 取較小者），比全部色對；CIEDE2000 只在 `AUDIT_PAL_VERBOSE=1` 時列為參考。
 - 換量度前，先拿既有紀錄的「修正前／修正後」數值重算一次，確認新量度仍能把兩組分開。
-- 網紅 blue/purple 目前列豁免、**待人工確認**是否同圖出現；若同圖出現屬實際缺陷。
+- 網紅 blue/purple（及其餘 6 份的非相鄰撞色）原列豁免；2026-11-01 Sprint_palette_system M2 已用 D.11 產生器換色，PAL 豁免全數移除（各份舊→新值見 `Skill/ARCHIVE.md`「配色修正」行）。
 
 來源：`dev/Sprint_end_skill_hardening.md` M2 偏離紀錄（2.7）；`Skill/ARCHIVE.md` 配色驗證紀錄。
 
