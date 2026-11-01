@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>__TODO:產業與分析主題，依檔名格式__ 訓練儀表板</title>
+  <title>數位廣告投放_ROAS與AB測試分析_訓練儀表板教材</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
@@ -349,6 +349,13 @@
     .findings-section.collapsed .findings-label { margin-bottom: 0; }
     .findings-section.collapsed .findings-label::after { transform: rotate(180deg); }
     .findings-section.collapsed > *:not(.findings-label) { display: none; }
+    /* ── 知識領域 chip（第 9 份新教學元素；只用既有 token＋color-mix，不新增色碼） ── */
+    .domain-chip { display: inline-flex; align-items: center; gap: 3px; flex-shrink: 0; align-self: flex-start; white-space: nowrap; border-radius: 10px; padding: 1px 8px; font-size: 0.67rem; font-weight: 600; margin-top: 1px; border: 1px solid transparent; }
+    .domain-chip.d-data { color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); border-color: color-mix(in srgb, var(--accent) 38%, transparent); }
+    .domain-chip.d-mkt { color: var(--purple); background: color-mix(in srgb, var(--purple) 12%, transparent); border-color: color-mix(in srgb, var(--purple) 42%, transparent); }
+    .domain-chip.d-ind { color: var(--accent2); background: color-mix(in srgb, var(--accent2) 10%, transparent); border-color: color-mix(in srgb, var(--accent2) 38%, transparent); }
+    .legend-domain { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .legend-domain .domain-chip { margin-top: 0; }
 </style>
 </head>
 <body>
@@ -356,13 +363,13 @@
 <header class="site-header" id="top-header">
   <!-- Row 1: 文件命名式標題 + 資訊 chips -->
   <div class="header-row-1">
-    <span class="header-title">__TODO:產業與分析主題，依檔名格式__ 訓練儀表板</span>
-    <span class="meta-chip">📅 資料期間：__TODO:YYYY/MM/DD__ – __TODO:YYYY/MM/DD__</span>
-    <span class="meta-chip">📊 資料範圍：__TODO:資料說明__</span>
+    <span class="header-title">數位廣告投放_ROAS與AB測試分析_訓練儀表板</span>
+    <span class="meta-chip">📅 資料期間：2025/01/01 – 2025/12/31</span>
+    <span class="meta-chip">📊 資料範圍：DTC 保養品牌「澄研」× <span data-v="nCh"></span> 投放通路 × 花費 NT$<span data-v="spend"></span> 萬 × 後台訂單 <span data-v="orders"></span> 筆</span>
     <span class="meta-chip demo">⚗️ DEMO 合成資料集</span>
     <span style="flex:1"></span>
     <span class="meta-chip">✏️ 製作者：Blake</span>
-    <span class="meta-chip">🗓️ 製作時間：YYYYMMDD</span>
+    <span class="meta-chip">🗓️ 製作時間：20261101</span>
   </div>
   <!-- Row 2: 指標定義 toggle + 分頁 tabs -->
   <div class="header-row-2">
@@ -372,9 +379,10 @@
       <span class="def-toggle-arrow">›</span>
     </button>
     <div class="nav-tabs">
-      <div class="nav-tab active" id="tab-ops" onclick="switchPage('ops')">📊 門市業績概覽</div>
-      <div class="nav-tab" id="tab-cust" onclick="switchPage('cust')">👤 顧客行為分析</div>
-      <div class="nav-tab" id="tab-deep" onclick="switchPage('deep')">🔗 跨維度深度分析</div>
+      <div class="nav-tab active" id="tab-ovw" onclick="switchPage('ovw')">💰 投放總覽</div>
+      <div class="nav-tab" id="tab-attr" onclick="switchPage('attr')">🔀 歸因口徑</div>
+      <div class="nav-tab" id="tab-ab" onclick="switchPage('ab')">🧪 A/B 測試</div>
+      <div class="nav-tab" id="tab-budget" onclick="switchPage('budget')">🎯 預算決策</div>
     </div>
   </div>
   <!-- Row 3: 色彩語意 + 難度 + F/I/A -->
@@ -395,6 +403,8 @@
       <span><span class="tag-f">F</span> 事實</span>
       <span><span class="tag-i">I</span> 推論</span>
       <span><span class="tag-a">A</span> 假設</span>
+      <span class="legend-vdivider"></span>
+      <span class="legend-domain">題目所需知識：<span class="domain-chip d-data">📊 數據分析</span><span class="domain-chip d-mkt">📣 行銷專業</span><span class="domain-chip d-ind">🏭 產業知識</span></span>
     </div>
   </div>
 </header>
@@ -408,705 +418,315 @@
       </div>
       <div class="def-no-result" id="defNoResult">沒有符合的指標</div>
   <div class="def-item">
-    <h4>年度總來客（人次）</h4>
-    <p>全年__TODO:門市數__門市 POS 系統累計消費人次，同一顧客每次消費記1人次，不去重。</p>
+    <h4>總花費</h4>
+    <p>6 個投放通路（Meta 開發、Meta 再行銷、Google 搜尋、Google PMax、YouTube、LINE）廣告後台的實際扣款合計，<span data-v="year"></span> 全年 NT$<span data-v="spend"></span> 萬。不含代理商服務費與素材製作費。</p>
   </div>
   <div class="def-item">
-    <h4>平均客單價（AOV）</h4>
-    <p>年度總業績（NT$） ÷ 年度總來客人次。驗算：__TODO:年度總業績 ÷ 年度總來客 = AOV（代入 DATA.anchors）__。</p>
+    <h4>後台營收／後台訂單</h4>
+    <p>品牌官網訂單系統（後台）記錄的實際訂單，每筆只算一次（去重）：全年 <span data-v="orders"></span> 筆、NT$<span data-v="rev"></span> 萬。每筆訂單依站內 UTM 的最終點擊來源歸給一個通路。</p>
   </div>
   <div class="def-item">
-    <h4>外帶佔比</h4>
-    <p>當月外帶人次 ÷ 當月總人次。外帶包含櫃檯自取，不含外送平台訂單（口徑說明：本儀表板未拆分外送vs自取，詳見設計選擇）。</p>
+    <h4>ROAS（Return on Ad Spend／廣告投資報酬率）</h4>
+    <p>營收 ÷ 廣告花費。只算營收、不扣商品成本與退貨，所以 ROAS 高不等於賺錢。分子用哪一種營收（後台或平台自報），決定了它是哪一種 ROAS。</p>
   </div>
   <div class="def-item">
-    <h4>月均門市業績</h4>
-    <p>年度總業績 ÷ 門市數 ÷ 12個月 = __TODO:月均門市業績驗算式__。反映單店月平均業績水準，不代表任何單一門市。</p>
+    <h4>混合 ROAS</h4>
+    <p>後台營收 ÷ 總花費 ＝ <span data-v="rev"></span> 萬 ÷ <span data-v="spend"></span> 萬 ≈ <span data-v="roas"></span>。不分通路、不依賴任何平台的歸因。業界常見替代名稱：MER（Marketing Efficiency Ratio，行銷效率比）。</p>
   </div>
   <div class="def-item">
-    <h4>30日回購率</h4>
-    <p>本月有消費的顧客中，在後續30天內再次消費的比例。口徑：首次消費後的滾動30天窗口，非自然月。</p>
+    <h4>平台自報 ROAS</h4>
+    <p>各廣告平台（Meta 廣告管理員、Google Ads、LINE 廣告後台）以自己的歸因窗口回報的轉換營收 ÷ 該通路花費（例：Meta 預設「點擊後 7 天內或看過後 1 天內」購買都算）。口徑與後台營收不同，不能直接加總，也不能和混合 ROAS 直接比。</p>
   </div>
   <div class="def-item">
-    <h4>高頻顧客貢獻率</h4>
-    <p>年消費12次以上顧客（含VIP）的總消費額 ÷ 全體顧客總消費額。高頻門檻：年≥12次（月均≥1次）。</p>
+    <h4>新客 CPA（Cost per Acquisition／取得成本）</h4>
+    <p>本儀表板定義：總花費 ÷ 首購新客數 ＝ <span data-v="spend"></span> 萬 ÷ <span data-v="newc"></span> 人 ≈ NT$<span data-v="cpa"></span>。分子含再行銷等以舊客為主的花費，是「混合口徑」。業界常見替代定義：只用開發型花費 ÷ 新客數。</p>
   </div>
   <div class="def-item">
-    <h4>VIP顧客</h4>
-    <p>年消費≥12次（月均≥1次）的顧客，共__TODO:VIP 人數__人（佔__TODO:VIP 佔比__）。其中年24次以上頂級VIP __TODO:頂級 VIP 人數與佔比__。注意：VIP AOV低於常客（習慣性消費行為），但年度LTV遠高於常客。</p>
+    <h4>AOV（Average Order Value／平均客單價）</h4>
+    <p>後台營收 ÷ 後台訂單 ＝ NT$<span data-v="aov"></span>。</p>
   </div>
   <div class="def-item">
-    <h4>品類集中度 HHI</h4>
-    <p>Herfindahl-Hirschman Index（赫芬達爾–赫希曼指數），衡量業績集中程度。計算公式：各類別佔比（以 % 計）的平方和，滿分 10,000。本儀表板以三大品類計算：<strong>__TODO:HHI 驗算式與結果__</strong>（≥2,500為高度集中；10,000為完全壟斷）。品類層級HHI反映套餐組合高度主導業績，任一品類供應異常均有顯著衝擊。</p>
+    <h4>CPM（Cost per Mille／每千次曝光成本）</h4>
+    <p>競價型廣告每 1,000 次曝光的花費，是廣告「進貨價」。檔期（尤其 Q4 雙 11、黑色星期五、聖誕節）多品牌同時加碼，CPM 通常上升。</p>
   </div>
   <div class="def-item">
-    <h4>YoY（Year-over-Year / 年比）</h4>
-    <p>本期數字相比去年同期的變化幅度。計算公式：(本期 − 前期) ÷ 前期 × 100%。例：__TODO:以本份 KPI 代入的 YoY 驗算式__。</p>
+    <h4>開發 vs 再行銷（Prospecting vs Retargeting）</h4>
+    <p>開發：對還沒接觸過品牌的受眾投放，目的是找新客。再行銷：對來過官網、加入購物車未結帳、或互動過品牌內容的人再次投放，購買意願本來就較高。</p>
   </div>
   <div class="def-item">
-    <h4>pp（Percentage Points / 百分點）</h4>
-    <p>兩個百分比數值的「差值」單位，有別於「%的%」。例：__TODO:以本份某個佔比指標的前後兩期代入，算出 pp 差__（不是 %）。當比較兩個百分比時，應說「上升 X pp」而非「上升 X%」。</p>
+    <h4>ATT（App Tracking Transparency／App 追蹤透明度）</h4>
+    <p>Apple 自 iOS 14.5 起要求 App 須經使用者同意才能跨 App 追蹤。多數使用者選擇拒絕，使 Meta 等平台追蹤得到的轉換變少、再行銷名單變小，平台歸因訊號流失。</p>
   </div>
   <div class="def-item">
-    <h4>LTV（Lifetime Value / 顧客終身價值）</h4>
-    <p>估算一位顧客在整個關係期間為企業帶來的總消費金額。常見估算公式：年均消費次數 × AOV × 年數。本儀表板中的LTV均為說明原理用的估算值（年均頻次非原始資料），非確定計算結果，對應答案均標註 [A]（假設）。</p>
+    <h4>PMax（Google Performance Max）</h4>
+    <p>Google 的自動化廣告活動：一個活動同時投放搜尋、YouTube、多媒體廣告聯播網、Gmail 等版位，由演算法分配預算與版位。</p>
   </div>
   <div class="def-item">
-    <h4>ROI（Return on Investment / 投資報酬率）</h4>
-    <p>衡量投入資源（資金、時間、人力）所獲得的回報比例。公式：(淨收益 − 投入成本) ÷ 投入成本 × 100%。儀表板中「ROI很低」的陳述為定性判斷，指改善效益相對投入成本偏低的情境。</p>
+    <h4>UTM 參數</h4>
+    <p>加在廣告連結後面的追蹤參數（如 utm_source、utm_campaign），讓官網後台辨識訂單來自哪個通路與活動。</p>
   </div>
   <div class="def-item">
-    <h4>KPI（Key Performance Indicators / 關鍵業績指標）</h4>
-    <p>衡量核心業務目標達成程度的量化指標。本儀表板的KPI卡位於每頁頂部，呈現當期數值、YoY變化與前年基準，是進入圖表分析前的「快速定位」工具，而非最終結論。</p>
+    <h4>DTC（Direct-to-Consumer／品牌直營電商）</h4>
+    <p>品牌透過自營官網直接賣給消費者，不經百貨或電商平台通路商；能拿到完整的顧客與訂單資料，但流量要靠自己買。</p>
+  </div>
+  <div class="def-item">
+    <h4>KPI（Key Performance Indicators／關鍵績效指標）</h4>
+    <p>衡量核心目標達成程度的量化指標。本儀表板的 KPI 卡位於每頁頂部，是進入圖表分析前的「快速定位」，而非最終結論——每張卡都值得先問「它的分子分母是什麼」。</p>
   </div>
   <div class="def-item">
     <h4>F / I / A 答案標籤系統</h4>
     <p>本儀表板所有題目答案使用三色標記，訓練分析者區分認知層次：<br>
     <strong style="color:var(--accent2)">F（Fact 事實）</strong>：可直接從圖表讀取的數字或模式，不需推論。<br>
     <strong style="color:var(--accent)">I（Inference 推論）</strong>：基於事實的合理解釋或趨勢判斷，需要邏輯連結。<br>
-    <strong style="color:var(--warn)">A（Assumption 假設）</strong>：需要補充資料才能驗證的行動建議，或使用了儀表板未呈現的假設數字。</p>
+    <strong style="color:var(--warn)">A（Assumption 假設）</strong>：需要補充資料才能驗證的行動建議，或使用了儀表板未呈現的假設。</p>
+  </div>
+  <div class="def-item">
+    <h4>知識領域 chip</h4>
+    <p>每題題目列右側標出回答這題主要需要的知識：<br>
+    <span class="domain-chip d-data">📊 數據分析</span> 計算、口徑、統計判讀；<br>
+    <span class="domain-chip d-mkt">📣 行銷專業</span> 投放機制、歸因、受眾與競價；<br>
+    <span class="domain-chip d-ind">🏭 產業知識</span> 保養品 DTC 的檔期、回購週期、成本結構與法規。<br>
+    三類題目數量相同，用來檢查自己哪一類最弱。</p>
   </div>
     </div><!-- def-panel-inner -->
   </div><!-- def-panel-outer -->
   <div id="content-area">
 
 <!-- ══════════════════════════════════════════
-     P1: 門市業績概覽
+     P1: 投放總覽（ovw）— 錢花在哪、帶回多少
 ══════════════════════════════════════════ -->
-<div id="page-ops" class="page active">
+<div id="page-ovw" class="page active">
 
-  <div class="section-title">關鍵業績指標 KPI</div>
+  <div class="section-title">全年投放 KPI</div>
   <div class="kpi-grid">
     <div class="kpi-card" style="--kpi-color:var(--accent)">
-      <div class="kpi-label">__TODO:KPI 指標一__</div>
-      <div class="kpi-value">__TODO:數值__</div>
-      <div class="kpi-sub"><span class="kpi-up">▲ +__TODO:X.X__% YoY</span> <span class="kpi-neutral">vs __TODO:前期值__</span></div>
+      <div class="kpi-label">總花費（6 通路）</div>
+      <div class="kpi-value">NT$<span data-v="spend"></span> 萬</div>
+      <div class="kpi-sub"><span class="kpi-neutral"><span data-v="year"></span> 全年｜Meta、Google、YouTube、LINE 廣告後台扣款</span></div>
     </div>
     <div class="kpi-card" style="--kpi-color:var(--accent2)">
-      <div class="kpi-label">__TODO:KPI 指標二__</div>
-      <div class="kpi-value">__TODO:數值__</div>
-      <div class="kpi-sub"><span class="kpi-up">▲ +__TODO:X.X__% YoY</span> <span class="kpi-neutral">vs __TODO:前期值__</span></div>
+      <div class="kpi-label">後台營收</div>
+      <div class="kpi-value">NT$<span data-v="rev"></span> 萬</div>
+      <div class="kpi-sub"><span class="kpi-neutral">後台訂單 <span data-v="orders"></span> 筆｜AOV NT$<span data-v="aov"></span></span></div>
     </div>
     <div class="kpi-card" style="--kpi-color:var(--warn)">
-      <div class="kpi-label">__TODO:KPI 指標三__</div>
-      <div class="kpi-value">__TODO:數值__</div>
-      <div class="kpi-sub"><span class="kpi-up">▲ +__TODO:X.X__pp YoY</span> <span class="kpi-neutral">vs __TODO:前期值__</span></div>
+      <div class="kpi-label">混合 ROAS</div>
+      <div class="kpi-value"><span data-v="roas"></span></div>
+      <div class="kpi-sub"><span class="kpi-neutral">＝後台營收 ÷ 總花費</span></div>
     </div>
     <div class="kpi-card" style="--kpi-color:var(--purple)">
-      <div class="kpi-label">__TODO:KPI 指標四__</div>
-      <div class="kpi-value">__TODO:數值__</div>
-      <div class="kpi-sub"><span class="kpi-up">▲ +__TODO:X.X__% YoY</span> <span class="kpi-neutral">vs __TODO:前期值__</span></div>
+      <div class="kpi-label">新客 CPA</div>
+      <div class="kpi-value">NT$<span data-v="cpa"></span></div>
+      <div class="kpi-sub"><span class="kpi-neutral">＝總花費 ÷ 首購新客 <span data-v="newc"></span> 人</span></div>
     </div>
   </div>
 
-  <div class="section-title">月度來客趨勢 × 客單價</div>
-  <div class="chart-card" id="card-cVisitAOV">
-    <div class="chart-card-title">__TODO:洞見式標題，例：Q4 來客明顯走高，2 月春節最低__（人次｜__TODO:資料期間__）</div>
-    <div class="chart-block h300"><canvas id="cVisitAOV"></canvas></div>
-    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>圖表解讀：</strong>藍柱 = 月度來客人次。旺季集中於 __TODO:旺季月份與幅度__；__TODO:客單價區間__，據此判讀業績成長由來客或提價驅動。__TODO:最低月份與原因__。</div></div>
-  </div>
-
-  <div class="chart-grid chart-grid-2" style="margin-top:18px">
-    <div class="chart-card" id="card-cDineTakeout">
-      <div class="chart-card-title">內用 vs 外帶比例（月）</div>
-      <div class="chart-block h260"><canvas id="cDineTakeout"></canvas></div>
-      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>趨勢：</strong>外帶佔比從 __TODO:首月佔比__ 上升至 __TODO:末月佔比__，全年均值 __TODO:全年均值__。外帶佔比上升不等同內用絕對人次下降。</div></div>
+  <div class="section-title">月度投入與產出</div>
+  <div class="chart-grid chart-grid-2">
+    <div class="chart-card" id="card-cSpendM">
+      <div class="chart-card-title">月度廣告花費（萬｜<span data-v="year"></span>）</div>
+      <div class="chart-block h280"><canvas id="cSpendM"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>節律：</strong>全年月花費平均約 <span data-v="spAvg"></span> 萬；高於平均的月份是 <span data-v="spPeaks"></span>。最高 <span data-v="spMaxM"></span>（<span data-v="spMax"></span> 萬）是最低 <span data-v="spMinM"></span>（<span data-v="spMin"></span> 萬）的 <span data-v="spRatio"></span> 倍；10–12 月三個月占全年花費 <span data-v="q4SpPct"></span>%。</div></div>
     </div>
-    <div class="chart-card" id="card-cRevCat">
-      <div class="chart-card-title">月度品類業績結構（万NT$）</div>
-      <div class="chart-block h260"><canvas id="cRevCat"></canvas></div>
-      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>品類佔比：</strong>__TODO:各品類年度業績與佔比（由 DATA.monthly_category 加總）__。紅虛線為月度總業績趨勢。</div></div>
+    <div class="chart-card" id="card-cRevM">
+      <div class="chart-card-title">月度後台營收（萬｜官網訂單去重）</div>
+      <div class="chart-block h280"><canvas id="cRevM"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>形狀：</strong>營收的高低月與花費圖大致同步；10–12 月占全年後台營收 <span data-v="q4RvPct"></span>%。<strong>口徑：</strong>這是官網後台的實際訂單營收（每筆只算一次），不是各廣告平台回報的數字。</div></div>
     </div>
   </div>
 
-  <div class="section-title">門市年度業績排行</div>
-  <div class="chart-card" id="card-cStoreRank">
-    <div class="chart-card-title">門市年度業績（万NT$，降序）— __TODO:門市數__門市</div>
-    <div class="chart-block h520"><canvas id="cStoreRank"></canvas></div>
-    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>差距：</strong>__TODO:最高 vs 最低門市與倍數__。__TODO:前段／後段門市的業績門檻__。門市業績受選址、商圈客流量高度影響。</div></div>
+  <div class="section-title">通路配置與平台回報</div>
+  <div class="chart-grid chart-grid-2">
+    <div class="chart-card" id="card-cSpendMix">
+      <div class="chart-card-title">通路花費占比（全年）</div>
+      <div class="chart-block h300"><canvas id="cSpendMix"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>集中度：</strong>Meta 兩條線（開發＋再行銷）合計 <span data-v="metaPct"></span>%；前兩大通路 <span data-v="top2"></span> 合計 <span data-v="top2Pct"></span>%。中心數字＝全年總花費。</div></div>
+    </div>
+    <div class="chart-card" id="card-cPlatRoas">
+      <div class="chart-card-title">各通路平台自報 ROAS（降序｜虛線＝混合 ROAS）</div>
+      <div class="chart-block h300"><canvas id="cPlatRoas"></canvas></div>
+      <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>讀法：</strong>每條長條＝該平台後台回報的轉換營收 ÷ 該通路花費（滑過長條可看兩個數字）。最高 <span data-v="prTopN"></span> <span data-v="prTop"></span>，最低 <span data-v="prBotN"></span> <span data-v="prBot"></span>；<span data-v="nCh"></span> 個通路中有 <span data-v="prAbove"></span> 個落在虛線右側。</div></div>
+    </div>
+  </div>
+
+  <div class="section-title">新客取得成本</div>
+  <div class="chart-card" id="card-cCpaM">
+    <div class="chart-card-title">月度新客 CPA（NT$｜虛線＝全年值）</div>
+    <div class="chart-block h280"><canvas id="cCpaM"></canvas></div>
+    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>走勢：</strong>1–9 月新客 CPA 落在 NT$<span data-v="cpaLo"></span>–<span data-v="cpaHi"></span>；<span data-v="novM"></span> NT$<span data-v="cpaNov"></span>、<span data-v="decM"></span> NT$<span data-v="cpaDec"></span>，<span data-v="decM"></span>比全年值 NT$<span data-v="cpa"></span> 高 <span data-v="cpaDecVs"></span>%。全年值是「整年花費 ÷ 整年新客」，不是 12 個月 CPA 的簡單平均。</div></div>
   </div>
 
   <hr class="section-divider">
-  <div class="section-title">訓練題組 — 門市業績</div>
+  <div class="section-title">訓練題組 — 投放總覽</div>
   <div class="qa-section">
 
     <!-- Q1 -->
-    <div class="qa-item">
+    <div class="qa-item" data-domain="ind">
       <div class="question" onclick="toggleQA(this)">
-        <span class="badge l1">L1·F</span>
-        <span class="question-text">Q1：去年全年總來客達到多少？與前年相比的成長幅度？</span>
+        <span class="badge l1">L1·I</span>
+        <span class="question-text">Q1：月度花費圖上有哪些高峰月？以台灣保養品電商的行銷行事曆，這些高峰各對應什麼檔期？最低的月份又為什麼低？</span>
+        <span class="domain-chip d-ind">🏭 產業知識</span>
         <span class="question-arrow">▶</span>
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> 從<span class="ev">月度來客人次</span>，全年總來客 <strong>__TODO:總來客__ 人次</strong>，YoY <strong>__TODO:YoY__</strong>（前年 __TODO:前年來客__ 人次）。</p>
-          <p>圖表來源：月度來客趨勢柱狀圖，各月加總即為年度數字。計算驗證：__TODO:本年 ÷ 前年 − 1 的驗算式__。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">月度廣告花費</span>，高於月平均（約 <span data-v="spAvg"></span> 萬）的月份是 <span data-v="spPeaks"></span>；最高 <span data-v="spMaxM"></span> <span data-v="spMax"></span> 萬，最低 <span data-v="spMinM"></span> <span data-v="spMin"></span> 萬，相差 <span data-v="spRatio"></span> 倍。</p>
+          <p><span class="tag-i">I:</span> 高峰對應台灣保養品 DTC 的固定檔期：5 月母親節禮盒、6 月 618 年中慶、10 月週年慶（百貨週年慶帶動比價囤貨，品牌官網會同步推組合價）、11 月雙 11（全年最大的電商檔期）、12 月聖誕禮盒與年終採買。保養品是「有檔期才囤貨」的品類，品牌會在檔期前預熱、檔期中加碼競價，花費自然跟著檔期走。</p>
+          <p><span class="tag-i">I:</span> 最低的 <span data-v="spMinM"></span>：春節（2025 年落在 1 月底到 2 月初）前後物流停運、消費預算移往年節，加上 2 月天數少；7–9 月沒有大檔期，也都低於平均。</p>
+          <p><span class="tag-i">I:</span> 注意花費高峰是代理商的<strong>排程決策</strong>，不是需求本身——需求有沒有同步放大，要對照營收圖才知道（見 Q3）。</p>
         </div>
-        <button class="chart-ref-btn" onclick="goToChart('ops','card-cVisitAOV')">📍 查看：月度來客趨勢</button>
+        <button class="chart-ref-btn" onclick="goToChart('ovw','card-cSpendM')">📍 查看：月度廣告花費</button>
       </div>
     </div>
 
     <!-- Q2 -->
-    <div class="qa-item">
+    <div class="qa-item" data-domain="mkt">
       <div class="question" onclick="toggleQA(this)">
-        <span class="badge l1">L1·I</span>
-        <span class="question-text">Q2：從月度來客趨勢圖，哪個季節是明顯旺季？可能的原因是什麼？</span>
+        <span class="badge l1">L1·A</span>
+        <span class="question-text">Q2：新客 CPA 在 <span data-v="q4m2"></span>明顯跳高。有人建議「明年 Q4 預算砍半，省下的錢挪到 CPA 最低的 <span data-v="cpaLoM"></span>」。你同意嗎？還要補什麼資料才能判斷？</span>
+        <span class="domain-chip d-mkt">📣 行銷專業</span>
         <span class="question-arrow">▶</span>
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> 從<span class="ev">月度來客人次</span>，__TODO:最高兩個月與人次__為全年最高，合計佔年度約 __TODO:合計佔比__。__TODO:最低月份與人次__為全年最低。</p>
-          <p><span class="tag-i">I:</span> 年末旺季可能來自三個因素——① 年終尾牙聚餐需求增加；② 節慶氛圍帶動聚餐頻率；③ 天氣轉涼促使外食意願提升。2月低點則因農曆春節期間大量顧客返鄉，商圈人流下降。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">月度新客 CPA</span>，1–9 月在 NT$<span data-v="cpaLo"></span>–<span data-v="cpaHi"></span> 之間（最低 <span data-v="cpaLoM"></span>）；<span data-v="novM"></span> NT$<span data-v="cpaNov"></span>、<span data-v="decM"></span> NT$<span data-v="cpaDec"></span>，<span data-v="decM"></span>比全年 NT$<span data-v="cpa"></span> 高 <span data-v="cpaDecVs"></span>%。</p>
+          <p><span class="tag-i">I:</span> ① Q4 是全年廣告競價最擠的季度——雙 11、黑色星期五、聖誕節各產業同時加碼，CPM（每千次曝光成本）上漲，同樣的錢買到的曝光變少，新客自然變貴。② 這裡的 CPA 分母只有新客：Q4 檔期折扣同時吸引大量舊客回購，花費裡有一部分是「讓舊客回來」的錢，卻全部攤在新客頭上，CPA 因此高估了「買到一個新客」的實際成本。</p>
+          <p><span class="tag-a">A:</span> 若 Q4 取得的新客在保養品常見的 60–90 天回購週期內回來買第二次，貴一點的 CPA 仍可能划算——這需要新客 cohort 的回購資料驗證，本頁沒有。另外，<span data-v="cpaLoM"></span> CPA 低，不代表把錢挪過去還能維持同樣水準：那個月沒有檔期需求，硬塞預算只會打到購買意願更低的人。</p>
+          <p><span class="tag-a">A:</span> 🎯 行動：① 把 Q4 花費拆成「開發（找新客）」與「再行銷／舊客」兩條，各自算成本；② 拉 Q4 新客的 90 天回購率，和其他月份取得的新客比較；③ 若要減碼，優先檢查雙 11 之後的 12 月開發預算（檔期需求已被提前消化），而不是整個 Q4 一刀砍。</p>
         </div>
-        <button class="chart-ref-btn" onclick="goToChart('ops','card-cVisitAOV')">📍 查看：月度來客趨勢</button>
+        <div class="trap-block" data-trap-stage="wrangle" data-trap="平均數陷阱">
+          <span class="trap-icon">⚠</span><span class="trap-tag">加工｜平均數陷阱</span>
+          <div><strong>常見陷阱：</strong>全年 CPA 看起來健康，是因為它把便宜的月份和昂貴的月份平均在一起——最後加碼的那幾週，每多買一個新客的成本遠高於平均。反過來，只拿 Q4 單月 CPA 就砍半，也忽略了檔期本身帶來的需求。平均值和單月值都要回到「多花這一筆，換到什麼」的邊際思考。</div>
+        </div>
+        <button class="chart-ref-btn" onclick="goToChart('ovw','card-cCpaM')">📍 查看：月度新客 CPA</button>
       </div>
     </div>
 
     <!-- Q3 -->
-    <div class="qa-item">
+    <div class="qa-item" data-domain="data">
       <div class="question" onclick="toggleQA(this)">
-        <span class="badge l1">L1·F</span>
-        <span class="question-text">Q3：__TODO:門市數__間門市中，業績最高與最低的門市分別是哪兩間？差距多少倍？</span>
+        <span class="badge l2">L2·F</span>
+        <span class="question-text">Q3：對照月度花費與月度後台營收兩張圖，哪個月「每 1 元花費帶回的後台營收」最高？哪個月最低？花最多錢的那個月排第幾？</span>
+        <span class="domain-chip d-data">📊 數據分析</span>
         <span class="question-arrow">▶</span>
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> 從<span class="ev">門市年度業績</span>，最高：<strong>__TODO:最高門市與業績__</strong>；最低：<strong>__TODO:最低門市與業績__</strong>。差距 <strong>__TODO:最高 ÷ 最低 = 倍數__</strong>。</p>
-          <p>圖表來源：門市業績排行水平柱狀圖，從上至下降序排列。</p>
+          <p><span class="tag-f">F:</span> 把<span class="ev">月度後台營收</span>除以<span class="ev">月度廣告花費</span>的同月數字（＝當月混合 ROAS）：最高 <span data-v="rMaxM"></span>，<span data-v="rMaxCalc"></span> ≈ <span data-v="rMax"></span>；最低 <span data-v="rMinM"></span>，<span data-v="rMinCalc"></span> ≈ <span data-v="rMin"></span>。</p>
+          <p><span class="tag-f">F:</span> 花費最高的 <span data-v="spMaxM"></span>：<span data-v="rSpCalc"></span> ≈ <span data-v="rSp"></span>，在 12 個月中排第 <span data-v="rSpRank"></span>。10–12 月占全年花費 <span data-v="q4SpPct"></span>%、占全年後台營收 <span data-v="q4RvPct"></span>%。</p>
         </div>
-        <button class="chart-ref-btn" onclick="goToChart('ops','card-cStoreRank')">📍 查看：門市業績排行</button>
+        <button class="chart-ref-btn" onclick="goToChart('ovw','card-cSpendM')">📍 查看：月度廣告花費</button>
+        <button class="chart-ref-btn" onclick="goToChart('ovw','card-cRevM')">📍 查看：月度後台營收</button>
       </div>
     </div>
 
     <!-- Q4 -->
-    <div class="qa-item">
+    <div class="qa-item" data-domain="data">
       <div class="question" onclick="toggleQA(this)">
         <span class="badge l2">L2·I</span>
-        <span class="question-text">Q4：外帶比例全年持續上升，代表內用市場正在萎縮嗎？</span>
+        <span class="question-text">Q4：KPI 卡的混合 ROAS 是 <span data-v="roas"></span>，但「各通路平台自報 ROAS」圖裡 <span data-v="nCh"></span> 個通路有 <span data-v="prAbove"></span> 個比它高。每個部分都比整體好，數學上說得通嗎？差距從哪裡來？</span>
+        <span class="domain-chip d-data">📊 數據分析</span>
         <span class="question-arrow">▶</span>
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> 從<span class="ev">內用 vs 外帶比例</span>，外帶佔比從 __TODO:首月佔比__ 升至 __TODO:末月佔比__，全年均值 __TODO:全年均值__，上升 __TODO:pp 差__ 個百分點。</p>
-          <p><span class="tag-i">I:</span> 外帶比例上升反映外帶偏好增加，<strong>但不等同於內用絕對人次下降</strong>。若同期總來客人次也在成長（__TODO:總來客 YoY__），則內用絕對人次可能仍維持或小幅成長，只是成長速度慢於外帶。</p>
-          <p>交叉驗證：需同時看總來客趨勢（月度趨勢圖）與外帶佔比趨勢（本圖）才能下定論。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">各通路平台自報 ROAS</span>：<span data-v="prList"></span>，只有 <span data-v="prBotN"></span> 低於<span class="ev">KPI：混合 ROAS</span> <span data-v="roas"></span>。滑過長條讀出各平台自報營收，<span data-v="nCh"></span> 個加總 <span data-v="platRev"></span> 萬，是<span class="ev">KPI：後台營收</span> <span data-v="rev"></span> 萬的 <span data-v="overclaim"></span> 倍。</p>
+          <p><span class="tag-i">I:</span> 如果各平台分的是<strong>同一份</strong>營收，各通路 ROAS 一定有高有低，用花費加權平均回去會剛好等於 <span data-v="roas"></span>。實際加權回去是 <span data-v="platRev"></span> ÷ <span data-v="spend"></span> ≈ <span data-v="platRoas"></span>，代表平台加總的營收比後台真實營收多——同一筆訂單被好幾個平台同時認領：消費者先看到 Meta 廣告（Meta 算「看過後 1 天內購買」）、隔天搜尋品牌名點了 Google 廣告下單，兩個平台各記一筆。每個平台只看得到自己的觸點，也各用各的歸因窗口。</p>
+          <p><span class="tag-i">I:</span> 這不是資料錯誤，是<strong>口徑不同</strong>：平台自報適合在同一平台內比較素材與受眾，不能跨平台加總，也不能直接拿來和後台營收比。哪個通路被高估最多，要等「歸因口徑」頁把後台訂單攤開才知道。</p>
         </div>
-        <div class="trap-block" data-trap-stage="wrangle" data-trap="量級錯置">
-          <span class="trap-icon">⚠</span><span class="trap-tag">加工｜量級錯置</span>
-          <div><strong>常見陷阱：</strong>比例上升 ≠ 絕對量下降。看到「外帶佔比上升」就直接推論「內用在萎縮」是比例vs.絕對量的基本混淆，需要同時對照總量圖表才能做出正確判斷。</div>
-        </div>
-        <button class="chart-ref-btn" onclick="goToChart('ops','card-cDineTakeout')">📍 查看：內用 vs 外帶比例</button>
+        <button class="chart-ref-btn" onclick="goToChart('ovw','card-cPlatRoas')">📍 查看：各通路平台自報 ROAS</button>
       </div>
     </div>
 
     <!-- Q5 -->
-    <div class="qa-item">
-      <div class="question" onclick="toggleQA(this)">
-        <span class="badge l1">L1·I</span>
-        <span class="question-text">Q5：從品項組成看，哪個品類佔比最高？對毛利率有何潛在含義？</span>
-        <span class="question-arrow">▶</span>
-      </div>
-      <div class="answer">
-        <div class="answer-block">
-          <p><span class="tag-f">F:</span> 從<span class="ev">月度品類業績結構</span>，__TODO:各品類年度業績與佔比__。三類合計 __TODO:總業績__。</p>
-          <p><span class="tag-i">I:</span> 套餐組合佔比最高，且套餐通常具有較高的綁定性（主餐＋飲料組合定價）。理論上套餐可提升整體客單價，同時利用定量食材控制備料成本，對毛利率有正向潛力——但實際效果需對照成本結構，此儀表板未揭露成本數據。</p>
-        </div>
-        <button class="chart-ref-btn" onclick="goToChart('ops','card-cRevCat')">📍 查看：月度品類業績結構</button>
-      </div>
-    </div>
-
-    <!-- Q6 -->
-    <div class="qa-item">
+    <div class="qa-item" data-domain="mkt">
       <div class="question" onclick="toggleQA(this)">
         <span class="badge l2">L2·A</span>
-        <span class="question-text">Q6：如果要提升整體業績，你優先建議改善哪類門市：高業績門市，還是低業績門市？</span>
+        <span class="question-text">Q5：主管提議：「Meta 再行銷自報 ROAS 最高、YouTube 最低，把 YouTube 的預算全部移給再行銷。」你會怎麼回應？</span>
+        <span class="domain-chip d-mkt">📣 行銷專業</span>
         <span class="question-arrow">▶</span>
       </div>
       <div class="answer">
         <div class="answer-block">
-          <p><span class="tag-f">F:</span> 從<span class="ev">門市年度業績</span>，前5名門市年業績均超 __TODO:前段門檻__（__TODO:第一名門市與業績__），後5名均低於 __TODO:後段門檻__（__TODO:最後一名門市與業績__）。</p>
-          <p><span class="tag-i">I:</span> 高業績門市已有成熟客群和位置紅利，邊際改善空間受限；低業績門市可能有兩種情況：A) 選址問題（外部因素，難以改變）；B) 運營效率問題（內部因素，有改善空間）。</p>
-          <p><span class="tag-a">A:</span> 建議 <strong>先診斷低業績原因</strong>，再決策資源分配——若是選址導致的低流量，投入改善的ROI很低；若是菜單、服務、效率問題，則有高槓桿改善機會。不應不加區分地「優先改善低業績門市」。</p>
+          <p><span class="tag-f">F:</span> 從<span class="ev">通路花費占比</span>，Meta 再行銷占 <span data-v="rtPct"></span>%（<span data-v="rtSp"></span> 萬）、YouTube 占 <span data-v="ytPct"></span>%（<span data-v="ytSp"></span> 萬）；從<span class="ev">各通路平台自報 ROAS</span>，再行銷 <span data-v="rtRoas"></span>、YouTube <span data-v="ytRoas"></span>。</p>
+          <p><span class="tag-i">I:</span> 再行銷的受眾是「來過官網、加過購物車、互動過品牌內容」的人——本來購買意願就高，就算沒看到廣告，也有一部分會自己回來買。平台把「看過或點過廣告之後下單」都算成廣告的功勞，所以再行銷的自報 ROAS 天生偏高。</p>
+          <p><span class="tag-i">I:</span> YouTube 是上漏斗通路：影片讓還不認識品牌的人第一次接觸，這些人之後多半透過品牌字搜尋或再行銷廣告才下單，功勞被下游通路領走，所以 YouTube 自報 ROAS 偏低。兩者是上下游關係，不是二選一。</p>
+          <p><span class="tag-a">A:</span> 再行銷名單要靠上游流量持續補充；YouTube 歸零後，再行銷受眾池可能在幾週內縮小，再行銷 ROAS 跟著下滑——本頁沒有受眾池規模資料，這是待驗證的假設。另外，iOS 的 ATT（App 追蹤透明度）讓 Meta 能追蹤到的網站訪客變少，再行銷名單本來就比以前小，再加預算容易對同一批人重複曝光、頻次過高。</p>
+          <p><span class="tag-a">A:</span> 🎯 行動：① 先看「歸因口徑」頁的後台去重 ROAS，確認自報與後台的落差有多大；② 想知道再行銷「真正多帶來」多少營收，做地理 holdout（部分地區暫停再行銷、比較兩區營收）——「預算決策」頁有這個實驗；③ 同時監控再行銷受眾池人數與平均頻次。</p>
         </div>
-        <div class="trap-block" data-trap-stage="read" data-trap="過度推論">
-          <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜過度推論</span>
-          <div><strong>常見陷阱：</strong>直覺上「低業績門市最需要幫助」聽起來合理，但選址差的門市即使大幅改善運營，也難以追趕商圈客流先天不足的劣勢。診斷原因先於資源投入，是分析師vs.直覺決策者的核心差距。</div>
+        <div class="trap-block" data-trap-stage="read" data-trap="相關≠因果">
+          <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜相關≠因果</span>
+          <div><strong>常見陷阱：</strong>「看過再行銷廣告的人購買率很高」不等於「再行銷廣告讓他們購買」——這群人是因為本來就想買，才會進入再行銷名單，因果方向剛好相反。用歸因 ROAS 分配預算，會把錢一路推向最會「撿現成訂單」的通路，同時餓死負責製造需求的上游。</div>
         </div>
-        <button class="chart-ref-btn" onclick="goToChart('ops','card-cStoreRank')">📍 查看：門市業績排行</button>
-      </div>
-    </div>
-
-    <!-- Q7 -->
-    <div class="qa-item">
-      <div class="question" onclick="toggleQA(this)">
-        <span class="badge l1">L1·F</span>
-        <span class="question-text">Q7：月均門市業績是多少萬元？這個數字是如何計算出來的？</span>
-        <span class="question-arrow">▶</span>
-      </div>
-      <div class="answer">
-        <div class="answer-block">
-          <p><span class="tag-f">F:</span> 從<span class="ev">月度品類業績結構</span>加總後換算，月均門市業績 <strong>__TODO:月均門市業績__</strong>。</p>
-          <p>計算公式：<code style="background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-family:var(--font-mono);font-size:0.8rem">__TODO:總業績__ ÷ __TODO:門市數__ ÷ 12月 = __TODO:結果__</code></p>
-          <p>注意：這是加權平均，實際各門市月業績差異巨大（__TODO:最高與最低門市的月均業績__）。平均值不代表「典型門市」。</p>
-        </div>
-        <button class="chart-ref-btn" onclick="goToChart('ops','card-cRevCat')">📍 查看：月度品類業績結構</button>
-      </div>
-    </div>
-
-  </div><!-- end qa-section -->
-</div><!-- end page-ops -->
-
-<!-- ══════════════════════════════════════════
-     P2: 顧客行為分析
-══════════════════════════════════════════ -->
-<div id="page-cust" class="page hidden">
-
-  <div class="section-title">顧客行為 KPI</div>
-  <div class="kpi-grid">
-    <div class="kpi-card" style="--kpi-color:var(--accent2)">
-      <div class="kpi-label">__TODO:KPI 指標五__</div>
-      <div class="kpi-value">__TODO:數值__</div>
-      <div class="kpi-sub"><span class="kpi-neutral">__TODO:補充說明__</span></div>
-    </div>
-    <div class="kpi-card" style="--kpi-color:var(--warn)">
-      <div class="kpi-label">__TODO:KPI 指標六__</div>
-      <div class="kpi-value">__TODO:數值__</div>
-      <div class="kpi-sub"><span class="kpi-neutral">__TODO:補充說明__</span></div>
-    </div>
-    <div class="kpi-card" style="--kpi-color:var(--purple)">
-      <div class="kpi-label">__TODO:KPI 指標七__</div>
-      <div class="kpi-value">__TODO:數值__</div>
-      <div class="kpi-sub"><span class="kpi-neutral">__TODO:計算說明__</span></div>
-    </div>
-    <div class="kpi-card" style="--kpi-color:var(--accent)">
-      <div class="kpi-label">__TODO:KPI 指標八__</div>
-      <div class="kpi-value">__TODO:數值__</div>
-      <div class="kpi-sub"><span class="kpi-neutral">__TODO:補充說明__</span></div>
-    </div>
-  </div>
-
-  <div class="section-title">24小時來客分布</div>
-  <div class="chart-card" id="card-cHourly">
-    <div class="chart-card-title">每小時來客指數（0–23時）</div>
-    <div class="chart-block h260"><canvas id="cHourly"></canvas></div>
-    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>雙峰型：</strong>午間高峰 __TODO:時點與指數__，晚間主高峰 __TODO:時點與指數__。__TODO:其他波峰／低谷__。排班建議：__TODO:依高峰時點推出的備料與人力配置__。</div></div>
-  </div>
-
-  <div class="chart-card" id="card-cFreqDist" style="margin-top:18px">
-    <div class="chart-card-title">顧客消費頻率分布</div>
-    <div class="chart-block h280"><canvas id="cFreqDist"></canvas></div>
-    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>分布特徵：</strong>__TODO:人數最多的頻次段、人數與佔比__，顯示大量偶發性顧客。__TODO:最高頻段與人數__雖人數少，但貢獻佔比高。</div></div>
-  </div>
-
-  <div class="chart-grid chart-grid-2" style="margin-top:18px">
-    <div class="chart-card" id="card-cTierDonut">
-      <div class="chart-card-title">顧客結構（人數）</div>
-      <div class="chart-block h240"><canvas id="cTierDonut"></canvas></div>
-    </div>
-    <div class="chart-card" id="card-cTierAOV">
-      <div class="chart-card-title">各等級平均客單價（NT$）</div>
-      <div class="chart-block h240"><canvas id="cTierAOV"></canvas></div>
-      <div class="findings-section" style="font-size:0.75rem"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong style="color:var(--warn)">逆直覺：</strong>VIP客單價(__TODO:VIP AOV__) &lt; 常客(__TODO:常客 AOV__)。原因見Q11。</div></div>
-    </div>
-  </div>
-
-  <hr class="section-divider">
-  <div class="section-title">訓練題組 — 顧客行為</div>
-  <div class="qa-section">
-
-    <!-- Q8 -->
-    <div class="qa-item">
-      <div class="question" onclick="toggleQA(this)">
-        <span class="badge l1">L1·I</span>
-        <span class="question-text">Q8：從24小時來客分布，用餐高峰集中在哪個時段？對人力排班有何意義？</span>
-        <span class="question-arrow">▶</span>
-      </div>
-      <div class="answer">
-        <div class="answer-block">
-          <p><span class="tag-f">F:</span> 從<span class="ev">每小時來客指數</span>，__TODO:最高峰時點與指數__，__TODO:次高峰時點與指數__，為雙峰型分布。__TODO:其他小波峰或過渡段__。</p>
-          <p><span class="tag-i">I:</span> 雙峰型分布對排班的含義：① 排班應在 __TODO:兩個高峰之前的時點__ 完成準備工作；② __TODO:主高峰時段__ 需配置最大人力；③ __TODO:低谷時段__ 為低谷，可安排清潔、備料、訓練；④ 若外帶佔比持續上升，高峰期的外帶打包效率也需納入排班考量。</p>
-        </div>
-        <button class="chart-ref-btn" onclick="goToChart('cust','card-cHourly')">📍 查看：24小時來客分布</button>
-      </div>
-    </div>
-
-    <!-- Q9 -->
-    <div class="qa-item">
-      <div class="question" onclick="toggleQA(this)">
-        <span class="badge l2">L2·F</span>
-        <span class="question-text">Q9：VIP顧客的人數和佔比各是多少？如何從儀表板數字驗算？</span>
-        <span class="question-arrow">▶</span>
-      </div>
-      <div class="answer">
-        <div class="answer-block">
-          <p><span class="tag-f">F:</span> 從<span class="ev">顧客結構</span>，VIP 顧客 <strong>__TODO:VIP 人數__ 人</strong>，佔全體顧客 <strong>__TODO:VIP 佔比__</strong>。</p>
-          <p>驗算：__TODO:VIP 人數 ÷ 總顧客數 × 100 = 佔比__。圖表來源：顧客結構 Donut 圖（中心文字顯示總顧客數）。</p>
-          <p>另一驗算路徑：頻率分布圖中「__TODO:高頻段人數相加的驗算式__」= VIP人數，兩圖可交叉確認。</p>
-        </div>
-        <button class="chart-ref-btn" onclick="goToChart('cust','card-cTierDonut')">📍 查看：顧客結構</button>
-      </div>
-    </div>
-
-    <!-- Q10 -->
-    <div class="qa-item">
-      <div class="question" onclick="toggleQA(this)">
-        <span class="badge l1">L1·F</span>
-        <span class="question-text">Q10：回購率（__TODO:回購率__）是如何定義的？哪個時間窗口內的回購？</span>
-        <span class="question-arrow">▶</span>
-      </div>
-      <div class="answer">
-        <div class="answer-block">
-          <p><span class="tag-f">F:</span> 對照<span class="ev">再購間隔天數分布</span>，<strong>30日回購率 __TODO:回購率__</strong>，定義為：本月有消費記錄的顧客中，在 <strong>首次消費後30天內</strong> 再次消費的比例。口徑為滾動30天窗口，而非自然月。</p>
-          <p>注意：不同公司的回購率定義差異很大——有些用「任意30天窗口」，有些用「自然月內二次消費」，口徑不同時數字無法直接比較。本儀表板指標定義面板有完整口徑說明。</p>
-        </div>
-        <button class="chart-ref-btn" onclick="goToChart('deep','card-cRepurchase')">📍 查看：再購間隔分布</button>
-      </div>
-    </div>
-
-    <!-- Q11 -->
-    <div class="qa-item">
-      <div class="question" onclick="toggleQA(this)">
-        <span class="badge l2">L2·I</span>
-        <span class="question-text">Q11：VIP顧客的平均客單價（__TODO:VIP AOV__）低於常客（__TODO:常客 AOV__），這代表VIP計畫失敗了嗎？</span>
-        <span class="question-arrow">▶</span>
-      </div>
-      <div class="answer">
-        <div class="answer-block">
-          <p><span class="tag-f">F:</span> 從<span class="ev">各等級平均客單價</span>，三等級AOV：__TODO:三個等級的 AOV__。VIP的AOV確實低於常客。</p>
-          <p><span class="tag-i">I:</span> 這是逆直覺的關鍵洞察。VIP的定義是年消費≥12次（月均≥1次），頻率遠高於常客（年4-11次）。<strong>高頻率造成「習慣性點餐」行為</strong>——每次不一定點最貴的組合，但年度總消費額（LTV）遠高於常客。</p>
-          <p><span class="tag-a">A:</span> 估算示意（年均頻次為假設值，非儀表板原始資料）：若VIP年均 __TODO:假設頻次__ 次、AOV=__TODO:VIP AOV__，則年LTV≈ __TODO:VIP LTV__；常客若年均 __TODO:假設頻次__ 次、AOV=__TODO:常客 AOV__，年LTV≈ __TODO:常客 LTV__——__TODO:兩者倍數比較__。實際頻次需從門市點單記錄計算，此處為說明原理的估算。</p>
-        </div>
-        <div class="trap-block" data-trap-stage="wrangle" data-trap="平均數陷阱">
-          <span class="trap-icon">⚠</span><span class="trap-tag">加工｜平均數陷阱</span>
-          <div><strong>常見陷阱：</strong>AOV（每次客單價）≠ LTV（全年總價值）。用單次消費金額評估顧客價值，會系統性低估高頻顧客的重要性——這是餐飲分析中最典型的單指標陷阱之一。</div>
-        </div>
-        <button class="chart-ref-btn" onclick="goToChart('cust','card-cTierAOV')">📍 查看：各等級平均客單價</button>
-      </div>
-    </div>
-
-    <!-- Q12 -->
-    <div class="qa-item">
-      <div class="question" onclick="toggleQA(this)">
-        <span class="badge l1">L1·F</span>
-        <span class="question-text">Q12：從頻率分佈圖，佔比最大的顧客群是哪個頻次段？人數多少？</span>
-        <span class="question-arrow">▶</span>
-      </div>
-      <div class="answer">
-        <div class="answer-block">
-          <p><span class="tag-f">F:</span> 從<span class="ev">顧客消費頻率分布</span>，佔比最大為 <strong>__TODO:頻次段、人數與佔比__</strong>。其次為 __TODO:第二大頻次段、人數與佔比__。</p>
-          <p>這表示 __TODO:低頻段合計人數與佔比（附驗算式）__ 屬於低頻偶發性消費，是擴大回購頻率的主要目標族群。</p>
-        </div>
-        <button class="chart-ref-btn" onclick="goToChart('cust','card-cFreqDist')">📍 查看：顧客消費頻率分布</button>
-      </div>
-    </div>
-
-    <!-- Q13 -->
-    <div class="qa-item">
-      <div class="question" onclick="toggleQA(this)">
-        <span class="badge l2">L2·A</span>
-        <span class="question-text">Q13：如果你要提升高頻顧客貢獻率（__TODO:高頻貢獻率__），你的首要行動是什麼？</span>
-        <span class="question-arrow">▶</span>
-      </div>
-      <div class="answer">
-        <div class="answer-block">
-          <p><span class="tag-f">F:</span> 從<span class="ev">顧客消費頻率分布</span>，高頻顧客（含VIP）共 __TODO:高頻人數__ 人，高頻業績 __TODO:高頻業績__ ÷ 總營收 __TODO:總營收__ = <strong>__TODO:高頻貢獻率__</strong>。中頻顧客共 __TODO:中頻人數與佔比__，為最大中間群體。</p>
-          <p><span class="tag-i">I:</span> 高頻顧客已習慣性高頻消費，維持黏性的成本較低但邊際提升空間有限；中頻顧客（年7-11次）距離12次高頻門檻僅差1-5次，轉化槓桿最高。</p>
-          <p><span class="tag-a">A:</span> 首要行動：<strong>設計「年7-11次→年12次+」的升頻方案</strong>，例如「滿10次送下次折扣」，將中頻轉高頻的槓桿效果（+__TODO:中頻人數__人×貢獻率提升）遠大於只服務現有 __TODO:VIP 人數__ 名VIP。</p>
-        </div>
-        <div class="trap-block" data-trap-stage="wrangle" data-trap="分母錯置">
-          <span class="trap-icon">⚠</span><span class="trap-tag">加工｜分母錯置</span>
-          <div><strong>常見陷阱：</strong>「提升高頻貢獻率」≠「只服務現有高頻顧客」。如果資源都投在已飽和的VIP族群，分母（總業績）增加有限；真正的槓桿在拉升中間層。</div>
-        </div>
-        <button class="chart-ref-btn" onclick="goToChart('cust','card-cFreqDist')">📍 查看：顧客消費頻率分布</button>
-      </div>
-    </div>
-
-    <!-- Q14 -->
-    <div class="qa-item">
-      <div class="question" onclick="toggleQA(this)">
-        <span class="badge l1">L1·I</span>
-        <span class="question-text">Q14：從再購間隔分布，大多數回購顧客在幾天內再訪？對行銷推播頻率有何建議？</span>
-        <span class="question-arrow">▶</span>
-      </div>
-      <div class="answer">
-        <div class="answer-block">
-          <p><span class="tag-f">F:</span> 從<span class="ev">再購間隔天數分布</span>，回購顧客中：__TODO:各間隔區間人數__。≤30天內回購合計<strong>__TODO:合計人數__</strong>（= __TODO:總顧客數 × 回購率__），與30日回購率KPI吻合。回購高峰在 <strong>__TODO:高峰區間__</strong>。</p>
-          <p><span class="tag-i">I:</span> 建議主要推播在首次消費後 <strong>__TODO:依回購高峰推出的推播時點__</strong> 觸達——此時顧客記憶尚新且接近自然回購窗口，推播效果最佳。過早推播（≤3天）打擾感高；過晚推播（≥21天後）顧客可能已轉向競品，效果顯著下降。</p>
-        </div>
-        <button class="chart-ref-btn" onclick="goToChart('deep','card-cRepurchase')">📍 查看：再購間隔分布</button>
-      </div>
-    </div>
-
-  </div><!-- end qa-section -->
-</div><!-- end page-cust -->
-
-<!-- ══════════════════════════════════════════
-     P3: 跨維度深度分析
-══════════════════════════════════════════ -->
-<div id="page-deep" class="page hidden">
-
-  <div class="section-title">門市四象限分析：來客×客單價</div>
-  <div class="chart-card" id="card-cStoreScatter">
-    <div class="chart-card-title">門市散點圖（x=月均來客，y=平均客單價）— 中線：x=__TODO:月均來客中線__, y=__TODO:AOV 中線__</div>
-    <div class="chart-block h420"><canvas id="cStoreScatter"></canvas></div>
-    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>四象限解讀：</strong>右上（高流量高客單）= 旗艦型（__TODO:右上象限門市__）；左上（低流量高客單）= 精品型（__TODO:左上象限門市__），商圈規模小但客單高，需差異化管理目標；右下（高流量低客單）= 效率提升型（__TODO:右下象限門市__），流量佳但客單有提升空間；左下（低流量低客單）= 需根本診斷（__TODO:左下象限門市__），先辨別外部選址問題或內部體驗問題。中線設定：x=__TODO:月均來客中線（= 總來客 ÷ 12 ÷ 門市數）__，y=__TODO:全局 AOV__。圖上中線由 JS 從 DATA.anchors 計算。</div></div>
-  </div>
-
-  <div class="section-title" style="margin-top:28px">顧客再購間隔分布</div>
-  <div class="chart-card" id="card-cRepurchase">
-    <div class="chart-card-title">再購間隔天數分布（有回購行為顧客）</div>
-    <div class="chart-block h280"><canvas id="cRepurchase"></canvas></div>
-    <div class="findings-section"><div class="findings-label">🔍 圖表解讀——先自己讀圖，再打開對照</div><div class="findings-content"><strong>行為特徵：</strong>回購高峰在 __TODO:高峰區間與人數__，__TODO:回訪節奏判讀__。__TODO:最短區間與人數__的快速回購者可能為高頻VIP的子集。≤30天回購合計 __TODO:合計人數__ = 總顧客數 × __TODO:回購率__，與KPI口徑封閉。</div></div>
-  </div>
-
-  <hr class="section-divider">
-  <div class="section-title">跨維度訓練題</div>
-  <div class="qa-section">
-
-    <!-- Q15 -->
-    <div class="qa-item">
-      <div class="question" onclick="toggleQA(this)">
-        <span class="badge l2">L2·I</span>
-        <span class="question-text">Q15：從四象限散點圖，哪個象限的門市最需要立即關注？你會採取什麼分析行動？</span>
-        <span class="question-arrow">▶</span>
-      </div>
-      <div class="answer">
-        <div class="answer-block">
-          <p><span class="tag-f">F:</span> 從<span class="ev">門市四象限散點圖</span>，左下象限（低來客 × 低客單）的門市同時面臨流量不足與消費力雙重問題，如 __TODO:代表門市與其月均來客、AOV__。</p>
-          <p><span class="tag-i">I:</span> 需優先診斷原因——選址問題（商圈客流本身不足，屬外部因素）還是服務/品項/體驗問題（內部因素，可改善）。診斷工具：比較同一城市其他門市的客流特徵；調查周邊競品密度；分析門市顧客回購率（若回購率尚可，問題是招新不足；若回購率也低，問題在留客）。</p>
-        </div>
-        <button class="chart-ref-btn" onclick="goToChart('deep','card-cStoreScatter')">📍 查看：門市四象限散點圖</button>
-      </div>
-    </div>
-
-    <!-- Q16 -->
-    <div class="qa-item">
-      <div class="question" onclick="toggleQA(this)">
-        <span class="badge l3">L3·I</span>
-        <span class="question-text">Q16：結合P2的顧客等級分析與P3的再購間隔，VIP高頻顧客的行為模式有何特徵？</span>
-        <span class="question-arrow">▶</span>
-      </div>
-      <div class="answer">
-        <div class="answer-block">
-          <p><span class="tag-f">F:</span> P2 顧客等級（<span class="ev">顧客結構</span>）：VIP 共 __TODO:VIP 人數驗算式__；P3（<span class="ev">再購間隔天數分布</span>）再購間隔高峰：__TODO:高峰區間__。</p>
-          <p><span class="tag-i">I:</span> VIP顧客約<strong>__TODO:由高峰區間推出的回訪節奏__</strong>，形成穩定習慣性回訪。習慣性消費導致「固定點餐」行為（偏好熟悉品項），進而造成AOV（__TODO:VIP AOV__）低於偶爾「犒賞自己」的常客（__TODO:常客 AOV__）。這是高頻熟客的典型行為特徵：頻率高→AOV低→LTV仍高。</p>
-        </div>
-        <div class="nav-hint" onclick="goToChart('cust','card-cTierAOV')">
-          👉 前往 P2 查看各等級客單價對比圖
-        </div>
-        <button class="chart-ref-btn" onclick="goToChart('cust','card-cTierAOV')">📍 查看：各等級平均客單價</button>
-      </div>
-    </div>
-
-    <!-- Q17 -->
-    <div class="qa-item">
-      <div class="question" onclick="toggleQA(this)">
-        <span class="badge l3">L3·A</span>
-        <span class="question-text">Q17：如果你是這家連鎖的數據分析師，你會如何設計一份「門市分級改善計畫」？</span>
-        <span class="question-arrow">▶</span>
-      </div>
-      <div class="answer">
-        <div class="answer-block">
-          <p><span class="tag-f">F:</span> 從<span class="ev">門市年度業績</span>，門市業績差距 __TODO:最高 ÷ 最低倍數__；從<span class="ev">門市四象限散點圖</span>，客單價差距約 __TODO:最高與最低 AOV__；四象限散點圖揭示業績×客單兩維度同時分化。</p>
-          <p><span class="tag-i">I:</span> 單一業績排名只能看規模，無法區分「高流量低客單」（有提升空間）與「低流量高客單」（有不同問題）。</p>
-          <p><span class="tag-a">A:</span> 建議 <strong>四象限分級改善框架</strong>：</p>
-          <ul style="margin:8px 0 0 16px;line-height:2">
-            <li>右上（高業績×高客單）→ 標竿維護：提取最佳實踐，複製到其他門市</li>
-            <li>右下（高業績×低客單）→ 品項升級：推套餐、加值配餐，提升AOV</li>
-            <li>左上（低業績×高客單）→ 流量擴大：行銷投入提升到店率，客質已夠好</li>
-            <li>左下（低業績×低客單）→ 根本診斷：先判斷是選址問題還是運營問題，再決定是否繼續投資</li>
-          </ul>
-        </div>
-        <div class="trap-block" data-trap-stage="wrangle" data-trap="分組過粗">
-          <span class="trap-icon">⚠</span><span class="trap-tag">加工｜分組過粗</span>
-          <div><strong>常見陷阱：</strong>只用單一業績指標分級，會將「高流量低客單」和「低流量低客單」的門市混為一談——前者問題是品項組合，後者問題是選址或品牌認知，改善方法完全不同。雙維度分析是分析師思維的核心。</div>
-        </div>
-        <div class="nav-hint" onclick="goToChart('ops','card-cStoreRank')">
-          👉 前往 P1 查看門市業績排行（單一指標分級看不到的差異）
-        </div>
-        <button class="chart-ref-btn" onclick="goToChart('deep','card-cStoreScatter')">📍 查看：門市四象限散點圖</button>
+        <button class="chart-ref-btn" onclick="goToChart('ovw','card-cSpendMix')">📍 查看：通路花費占比</button>
+        <button class="chart-ref-btn" onclick="goToChart('ovw','card-cPlatRoas')">📍 查看：各通路平台自報 ROAS</button>
       </div>
     </div>
 
   </div><!-- end qa-section -->
 
-  <!-- ── Training Questions Block ── -->
+  <!-- ── 本頁訓練題（訓練題拆到每頁末尾） ── -->
   <div class="training-block">
-    <div class="training-title">進階訓練題組（T1–T5）— 數據局限性與批判思維</div>
+    <div class="training-title">★ 本頁訓練題 T1 — 投放總覽綜合判斷</div>
     <div class="qa-section">
 
       <!-- T1 -->
-      <div class="qa-item">
+      <div class="qa-item" data-domain="ind">
         <div class="question" onclick="toggleQA(this)">
-          <span class="badge l3">L3·A</span>
-          <span class="question-text">T1：本份儀表板缺少「翻桌率」數據，這對分析結論有何影響？如何補救？</span>
+          <span class="badge l2">L2·A</span>
+          <span class="question-text">T1：老闆看完這一頁說：「混合 ROAS <span data-v="roas"></span>，每投 1 元廣告就回來 <span data-v="roas"></span> 元，明年預算直接加倍。」用這一頁的數據和你對保養品電商的理解，寫一段回覆。</span>
+          <span class="domain-chip d-ind">🏭 產業知識</span>
           <span class="question-arrow">▶</span>
         </div>
         <div class="answer">
           <div class="answer-block">
-            <p><span class="tag-f">F:</span> 從<span class="ev">月度來客人次</span>等現有圖表可見來客人次、AOV、業績，但無翻桌率（桌次周轉次數/小時）。</p>
-            <p><span class="tag-i">I:</span> 缺少翻桌率使「來客成長」的詮釋變得不完整——無法區分成長是來自「更多不同顧客」還是「同樣顧客更多次光顧但座位效率沒提升」。對內用門市而言，翻桌率是空間效率的核心指標。</p>
-            <p><span class="tag-a">A:</span> 補救方案三種：① 加入翻桌率KPI（= 每日桌次使用數 ÷ 桌數）；② 用POS時間戳計算同桌平均停留時長；③ 將來客人次與座位數交叉計算理論翻桌率（= 來客人次 ÷ 座位數 ÷ 營業時數）。</p>
+            <p><span class="tag-f">F:</span> ① <span class="ev">KPI：混合 ROAS</span> <span data-v="roas"></span> ＝ <span data-v="rev"></span> 萬 ÷ <span data-v="spend"></span> 萬。② 花最多錢的 <span data-v="spMaxM"></span>（<span data-v="spMax"></span> 萬），當月 ROAS <span data-v="rSp"></span>、新客 CPA NT$<span data-v="cpaSpMax"></span>；<span data-v="rMinM"></span> ROAS <span data-v="rMin"></span> 是全年最低，新客 CPA NT$<span data-v="cpaDec"></span> 是全年最高（<span class="ev">月度廣告花費</span>、<span class="ev">月度後台營收</span>、<span class="ev">月度新客 CPA</span>）。</p>
+            <p><span class="tag-i">I:</span> ① <strong>ROAS 算的是營收，不是利潤。</strong>保養品 DTC 的營收要先扣商品成本、退貨、物流金流與平台手續費，剩下的毛利才能拿來付廣告費；ROAS <span data-v="roas"></span> 到底賺不賺錢，要先算出損益兩平 ROAS（「預算決策」頁會算）。</p>
+            <p><span class="tag-i">I:</span> ② <strong>保養品高度依賴檔期。</strong>本頁的花費高峰都落在檔期，預算加倍不會讓檔期加倍：多出來的錢不是流向需求較弱的月份，就是在 Q4 競價最貴時硬加碼——本頁已經看到花最多的月份效率並沒有最好。</p>
+            <p><span class="tag-i">I:</span> ③ <strong>反方論點也要講：</strong>保養品回購週期約 60–90 天，新客第一單的 ROAS 低估了她之後的回購價值；「新客 CPA 能不能接受」應該用回購後的價值來評估，而不是只看第一單。</p>
+            <p><span class="tag-a">A:</span> 若品牌在台灣的目標受眾規模有限，預算加倍會先把同一批人打到頻次疲乏，CPM 與 CPA 一起上升——這是假設，需要分階段加碼才能驗證。</p>
+            <p><span class="tag-a">A:</span> 🎯 建議回覆：「先不要直接加倍。① 請財務提供商品成本與退貨率，算出損益兩平 ROAS；② 明年分季、一次只動一個通路逐步加碼，每週看新客 CPA 與『多花的那筆錢帶回多少』，效率跌破門檻就停；③ 加碼時保留一組不投放的對照地區，量出廣告真正多帶來的營收。」</p>
           </div>
           <div class="trap-block" data-trap-stage="read" data-trap="單指標決策">
             <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜單指標決策</span>
-            <div><strong>常見陷阱：</strong>用「來客成長=一切向好」替代翻桌率分析，可能掩蓋座位效率下降的問題——在租金固定的門市，翻桌率才是真正的坪效驅動因子。</div>
+            <div><strong>常見陷阱：</strong>只看一個 ROAS 就決定預算方向，等於讓同一個數字回答三個不同的問題：賺不賺錢（ROAS 沒扣成本）、加碼後還會不會這麼好（平均不等於邊際）、這些營收是不是廣告創造的（歸因不等於增量）。三題都會答錯。</div>
           </div>
-          <div class="nav-hint" onclick="goToChart('ops','card-cVisitAOV')">
-            👉 前往 P1 查看月度來客趨勢（翻桌率缺口要對照的總量）
-          </div>
-          <button class="chart-ref-btn" onclick="goToChart('ops','card-cVisitAOV')">📍 查看：月度來客趨勢</button>
-        </div>
-      </div>
-
-      <!-- T2 -->
-      <div class="qa-item">
-        <div class="question" onclick="toggleQA(this)">
-          <span class="badge l3">L3·A</span>
-          <span class="question-text">T2：如果你發現高業績門市（如 __TODO:業績第一名門市__）的30日回購率反而低於中型社區門市，你如何解釋？</span>
-          <span class="question-arrow">▶</span>
-        </div>
-        <div class="answer">
-          <div class="answer-block">
-            <p><span class="tag-f">F:</span> 假設情境（非 DATA，全體基準見<span class="ev">再購間隔天數分布</span>）：__TODO:業績第一名門市__ 30日回購率25%，某中型社區門市42%。兩者業績差距可能>3倍，但回購率倒置。</p>
-            <p><span class="tag-i">I:</span> 旗艦店客群結構以「觀光客/初次嘗鮮客」為主——高流量、低黏性；中型社區店客群以「習慣型回購客/周邊居民/辦公族」為主——低流量、高黏性。<strong>客群結構不同，相同KPI目標毫無意義。</strong></p>
-            <p><span class="tag-a">A:</span> 不應用同一30日回購率目標管理性質不同的門市，應按客群類型設定分層目標：觀光型門市追求客單和首次好評；社區型門市追求回購率和VIP轉化率。</p>
-          </div>
-          <div class="trap-block" data-trap-stage="read" data-trap="基線缺失">
-            <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜基線缺失</span>
-            <div><strong>常見陷阱：</strong>用統一KPI目標衡量本質不同的門市，不但無法帶來改善，還可能驅動錯誤行動——例如讓旗艦店花大量資源追求「提升回購率」，但其目標客群根本不住在附近。</div>
-          </div>
-          <div class="nav-hint" onclick="goToChart('ops','card-cStoreRank')">
-            👉 前往 P1 查看門市業績排行（業績高低 vs 回購率）
-          </div>
-          <button class="chart-ref-btn" onclick="goToChart('deep','card-cRepurchase')">📍 查看：再購間隔分布</button>
-        </div>
-      </div>
-
-      <!-- T3 -->
-      <div class="qa-item">
-        <div class="question" onclick="toggleQA(this)">
-          <span class="badge l3">L3·A</span>
-          <span class="question-text">T3：外帶佔比持續上升（__TODO:首月→末月外帶佔比__），但本儀表板未區分「外送平台」vs「自取」，這個缺失如何影響策略建議？</span>
-          <span class="question-arrow">▶</span>
-        </div>
-        <div class="answer">
-          <div class="answer-block">
-            <p><span class="tag-f">F:</span> 從<span class="ev">內用 vs 外帶比例</span>，外帶佔比 __TODO:全年均值__，YoY __TODO:pp 變化__，但數據未拆分外送平台訂單vs門市自取。</p>
-            <p><span class="tag-i">I:</span> 外送平台（UberEats/Foodpanda等）通常抽成15-30%，是高業績但低利潤的通路；自取外帶的成本結構與內用相近，利潤率不受影響。若外帶成長主要由外送平台貢獻，則表面業績成長可能伴隨利潤侵蝕。</p>
-            <p><span class="tag-a">A:</span> 在做「擴大外帶/外送」策略前，<strong>必須先拆分外送vs自取比例</strong>——兩者成本結構差異巨大，混合數字可能導致推薦了最貴的成長路徑。建議在下版儀表板中加入「外送平台佔比」指標。</p>
-          </div>
-          <div class="trap-block" data-trap-stage="read" data-trap="過度推論">
-            <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜過度推論</span>
-            <div><strong>常見陷阱：</strong>看到「外帶成長」就建議「強化外送合作」，但若外送已是主要外帶來源，此建議等於在高抽成渠道投入更多——可能是連鎖成本最高的成長路徑。</div>
-          </div>
-          <div class="nav-hint" onclick="goToChart('ops','card-cDineTakeout')">
-            👉 前往 P1 查看內用 vs 外帶比例
-          </div>
-          <button class="chart-ref-btn" onclick="goToChart('ops','card-cDineTakeout')">📍 查看：內用 vs 外帶比例</button>
-        </div>
-      </div>
-
-      <!-- T4 -->
-      <div class="qa-item">
-        <div class="question" onclick="toggleQA(this)">
-          <span class="badge l3">L3·A</span>
-          <span class="question-text">T4：品類集中度 HHI=__TODO:HHI__（品類層級），這個數字說明了什麼？對連鎖餐廳的業績風險有何含義？</span>
-          <span class="question-arrow">▶</span>
-        </div>
-        <div class="answer">
-          <div class="answer-block">
-            <p><span class="tag-f">F:</span> 從<span class="ev">月度品類業績結構</span>，HHI=__TODO:HHI 驗算式與結果__（滿分10,000），屬<strong>__TODO:集中程度判讀__</strong>（>2,500即為高度集中）。三大品類佔比：__TODO:各品類佔比__。</p>
-            <p><span class="tag-i">I:</span> 以品類角度分析：__TODO:最大品類與佔比__意味著它是業績的最大支柱。任何使套餐品類受衝擊的事件（關鍵食材漲價/缺貨、旗艦套餐口味投訴、競品推出強力替代套餐），都會直接影響業績的 __TODO:最大品類佔比__ 部分，風險集中而非分散。HHI=__TODO:HHI__顯示即使在品類層級，集中程度已遠超「高度集中」門檻（>2,500）。</p>
-            <p><span class="tag-a">A:</span> 建議：① 定期監控前5名品項的業績佔比趨勢，設定警戒線（如單品佔比>15%需建立備案）；② 建立「品項替代矩陣」——每個高佔比品項需有替代方案；③ 適度多元化品項組合，降低集中度風險，同時不犧牲明星品項的推廣力度。</p>
-          </div>
-          <div class="trap-block" data-trap-stage="read" data-trap="過度集中推論">
-            <span class="trap-icon">⚠</span><span class="trap-tag">解讀｜過度集中推論</span>
-            <div><strong>常見陷阱：</strong>「集中度高=效率好，管理簡單」是常見誤解。集中度高確實降低運營複雜度，但同時也意味著更高的脆弱性（anti-fragility角度）——單一依賴是供應鏈與市場風險的放大器。</div>
-          </div>
-          <div class="nav-hint" onclick="goToChart('ops','card-cRevCat')">
-            👉 前往 P1 查看月度品類業績結構
-          </div>
-          <button class="chart-ref-btn" onclick="goToChart('ops','card-cRevCat')">📍 查看：月度品類業績結構</button>
-        </div>
-      </div>
-
-      <!-- T5（選用）資料矛盾題：見 Skill C.7 T5、A 原則 7。不用時整段刪除。 -->
-      <div class="qa-item">
-        <div class="question" onclick="toggleQA(this)">
-          <span class="badge l3">L3·A</span>
-          <span class="question-text">T5：__TODO:指標 X__ 說 __TODO:故事 A__，__TODO:指標 Y__ 卻說 __TODO:故事 B__——哪一個是對的？</span>
-          <span class="question-arrow">▶</span>
-        </div>
-        <div class="answer">
-          <div class="answer-block">
-            <p><span class="tag-f">F:</span> ① 各自讀：從<span class="ev">__TODO:圖 X 名稱__</span>，__TODO:指標 X 的數字__；從<span class="ev">__TODO:圖 Y 名稱__</span>，__TODO:指標 Y 的數字__。</p>
-            <p><span class="tag-i">I:</span> ② 找矛盾：兩者的__TODO:分母／時間窗／族群組成__不同——__TODO:具體說明差在哪，必須能從 DATA 反推__。</p>
-            <p><span class="tag-a">A:</span> ③ 下判斷：__TODO:承認不確定性的建議__；下個月追加監控 __TODO:指標 Z__，才能判斷哪個故事為真。</p>
-          </div>
-          <div class="trap-block" data-trap-stage="curate" data-trap="口徑定義不一致">
-            <span class="trap-icon">⚠</span><span class="trap-tag">整理｜口徑定義不一致</span>
-            <div><strong>常見陷阱：</strong>__TODO:兩個指標用了不同定義，卻被當成同一件事比較__。先對齊口徑，再談誰對誰錯。</div>
-          </div>
-          <div class="nav-hint" onclick="goToChart('ops','card-cVisitAOV')">
-            👉 前往 __TODO:圖 Y 所在頁__ 查看 __TODO:圖 Y 名稱__（onclick 目標一併改）
-          </div>
-          <button class="chart-ref-btn" onclick="goToChart('ops','card-cVisitAOV')">📍 查看：__TODO:圖 X 名稱__</button>
+          <button class="chart-ref-btn" onclick="goToChart('ovw','card-cCpaM')">📍 查看：月度新客 CPA</button>
+          <button class="chart-ref-btn" onclick="goToChart('ovw','card-cSpendM')">📍 查看：月度廣告花費</button>
         </div>
       </div>
 
     </div><!-- end training qa-section -->
   </div><!-- end training-block -->
 
-  <!-- ── Design Choices ── -->
-  <hr class="section-divider">
-  <div class="section-title">設計選擇揭露</div>
-  <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px">每一個圖表選擇背後都有三個問題：用哪些指標回答什麼商業問題？這個視覺形式為什麼適合這份資料？讀者應該看到什麼、帶走什麼判斷？以下逐一說明本儀表板的 8 個關鍵設計決策。</p>
-  <div class="design-grid">
-    <div class="design-item">
-      <h4>1. 核心 KPI：來客人次 × 客單價</h4>
-      <p><strong>分析資料選擇：</strong>餐飲業業績恆等式是「來客 × 客單」，把兩者分開呈現才能判斷成長性質——來客驅動代表市場擴張，客單驅動代表消費升級，兩種成長的可持續性與對應策略截然不同。<br><br>
-      <strong>閱讀設計：</strong>KPI 卡同時呈現絕對值、YoY 和前年基準，讀者第一眼即可判斷方向與幅度，無需自行計算。</p>
-    </div>
-    <div class="design-item">
-      <h4>2. 月度趨勢：單一值軸</h4>
-      <p><strong>視覺設計邏輯：</strong>一張圖只用一條值軸（B.9-2）。兩個量級不同的指標要同框比較時，拆成兩張圖或指數化到同一軸；雙軸只在刻意設計成教學陷阱時使用，並在此處說明刻度是怎麼選的、會造成什麼誤讀。</p>
-    </div>
-    <div class="design-item">
-      <h4>3. 外帶佔比用% 而非絕對人次</h4>
-      <p><strong>分析資料選擇：</strong>外帶佔比反映「消費偏好的結構遷移」，絕對人次只反映量的增減。若同期總來客成長，外帶人次可能同步增長但佔比不變；百分比才能偵測偏好遷移。<br><br>
-      <strong>閱讀設計：</strong>外送 vs 自取未拆分，外帶指標實際上混合了成本結構完全不同的兩個渠道（外送平台抽成 15–30% vs 自取幾乎零額外成本）。數字表面完整但存在盲點，閱讀時應主動提問「這個外帶是哪種外帶？」</p>
-    </div>
-    <div class="design-item">
-      <h4>4. 品類業績：堆疊柱 + 總量折線複合圖</h4>
-      <p><strong>視覺設計邏輯：</strong>堆疊柱解決「同時看整體量與品類結構」的需求——折線讀趨勢，堆疊讀各品類貢獻比例。若拆成兩張圖，「哪個品類在哪個月拉動整體」這個核心問題就需要跨圖比對，認知成本倍增。<br><br>
-      <strong>閱讀設計：</strong>__TODO:各品類佔比__。HHI = __TODO:HHI 驗算式與結果__。讀者應思考：任一主力品類的供應異常（如食安問題），對整體的衝擊有多大？</p>
-    </div>
-    <div class="design-item">
-      <h4>5. 散點圖：月均來客 × 客單價</h4>
-      <p><strong>分析資料選擇：</strong>這兩個維度定義門市「成長型別」——高來客低客單為大眾型，低來客高客單為精品型。年度業績排名無法顯示這種型別差異，也無法指向正確的策略處方（大眾型擴客流 vs 精品型深化體驗）。<br><br>
-      <strong>資料封閉性：</strong>x 軸月均來客由「年收入 ÷ (AOV × 12)」反推，確保三數字形成封閉三角，防止來客、客單、業績出現無法自洽的矛盾。</p>
-    </div>
-    <div class="design-item">
-      <h4>6. 高頻顧客門檻：年 ≥ 12 次</h4>
-      <p><strong>分析資料選擇：</strong>月均≥1次是餐飲業「習慣性消費」的通行門檻，代表該顧客已把此餐廳納入日常選項。低於此門檻的顧客行為更接近偶爾嘗試，留存策略（習慣固化 vs 初次轉化）差異顯著，混用同一套策略會同時降低兩類效益。<br><br>
-      <strong>閱讀設計：</strong>VIP AOV（__TODO:VIP AOV__）低於全體均值（__TODO:全體 AOV__），這個逆直覺數字直接呈現，讓讀者自行發現，而非事先解釋，以確保讀者真正完成了「AOV ≠ LTV」的認知更新。</p>
-    </div>
-    <div class="design-item">
-      <h4>7. 再購間隔用 bucket bar 而非折線</h4>
-      <p><strong>視覺設計邏輯：</strong>天數為人工切分的離散區間（≤7天、8–14天…），bucket bar 正確呈現分佈形狀；折線暗示「值隨 x 連續變化」，對離散區間資料產生視覺誤導。<br><br>
-      <strong>閱讀設計：</strong>前 30 天 __TODO:bucket 數__ 個 bucket 已覆蓋 __TODO:累計佔比__ 再購者，呈現為視覺高峰，讓「黃金窗口設計」的行動結論在圖上一目了然，不需讀者自行計算累計比例。</p>
-    </div>
-    <div class="design-item">
-      <h4>8. 指標口徑強制寫入定義面板</h4>
-      <p><strong>閱讀設計：</strong>「30日回購率」在不同企業定義不同——首購後滾動30天、任意相鄰消費間隔30天內、自然月各算一次，口徑不同結果可差 20pp 以上。不列明口徑，讀者無意識帶入自己公司的定義，使同一張圖被不同人讀成不同的事實。定義面板是讓數字可比較的前提，不是附加說明。</p>
-    </div>
-  </div>
+</div><!-- end page-ovw -->
 
-</div><!-- end page-deep -->
+<!-- ══════════════════════════════════════════
+     P2: 歸因口徑（attr）— Layer 3 建構
+══════════════════════════════════════════ -->
+<div id="page-attr" class="page hidden">
+  <div class="section-title">歸因口徑</div>
+  <p style="font-size:0.82rem;color:var(--text-muted)">__TODO:Layer 3 — 歸因口徑頁：平台自報 vs 後台訂單、三種歸因模型 ROAS、轉換延遲分布、各通路新舊客占比、品牌字 vs 非品牌字；QA（L1·I、L2·F、L2·A、L3·I、L3·A）＋ T2__</p>
+</div><!-- end page-attr -->
+
+<!-- ══════════════════════════════════════════
+     P3: A/B 測試（ab）— Layer 4 建構
+══════════════════════════════════════════ -->
+<div id="page-ab" class="page hidden">
+  <div class="section-title">A/B 測試</div>
+  <p style="font-size:0.82rem;color:var(--text-muted)">__TODO:Layer 4 — A/B 測試頁：累積轉換率＋95% CI、逐日累積 p 值、逐週 lift、8 支素材 CTR＋CI、裝置別結果；QA（L1·A、L2·I、L2·A、L3·A、L3·F）＋ T3__</p>
+</div><!-- end page-ab -->
+
+<!-- ══════════════════════════════════════════
+     P4: 預算決策（budget）— Layer 5 建構（含收尾面板）
+══════════════════════════════════════════ -->
+<div id="page-budget" class="page hidden">
+  <div class="section-title">預算決策</div>
+  <p style="font-size:0.82rem;color:var(--text-muted)">__TODO:Layer 5 — 預算決策頁：花費級距 vs 邊際 ROAS、地理 holdout 增量 vs 歸因 ROAS、營收 vs 毛利 ROAS；QA（L2·A、L3·I、L3·A、L3·A）＋ T4、T5；設計選擇揭露面板__</p>
+</div><!-- end page-budget -->
 
 <div class="page-footer">
-  __TODO:產業__ __TODO:分析主題__ 訓練儀表板教材 · __TODO:年度__ 年度資料 · 全部數據為合成資料，僅供訓練用途
+  數位廣告投放 ROAS與AB測試分析 訓練儀表板教材 · <span data-v="year"></span> 年度資料 · 全部數據為合成資料，僅供訓練用途
 </div>
   </div><!-- content-area -->
 </div><!-- main-wrapper -->
@@ -1435,433 +1055,243 @@ function isStackTop(ctx) { // datalabels.display 用：只在同 stack 最上層
 // 頂端加總用法：datalabels: { display: isStackTop, formatter: (v, ctx) => stackTotal(ctx.chart, ctx.dataIndex, ctx.dataset.stack) + '万' }
 
 // ══════════════════════════════════════════════════
-// LAZY INIT
+// TEXT VALUES：HTML 文字裡的資料數字一律由此從 DATA 衍生，注入 [data-v]（不寫死）
 // ══════════════════════════════════════════════════
-const initialized = { ops: false, cust: false, deep: false };
+const fmt = (n, d = 0) => Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+const argMax = arr => arr.reduce((b, v, i) => v > arr[b] ? i : b, 0);
+const argMin = arr => arr.reduce((b, v, i) => v < arr[b] ? i : b, 0);
+const sumArr = arr => arr.reduce((a, b) => a + b, 0);
+const descIdx = arr => arr.map((_, i) => i).sort((a, b) => arr[b] - arr[a]);
+// 通路 → 語意色 key（全頁共用，同一通路在每張圖同色）
+const CH_COLOR = { 'Meta 開發': 'blue', 'Meta 再行銷': 'purple', 'Google 搜尋': 'teal', 'Google PMax': 'orange', 'YouTube': 'red', 'LINE': 'gray' };
+const chColor = (label, alpha = 1) => c(CH_COLOR[label] || 'gray', alpha);
 
-// ══════════════════════════════════════════════════
-// DRAW P1: ops
-// ══════════════════════════════════════════════════
-function drawOps() {
-  applyChartTheme();
-  const months = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-  // 品類名稱一律從 DATA 讀，不寫死（換產業時只改 DATA）
-  const catKeys = Object.keys(DATA.monthly_category);
-  const monthlyTotal = months.map((_,i) => catKeys.reduce((s,k) => s + DATA.monthly_category[k][i], 0));
+function buildTextValues() {
+  const A = DATA.anchors, M = DATA.monthly, CH = DATA.channels, mon = DATA.months;
+  const sp = M.spend_wan, rv = M.revenue_wan, roas = M.roas, cpa = M.new_cpa;
+  const V = {};
+  // 敘事守門：題目／findings 的文字敘述依賴下列資料形狀，資料重生後若不成立就在 console 報錯
+  const guard = (cond, msg) => { if (!cond) console.error('✗ Narrative guard:', msg); };
 
-  // cVisitAOV：單一值軸（B.9-2）。第二個指標（如客單價）請另開一張圖，或以 t0=100 指數化放同一軸。
-  // 雙 Y-axis 只允許當刻意教學陷阱，且對應 QA 必須有 data-trap="雙軸假相關" 的 trap-block。
-  mk('cVisitAOV', 'bar', months, [
-    {
-      label: '來客人次',
-      data: DATA.monthly_visits,
-      backgroundColor: c('blue', 0.55),
-      borderColor: c('blue', 0.9),
-      borderWidth: 1
-    }
-  ], {
-    plugins: {
-      legend: { display: false },
-      tooltip: TT,
-      datalabels: { display: false }
-    },
-    scales: {
-      y: { min: 0, grid: { color: TH.grid }, ticks: { color: TH.text, callback: v => (v/1000).toFixed(0)+'K' },
-           title: { display: true, text: '人次', color: TH.text } },
-      x: { grid: { color: TH.grid }, ticks: { color: TH.text } }
-    }
-  });
+  V.year = A.year; V.spend = fmt(A.spend_wan); V.rev = fmt(A.revenue_wan); V.roas = A.blended_roas.toFixed(2);
+  V.cpa = fmt(A.new_cpa); V.orders = fmt(A.orders); V.aov = fmt(A.aov); V.newc = fmt(A.new_customers);
+  V.platRev = fmt(A.platform_revenue_wan); V.overclaim = A.overclaim_ratio.toFixed(2); V.platRoas = A.platform_roas.toFixed(2);
+  V.nCh = CH.labels.length;
 
-  // cDineTakeout: stacked bar
-  mk('cDineTakeout', 'bar', months, [
-    {
-      label: '內用%',
-      data: DATA.dine_takeout.dine_in_pct,
-      backgroundColor: c('blue', 0.55),
-      stack: 'pct'
-    },
-    {
-      label: '外帶%',
-      data: DATA.dine_takeout.takeout_pct,
-      backgroundColor: c('orange', 0.6),
-      stack: 'pct'
-    }
-  ], {
-    plugins: {
-      legend: { display: true, labels: { color: TH.text, boxWidth: 10, font: { size: 11 } } },
-      tooltip: { ...TT, mode: 'index' },
-      datalabels: { display: false }
-    },
-    scales: {
-      x: { stacked: true, grid: { color: TH.grid }, ticks: { color: TH.text } },
-      y: { stacked: true, grid: { color: TH.grid }, ticks: { color: TH.text, callback: v => v+'%' }, max: 100 }
-    }
-  });
+  // 月度花費（Q1、findings）
+  const avgSp = A.spend_wan / 12, iSpMax = argMax(sp), iSpMin = argMin(sp);
+  V.spAvg = fmt(avgSp); V.spMaxM = mon[iSpMax]; V.spMax = sp[iSpMax]; V.spMinM = mon[iSpMin]; V.spMin = sp[iSpMin];
+  V.spRatio = (sp[iSpMax] / sp[iSpMin]).toFixed(1);
+  const peaks = sp.map((v, i) => i).filter(i => sp[i] > avgSp);
+  V.spPeaks = peaks.map(i => `${mon[i]} ${sp[i]} 萬`).join('、');
+  guard(peaks.join() === '4,5,9,10,11', 'Q1 檔期敘述假設高於平均的月份＝5、6、10、11、12 月');
+  guard(iSpMin === 1, 'Q1 假設花費最低月＝2 月（春節）');
+  guard([6, 7, 8].every(i => sp[i] < avgSp), 'Q1 假設 7–9 月皆低於平均');
+  const q4 = [9, 10, 11];
+  V.q4SpPct = (sumArr(q4.map(i => sp[i])) / A.spend_wan * 100).toFixed(1);
+  V.q4RvPct = (sumArr(q4.map(i => rv[i])) / A.revenue_wan * 100).toFixed(1);
 
-  // cRevCat: stacked bar + total line
-  const catColors = ['blue','teal','purple','orange','red'];
-  new Chart(document.getElementById('cRevCat').getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: months,
-      datasets: [
-        ...catKeys.map((k,i) => ({
-          type: 'bar',
-          label: k,
-          data: DATA.monthly_category[k],
-          backgroundColor: c(catColors[i], 0.65),
-          stack: 'rev'
-        })),
-        {
-          type: 'line',
-          label: '月度合計',
-          data: monthlyTotal,
-          borderColor: c('red'),
-          borderDash: [5,3],
-          borderWidth: 2,
-          pointRadius: 2,
-          tension: 0.3,
-          fill: false,
-          stack: undefined
-        }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      animation: { duration: 480 },
-      plugins: {
-        legend: { display: true, labels: { color: TH.text, boxWidth: 10, font: { size: 11 } } },
-        // 各段佔比的分母＝同 stack 的可見組成系列（stackPct 排除「月度合計」線與被隱藏的品類）
-        tooltip: { ...TT, mode: 'index', callbacks: { label: ctx => {
-          const pct = stackPct(ctx);
-          return ` ${ctx.dataset.label}: ${ctx.raw}万` + (pct == null ? '' : `（${pct.toFixed(1)}%）`);
-        } } },
-        datalabels: { display: false }
-      },
-      scales: {
-        x: { stacked: true, grid: { color: TH.grid }, ticks: { color: TH.text } },
-        y: { stacked: true, grid: { color: TH.grid }, ticks: { color: TH.text, callback: v => v+'万' } }
-      }
-    }
-  });
+  // 月度 ROAS（Q3、T1）：後台營收 ÷ 花費（＝ DATA.monthly.roas）
+  const iRMax = argMax(roas), iRMin = argMin(roas);
+  const calc = i => `${rv[i]} ÷ ${sp[i]}`;
+  V.rMaxM = mon[iRMax]; V.rMax = roas[iRMax].toFixed(2); V.rMaxCalc = calc(iRMax);
+  V.rMinM = mon[iRMin]; V.rMin = roas[iRMin].toFixed(2); V.rMinCalc = calc(iRMin);
+  V.rSp = roas[iSpMax].toFixed(2); V.rSpCalc = calc(iSpMax);
+  V.rSpRank = 1 + roas.filter(v => v > roas[iSpMax]).length;
+  guard(iRMax !== iSpMax, 'Q3 假設花費最高月不是 ROAS 最高月');
 
-  // cStoreRank: horizontal bar
-  mk('cStoreRank', 'bar', DATA.store_labels, [
-    {
-      label: '年度業績（万NT$）',
-      data: DATA.store_revenue,
-      backgroundColor: DATA.store_revenue.map((v,i,arr) => {   // 前 5／後 5 名著色（後段起點由資料筆數推出）
-        if (i < 5) return c('teal', 0.75);
-        if (i >= arr.length - 5) return c('red', 0.65);
-        return c('blue', 0.5);
-      }),
-      borderRadius: 3,
-      borderSkipped: false
-    }
-  ], {
-    indexAxis: 'y',
-    plugins: {
-      legend: { display: false },
-      tooltip: { ...TT, mode: 'nearest' },
-      datalabels: {
-        display: true,
-        color: TH.text,
-        anchor: 'end',
-        align: 'end',
-        font: { size: 9, family: TH.fontMono },
-        formatter: v => v+'万'
-      }
-    },
-    scales: {
-      x: { grid: { color: TH.grid }, ticks: { color: TH.text, callback: v => v+'万' } },
-      y: { grid: { display: false }, ticks: { color: TH.text, font: { size: 10 } } }
-    },
-    layout: { padding: { right: 50 } }
+  // 月度新客 CPA（Q2、T1、findings）
+  const first9 = cpa.slice(0, 9);
+  V.cpaLo = fmt(Math.min(...first9)); V.cpaHi = fmt(Math.max(...first9)); V.cpaLoM = mon[argMin(cpa)];
+  V.novM = mon[10]; V.decM = mon[11]; V.cpaNov = fmt(cpa[10]); V.cpaDec = fmt(cpa[11]);
+  V.q4m2 = `${mon[10]}、${mon[11]}`;
+  V.cpaDecVs = ((cpa[11] / A.new_cpa - 1) * 100).toFixed(1);
+  V.cpaSpMax = fmt(cpa[iSpMax]);
+  guard(descIdx(cpa).slice(0, 2).sort().join() === '10,11', 'Q2 假設 CPA 最高的兩個月＝11、12 月');
+  guard(argMin(cpa) < 9, 'Q2 假設 CPA 最低月落在 1–9 月');
+  guard(iRMin === 11 && argMax(cpa) === 11, 'T1 假設 12 月同時是 ROAS 最低與 CPA 最高');
+
+  // 通路（donut、自報 ROAS、Q4、Q5）
+  const L = CH.labels, idx = name => L.indexOf(name);
+  const pr = CH.platform_roas, prOrd = descIdx(pr);
+  V.prList = prOrd.map(i => `${L[i]} ${pr[i].toFixed(2)}`).join('、');
+  V.prTopN = L[prOrd[0]]; V.prTop = pr[prOrd[0]].toFixed(2);
+  V.prBotN = L[prOrd[prOrd.length - 1]]; V.prBot = pr[prOrd[prOrd.length - 1]].toFixed(2);
+  V.prAbove = pr.filter(v => v > A.blended_roas).length;
+  guard(V.prAbove === L.length - 1, 'Q4 假設只有一個通路自報 ROAS 低於混合 ROAS');
+  const rt = idx('Meta 再行銷'), yt = idx('YouTube'), md = idx('Meta 開發');
+  guard(prOrd[0] === rt && prOrd[prOrd.length - 1] === yt, 'Q5 假設自報 ROAS 最高＝Meta 再行銷、最低＝YouTube');
+  V.rtPct = fmt(CH.spend_pct[rt]); V.rtSp = CH.spend_wan[rt]; V.rtRoas = pr[rt].toFixed(2);
+  V.ytPct = fmt(CH.spend_pct[yt]); V.ytSp = CH.spend_wan[yt]; V.ytRoas = pr[yt].toFixed(2);
+  V.metaPct = fmt(CH.spend_pct[md] + CH.spend_pct[rt]);
+  const spOrd = descIdx(CH.spend_pct);
+  V.top2 = `${L[spOrd[0]]}＋${L[spOrd[1]]}`; V.top2Pct = fmt(CH.spend_pct[spOrd[0]] + CH.spend_pct[spOrd[1]]);
+  return V;
+}
+
+function fillTextValues() {
+  const V = buildTextValues();
+  document.querySelectorAll('[data-v]').forEach(el => {
+    const k = el.dataset.v;
+    if (V[k] === undefined) { console.error('✗ data-v 缺值：', k); return; }
+    el.textContent = V[k];
   });
 }
 
 // ══════════════════════════════════════════════════
-// DRAW P2: cust
+// LAZY INIT
 // ══════════════════════════════════════════════════
-function drawCust() {
+const initialized = { ovw: false, attr: false, ab: false, budget: false };
+
+// ══════════════════════════════════════════════════
+// DRAW P1: ovw 投放總覽
+// ══════════════════════════════════════════════════
+function drawOvw() {
   applyChartTheme();
-  const hours = Array.from({length:24}, (_,i) => i+'時');
+  const A = DATA.anchors, M = DATA.monthly, CH = DATA.channels, mon = DATA.months;
+  const outLabel = formatter => ({ anchor: 'end', align: 'end', offset: 2, color: TH.label, font: { size: 10, family: TH.fontMono }, formatter });
+  const headroom = (arr, step) => Math.ceil(Math.max(...arr) * 1.2 / step) * step;   // ≥1.2× 最大值（B.2-4）
 
-  // cHourly: line+fill
-  mk('cHourly', 'line', hours, [
-    {
-      label: '來客指數',
-      data: DATA.hourly,
-      borderColor: c('purple'),
-      backgroundColor: c('purple', 0.12),
-      borderWidth: 2.5,
-      pointRadius: 2,
-      pointHoverRadius: 10,   // B.5 🔴／audit CH-09：折線 hover 半徑 ≥10
-      tension: 0.4,
-      fill: true
-    }
-  ], {
-    interaction: { mode: 'index', intersect: false },   // B.5 🔴／audit CH-08：游標在任一 X 位置即觸發 tooltip
+  // cSpendM：月度花費（單一值軸）
+  mk('cSpendM', 'bar', mon, [{
+    label: '廣告花費（萬）', data: M.spend_wan,
+    backgroundColor: c('blue', 0.6), borderColor: c('blue', 0.9), borderWidth: 1, borderRadius: 3
+  }], {
     plugins: {
-      legend: { display: false },
-      tooltip: TT,
-      datalabels: { display: false }
+      tooltip: { mode: 'nearest', intersect: false, callbacks: { label: ctx => ` 花費 ${fmt(ctx.raw)} 萬` } },
+      datalabels: outLabel(v => v)
     },
     scales: {
-      x: { grid: { color: TH.grid }, ticks: { color: TH.text, font: { size: 10 } } },
-      y: { grid: { color: TH.grid }, ticks: { color: TH.text } }
+      y: { min: 0, max: headroom(M.spend_wan, 10), grid: { color: TH.grid }, ticks: { color: TH.text, callback: v => v + ' 萬' } },
+      x: { grid: { display: false }, ticks: { color: TH.text } }
     }
   });
 
-  // cFreqDist: vertical bar（最後兩個頻次段＝高頻／VIP 著色；分段數改變時起點跟著 DATA 走）
-  const FREQ_HIGH_FROM = Math.max(0, DATA.frequency.labels.length - 2);
-  mk('cFreqDist', 'bar', DATA.frequency.labels, [
-    {
-      label: '顧客人數',
-      data: DATA.frequency.counts,
-      backgroundColor: DATA.frequency.counts.map((v,i) => {
-        if (i >= FREQ_HIGH_FROM) return c('orange', 0.75);
-        return c('blue', 0.55);
-      }),
-      borderRadius: 5,
-      borderSkipped: false
-    }
-  ], {
+  // cRevM：月度後台營收（單一值軸，與花費分開兩張圖）
+  mk('cRevM', 'bar', mon, [{
+    label: '後台營收（萬）', data: M.revenue_wan,
+    backgroundColor: c('teal', 0.6), borderColor: c('teal', 0.9), borderWidth: 1, borderRadius: 3
+  }], {
     plugins: {
-      legend: { display: false },
-      tooltip: TT,
-      datalabels: {
-        display: true,
-        color: TH.text,
-        anchor: 'end',
-        align: 'end',
-        font: { size: 9 },
-        formatter: v => v.toLocaleString()
-      }
+      tooltip: { mode: 'nearest', intersect: false, callbacks: { label: ctx => ` 後台營收 ${fmt(ctx.raw)} 萬｜訂單 ${fmt(M.orders[ctx.dataIndex])} 筆` } },
+      datalabels: outLabel(v => v)
     },
     scales: {
-      x: { grid: { display: false }, ticks: { color: TH.text, font: { size: 10 } } },
-      y: { grid: { color: TH.grid }, ticks: { color: TH.text } }
-    },
-    layout: { padding: { top: 20 } }
+      y: { min: 0, max: headroom(M.revenue_wan, 50), grid: { color: TH.grid }, ticks: { color: TH.text, callback: v => v + ' 萬' } },
+      x: { grid: { display: false }, ticks: { color: TH.text } }
+    }
   });
 
-  // cTierDonut: doughnut with center text（中心數字與百分比分母＝DATA 各層人數加總）
-  const tierTotal = DATA.customer_tier.counts.reduce((a,b) => a+b, 0);
-  const centerTextPlugin = {
-    id: 'centerText',
+  // cSpendMix：通路花費占比 donut（降序、12 點鐘起、外部標籤＝名稱＋%、中心＝總花費）
+  const mixOrd = descIdx(CH.spend_pct);
+  const mixLabels = mixOrd.map(i => CH.labels[i]);
+  const centerText = {
+    id: 'centerTextOvw',
     afterDraw(chart) {
       const { ctx, chartArea: { left, top, right, bottom } } = chart;
-      const cx = (left+right)/2, cy = (top+bottom)/2;
+      const cx = (left + right) / 2, cy = (top + bottom) / 2;
       ctx.save();
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = TH.label;
-      ctx.font = `bold 15px ${TH.fontMono}`;
-      ctx.fillText(tierTotal.toLocaleString(), cx, cy-8);
-      ctx.fillStyle = TH.text;
-      ctx.font = `11px ${TH.fontBody}`;
-      ctx.fillText('顧客', cx, cy+10);
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = TH.label; ctx.font = `600 14px ${TH.fontMono}`;
+      ctx.fillText(`NT$${fmt(A.spend_wan)} 萬`, cx, cy - 8);
+      ctx.fillStyle = TH.text; ctx.font = `11px ${TH.fontBody}`;
+      ctx.fillText('全年總花費', cx, cy + 11);
       ctx.restore();
     }
   };
-  const tierCtx = document.getElementById('cTierDonut')?.getContext('2d');
-  if (tierCtx) {
-    new Chart(tierCtx, {
-      type: 'doughnut',
-      data: {
-        labels: DATA.customer_tier.labels,
-        datasets: [{
-          data: DATA.customer_tier.counts,
-          backgroundColor: [c('blue',0.65), c('teal',0.65), c('orange',0.8)],
-          borderColor: TH.card,
-          borderWidth: 3,
-          hoverOffset: 6
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        cutout: '62%',
-        animation: { duration: 480 },
-        plugins: {
-          legend: { display: true, position: 'bottom', labels: { color: TH.text, boxWidth: 10, font: { size: 10 }, padding: 10 } },
-          tooltip: { ...TT, mode: 'nearest' },
-          datalabels: {
-            display: true,   // 全域預設 display=false，donut 不經 mk()，必須顯式開啟（否則百分比靜默不顯示）
-            color: TH.label,
-            font: { size: 9, weight: '600' },
-            formatter: v => tierTotal > 0 ? (v / tierTotal * 100).toFixed(0) + '%' : ''
-          }
+  const mixCtx = document.getElementById('cSpendMix')?.getContext('2d');
+  if (mixCtx) new Chart(mixCtx, {
+    type: 'doughnut',
+    data: {
+      labels: mixLabels,
+      datasets: [{
+        data: mixOrd.map(i => CH.spend_pct[i]),
+        backgroundColor: mixLabels.map(l => chColor(l, 0.75)),
+        borderColor: TH.card, borderWidth: 3, hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '58%',
+      animation: { duration: 480 },
+      layout: { padding: 40 },
+      plugins: {
+        legend: { display: false },
+        tooltip: { ...TT, mode: 'nearest', callbacks: { label: ctx => ` ${ctx.label}：${ctx.raw}%（${fmt(CH.spend_wan[mixOrd[ctx.dataIndex]])} 萬）` } },
+        datalabels: {
+          display: true,   // donut 不經 mk()，全域 display=false，必須顯式開啟
+          anchor: 'end', align: 'end', offset: 6, textAlign: 'center',
+          color: TH.label, font: { size: 10, weight: '600' },
+          formatter: (v, ctx) => ctx.chart.data.labels[ctx.dataIndex] + '\n' + v + '%'
         }
-      },
-      plugins: [centerTextPlugin]
-    });
-  }
+      }
+    },
+    plugins: [centerText]
+  });
 
-  // cTierAOV: horizontal bar
-  mk('cTierAOV', 'bar', DATA.customer_tier.labels, [
-    {
-      label: '平均客單價 (NT$)',
-      data: DATA.customer_tier.aov,
-      backgroundColor: [c('blue',0.55), c('teal',0.65), c('orange',0.75)],
-      borderRadius: 5,
-      borderSkipped: false
-    }
-  ], {
+  // cPlatRoas：各通路平台自報 ROAS（水平 bar 降序；虛線＝混合 ROAS）
+  const prOrd = descIdx(CH.platform_roas);
+  const prLabels = prOrd.map(i => CH.labels[i]);
+  mk('cPlatRoas', 'bar', prLabels, [{
+    label: '平台自報 ROAS', data: prOrd.map(i => CH.platform_roas[i]),
+    backgroundColor: prLabels.map(l => chColor(l, 0.7)), borderColor: prLabels.map(l => chColor(l, 0.95)),
+    borderWidth: 1, borderRadius: 3, borderSkipped: false
+  }], {
     indexAxis: 'y',
     plugins: {
-      legend: { display: false },
-      tooltip: TT,
-      datalabels: {
-        display: true,
-        color: TH.label,
-        anchor: 'end',
-        align: 'end',
-        font: { size: 11, weight: '700', family: TH.fontMono },
-        formatter: v => 'NT$'+v
-      }
+      tooltip: { mode: 'nearest', intersect: false, callbacks: { label: ctx => {
+        const i = prOrd[ctx.dataIndex];
+        return ` 自報 ROAS ${ctx.raw.toFixed(2)}＝自報營收 ${fmt(CH.platform_revenue_wan[i])} 萬 ÷ 花費 ${fmt(CH.spend_wan[i])} 萬`;
+      } } },
+      datalabels: { ...outLabel(v => v.toFixed(2)), offset: 4 },
+      annotation: { clip: false, annotations: { blended: {   // 標籤放在圖區上緣外，避免壓到長條數值
+        type: 'line', scaleID: 'x', value: A.blended_roas,
+        borderColor: TH.guide, borderWidth: 1.5, borderDash: [5, 4],
+        label: { display: true, content: `混合 ROAS ${A.blended_roas.toFixed(2)}`, position: 'start', yAdjust: -20,
+                 backgroundColor: TT.backgroundColor, color: TH.label, font: { size: 10 }, padding: 4 }
+      } } }
     },
+    layout: { padding: { top: 24 } },
     scales: {
-      // bar 值軸從 0 起（截斷軸只在刻意教學陷阱時用）；上限留 20% 給數值標籤
-      x: { grid: { color: TH.grid }, ticks: { color: TH.text, callback: v => 'NT$'+v }, min: 0,
-           suggestedMax: Math.max(0, ...DATA.customer_tier.aov) * 1.2 || undefined },
-      y: { grid: { display: false }, ticks: { color: TH.text } }
-    },
-    layout: { padding: { right: 55 } }
-  });
-}
-
-// ══════════════════════════════════════════════════
-// DRAW P3: deep
-// ══════════════════════════════════════════════════
-function drawDeep() {
-  applyChartTheme();
-  // cStoreScatter：象限中線由 DATA 衍生——x＝總來客 ÷ 12 ÷ 門市數（月均每店來客），y＝全局 AOV
-  const A = DATA.anchors;
-  const xMid = A.total_visits / 12 / A.total_stores, yMid = A.aov;
-  const midOK = Number.isFinite(xMid) && xMid > 0 && Number.isFinite(yMid) && yMid > 0;
-  const nStores = DATA.scatter_data.length;
-  const scatterCtx = document.getElementById('cStoreScatter')?.getContext('2d');
-  if (scatterCtx) {
-    new Chart(scatterCtx, {
-      type: 'scatter',
-      data: {
-        datasets: [{
-          label: '門市',
-          data: DATA.scatter_data,
-          backgroundColor: DATA.scatter_data.map(d => {
-            const hx = midOK && d.x >= xMid, hy = midOK && d.y >= yMid;
-            if (hx && hy) return c('teal', 0.75);
-            if (hx && !hy) return c('blue', 0.65);
-            if (!hx && hy) return c('orange', 0.75);
-            return c('red', 0.65);
-          }),
-          pointRadius: 7,
-          pointHoverRadius: 9
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        animation: { duration: 480 },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            ...TT,
-            mode: 'nearest',
-            callbacks: {
-              label: ctx => {
-                const d = ctx.raw;
-                return ` ${d.label}  月均來客:${d.x}  AOV:NT$${d.y}`;
-              }
-            }
-          },
-          datalabels: {
-            display: ctx => {
-            const d = DATA.scatter_data[ctx.dataIndex];
-            // 業績前 5／後 5（scatter_data 與 store_revenue 同序、降序）＋所有左上（精品型）門市
-            return ctx.dataIndex < 5 || ctx.dataIndex >= nStores - 5 || (midOK && d.x < xMid && d.y >= yMid);
-          },
-            color: TH.label,
-            font: { size: 9 },
-            anchor: 'end',
-            align: 'top',
-            offset: 2,
-            formatter: (v, ctx) => DATA.scatter_data[ctx.dataIndex].label
-          },
-          annotation: {
-            annotations: !midOK ? {} : {
-              lineX: {
-                type: 'line',
-                xMin: xMid, xMax: xMid,
-                borderColor: TH.guide,
-                borderWidth: 1,
-                borderDash: [5,4],
-                label: { content: `月均來客 ${Math.round(xMid).toLocaleString()}`, display: true, position: 'start', color: TH.text, font: { size: 9 } }
-              },
-              lineY: {
-                type: 'line',
-                yMin: yMid, yMax: yMid,
-                borderColor: TH.guide,
-                borderWidth: 1,
-                borderDash: [5,4],
-                label: { content: `AOV ${Math.round(yMid).toLocaleString()}`, display: true, position: 'end', color: TH.text, font: { size: 9 } }
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            grid: { color: TH.grid },
-            ticks: { color: TH.text },
-            title: { display: true, text: '月均來客人次', color: TH.text, font: { size: 11 } }
-          },
-          y: {
-            grid: { color: TH.grid },
-            ticks: { color: TH.text, callback: v => 'NT$'+v },
-            title: { display: true, text: '平均客單價 (NT$)', color: TH.text, font: { size: 11 } },
-            grace: '8%'   // 範圍由資料決定（散點圖不必從 0 起），不寫死上下限
-          }
-        }
-      }
-    });
-  }
-
-  // cRepurchase: vertical bar（著色最高的區間＝回購高峰，由資料決定）
-  const repPeak = DATA.repurchase.counts.indexOf(Math.max(...DATA.repurchase.counts));
-  mk('cRepurchase', 'bar', DATA.repurchase.labels, [
-    {
-      label: '回購顧客數',
-      data: DATA.repurchase.counts,
-      backgroundColor: DATA.repurchase.counts.map((v,i) => i===repPeak ? c('teal',0.8) : c('blue',0.5)),
-      borderRadius: 5,
-      borderSkipped: false
+      x: { min: 0, max: headroom(CH.platform_roas, 1), grid: { color: TH.grid }, ticks: { color: TH.text } },
+      y: { grid: { display: false }, ticks: { color: TH.text, font: { size: 11 } } }
     }
-  ], {
+  });
+
+  // cCpaM：月度新客 CPA（折線；interaction index、pointHoverRadius 10；虛線＝全年值）
+  mk('cCpaM', 'line', mon, [{
+    label: '新客 CPA', data: M.new_cpa,
+    borderColor: c('orange', 0.95), backgroundColor: c('orange', 0.12), fill: true, tension: 0.3,
+    borderWidth: 2, pointRadius: 3, pointHoverRadius: 10, pointBackgroundColor: c('orange')
+  }], {
+    interaction: { mode: 'index', intersect: false },
     plugins: {
-      legend: { display: false },
-      tooltip: TT,
-      datalabels: {
-        display: true,
-        color: TH.text,
-        anchor: 'end',
-        align: 'end',
-        font: { size: 9 },
-        formatter: v => v.toLocaleString()
-      }
+      tooltip: { callbacks: { label: ctx => ` 新客 CPA NT$${fmt(ctx.raw)}｜花費 ${M.spend_wan[ctx.dataIndex]} 萬 ÷ 新客 ${fmt(M.new_customers[ctx.dataIndex])} 人` } },
+      annotation: { annotations: { yearCpa: {
+        type: 'line', scaleID: 'y', value: A.new_cpa,
+        borderColor: TH.guide, borderWidth: 1.5, borderDash: [5, 4],
+        label: { display: true, content: `全年 NT$${fmt(A.new_cpa)}`, position: 'start',
+                 backgroundColor: TT.backgroundColor, color: TH.label, font: { size: 10 }, padding: 4 }
+      } } }
     },
     scales: {
-      x: { grid: { display: false }, ticks: { color: TH.text } },
-      y: { grid: { color: TH.grid }, ticks: { color: TH.text } }
-    },
-    layout: { padding: { top: 20 } }
+      y: { min: 0, max: headroom(M.new_cpa, 100), grid: { color: TH.grid }, ticks: { color: TH.text, callback: v => 'NT$' + v } },
+      x: { grid: { display: false }, ticks: { color: TH.text } }
+    }
   });
 }
+
+// ══════════════════════════════════════════════════
+// DRAW P2–P4：attr／ab／budget（Layer 3–5 實作；目前為空殼）
+// ══════════════════════════════════════════════════
+function drawAttr() { applyChartTheme(); }
+function drawAb() { applyChartTheme(); }
+function drawBudget() { applyChartTheme(); }
 
 // ══════════════════════════════════════════════════
 // PAGE SWITCHING
 // ══════════════════════════════════════════════════
 function switchPage(name) {
-  const pages = ['ops','cust','deep'];
+  const pages = ['ovw','attr','ab','budget'];
   pages.forEach(p => {
     document.getElementById('page-'+p)?.classList.remove('active');
     document.getElementById('page-'+p)?.classList.add('hidden');
@@ -1878,7 +1308,7 @@ function switchPage(name) {
    - 等到該頁所有 .chart-block 尺寸有效（寬高 > 0）才畫，逐 frame 檢查，不靠固定延遲；
    - draw 成功才標記 initialized；draw 丟錯 → 銷毀該頁已建立的 Chart 實例，下次切到此頁重試；
    - 使用者在等待期間切走 → 本次放棄，切回時重來。 */
-const DRAW = { ops: drawOps, cust: drawCust, deep: drawDeep };
+const DRAW = { ovw: drawOvw, attr: drawAttr, ab: drawAb, budget: drawBudget };
 const renderPending = {};
 function nextFrame(cb) {   // rAF 為主；背景分頁 rAF 會暫停，100ms 保底只為了不卡死，先到者執行一次
   let done = false;
@@ -1975,7 +1405,8 @@ document.addEventListener('DOMContentLoaded', () => {
     sec.querySelector('.findings-label')?.addEventListener('click', () => sec.classList.toggle('collapsed'));
   });
 });
-switchPage('ops');
+fillTextValues();
+switchPage('ovw');
 </script>
 </body>
 </html>
