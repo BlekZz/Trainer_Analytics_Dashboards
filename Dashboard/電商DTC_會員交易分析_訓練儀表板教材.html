@@ -1320,7 +1320,7 @@ function drawMember(){
      backgroundColor:c('red',0.65), borderRadius:4,
      datalabels:{display:true,anchor:'end',align:'end',color:'#d43a2f',font:{size:9,weight:'600',family:'JetBrains Mono'},formatter:v=>v}}
   ], {plugins:{legend:{display:true,position:'top',labels:{color:'#6b6b80',boxWidth:12,padding:16,font:{size:12}}},tooltip:TT},
-      scales:{x:{grid:{display:false},ticks:{color:'#9898a8'}},y:{grid:{color:GRID},ticks:{color:'#9898a8'}}}});
+      scales:{x:{grid:{display:false},ticks:{color:'#9898a8'}},y:{suggestedMax:Math.max(...DATA.member_flow.new,...DATA.member_flow.loss)*1.2,grid:{color:GRID},ticks:{color:'#9898a8'}}}});
 
   // 等級結構 donut
   const tierCtx = document.getElementById('cMemberTier')?.getContext('2d');
@@ -1377,7 +1377,7 @@ function drawMember(){
     borderRadius:5
   }], {layout:{padding:{top:24,right:8}},
        scales:{x:{grid:{display:false},ticks:{color:'#9898a8'}},
-               y:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v+'%'},suggestedMax:50}},
+               y:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v+'%'},suggestedMax:Math.max(...DATA.age.pct)*1.2}},
        plugins:{tooltip:{...TT, callbacks:{label:ctx2=>` 佔比 ${ctx2.parsed.y}%`}},
                 datalabels:{display:true,anchor:'end',align:'end',color:'#2d5be3',font:{family:'JetBrains Mono',size:11,weight:'600'},formatter:v=>v+'%',padding:{bottom:2}}}});
 }
@@ -1475,7 +1475,7 @@ function drawTx(){
                  datalabels:{display:true,anchor:'end',align:'end',color:'#3a3a4a',font:{family:'JetBrains Mono',size:9,weight:'600'},formatter:v=>v>=1000?(v/1000).toFixed(1)+'K':v,padding:{bottom:2}},
                  ...(ann ? {annotation: ann} : {})},
         scales:{x:{grid:{display:false},ticks:{color:'#9898a8',font:{size:11}}},
-                y:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v>=1000?v/1000+'K':v}}}}});
+                y:{suggestedMax:Math.max(...DATA.order_distribution.counts)*1.2,grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v>=1000?v/1000+'K':v}}}}});
   }
 
   // 時段下單 + 20 點高峰 annotation
@@ -1514,6 +1514,7 @@ function drawTx(){
                        pointHitRadius:20,
                        borderWidth:2.5}]},
       options:{responsive:true,
+        interaction:{mode:'index',intersect:false},
         plugins:{legend:{display:false}, tooltip:{...TT, mode:'index', intersect:false},
                  datalabels:{display:true,color:'#7c4dff',font:{family:'JetBrains Mono',size:9,weight:'700'},
                              formatter:(v,ctx)=>{const d=ctx.chart.data.datasets[0].data;const max=Math.max(...d);return v===max?v+'筆':'';},
@@ -1533,14 +1534,15 @@ function drawTx(){
      borderColor:c('red',0.75), backgroundColor:'transparent', fill:false, tension:0.3, borderWidth:2, pointRadius:3, borderDash:[5,3]},
     {label:'其他 (轉帳/超商代收)', data: DATA.payment.other,
      borderColor:c('gray',0.6), backgroundColor:'transparent', fill:false, tension:0.3, borderWidth:1.8, pointRadius:3, borderDash:[2,3]}
-  ], {plugins:{legend:{display:true,position:'top',labels:{color:'#6b6b80',boxWidth:12,font:{size:11},padding:14}},
+  ], {interaction:{mode:'index',intersect:false}, elements:{point:{hoverRadius:10}},
+      plugins:{legend:{display:true,position:'top',labels:{color:'#6b6b80',boxWidth:12,font:{size:11},padding:14}},
                tooltip:TT,
                datalabels:{display:true,font:{family:'JetBrains Mono',size:9,weight:'600'},
                            formatter:(v,ctx)=>{const i=ctx.dataIndex,len=ctx.dataset.data.length;return(i===0||i===len-1)?v+'%':'';},
                            anchor:'top',align:'top',padding:{bottom:1},
                            color:(ctx)=>{const colors=['#2aab85','#2d5be3','#d43a2f','#646e87'];return colors[ctx.datasetIndex]||'#3a3a4a';}}},
       scales:{x:{grid:{display:false},ticks:{color:'#9898a8'}},
-              y:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v+'%'}}}});
+              y:{suggestedMax:Math.max(...DATA.payment.linepay,...DATA.payment.applepay,...DATA.payment.credit,...DATA.payment.other)*1.2,grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>v+'%'}}}});
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -1559,7 +1561,7 @@ function drawCross(){
                datalabels:{display:true,anchor:'end',align:'end',color:'#3a3a4a',font:{family:'JetBrains Mono',size:9,weight:'600'},
                            formatter:v=>'NT$'+(v>=1000?(v/1000).toFixed(1)+'K':v),padding:{bottom:2}}},
       scales:{x:{grid:{display:false},ticks:{color:'#3a3a4a'}},
-              y:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>'NT$'+v.toLocaleString()},suggestedMax:20000}}});
+              y:{grid:{color:GRID},ticks:{color:'#9898a8',callback:v=>'NT$'+v.toLocaleString()},suggestedMax:Math.max(...DATA.tier_spend.annual,...DATA.tier_spend.aov)*1.2}}});
 
   // 頻次分佈
   mk('cFreqDist','bar', DATA.frequency.labels, [{

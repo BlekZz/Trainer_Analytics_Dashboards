@@ -1114,7 +1114,7 @@ function mk(id, type, labels, datasets, opts={}) {
   // Fix: line charts — enlarge hover hit area
   if (type === 'line') {
     datasets = datasets.map(ds => ({
-      pointHitRadius: 18, pointRadius: ds.pointRadius ?? 3, pointHoverRadius: ds.pointHoverRadius ?? 7,
+      pointHitRadius: 18, pointRadius: ds.pointRadius ?? 3, pointHoverRadius: ds.pointHoverRadius ?? 10,
       ...ds
     }));
   }
@@ -1215,7 +1215,7 @@ function drawMrr(){
     }}}},
     scales:{
       x:{ticks:{color:'#475569',font:{size:12}}},
-      y:{ticks:{color:'#64748B',font:{size:10},callback:v=>'NT$'+(v/10000).toFixed(0)+'萬'},min:4600000,max:5150000}
+      y:{ticks:{color:'#64748B',font:{size:10},callback:v=>'NT$'+(v/10000).toFixed(0)+'萬'},min:4600000,suggestedMax:4600000+(Math.max(r0,r1,r2,r3,r4,wfEnd)-4600000)*1.2}
     }
   });
 
@@ -1325,7 +1325,7 @@ function drawLtv(){
       backgroundColor:DL.ltv_cac.map(v=>v>=5?c('teal',.85):v>=3?c('blue',.75):c('red',.75)),
       borderRadius:4,maxBarThickness:36}],
     {indexAxis:'y',
-     scales:{x:{min:0,max:10,ticks:{callback:v=>v+'×'}},y:{ticks:{font:{size:12}}}},
+     scales:{x:{min:0,suggestedMax:Math.max(...DL.ltv_cac)*1.2,ticks:{callback:v=>v+'×'}},y:{ticks:{font:{size:12}}}},
      plugins:{datalabels:{display:true,anchor:'end',align:'end',color:'#475569',font:{size:12,weight:'600'},formatter:v=>v+'×'},
               legend:{display:false}}}
   );
@@ -1336,7 +1336,7 @@ function drawLtv(){
       backgroundColor:[c('teal',.8),c('blue',.7),c('purple',.7),c('orange',.8),c('red',.75)],
       borderRadius:4,maxBarThickness:36}],
     {indexAxis:'y',
-     scales:{x:{ticks:{callback:v=>'NT$'+(v/1000).toFixed(0)+'K'}},y:{ticks:{font:{size:12}}}},
+     scales:{x:{suggestedMax:Math.max(...DL.cac)*1.2,ticks:{callback:v=>'NT$'+(v/1000).toFixed(0)+'K'}},y:{ticks:{font:{size:12}}}},
      plugins:{datalabels:{display:true,anchor:'end',align:'end',color:'#475569',font:{size:11},formatter:v=>'NT$'+(v/1000).toFixed(0)+'K'},
               legend:{display:false}}}
   );
@@ -1359,7 +1359,7 @@ function drawLtv(){
       {label:'降級（→ 下一方案）',data:DM.downgrades,backgroundColor:c('orange',.8),borderRadius:4},
       {label:'流失（取消訂閱）',data:DM.churn_count,backgroundColor:c('red',.75),borderRadius:4}
     ],
-    {scales:{y:{ticks:{stepSize:25}}},
+    {scales:{y:{suggestedMax:Math.max(...DM.upgrades,...DM.downgrades,...DM.churn_count)*1.2,ticks:{stepSize:25}}},
      plugins:{datalabels:{display:true,anchor:'end',align:'top',font:{size:11,weight:'600'},
        color:(ctx)=>['#059669','#D97706','#DC2626'][ctx.datasetIndex],
        formatter:v=>v}}}
@@ -1377,7 +1377,7 @@ function drawFunnel(){
       backgroundColor:[c('blue',.8),c('blue',.65),c('purple',.75),c('teal',.8),c('teal',.65)],
       borderRadius:4,maxBarThickness:42}],
     {indexAxis:'y',
-     scales:{x:{ticks:{callback:v=>v>=1000?(v/1000).toFixed(0)+'K':v},max:56000},y:{ticks:{font:{size:12}}}},
+     scales:{x:{ticks:{callback:v=>v>=1000?(v/1000).toFixed(0)+'K':v},suggestedMax:Math.max(...DF.counts)*1.2},y:{ticks:{font:{size:12}}}},
      plugins:{datalabels:{display:true,anchor:'end',align:'end',
        color:'#475569',font:{size:11,weight:'600'},
        formatter:(v,ctx)=>{
@@ -1393,7 +1393,7 @@ function drawFunnel(){
     [{label:'轉換人數',data:DD.values,
       backgroundColor:[c('blue',.75),c('teal',.8),c('purple',.7),c('orange',.75)],
       borderRadius:4,maxBarThickness:60}],
-    {scales:{y:{ticks:{stepSize:100}}},
+    {scales:{y:{suggestedMax:Math.max(...DD.values)*1.2,ticks:{stepSize:100}}},
      plugins:{datalabels:{display:true,anchor:'end',align:'top',color:'#475569',font:{size:12,weight:'600'},
        formatter:(v,ctx)=>{
          const pct=Math.round(v/1468*1000)/10;
@@ -1418,7 +1418,7 @@ function drawFunnel(){
       backgroundColor:DC.conv_rates.map(v=>v>=50?c('teal',.85):v>=30?c('blue',.75):v>=10?c('orange',.8):c('red',.75)),
       borderRadius:4,maxBarThickness:48}],
     {indexAxis:'y',
-     scales:{x:{min:0,max:90,ticks:{callback:v=>v+'%'}},y:{ticks:{font:{size:12}}}},
+     scales:{x:{min:0,suggestedMax:Math.max(...DC.conv_rates)*1.2,ticks:{callback:v=>v+'%'}},y:{ticks:{font:{size:12}}}},
      plugins:{datalabels:{display:true,anchor:'end',align:'end',
        color:'#475569',font:{size:11,weight:'600'},formatter:v=>v+'%'},
        legend:{display:false}}}

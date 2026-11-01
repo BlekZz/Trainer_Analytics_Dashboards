@@ -1268,12 +1268,13 @@ function draw_p1() {
         label: '累積收入佔比',
         data: DATA.pareto_rev_pct,
         borderColor: c('green'), backgroundColor: c('green', 0.12),
-        fill: true, tension: 0.35, pointRadius: 0, pointHoverRadius: 5, borderWidth: 2.5
+        fill: true, tension: 0.35, pointRadius: 0, pointHoverRadius: 10, borderWidth: 2.5
       }]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       animation: { duration: 480 },
+      interaction: { mode: 'index', intersect: false },
       plugins: {
         tooltip: {
           backgroundColor: 'rgba(255,255,255,0.97)',
@@ -1284,7 +1285,7 @@ function draw_p1() {
             title: (items) => `SKU 前 ${items[0].label} 累積`
           }
         },
-        legend: { labels: { color: '#374151', font: { family: "'Nunito Sans'" } } },
+        legend: { display: false, labels: { color: '#374151', font: { family: "'Nunito Sans'" } } },
         datalabels: { display: false },
         annotation: {
           annotations: {
@@ -1463,7 +1464,7 @@ function draw_p2() {
       responsive:true, maintainAspectRatio:false, animation:{duration:480},
       interaction:{ mode:'index', intersect:false },
       plugins:{
-        ...TTP, legend:{labels:{color:'#374151',font:{family:"'Nunito Sans'"}}},
+        ...TTP, legend:{display:false,labels:{color:'#374151',font:{family:"'Nunito Sans'"}}},
         annotation:{ annotations:{ peak:{ type:'line', xMin:'12月', xMax:'12月', borderColor:c('red',0.4), borderWidth:1.5, borderDash:[4,3], label:{display:true,content:'12月 338次',position:'start',backgroundColor:c('red',0.65),color:'#fff',font:{size:10},padding:{x:5,y:2}} } } },
         datalabels:{display:false}
       },

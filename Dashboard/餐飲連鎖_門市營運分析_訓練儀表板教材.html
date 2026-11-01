@@ -1471,7 +1471,7 @@ function drawOps() {
       }
     },
     scales: {
-      x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b949e', callback: v => v+'万' } },
+      x: { suggestedMax: Math.max(...DATA.store_revenue) * 1.2, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b949e', callback: v => v+'万' } },
       y: { grid: { display: false }, ticks: { color: '#8b949e', font: { size: 10 } } }
     },
     layout: { padding: { right: 50 } }
@@ -1493,11 +1493,12 @@ function drawCust() {
       backgroundColor: c('purple', 0.12),
       borderWidth: 2.5,
       pointRadius: 2,
-      pointHoverRadius: 5,
+      pointHoverRadius: 10,
       tension: 0.4,
       fill: true
     }
   ], {
+    interaction: { mode: 'index', intersect: false },
     plugins: {
       legend: { display: false },
       tooltip: TT,
@@ -1536,7 +1537,7 @@ function drawCust() {
     },
     scales: {
       x: { grid: { display: false }, ticks: { color: '#8b949e', font: { size: 10 } } },
-      y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b949e' } }
+      y: { suggestedMax: Math.max(...DATA.frequency.counts) * 1.2, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b949e' } }
     },
     layout: { padding: { top: 20 } }
   });
@@ -1619,7 +1620,7 @@ function drawCust() {
       }
     },
     scales: {
-      x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b949e', callback: v => 'NT$'+v }, min: 200, max: 340 },
+      x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b949e', callback: v => 'NT$'+v }, min: 0, suggestedMax: Math.max(...DATA.customer_tier.aov) * 1.2 },
       y: { grid: { display: false }, ticks: { color: '#8b949e' } }
     },
     layout: { padding: { right: 55 } }
@@ -1740,7 +1741,7 @@ function drawDeep() {
     },
     scales: {
       x: { grid: { display: false }, ticks: { color: '#8b949e' } },
-      y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b949e' } }
+      y: { suggestedMax: Math.max(...DATA.repurchase.counts) * 1.2, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b949e' } }
     },
     layout: { padding: { top: 20 } }
   });

@@ -1613,7 +1613,7 @@ function mk(id, type, labels, datasets, opts={}) {
     datasets = datasets.map(ds => ({
       pointHitRadius: 18,
       pointRadius: ds.pointRadius ?? 3,
-      pointHoverRadius: ds.pointHoverRadius ?? 7,
+      pointHoverRadius: ds.pointHoverRadius ?? 10,
       ...ds
     }));
   }
@@ -1629,6 +1629,7 @@ function mk(id, type, labels, datasets, opts={}) {
       maintainAspectRatio: false,
       layout: { padding: { top: topPad, ...(opts.layout?.padding || {}) } },
       ...TT,
+      ...(type === 'line' ? { interaction: { mode: 'index', intersect: false } } : {}),
       ...opts,
       plugins: mergedPlugins
     }
@@ -1795,7 +1796,7 @@ function drawP1() {
       }
     },
     scales: {
-      x: { ticks:{ callback: v=>`${v}K` }, grid:{ color:'rgba(0,0,0,0.06)' } },
+      x: { suggestedMax: Math.max(...platVals) * 1.2, ticks:{ callback: v=>`${v}K` }, grid:{ color:'rgba(0,0,0,0.06)' } },
       y: { grid:{ display:false } }
     },
     layout: { padding:{ right:20 } }
@@ -1921,7 +1922,7 @@ function drawP2() {
       datalabels:{ anchor:'end', align:'end', color:'#1E1B4B', font:{ size:11, weight:'600' }, formatter: v=>`$${v}K` }
     },
     scales:{
-      x:{ ticks:{ callback:v=>`$${v}K` }, grid:{ color:'rgba(0,0,0,0.06)' } },
+      x:{ suggestedMax: Math.max(...brandVals) * 1.2, ticks:{ callback:v=>`$${v}K` }, grid:{ color:'rgba(0,0,0,0.06)' } },
       y:{ grid:{ display:false } }
     },
     layout:{ padding:{ right:16 } }
@@ -1971,7 +1972,7 @@ function drawP3() {
       datalabels:{ anchor:'end', align:'end', color:'#1E1B4B', font:{ size:12, weight:'700' }, formatter: v=>`$${v}` }
     },
     scales:{
-      x:{ ticks:{ callback:v=>`$${v}` }, grid:{ color:'rgba(0,0,0,0.06)' } },
+      x:{ suggestedMax: Math.max(...cpmVals) * 1.2, ticks:{ callback:v=>`$${v}` }, grid:{ color:'rgba(0,0,0,0.06)' } },
       y:{ grid:{ display:false } }
     },
     layout:{ padding:{ right:16 } }
@@ -2027,7 +2028,7 @@ function drawP4() {
     plugins: { legend:{ position:'bottom', labels:{ boxWidth:12, padding:14 } } },
     scales:{
       x: { grid:{ display:false } },
-      y: { ticks:{ callback:v=>`${v}%` }, title:{ display:true, text:'互動率 %', font:{size:11} }, grid:{ color:'rgba(0,0,0,0.06)' } }
+      y: { suggestedMax: Math.max(...p4.engagement_rate, ...p4.engagement_benchmark) * 1.2, ticks:{ callback:v=>`${v}%` }, title:{ display:true, text:'互動率 %', font:{size:11} }, grid:{ color:'rgba(0,0,0,0.06)' } }
     }
   });
 
@@ -2064,7 +2065,7 @@ function drawP4() {
     plugins: { legend:{ position:'bottom', labels:{ boxWidth:12, padding:14 } } },
     scales:{
       x: { grid:{ display:false } },
-      y: { min:0, max:100, ticks:{ callback:v=>`${v}%` }, grid:{ color:'rgba(0,0,0,0.06)' } }
+      y: { min:0, suggestedMax: Math.max(...p4.active_rate_30d, ...p4.active_rate_90d) * 1.2, ticks:{ callback:v=>v>100?'':`${v}%` }, grid:{ color:ctx=>ctx.tick&&ctx.tick.value>100?'transparent':'rgba(0,0,0,0.06)' } }
     }
   });
 
